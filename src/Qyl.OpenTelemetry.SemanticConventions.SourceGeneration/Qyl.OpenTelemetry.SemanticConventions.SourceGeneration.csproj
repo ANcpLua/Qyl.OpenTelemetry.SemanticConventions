@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>Qyl.OpenTelemetry.SemanticConventions.SourceGeneration</RootNamespace>
+    <AssemblyName>Qyl.OpenTelemetry.SemanticConventions.SourceGeneration</AssemblyName>
+
+    <PackageId>Qyl.OpenTelemetry.SemanticConventions.SourceGeneration</PackageId>
+    <Description>Roslyn incremental source generator for OpenTelemetry semantic conventions. Reads a resolved-registry YAML (added as AdditionalFiles by the consumer's build) and emits a SchemaUrl constant + per-domain attribute classes. The Qyl.OpenTelemetry.SemanticConventions.Nuke build component produces the registry input; this generator turns it into compile-time constants in consumer assemblies.</Description>
+    <PackageTags>opentelemetry;semantic-conventions;roslyn;source-generator;otel</PackageTags>
+
+    <IsPackable>true</IsPackable>
+    <IsRoslynComponent>true</IsRoslynComponent>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+
+    <NoWarn>$(NoWarn);RS1041;RS1038;RS2008;CS1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Using Include="System"/>
+    <Using Include="System.Collections.Generic"/>
+    <Using Include="System.Collections.Immutable"/>
+    <Using Include="System.Linq"/>
+    <Using Include="System.Text"/>
+    <Using Include="Microsoft.CodeAnalysis"/>
+    <Using Include="Microsoft.CodeAnalysis.Diagnostics"/>
+    <Using Include="Microsoft.CodeAnalysis.Text"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all"/>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)../../README.md" Pack="true" PackagePath="\"/>
+    <None Include="buildTransitive\**" Pack="true" PackagePath="buildTransitive\"/>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddGeneratorToPackage</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <Target Name="_AddGeneratorToPackage" Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(OutputPath)$(AssemblyName).dll" PackagePath="analyzers/dotnet/cs"/>
+    </ItemGroup>
+  </Target>
+
+</Project>

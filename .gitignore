@@ -1,0 +1,22 @@
+artifacts/
+bin/
+obj/
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+
+# Nuke
+.tmp/
+.nuke/temp/
+
+# macOS
+.DS_Store
+
+# Tooling
+.tools/
+node_modules/
+
+# Upstream snapshot (pin via scripts/seed-catalog.sh)
+.semconv-cache/

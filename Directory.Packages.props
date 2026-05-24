@@ -1,0 +1,35 @@
+<Project>
+  <!-- Version.props is imported by Directory.Build.props; MSBuild guarantees that
+       import has already run by the time Directory.Packages.props evaluates. -->
+
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+
+  <ItemGroup Label="Roslyn (analyzers + source generator)">
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="$(MicrosoftCodeAnalysisVersion)"/>
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(MicrosoftCodeAnalysisVersion)"/>
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="$(MicrosoftCodeAnalysisVersion)"/>
+    <PackageVersion Include="ANcpLua.Roslyn.Utilities" Version="$(ANcpLuaRoslynUtilitiesVersion)"/>
+    <PackageVersion Include="ANcpLua.Roslyn.Utilities.Polyfills" Version="$(ANcpLuaRoslynUtilitiesVersion)"/>
+    <PackageVersion Include="ANcpLua.Roslyn.Utilities.Testing" Version="$(ANcpLuaRoslynUtilitiesVersion)"/>
+  </ItemGroup>
+
+  <ItemGroup Label="Build (Nuke component + eng/build host)">
+    <PackageVersion Include="Nuke.Common" Version="$(NukeVersion)"/>
+    <PackageVersion Include="Nuke.Components" Version="$(NukeVersion)"/>
+    <PackageVersion Include="YamlDotNet" Version="$(YamlDotNetVersion)"/>
+  </ItemGroup>
+
+  <ItemGroup Label="Transitive security overrides (Nuke.Common 10.1.0)">
+    <PackageVersion Include="NuGet.Packaging" Version="$(NuGetPackagingVersion)"/>
+    <PackageVersion Include="System.Security.Cryptography.Xml" Version="$(SystemSecurityCryptographyXmlVersion)"/>
+  </ItemGroup>
+
+  <ItemGroup Label="Tests">
+    <PackageVersion Include="xunit.v3.mtp-v2" Version="$(XunitVersion)"/>
+    <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="$(MicrosoftTestingTrxVersion)"/>
+    <PackageVersion Include="AwesomeAssertions" Version="$(AwesomeAssertionsVersion)"/>
+  </ItemGroup>
+</Project>

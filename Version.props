@@ -1,0 +1,19 @@
+<Project>
+  <PropertyGroup Label="Central Versions">
+    <SemConvSchemaVersion>1.41.0</SemConvSchemaVersion>
+
+    <ANcpLuaRoslynUtilitiesVersion>2.2.22</ANcpLuaRoslynUtilitiesVersion>
+    <MicrosoftCodeAnalysisVersion>5.3.0</MicrosoftCodeAnalysisVersion>
+
+    <NukeVersion>10.1.0</NukeVersion>
+
+    <XunitVersion>3.2.2</XunitVersion>
+    <MicrosoftTestingTrxVersion>2.1.0</MicrosoftTestingTrxVersion>
+    <AwesomeAssertionsVersion>9.4.0</AwesomeAssertionsVersion>
+
+    <YamlDotNetVersion>17.1.0</YamlDotNetVersion>
+
+    <NuGetPackagingVersion>7.3.1</NuGetPackagingVersion>
+    <SystemSecurityCryptographyXmlVersion>10.0.7</SystemSecurityCryptographyXmlVersion>
+  </PropertyGroup>
+</Project>

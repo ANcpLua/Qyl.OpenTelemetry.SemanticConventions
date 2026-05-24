@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+    <NoWarn>$(NoWarn);CA1707;CA2007;CS1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit.v3.mtp-v2"/>
+    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport"/>
+    <PackageReference Include="AwesomeAssertions"/>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/Qyl.OpenTelemetry.SemanticConventions.Nuke/Qyl.OpenTelemetry.SemanticConventions.Nuke.csproj"/>
+    <!-- Reference as a normal assembly so we can instantiate SchemaUrlGenerator() directly in unit tests.
+         The generator-run path (Analyzer/ReferenceOutputAssembly=false) is exercised by CSharpGeneratorDriver
+         in the tests, not by the test project's own compilation. -->
+    <ProjectReference Include="../../src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.csproj"/>
+  </ItemGroup>
+
+</Project>

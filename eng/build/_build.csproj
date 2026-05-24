@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Qyl.OpenTelemetry.SemanticConventions.Build</RootNamespace>
+    <AssemblyName>_build</AssemblyName>
+
+    <IsPackable>false</IsPackable>
+    <!-- CA1707: Nuke convention requires the assembly to be named `_build` for the
+         entry-point discovery; the underscore is intentional. Other suppressions
+         are standard for a Nuke build host (top-level program, no async ctx). -->
+    <NoWarn>$(NoWarn);CA1050;CA1707;CA1822;CA2007;CS1591</NoWarn>
+
+    <!-- Build host: don't enforce documentation-comment generation. -->
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+
+    <NukeRootDirectory>../..</NukeRootDirectory>
+    <NukeScriptDirectory>../..</NukeScriptDirectory>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Dogfood: the build host references the Nuke component this repo SHIPS.
+         IUpstreamConventions, LockstepPolicy and friends come from here — the
+         very same package consumers will get from nuget.org. -->
+    <ProjectReference Include="../../src/Qyl.OpenTelemetry.SemanticConventions.Nuke/Qyl.OpenTelemetry.SemanticConventions.Nuke.csproj"/>
+  </ItemGroup>
+
+  <!-- The Nuke component pins NuGet.Packaging 7.3.1 and System.Security.Cryptography.Xml
+       10.0.7 with PrivateAssets=all (security overrides for GHSA-g4vj-cjjj-v7hg /
+       GHSA-37gx-xxp4-5rgx). Because PrivateAssets=all suppresses transitive flow, the
+       build host re-resolves Nuke.Common's vulnerable defaults instead of inheriting the
+       patches. Re-declare here so the dotnet-run executable also gets the patched DLLs. -->
+  <ItemGroup>
+    <PackageReference Include="NuGet.Packaging"/>
+    <PackageReference Include="System.Security.Cryptography.Xml"/>
+  </ItemGroup>
+
+</Project>

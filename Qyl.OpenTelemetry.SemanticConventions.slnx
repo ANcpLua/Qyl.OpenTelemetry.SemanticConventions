@@ -1,0 +1,27 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Qyl.OpenTelemetry.SemanticConventions/Qyl.OpenTelemetry.SemanticConventions.csproj"/>
+    <Project Path="src/Qyl.OpenTelemetry.SemanticConventions.Incubating/Qyl.OpenTelemetry.SemanticConventions.Incubating.csproj"/>
+    <Project Path="src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.csproj"/>
+    <Project Path="src/Qyl.OpenTelemetry.SemanticConventions.Analyzers/Qyl.OpenTelemetry.SemanticConventions.Analyzers.csproj"/>
+    <Project Path="src/Qyl.OpenTelemetry.SemanticConventions.Nuke/Qyl.OpenTelemetry.SemanticConventions.Nuke.csproj"/>
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Qyl.OpenTelemetry.SemanticConventions.Pipeline.Tests/Qyl.OpenTelemetry.SemanticConventions.Pipeline.Tests.csproj"/>
+  </Folder>
+
+  <Folder Name="/eng/">
+    <Project Path="eng/build/_build.csproj"/>
+  </Folder>
+  <Folder Name="/solution-items/">
+    <File Path="README.md"/>
+    <File Path="LICENSE"/>
+    <File Path="Directory.Build.props"/>
+    <File Path="Directory.Packages.props"/>
+    <File Path="Version.props"/>
+    <File Path="global.json"/>
+    <File Path="nuget.config"/>
+    <File Path=".editorconfig"/>
+    <File Path="master-programmatic.yaml"/>
+  </Folder>
+</Solution>

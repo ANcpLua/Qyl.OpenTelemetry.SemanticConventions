@@ -1,0 +1,11 @@
+<Project>
+  <!--
+    Forwards the SemConv schema version into the analyzer-config so the
+    SchemaUrlGenerator can read it via build_property.QylSemConvSchemaVersion.
+    Consumers that want to override the default set <QylSemConvSchemaVersion>
+    in their own csproj.
+  -->
+  <ItemGroup>
+    <CompilerVisibleProperty Include="QylSemConvSchemaVersion"/>
+  </ItemGroup>
+</Project>

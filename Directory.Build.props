@@ -1,0 +1,54 @@
+<Project>
+  <Import Project="Version.props"/>
+
+  <PropertyGroup Label="Output layout">
+    <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts/</ArtifactsPath>
+    <UseArtifactsOutput>true</UseArtifactsOutput>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Versioning">
+    <VersionPrefix Condition="'$(VersionPrefix)' == ''">2.0.1</VersionPrefix>
+    <VersionSuffix Condition="'$(VersionSuffix)' == ''">local</VersionSuffix>
+    <Version Condition="'$(VersionSuffix)' != ''">$(VersionPrefix)-$(VersionSuffix)</Version>
+    <Version Condition="'$(VersionSuffix)' == ''">$(VersionPrefix)</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Language">
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Quality">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors/>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Deterministic>true</Deterministic>
+    <NoWarn>$(NoWarn);NU1604</NoWarn>
+    <NoWarn Condition="'$(TargetFramework)' == 'netstandard2.0'">$(NoWarn);NU1701</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Packaging defaults (per-project IsPackable overrides)">
+    <IsPackable>false</IsPackable>
+    <Authors>Alexander Nachtmann</Authors>
+    <Company>ANcpLua</Company>
+    <Copyright>Copyright (c) 2025-2026 Alexander Nachtmann</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions</RepositoryUrl>
+    <PackageProjectUrl>$(RepositoryUrl)</PackageProjectUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PackageTags>opentelemetry;semantic-conventions;otel;observability;telemetry</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(CI)' == 'true' OR '$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+</Project>

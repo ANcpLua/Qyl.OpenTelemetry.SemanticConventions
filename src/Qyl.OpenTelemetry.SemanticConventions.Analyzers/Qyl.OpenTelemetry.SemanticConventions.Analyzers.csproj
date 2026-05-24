@@ -1,0 +1,87 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>Qyl.OpenTelemetry.SemanticConventions.Analyzers</RootNamespace>
+    <AssemblyName>Qyl.OpenTelemetry.SemanticConventions.Analyzers</AssemblyName>
+
+    <PackageId>Qyl.OpenTelemetry.SemanticConventions.Analyzers</PackageId>
+    <Description>Roslyn diagnostic analyzers + code fixes for OpenTelemetry semantic-conventions consumers. Flags deprecated attributes, schema-url omission, missing required attributes (GenAI, HTTP), and a wider band of OTel observability/instrumentation patterns at compile time.</Description>
+    <PackageTags>opentelemetry;semantic-conventions;roslyn;analyzer;codefix;otel</PackageTags>
+
+    <IsPackable>true</IsPackable>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <NeutralLanguage>en</NeutralLanguage>
+
+    <NoWarn>$(NoWarn);RS1041;RS1025;RS1026;RS0030;RS1038;RS2000;RS2008;IDE0055;CA2249;CS1591;CS1570;CS1572;CS1573;CS1574</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup Label="Global usings consumed by imported analyzer + codefix sources">
+    <Using Include="System"/>
+    <Using Include="System.Collections.Generic"/>
+    <Using Include="System.Collections.Concurrent"/>
+    <Using Include="System.Collections.Immutable"/>
+    <Using Include="System.Composition"/>
+    <Using Include="System.Diagnostics.CodeAnalysis"/>
+    <Using Include="System.Linq"/>
+    <Using Include="System.Threading"/>
+    <Using Include="System.Threading.Tasks"/>
+    <Using Include="Microsoft.CodeAnalysis"/>
+    <Using Include="Microsoft.CodeAnalysis.CSharp"/>
+    <Using Include="Microsoft.CodeAnalysis.CSharp.Syntax"/>
+    <Using Include="Microsoft.CodeAnalysis.Diagnostics"/>
+    <Using Include="Microsoft.CodeAnalysis.Operations"/>
+    <Using Include="Microsoft.CodeAnalysis.CodeFixes"/>
+    <Using Include="Microsoft.CodeAnalysis.CodeActions"/>
+    <Using Include="ANcpLua.Roslyn.Utilities"/>
+    <Using Include="ANcpLua.Roslyn.Utilities.Analyzers"/>
+    <Using Include="ANcpLua.Roslyn.Utilities.Contexts"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ANcpLua.Roslyn.Utilities" PrivateAssets="all"/>
+    <PackageReference Include="ANcpLua.Roslyn.Utilities.Polyfills" PrivateAssets="all"/>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all"/>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" PrivateAssets="all"/>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup Label="Resource wiring (resx ↔ Designer + LogicalName for resolver)">
+    <Compile Update="Resources.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="Resources.resx"/>
+    <EmbeddedResource Update="Resources.resx" Generator="ResXFileCodeGenerator" LastGenOutput="Resources.Designer.cs" LogicalName="Qyl.OpenTelemetry.SemanticConventions.Analyzers.Resources.resources"/>
+    <Compile Update="CodeFixResources.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="CodeFixResources.resx"/>
+    <EmbeddedResource Update="CodeFixResources.resx" Generator="ResXFileCodeGenerator" LastGenOutput="CodeFixResources.Designer.cs" LogicalName="Qyl.OpenTelemetry.SemanticConventions.Analyzers.CodeFixResources.resources"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)../../README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="AnalyzerReleases.Shipped.md"/>
+    <AdditionalFiles Include="AnalyzerReleases.Unshipped.md"/>
+  </ItemGroup>
+
+  <!-- Bundle the analyzer assembly + ANcpLua.Roslyn.Utilities into analyzers/dotnet/cs.
+       Microsoft.CodeAnalysis.CSharp[.Workspaces] are intentionally NOT bundled — they
+       are provided by every analyzer host. Polyfills is source-only. -->
+  <PropertyGroup>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToPackage</TargetsForTfmSpecificContentInPackage>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <Target Name="_AddAnalyzersToPackage" Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(OutputPath)$(AssemblyName).dll"          PackagePath="analyzers/dotnet/cs"/>
+      <TfmSpecificPackageFile Include="$(OutputPath)ANcpLua.Roslyn.Utilities.dll" PackagePath="analyzers/dotnet/cs"/>
+    </ItemGroup>
+  </Target>
+
+</Project>
