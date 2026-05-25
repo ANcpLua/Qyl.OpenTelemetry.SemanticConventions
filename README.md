@@ -21,10 +21,10 @@ catalog, and compiles the source generator's resolved-registry input. Any
 divergence between the committed `.g.cs` and what the pipeline would emit fails
 CI — the analyzer/generator catalog cannot drift from the registry by accident.
 
-## Donation story
+## Upstream path
 
-If the OpenTelemetry .NET source-generator donation
+If the upstream OpenTelemetry .NET source-generator effort
 ([open-telemetry/opentelemetry-dotnet-contrib#4424](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/issues/4424))
-lands upstream, the `SourceGeneration`, `Analyzers`, and `Nuke` packages travel
-together as a single donation unit. Type identities are preserved so a
-PackageReference swap is the only consumer-side change.
+lands, the `SourceGeneration`, `Analyzers`, and `Nuke` packages ship as one
+cohesive unit. Type identities are preserved so the only consumer-side change
+is the `PackageReference` id.
