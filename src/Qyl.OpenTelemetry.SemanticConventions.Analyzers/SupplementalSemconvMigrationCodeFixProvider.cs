@@ -8,9 +8,9 @@ public sealed class SupplementalSemconvMigrationCodeFixProvider : CodeFixProvide
 {
     public override ImmutableArray<string> FixableDiagnosticIds { get; } =
     [
-        "QYL0030",
-        "QYL0031",
-        "QYL0032",
+        "QYL0009",
+        "QYL0010",
+        "QYL0011",
     ];
 
     public override FixAllProvider GetFixAllProvider() =>
