@@ -9,7 +9,15 @@ internal static class GeneratedSourceNames
             return Sanitize(className) + ".g.cs";
         }
 
-        return Sanitize(containingNamespace) + "." + Sanitize(className) + ".g.cs";
+        // Sanitize each namespace segment independently and rejoin with '.'. Naive
+        // whole-string sanitization collapsed '.' → '_', so A.B and A_B (or
+        // ConsumerB.Different.Nested.Path and ConsumerB_Different_Nested_Path)
+        // produced colliding AddSource hint names.
+        var segments = containingNamespace.Split('.');
+        for (var i = 0; i < segments.Length; i++)
+            segments[i] = Sanitize(segments[i]);
+
+        return string.Join(".", segments) + "." + Sanitize(className) + ".g.cs";
     }
 
     private static string Sanitize(string value)

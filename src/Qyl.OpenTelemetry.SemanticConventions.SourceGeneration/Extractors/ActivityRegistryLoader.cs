@@ -32,11 +32,17 @@ internal static class ActivityRegistryLoader
 
     internal static ActivityRegistryModel ParseRegistry(JsonValue root)
     {
+        // Fail loud: silently returning an empty registry on shape regressions
+        // means the generator emits nothing with no diagnostic and consumers
+        // think their markers "just don't work." A FormatException surfaces at
+        // analyzer-load time with a clear cause.
         if (root is not JsonObject obj)
-            return new ActivityRegistryModel(default);
+            throw new FormatException(
+                $"Embedded activity registry root must be a JSON object; got {root?.GetType().Name ?? "null"}.");
 
         if (obj.TryGetArray("catalog") is not { } catalogArr)
-            return new ActivityRegistryModel(default);
+            throw new FormatException(
+                "Embedded activity registry is missing the required 'catalog' array.");
 
         var contextsByKey = obj.TryGetArray("groups") is { } groupsArr
             ? BuildContextsByAttribute(groupsArr)

@@ -1,3 +1,4 @@
+using System.Linq;
 using ANcpLua.Roslyn.Utilities.Testing.GeneratorHelpers;
 using AwesomeAssertions;
 using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration;
@@ -59,15 +60,46 @@ public sealed class ByteIdentitySnapshotTests
         //         public const string Write = "write";
         //     }
 
-        generated.Should()
-            .Contain("/// <summary>")
-            .And.Contain("/// The disk IO operation direction.")
-            .And.Contain("/// </summary>")
-            .And.Contain("public const string AttributeDiskIoDirection = \"disk.io.direction\";")
-            .And.Contain("public static class DiskIoDirectionValues")
-            .And.Contain("/// read.")
-            .And.Contain("public const string Read = \"read\";")
-            .And.Contain("/// write.")
-            .And.Contain("public const string Write = \"write\";");
+        // Contiguous block check: assert the disk.io.direction member region
+        // appears as one uninterrupted run of lines, not just that the substrings
+        // are present anywhere in the file. The original .And.Contain chain would
+        // have passed even if the lines were reordered or had unrelated members
+        // interleaved between them — a byte-shape regression with green tests.
+        //
+        // Whitespace is normalized per-line (leading trim) because the generator
+        // emits inside a user-declared partial class, while the contrib reference
+        // is a top-level static class — the column counts differ by one nesting
+        // level but the row sequence must match.
+        const string expectedBlock = """
+            /// <summary>
+            /// The disk IO operation direction.
+            /// </summary>
+            /// <remarks>
+            /// Examples:
+            /// - read
+            /// </remarks>
+            public const string AttributeDiskIoDirection = "disk.io.direction";
+
+            /// <summary>
+            /// The disk IO operation direction.
+            /// </summary>
+            public static class DiskIoDirectionValues
+            {
+            /// <summary>
+            /// read.
+            /// </summary>
+            public const string Read = "read";
+
+            /// <summary>
+            /// write.
+            /// </summary>
+            public const string Write = "write";
+            }
+            """;
+
+        static string Normalize(string code) =>
+            string.Join("\n", code.Replace("\r\n", "\n").Split('\n').Select(static l => l.TrimStart()));
+
+        Normalize(generated).Should().Contain(Normalize(expectedBlock));
     }
 }

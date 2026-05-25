@@ -86,75 +86,74 @@ public sealed class CachingTests
         }
     }
 
-    [Fact]
-    public void MetricsGenerator_Has_No_Forbidden_Types_And_Caches()
+    // Collapsed from four per-generator [Fact]s into one [Theory] — the per-signal
+    // duplicates only varied by generator type + marker source line.
+    public static TheoryData<string, Func<IIncrementalGenerator>, string> SignalGenerators => new()
     {
-        const string source = """
+        {
+            "Metrics",
+            static () => new SemConvMetricsGenerator(),
+            """
             using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration;
             namespace MyApp;
             [SemanticConventionMetrics("http.server")]
             internal static partial class HttpServerMetrics;
-            """;
-
-        AssertGeneratorCachesObservableSteps<SemConvMetricsGenerator>(source);
-    }
-
-    [Fact]
-    public void EventsGenerator_Has_No_Forbidden_Types_And_Caches()
-    {
-        const string source = """
+            """
+        },
+        {
+            "Events",
+            static () => new SemConvEventsGenerator(),
+            """
             using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration;
             namespace MyApp;
             [SemanticConventionEvents("session")]
             internal static partial class SessionEvents;
-            """;
-
-        AssertGeneratorCachesObservableSteps<SemConvEventsGenerator>(source);
-    }
-
-    [Fact]
-    public void MetersGenerator_Has_No_Forbidden_Types_And_Caches()
-    {
-        const string source = """
+            """
+        },
+        {
+            "Meters",
+            static () => new SemConvMetersGenerator(),
+            """
             using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration;
             namespace MyApp;
             [SemanticConventionMeters("http.server")]
             internal static partial class HttpServerMeters;
-            """;
-
-        AssertGeneratorCachesObservableSteps<SemConvMetersGenerator>(source);
-    }
-
-    [Fact]
-    public void ActivitiesGenerator_Has_No_Forbidden_Types_And_Caches()
-    {
-        const string source = """
+            """
+        },
+        {
+            "Activities",
+            static () => new SemConvActivitiesGenerator(),
+            """
             using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration;
             namespace MyApp;
             [SemanticConventionActivities("http")]
             internal static partial class HttpActivityExtensions;
-            """;
+            """
+        },
+    };
 
-        AssertGeneratorCachesObservableSteps<SemConvActivitiesGenerator>(source);
-    }
-
-    private static void AssertGeneratorCachesObservableSteps<TGenerator>(string source)
-        where TGenerator : IIncrementalGenerator, new()
+    [Theory]
+    [MemberData(nameof(SignalGenerators))]
+    public void Signal_Generator_Has_No_Forbidden_Types_And_Caches(
+        string signal,
+        Func<IIncrementalGenerator> generatorFactory,
+        string markerSource)
     {
-        var (firstRun, secondRun, report) = RunGeneratorTwice<TGenerator>(source);
+        _ = signal;
+        var (firstRun, secondRun, report) = RunGeneratorTwice(generatorFactory, markerSource);
 
         firstRun.GeneratedTrees.Should().NotBeEmpty();
         secondRun.GeneratedTrees.Should().NotBeEmpty();
         report.ObservableSteps.Should().NotBeEmpty(
-            $"{typeof(TGenerator).Name} must expose at least one user-defined pipeline step");
+            $"{signal} generator must expose at least one user-defined pipeline step");
 
         foreach (var step in report.ObservableSteps)
         {
             step.IsCachedSuccessfully.Should().BeTrue(
-                $"{typeof(TGenerator).Name} step '{step.StepName}' should cache on the second run ({step.FormatBreakdown()})");
+                $"{signal} generator step '{step.StepName}' should cache on the second run ({step.FormatBreakdown()})");
             if (IsUserPipelineStep(step.StepName))
                 step.HasForbiddenTypes.Should().BeFalse(
-                    $"{typeof(TGenerator).Name} step '{step.StepName}' must not carry forbidden Roslyn types in its cached output");
+                    $"{signal} generator step '{step.StepName}' must not carry forbidden Roslyn types in its cached output");
         }
     }
 
@@ -171,6 +170,14 @@ public sealed class CachingTests
     private static (GeneratorDriverRunResult FirstRun, GeneratorDriverRunResult SecondRun, GeneratorCachingReport Report)
         RunGeneratorTwice<TGenerator>(string source)
         where TGenerator : IIncrementalGenerator, new()
+        => RunGeneratorTwice(static () => new TGenerator(), source, typeof(TGenerator));
+
+    private static (GeneratorDriverRunResult FirstRun, GeneratorDriverRunResult SecondRun, GeneratorCachingReport Report)
+        RunGeneratorTwice(Func<IIncrementalGenerator> generatorFactory, string source)
+        => RunGeneratorTwice(generatorFactory, source, generatorFactory().GetType());
+
+    private static (GeneratorDriverRunResult FirstRun, GeneratorDriverRunResult SecondRun, GeneratorCachingReport Report)
+        RunGeneratorTwice(Func<IIncrementalGenerator> generatorFactory, string source, Type generatorType)
     {
         var syntaxTree = CSharpSyntaxTree.ParseText(source);
         var references = GetBaseReferences();
@@ -181,7 +188,7 @@ public sealed class CachingTests
             references,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-        var generator = new TGenerator();
+        var generator = generatorFactory();
         GeneratorDriver driver = CSharpGeneratorDriver.Create(
             new[] { generator.AsSourceGenerator() },
             additionalTexts: null,
@@ -203,7 +210,7 @@ public sealed class CachingTests
         driver = driver.RunGenerators(secondCompilation, TestContext.Current.CancellationToken);
         var secondRun = driver.GetRunResult();
 
-        return (firstRun, secondRun, GeneratorCachingReport.Create(firstRun, secondRun, typeof(TGenerator)));
+        return (firstRun, secondRun, GeneratorCachingReport.Create(firstRun, secondRun, generatorType));
     }
 
     private static MetadataReference[] GetBaseReferences()

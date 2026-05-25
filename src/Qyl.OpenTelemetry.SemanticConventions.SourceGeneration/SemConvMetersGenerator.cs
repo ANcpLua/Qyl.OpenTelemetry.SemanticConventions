@@ -5,6 +5,15 @@ using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Extractors;
 
 namespace Qyl.OpenTelemetry.SemanticConventions.SourceGeneration;
 
+/// <summary>
+///   Roslyn incremental source generator for OpenTelemetry semantic-convention
+///   <c>Meter</c> instrument factories. Triggered by
+///   <c>[SemanticConventionMeters("&lt;prefix&gt;")]</c> (stable) or
+///   <c>[SemanticConventionIncubatingMeters("&lt;prefix&gt;")]</c> (incubating
+///   superset). Emits <c>public static Histogram&lt;double&gt; Create&lt;Name&gt;(
+///   this Meter meter)</c> style factories that wire the canonical name + unit
+///   from the resolved-registry pin.
+/// </summary>
 [Generator(LanguageNames.CSharp)]
 public sealed class SemConvMetersGenerator : IIncrementalGenerator
 {
@@ -52,6 +61,7 @@ public sealed class SemConvMetersGenerator : IIncrementalGenerator
         }
         """;
 
+    /// <inheritdoc/>
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         context.RegisterPostInitializationOutput(static ctx =>

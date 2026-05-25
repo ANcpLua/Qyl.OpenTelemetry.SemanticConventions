@@ -38,7 +38,14 @@ internal static class RegistryLoader
 
         using var reader = new StreamReader(stream);
         var text = reader.ReadToEnd();
-        return JsonReader.Parse(text) as JsonObject;
+        // Fail loud: `as JsonObject` would silently return null and degrade
+        // every downstream model to empty, masking packaging/schema regressions
+        // (wrong resource embedded, registry truncated, etc.).
+        var parsed = JsonReader.Parse(text);
+        if (parsed is not JsonObject root)
+            throw new FormatException(
+                $"Embedded resource '{ResourceName}' in {assembly.FullName} must parse as a JSON object; got {parsed.GetType().Name}.");
+        return root;
     }
 
     internal static RegistryModel ParseRegistry(JsonObject? root)

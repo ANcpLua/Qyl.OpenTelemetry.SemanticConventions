@@ -6,6 +6,15 @@ using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Models;
 
 namespace Qyl.OpenTelemetry.SemanticConventions.SourceGeneration;
 
+/// <summary>
+///   Roslyn incremental source generator for OpenTelemetry semantic-convention
+///   event descriptors and payload record-structs. Triggered by
+///   <c>[SemanticConventionEvents("&lt;prefix&gt;")]</c> (stable) or
+///   <c>[SemanticConventionIncubatingEvents("&lt;prefix&gt;")]</c> (incubating
+///   superset). Emits <c>readonly record struct &lt;EventName&gt;Payload</c>
+///   types + emission-target descriptors so consumers can call <c>Logger.LogX</c>
+///   or <c>Activity.AddEvent</c> with type-checked semconv payloads.
+/// </summary>
 [Generator(LanguageNames.CSharp)]
 public sealed class SemConvEventsGenerator : IIncrementalGenerator
 {
@@ -66,6 +75,7 @@ public sealed class SemConvEventsGenerator : IIncrementalGenerator
         #endif
         """;
 
+    /// <inheritdoc/>
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         context.RegisterPostInitializationOutput(static ctx =>

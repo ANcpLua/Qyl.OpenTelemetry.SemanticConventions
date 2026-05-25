@@ -5,6 +5,15 @@ using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Extractors;
 
 namespace Qyl.OpenTelemetry.SemanticConventions.SourceGeneration;
 
+/// <summary>
+///   Roslyn incremental source generator for OpenTelemetry semantic-convention
+///   Activity tag-setter extensions. Triggered by
+///   <c>[SemanticConventionActivities("&lt;prefix&gt;")]</c> (stable surface) or
+///   <c>[SemanticConventionIncubatingActivities("&lt;prefix&gt;")]</c> (incubating
+///   superset) on a user-declared <c>static partial class</c>. Emits typed
+///   <c>this Activity</c> extension methods that wrap <c>SetTag</c> with the
+///   semconv key + value-type guarantees pinned in the embedded resolved-registry.
+/// </summary>
 [Generator(LanguageNames.CSharp)]
 public sealed class SemConvActivitiesGenerator : IIncrementalGenerator
 {
@@ -52,6 +61,7 @@ public sealed class SemConvActivitiesGenerator : IIncrementalGenerator
         }
         """;
 
+    /// <inheritdoc/>
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         context.RegisterPostInitializationOutput(static ctx =>

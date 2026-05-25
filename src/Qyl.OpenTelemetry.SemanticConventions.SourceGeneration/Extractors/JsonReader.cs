@@ -65,9 +65,13 @@ internal static class JsonReader
             '"' => new JsonString(ReadString(text, ref index)),
             't' or 'f' => ReadBool(text, ref index),
             'n' => ReadNull(text, ref index),
-            _ => ReadNumber(text, ref index)
+            _ when IsNumberStart(c) => ReadNumber(text, ref index),
+            _ => throw new FormatException(
+                $"Unexpected token '{c}' (0x{(int)c:X2}) at position {index}.")
         };
     }
+
+    private static bool IsNumberStart(char c) => c == '-' || (c >= '0' && c <= '9');
 
     private static JsonObject ReadObject(string text, ref int index)
     {
@@ -207,6 +211,11 @@ internal static class JsonReader
     {
         var start = index;
         if (text[index] == '-') index++;
+        // After an optional sign there must be at least one digit; without this
+        // guard malformed input (e.g. "-", "-x") returned JsonNumber("") without
+        // advancing the index and poisoned downstream models.
+        if (index >= text.Length || !(text[index] >= '0' && text[index] <= '9'))
+            throw new FormatException($"Invalid number literal at position {start}.");
         while (index < text.Length && IsNumberChar(text[index])) index++;
         return new JsonNumber(text.Substring(start, index - start));
     }

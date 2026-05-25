@@ -6,6 +6,15 @@ using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Models;
 
 namespace Qyl.OpenTelemetry.SemanticConventions.SourceGeneration;
 
+/// <summary>
+///   Roslyn incremental source generator for OpenTelemetry semantic-convention
+///   metric constants and descriptors. Triggered by
+///   <c>[SemanticConventionMetrics("&lt;prefix&gt;")]</c> (stable) or
+///   <c>[SemanticConventionIncubatingMetrics("&lt;prefix&gt;")]</c> (incubating
+///   superset). Emits the canonical metric-name constant, descriptor class with
+///   instrument kind + unit + requirement-level metadata, and attribute-name
+///   constants used for tagging measurements.
+/// </summary>
 [Generator(LanguageNames.CSharp)]
 public sealed class SemConvMetricsGenerator : IIncrementalGenerator
 {
@@ -53,6 +62,7 @@ public sealed class SemConvMetricsGenerator : IIncrementalGenerator
         }
         """;
 
+    /// <inheritdoc/>
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         context.RegisterPostInitializationOutput(static ctx =>
