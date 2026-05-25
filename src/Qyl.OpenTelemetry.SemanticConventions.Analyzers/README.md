@@ -1,3 +1,5 @@
+# Qyl.OpenTelemetry.SemanticConventions.Analyzers
+
 [![NuGet Qyl.OpenTelemetry.SemanticConventions](https://img.shields.io/nuget/v/Qyl.OpenTelemetry.SemanticConventions?label=Qyl.OpenTelemetry.SemanticConventions&color=0891B2)](https://www.nuget.org/packages/Qyl.OpenTelemetry.SemanticConventions/)
 [![NuGet Qyl.OpenTelemetry.SemanticConventions.Incubating](https://img.shields.io/nuget/v/Qyl.OpenTelemetry.SemanticConventions.Incubating?label=.Incubating&color=0891B2)](https://www.nuget.org/packages/Qyl.OpenTelemetry.SemanticConventions.Incubating/)
 [![NuGet Qyl.OpenTelemetry.SemanticConventions.SourceGeneration](https://img.shields.io/nuget/v/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration?label=.SourceGeneration&color=0891B2)](https://www.nuget.org/packages/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/)
@@ -5,8 +7,6 @@
 [![NuGet Qyl.OpenTelemetry.SemanticConventions.Nuke](https://img.shields.io/nuget/v/Qyl.OpenTelemetry.SemanticConventions.Nuke?label=.Nuke&color=0891B2)](https://www.nuget.org/packages/Qyl.OpenTelemetry.SemanticConventions.Nuke/)
 [![.NET](https://img.shields.io/badge/.NET-netstandard2.0-512BD4)](https://dotnet.microsoft.com/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
-
-# Qyl.OpenTelemetry.SemanticConventions.Analyzers
 
 Roslyn diagnostic analyzers and code fixes for OpenTelemetry consumers — flags deprecated semantic-convention usage, schema-URL omission, missing GenAI required attributes, ActivitySource and Meter registration gaps, sensitive-data leakage, and OTLP export misconfiguration across 48 rules in 8 domain bands.
 

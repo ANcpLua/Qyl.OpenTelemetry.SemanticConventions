@@ -16,7 +16,7 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class Al0063UnregisteredActivitySourceAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0063.</summary>
+    /// <summary>The diagnostic identifier for QYL0101.</summary>
     private const string DiagnosticId = "QYL0101";
 
     private const string ActivitySourceTypeName = "System.Diagnostics.ActivitySource";

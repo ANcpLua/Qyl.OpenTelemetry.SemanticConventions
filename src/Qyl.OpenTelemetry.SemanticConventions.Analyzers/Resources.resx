@@ -159,7 +159,7 @@
         <value>Collector endpoint should use OTLP protocol</value>
     </data>
     <data name="QYL0301AnalyzerMessageFormat" xml:space="preserve">
-        <value>Collector endpoint '{0}' should use OTLP protocol (grpc:// or http://...v1/traces)</value>
+        <value>Collector endpoint '{0}' should use OTLP endpoint (for gRPC typically http(s)://host:4317; for HTTP/protobuf http(s)://host:4318/v1/traces)</value>
     </data>
     <data name="QYL0301AnalyzerDescription" xml:space="preserve">
         <value>Collector endpoints should use the OTLP protocol for standardized telemetry export. OTLP provides better performance and broader compatibility than proprietary protocols.</value>
