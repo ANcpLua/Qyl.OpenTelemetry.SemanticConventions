@@ -8,9 +8,9 @@ public sealed class LiveSemconvMetadataCodeFixProvider : CodeFixProvider
 {
     public override ImmutableArray<string> FixableDiagnosticIds { get; } =
     [
-        "QYL0010",
-        "QYL0012",
-        "QYL0014",
+        "QYL0003",
+        "QYL0005",
+        "QYL0007",
     ];
 
     public override FixAllProvider GetFixAllProvider() =>
@@ -28,7 +28,7 @@ public sealed class LiveSemconvMetadataCodeFixProvider : CodeFixProvider
                 continue;
             }
 
-            if (diagnostic.Id == "QYL0010")
+            if (diagnostic.Id == "QYL0003")
             {
                 await RegisterTypedConstantFixAsync(context, diagnostic, replacement!).ConfigureAwait(false);
                 continue;

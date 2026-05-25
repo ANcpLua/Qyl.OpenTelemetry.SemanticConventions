@@ -791,7 +791,7 @@ public sealed class SupplementalSemconvMigrationAnalyzer : DiagnosticAnalyzer
 
         var args = descriptor.Id switch
         {
-            "QYL0030" => new object[] { entry.OldName, replacement, evidence },
+            "QYL0009" => new object[] { entry.OldName, replacement, evidence },
             _ => new object[] { entry.OldName, evidence },
         };
 

@@ -46,15 +46,15 @@ public sealed class SemconvLegacyContextSuppressor : DiagnosticSuppressor
         ImmutableArray.Create(
             "QYL0001",
             "QYL0002",
+            "QYL0003",
+            "QYL0004",
             "QYL0005",
+            "QYL0007",
+            "QYL0008",
+            "QYL0009",
             "QYL0010",
             "QYL0011",
-            "QYL0012",
-            "QYL0014",
-            "QYL0021",
-            "QYL0030",
-            "QYL0031",
-            "QYL0032");
+            "QYL0400");
 
     private static readonly ImmutableDictionary<string, SuppressionDescriptor> s_suppressions =
         BuildSuppressions();
