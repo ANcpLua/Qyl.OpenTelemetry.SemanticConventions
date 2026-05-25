@@ -1,0 +1,499 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+#
+# CodeRabbit Pro+ config for ANcpLua/Qyl.OpenTelemetry.SemanticConventions — v1
+# (first config; previously relied on Organization-UI defaults).
+#
+# Design mirrors ANcpLua/ANcpLua.Analyzers/.coderabbit.yaml with adjustments
+# for this monorepo's shape:
+#   - 5-package family: SemConv (stable), .Incubating, .SourceGeneration,
+#     .Analyzers (QYL####), .Nuke
+#   - Mostly Weaver-generated `*.g.cs` attribute constants
+#   - Dogfood build pipeline at eng/build/ that consumes the shipped .Nuke pkg
+#   - Different ID prefix (QYL#### vs AL####)
+#   - `auto_apply_labels: false` from day one to prevent the retry-loop bug
+#     observed on ANcpLua.Analyzers PR #174.
+
+language: en-US
+
+tone_instructions: 'Principal-level review for an OpenTelemetry SemConv monorepo.
+  Spend context on attribute-registry correctness, schema-version pinning, generator
+  cache safety, analyzer ID conformance, and Nuke-component dogfood integrity. Direct,
+  no praise, no filler.'
+
+early_access: true
+enable_free_tier: false
+inheritance: false
+
+reviews:
+  profile: assertive
+  request_changes_workflow: false
+
+  high_level_summary: true
+  high_level_summary_in_walkthrough: true
+  high_level_summary_placeholder: "@coderabbitai summary"
+  high_level_summary_instructions: 'Dense engineering summary: which of the 5 packages
+    changed, registry-version drift, attribute-table delta, analyzer DiagnosticId
+    delta, dogfood-pipeline impact, cross-consumer implications. No praise, no filler.'
+
+  auto_title_placeholder: "@coderabbitai title"
+  auto_title_instructions: 'Conventional commits with area scope (semconv | incubating |
+    sourcegen | analyzers | nuke | build). Max 72 chars, no trailing punctuation.'
+
+  review_status: true
+  review_details: true
+  commit_status: true
+  fail_commit_status: true
+  collapse_walkthrough: false
+  changed_files_summary: true
+  sequence_diagrams: true
+  estimate_code_review_effort: true
+
+  assess_linked_issues: true
+  related_issues: true
+  related_prs: true
+
+  # === Labels — auto_apply_labels: false from day one (avoids retry-loop bug). ===
+  suggested_labels: true
+  auto_apply_labels: false
+  labeling_instructions:
+  - label: area:semconv
+    instructions: Apply when src/Qyl.OpenTelemetry.SemanticConventions/ stable attribute keys change.
+  - label: area:incubating
+    instructions: Apply when src/Qyl.OpenTelemetry.SemanticConventions.Incubating/ changes.
+  - label: area:sourcegen
+    instructions: Apply when src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/ generator or emitter code changes.
+  - label: area:analyzers
+    instructions: Apply when src/Qyl.OpenTelemetry.SemanticConventions.Analyzers/ QYL#### rules change.
+  - label: area:nuke
+    instructions: Apply when src/Qyl.OpenTelemetry.SemanticConventions.Nuke/ build component changes.
+  - label: area:dogfood
+    instructions: Apply when eng/build/ host or VerifyAttributesHash machinery changes.
+  - label: breaking
+    instructions: Apply when QYL#### values, public attribute-constant names, generator marker attributes, or Nuke component interfaces change incompatibly with prior consumers.
+
+  suggested_reviewers: true
+  auto_assign_reviewers: false
+  suggested_reviewers_instructions:
+  - reviewers:
+    - handle: ANcpLua
+      type: user
+    instructions: Suggest for PRs touching SemConv registry, analyzer surface, source-generator pipeline, Nuke dogfood loop, or package versioning.
+
+  in_progress_fortune: false
+  poem: false
+  enable_prompt_for_ai_agents: true
+
+  # === Path filters — exclude noise at source ===
+  path_filters:
+  - "!**/bin/**"
+  - "!**/obj/**"
+  - "!**/dist/**"
+  - "!**/node_modules/**"
+  - "!**/coverage/**"
+  - "!**/*.min.js"
+  - "!**/*.min.css"
+  - "!**/artifacts/**"
+  - "!**/release-artifacts/**"
+  - "!**/*.sarif"
+  - "!**/*.trx"
+  - "!**/*.nupkg"
+  - "!**/*.snupkg"
+  - "!**/*.Designer.cs"             # auto-generated from resx
+  - "!**/Snapshots/**/*.expected.txt"  # byte-identity snapshots
+  - "!**/eng/analyzer-renumber-plan.md"  # planning artifact
+  - "!**/AnalyzerReleases.Shipped.md"  # machine-generated catalog
+  - "!**/AnalyzerReleases.Unshipped.md"
+  - "!src/**/schemas/*.yaml"  # embedded Weaver schema snapshot
+  - "!**/master-programmatic.yaml"  # upstream registry pin
+  - "!src/**/Resources/resolved-registry.json"  # 5.6 MB embedded registry
+
+  # === Path instructions — package-specific ===
+  path_instructions:
+  - path: "**/*.{cs,csproj,props,targets,slnx}"
+    instructions: |
+      C#/.NET review. Treat as correctness concerns:
+      - warnings, nullable annotations, async flow, package boundaries, generated code
+      - sync-over-async (.Result, .Wait(), .GetAwaiter().GetResult())
+      - missing CancellationToken on public/internal async methods
+      - DateTime.Now/UtcNow in domain logic
+      - null-forgiving (!) without a documented proof
+      - catch-and-fallback that hides failures
+      Public package/API changes need XML docs + explicit compatibility notes.
+  - path: "src/Qyl.OpenTelemetry.SemanticConventions/Attributes/**/*.g.cs"
+    instructions: |
+      Stable Weaver-generated attribute constants. Do NOT suggest edits.
+      If the constant name/value is wrong, the upstream registry or Weaver
+      template needs to change; flag the source-of-drift, don't patch the
+      generated file. The same code regenerates on every Weaver run.
+  - path: "src/Qyl.OpenTelemetry.SemanticConventions.Incubating/Attributes/**/*.g.cs"
+    instructions: |
+      Incubating Weaver-generated attribute constants (subject to breaking
+      changes between minor versions). Same generated-output discipline as
+      stable. If consumers are using incubating constants in libraries (not
+      apps), flag — they'll churn.
+  - path: "src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/**/*.cs"
+    instructions: |
+      Roslyn IIncrementalGenerator source. Hard requirements:
+      - Use IIncrementalGenerator, never ISourceGenerator.
+      - Incremental models hold value-equatable data only — no ISymbol,
+        SyntaxNode, or Compilation references in cached values.
+      - Generator output is deterministic (no DateTime.Now, no GUIDs).
+      - AddSource hint names use the namespace-aware sanitization in
+        GeneratedSourceNames (dots preserved in namespace, sanitize-per-segment).
+      - JsonReader fails loud on malformed input (no silent empty defaults).
+      - RegistryLoader fails loud on non-JsonObject root.
+  - path: "src/Qyl.OpenTelemetry.SemanticConventions.Analyzers/**/*.cs"
+    instructions: |
+      Roslyn analyzer source. Hard requirements:
+      - DiagnosticIds match `^QYL\d{4}$` and are never reused after publish.
+      - The 8 domain bands are non-negotiable: QYL00xx semconv, QYL01xx
+        tracing, QYL02xx metrics, QYL03xx configuration, QYL04xx genai,
+        QYL05xx source-gen, QYL06xx security, QYL07xx export/perf.
+        Reserved: QYL08xx-QYL09xx, QYL9xxx (runtime-derived suppressors).
+      - LocalizableResourceString from Resources.resx for all diagnostic text
+        (no inline strings). Keys must use QYL#### prefix (not AL####).
+      - AlAnalyzer.CreateRule interpolates `$"{id}AnalyzerTitle"` — resx
+        prefix must match the DiagnosticId literal exactly.
+      - Each new/changed analyzer requires a matching
+        AnalyzerReleases.Unshipped.md entry.
+  - path: "src/Qyl.OpenTelemetry.SemanticConventions.Nuke/**/*.cs"
+    instructions: |
+      Nuke build component (public API: IUpstreamConventions,
+      IDomainConventionsApi, LockstepPolicy). Hard requirements:
+      - Net10.0 only (Nuke.Common 10.x).
+      - PrivateAssets="all" on transitive security overrides
+        (NuGet.Packaging, System.Security.Cryptography.Xml).
+      - All targets must be runnable in isolation (no global state).
+      - LockstepPolicy.ParseSemconvSuffixVersion is a published contract;
+        any signature/throw-pattern change is breaking.
+  - path: "eng/build/**/*.cs"
+    instructions: |
+      Dogfood Nuke host that consumes the shipped .Nuke component via
+      ProjectReference. Changes here exercise the same API surface
+      consumers will hit from nuget.org — flag if a code path here works
+      only because of in-repo proximity (e.g. references internal types).
+  - path: "tests/**/*.cs"
+    instructions: |
+      Test review.
+      - Tests exercise observable behavior, not implementation details.
+      - SourceGeneration.Tests uses ANcpLua.Roslyn.Utilities.Testing.GeneratorHelpers
+        — runs the actual generator pipeline including caching gates.
+      - ByteIdentitySnapshotTests is a contiguous-block check against the
+        contrib reference shape — do not weaken to substring matches.
+      - Caching tests must validate that `step.IsCachedSuccessfully` for
+        every observable pipeline step.
+  - path: ".github/workflows/**"
+    instructions: |
+      Actions review.
+      - Pin third-party actions to immutable SHAs.
+      - Keep job permissions minimal.
+      - VerifyAttributesHash is a release-blocking dogfood gate — never skip.
+  - path: "**/*.{md,mdx}"
+    instructions: |
+      Docs review. Flag instructions that disagree with actual scripts,
+      package versions, or repo layout. Keep CLAUDE.md / README.md /
+      eng/analyzer-renumber-plan.md coherent with automation.
+  - path: "**/{*.g.cs,*.generated.*}"
+    instructions: |
+      Generated-output discipline. Never suggest hand-editing. Identify
+      the generator/source input and require regeneration in the same PR.
+  - path: "Version.props"
+    instructions: 'Single source of truth for $(VersionPrefix) and downstream package-version variables. Flag mismatch with $(VersionSuffix) policy or with the version in the most recent release tag.'
+
+  abort_on_close: true
+  disable_cache: false
+
+  slop_detection:
+    enabled: true
+    label: review:slop
+
+  auto_review:
+    enabled: true
+    description_keyword: "@coderabbitai review"
+    auto_incremental_review: true
+    auto_pause_after_reviewed_commits: 0
+    ignore_title_keywords:
+    - "[skip review]"
+    labels: []
+    drafts: true
+    base_branches:
+    - ".*"
+    ignore_usernames: []
+
+  # === Finishing touches — autofix-first ===
+  finishing_touches:
+    docstrings:
+      enabled: true
+    unit_tests:
+      enabled: true
+    simplify:
+      enabled: true
+    custom:
+    - enabled: true
+      name: autofix public XML doc gaps
+      instructions: |
+        Pro+ autofix: for each public/protected analyzer, code-fix, Nuke
+        component target, or source-generator-emitted attribute added in
+        this PR that lacks XML docs, generate them. Document intent +
+        DiagnosticId (where applicable) + contracts + cancellation +
+        exceptions + compatibility. Skip private implementation members.
+    - enabled: true
+      name: autofix missing analyzer/sourcegen test coverage
+      instructions: |
+        Pro+ autofix: for each new analyzer DiagnosticDescriptor in
+        src/Qyl.OpenTelemetry.SemanticConventions.Analyzers/, generate a
+        focused xUnit test under tests/...Analyzers.Tests/ using
+        ANcpLua.Roslyn.Utilities.Testing. For each new source-generator
+        emitter, add a byte-identity snapshot test mirroring
+        tests/...SourceGeneration.Tests/ByteIdentitySnapshotTests.cs.
+    - enabled: true
+      name: autofix incremental-pipeline forbidden types
+      instructions: |
+        Pro+ autofix: if an analyzer or source-generator incremental-pipeline
+        value-type carries ISymbol/SyntaxNode/Compilation, rewrite to extract
+        value-equatable data (name strings, ImmutableArray<T> of value
+        records). Required for incremental cache correctness.
+    - enabled: true
+      name: autofix release-tracking entry
+      instructions: |
+        Pro+ autofix: if a new DiagnosticDescriptor or DiagnosticId const is
+        added in this PR but AnalyzerReleases.Unshipped.md doesn't yet have a
+        row, add it in format `RuleID | Category | Severity | Notes`.
+    - enabled: true
+      name: autofix sync-over-async / cancellation gaps
+      instructions: |
+        Pro+ autofix: where a public/internal async method lacks
+        CancellationToken, add `CancellationToken cancellationToken = default`
+        and thread it through. Where `.Result` / `.Wait()` /
+        `.GetAwaiter().GetResult()` blocks async, rewrite to await.
+
+  # === Pre-merge hard gates ===
+  pre_merge_checks:
+    override_requested_reviewers_only: true
+    docstrings:
+      mode: warning
+      threshold: 75
+    title:
+      mode: error
+      requirements: 'Conventional commits with area scope; under 72 chars; no trailing punctuation; names the highest-impact change.'
+    description:
+      mode: error
+    issue_assessment:
+      mode: warning
+    custom_checks:
+    - mode: error
+      name: No Secrets Or PII
+      instructions: 'Fail if the PR adds secrets, tokens, credentials, private keys, real user data, API keys, connection strings, or logs that expose sensitive payloads.'
+    - mode: error
+      name: Generated Files Regenerated
+      instructions: 'If master-programmatic.yaml, resolved-registry.json, schemas/*.yaml, or a Weaver template changes, all dependent `**/*.g.cs` files must be updated in the same PR. Fail if drift.'
+    - mode: error
+      name: Generated Code Not Hand-Edited
+      instructions: 'Fail if `**/Attributes/**/*.g.cs`, `**/*.Designer.cs`, `**/SchemaUrl.g.cs`, or `**/SchemaVersion.g.cs` have edits not accompanied by a corresponding source-input change in the same PR.'
+    - mode: error
+      name: Async And Cancellation Safe
+      instructions: 'Fail C# changes that introduce sync-over-async, fire-and-forget without lifecycle handling, missing CancellationToken on public/internal async, sleeps for synchronization, or disposal paths that drop in-flight work.'
+    - mode: error
+      name: No .Result/.Wait() blocking async
+      instructions: 'Scan added/modified C# for `.Result`, `.Wait()`, or `.GetAwaiter().GetResult()`. Pass if none. Fail if any.'
+    - mode: error
+      name: Diagnostic ID Format Conformance
+      instructions: 'Fail any new or modified `const string DiagnosticId = "..."` literal in src/Qyl.OpenTelemetry.SemanticConventions.Analyzers/ whose value does not match `^QYL\d{4}$`. The 8 domain bands (QYL00xx-QYL07xx) are reserved by domain; QYL08xx-QYL09xx reserved for future use; QYL9xxx reserved for runtime-derived suppressors.'
+    - mode: error
+      name: AnalyzerReleases Tracking
+      instructions: 'If a new analyzer DiagnosticDescriptor is added, fail if AnalyzerReleases.Unshipped.md does not have a matching row. Format: `RuleID | Category | Severity | Notes`.'
+    - mode: error
+      name: No DateTime.Now/UtcNow in analyzer or generator code
+      instructions: 'Scan added/modified C# files under src/Qyl.OpenTelemetry.SemanticConventions.{Analyzers,SourceGeneration}/. Fail if any DateTime.Now or DateTime.UtcNow — both must be deterministic.'
+    - mode: error
+      name: No ISourceGenerator
+      instructions: 'Scan added/modified C# for `: ISourceGenerator` or new `[Generator(LanguageNames.CSharp)]` on a non-IIncrementalGenerator. Pass if none. Fail if added.'
+    - mode: error
+      name: VerifyAttributesHash Lock In Sync
+      instructions: 'If `src/Qyl.OpenTelemetry.SemanticConventions{,.Incubating}/Attributes/**/*.g.cs` changed, `eng/semconv/attributes.lock.sha256` must also change (or ./build.sh SeedAttributesHash was re-run). Fail if .g.cs changes are present but the lock is unchanged.'
+    - mode: error
+      name: Public Contract Documented
+      instructions: 'Fail if public attribute-constant names, generator marker attributes, Nuke component interfaces, or DiagnosticDescriptor public surface change without matching docs/tests and explicit compatibility notes in the PR description.'
+    - mode: error
+      name: CI Release Safety
+      instructions: 'If no workflow/build/release files changed, pass. Fail when a changed workflow removes the VerifyAttributesHash dogfood step, removes concurrency, adds --admin/force-push, increases token permissions beyond contents:read without rationale, exposes secrets, or makes a required check ignorable.'
+    - mode: warning
+      name: No ISymbol stored in incremental models
+      instructions: 'Scan added/modified C# in incremental-generator/analyzer code for record/class types with ISymbol, SyntaxNode, or Compilation members. Pass if none. Fail if any incremental model stores Roslyn symbols directly.'
+    - mode: warning
+      name: No null-forgiving without justification
+      instructions: 'Scan added/modified C# for `!` (null-forgiving). Fail if added without an inline comment explaining why the code cannot be rewritten.'
+    - mode: warning
+      name: Tests Match Risk
+      instructions: 'Warn when production behavior changes without focused tests or when tests assert only implementation details. Require byte-identity snapshot coverage for new source-generator emitters.'
+    - mode: warning
+      name: No Hidden Fallback Path
+      instructions: 'Warn when code catches and silently falls back, hides upstream failure, or adds compatibility wrappers without a documented product requirement and tests for both paths.'
+
+  tools:
+    ast-grep:
+      essential_rules: true
+    shellcheck:
+      enabled: true
+    markdownlint:
+      enabled: true
+    github-checks:
+      enabled: true
+      timeout_ms: 900000
+    languagetool:
+      enabled: true
+      level: default
+    yamllint:
+      enabled: true
+    actionlint:
+      enabled: true
+    gitleaks:
+      enabled: true
+    trufflehog:
+      enabled: true
+    checkov:
+      enabled: true
+    opengrep:
+      enabled: true
+    semgrep:
+      enabled: true
+    trivy:
+      enabled: true
+    osvScanner:
+      enabled: true
+    psscriptanalyzer:
+      enabled: true
+    ruff:           {enabled: false}
+    biome:          {enabled: false}
+    hadolint:       {enabled: false}
+    swiftlint:      {enabled: false}
+    phpstan:        {enabled: false}
+    phpmd:          {enabled: false}
+    phpcs:          {enabled: false}
+    golangci-lint:  {enabled: false}
+    tflint:         {enabled: false}
+    detekt:         {enabled: false}
+    eslint:         {enabled: false}
+    flake8:         {enabled: false}
+    fortitudeLint:  {enabled: false}
+    rubocop:        {enabled: false}
+    buf:            {enabled: false}
+    regal:          {enabled: false}
+    pmd:            {enabled: false}
+    clang:          {enabled: false}
+    cppcheck:       {enabled: false}
+    circleci:       {enabled: false}
+    clippy:         {enabled: false}
+    sqlfluff:       {enabled: false}
+    prismaLint:     {enabled: false}
+    pylint:         {enabled: false}
+    oxc:            {enabled: false}
+    shopifyThemeCheck: {enabled: false}
+    luacheck:       {enabled: false}
+    brakeman:       {enabled: false}
+    dotenvLint:     {enabled: false}
+    htmlhint:       {enabled: false}
+    stylelint:      {enabled: false}
+    checkmake:      {enabled: false}
+    blinter:        {enabled: false}
+    smartyLint:     {enabled: false}
+    emberTemplateLint: {enabled: false}
+    presidio:       {enabled: false}
+
+chat:
+  art: false
+  allow_non_org_members: false
+  auto_reply: true
+  integrations:
+    jira:
+      usage: disabled
+    linear:
+      usage: disabled
+
+knowledge_base:
+  opt_out: false
+  web_search:
+    enabled: true
+  code_guidelines:
+    enabled: true
+    filePatterns:
+    - CLAUDE.md
+    - AGENTS.md
+    - "**/CLAUDE.md"
+    - "**/AGENTS.md"
+    - ".editorconfig"
+    - README.md
+    - docs/**/*.md
+    - Directory.Build.props
+    - Directory.Packages.props
+    - global.json
+    - Version.props
+    - eng/analyzer-renumber-plan.md
+    - "src/*/README.md"  # per-package READMEs
+  learnings:
+    scope: global
+  issues:
+    scope: global
+  jira:
+    usage: disabled
+  linear:
+    usage: disabled
+  pull_requests:
+    scope: global
+  mcp:
+    usage: auto
+  linked_repositories:
+  - repository: ANcpLua/ANcpLua.Analyzers
+    instructions: Sibling analyzer family (AL####). Cross-team flag any QYL rule that's NOT semconv-shaped (i.e. general .NET hygiene) — those belong in AL, not QYL. Shares AlAnalyzer base class via ANcpLua.Roslyn.Utilities.Sources.
+  - repository: ANcpLua/ANcpLua.Roslyn.Utilities
+    instructions: Source-only sibling providing AlAnalyzer base class, Guard helpers, incremental-pipeline patterns. AlAnalyzer.CreateRule's `$"{id}AnalyzerTitle"` interpolation determines resx-key naming.
+  - repository: ANcpLua/ANcpLua.NET.Sdk
+    instructions: SDK that bundles analyzers transitively. Reference for SDK-consumer impact when this monorepo bumps versions.
+  - repository: ANcpLua/ANcpLua.Agents
+    instructions: MAF-bundling consumer. Reference for runtime-consumer breakage signals.
+  - repository: O-ANcppLua/qyl
+    instructions: Largest end-consumer. References Qyl.OpenTelemetry.SemanticConventions{,.Incubating,.SourceGeneration} in Directory.Packages.props. Has 3 QYL editorconfig suppressions (QYL0001 = graphql.document opt-in). Reference for "will this break consumers" questions.
+  - repository: ANcpLua/typespec-otel-semconv
+    instructions: Upstream TypeSpec semconv source. Reference for spec version drift questions.
+
+code_generation:
+  docstrings:
+    language: en-US
+    path_instructions:
+    - path: "**/*.cs"
+      instructions: 'Generate XML docs for public/protected APIs only. Document intent, DiagnosticId (where applicable), contracts, cancellation, exceptions, compatibility.'
+  unit_tests:
+    path_instructions:
+    - path: "src/Qyl.OpenTelemetry.SemanticConventions.Analyzers/**/*.cs"
+      instructions: 'Generate xUnit tests using ANcpLua.Roslyn.Utilities.Testing verifier infrastructure. Cover rule-fires + rule-doesnt-fire + diagnostic span + paired CodeFixProvider output.'
+    - path: "src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/**/*.cs"
+      instructions: 'Generate generator tests under tests/...SourceGeneration.Tests/ that exercise the actual incremental pipeline (cache invalidation, byte-identity snapshots), not just diagnostic output. Mirror existing test naming.'
+
+issue_enrichment:
+  auto_enrich:
+    enabled: true
+  planning:
+    enabled: true
+    auto_planning:
+      enabled: true
+      labels:
+      - plan:auto
+      - enhancement
+      - bug
+      - good-first-issue
+      - help-wanted
+  labeling:
+    auto_apply_labels: true
+    labeling_instructions:
+    - label: bug
+      instructions: Apply when the issue reports incorrect behavior, failing tests, regressions, or broken automation.
+    - label: enhancement
+      instructions: Apply when the issue asks for new capability or meaningful improvement.
+    - label: documentation
+      instructions: Apply when the issue is primarily about docs, examples, guides, or agent instructions.
+    - label: security
+      instructions: Apply when the issue involves secrets, auth, privacy, or dependency risk.
+    - label: dependencies
+      instructions: Apply when the issue is about package, SDK, runtime, or lockfile updates.
+    - label: good-first-issue
+      instructions: Apply only when the issue is small, well-scoped, and low-risk for a new contributor.
