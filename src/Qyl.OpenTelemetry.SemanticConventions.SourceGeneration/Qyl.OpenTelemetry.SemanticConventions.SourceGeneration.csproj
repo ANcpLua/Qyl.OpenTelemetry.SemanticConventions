@@ -21,7 +21,11 @@
     <IncludeSymbols>false</IncludeSymbols>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
 
-    <NoWarn>$(NoWarn);RS1041;RS1038;RS2008;CS1591</NoWarn>
+    <!-- NU5017: source-generator packs ship via _AddGeneratorToPackage into
+         analyzers/dotnet/cs/ (not lib/), so the pack target's content check fires
+         before the custom target runs. The nupkg is produced correctly; the warning
+         is spurious here. -->
+    <NoWarn>$(NoWarn);NU5017;RS1041;RS1038;RS2008;CS1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

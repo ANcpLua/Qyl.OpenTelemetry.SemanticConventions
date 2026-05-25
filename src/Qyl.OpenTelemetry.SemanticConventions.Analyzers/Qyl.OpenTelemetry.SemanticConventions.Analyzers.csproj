@@ -22,7 +22,10 @@
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
     <NeutralLanguage>en</NeutralLanguage>
 
-    <NoWarn>$(NoWarn);RS1041;RS1025;RS1026;RS0030;RS1038;RS2000;RS2008;IDE0055;CA2249;CS1591;CS1570;CS1572;CS1573;CS1574</NoWarn>
+    <!-- NU5017: analyzer packs ship via _AddAnalyzersToPackage into analyzers/dotnet/cs/
+         (not lib/), so the pack target's content check fires before the custom target
+         runs. The nupkg is produced correctly; the warning is spurious here. -->
+    <NoWarn>$(NoWarn);NU5017;RS1041;RS1025;RS1026;RS0030;RS1038;RS2000;RS2008;IDE0055;CA2249;CS1591;CS1570;CS1572;CS1573;CS1574</NoWarn>
   </PropertyGroup>
 
   <ItemGroup Label="Global usings consumed by imported analyzer + codefix sources">
