@@ -26,8 +26,11 @@ jobs:
       - name: Verify attribute manifest (dogfoods Qyl.OpenTelemetry.SemanticConventions.Nuke)
         run: ./build.sh VerifyAttributesHash
 
+      # xunit.v3.mtp-v2 + .NET 10 SDK requires the Microsoft Testing Platform
+       # entry point (per https://aka.ms/dotnet-test-mtp-error). Each test csproj
+       # sets <OutputType>Exe</OutputType>, so `dotnet run` IS the MTP runner.
       - name: Test
-        run: dotnet test Qyl.OpenTelemetry.SemanticConventions.slnx --no-build --configuration Release
+        run: dotnet run --project tests/Qyl.OpenTelemetry.SemanticConventions.Pipeline.Tests/ --configuration Release --no-build
 
       - name: Pack
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
