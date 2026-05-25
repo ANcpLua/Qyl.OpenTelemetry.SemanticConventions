@@ -12,6 +12,7 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="$(MicrosoftCodeAnalysisVersion)"/>
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="$(MicrosoftCodeAnalysisVersion)"/>
     <PackageVersion Include="ANcpLua.Roslyn.Utilities" Version="$(ANcpLuaRoslynUtilitiesVersion)"/>
+    <PackageVersion Include="ANcpLua.Roslyn.Utilities.Sources" Version="$(ANcpLuaRoslynUtilitiesVersion)"/>
     <PackageVersion Include="ANcpLua.Roslyn.Utilities.Polyfills" Version="$(ANcpLuaRoslynUtilitiesVersion)"/>
     <PackageVersion Include="ANcpLua.Roslyn.Utilities.Testing" Version="$(ANcpLuaRoslynUtilitiesVersion)"/>
   </ItemGroup>
@@ -20,6 +21,7 @@
     <PackageVersion Include="Nuke.Common" Version="$(NukeVersion)"/>
     <PackageVersion Include="Nuke.Components" Version="$(NukeVersion)"/>
     <PackageVersion Include="YamlDotNet" Version="$(YamlDotNetVersion)"/>
+    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="$(MicrosoftBclAsyncInterfacesVersion)"/>
   </ItemGroup>
 
   <ItemGroup Label="Transitive security overrides (Nuke.Common 10.1.0)">
