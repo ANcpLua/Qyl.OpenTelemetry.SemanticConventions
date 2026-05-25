@@ -16,6 +16,9 @@
     <GenerateDependencyFile>false</GenerateDependencyFile>
     <DevelopmentDependency>true</DevelopmentDependency>
     <NoPackageAnalysis>true</NoPackageAnalysis>
+    <!-- Source-generator DLL ships via _AddGeneratorToPackage into analyzers/dotnet/cs,
+         not lib/. Default snupkg packer errors NU5017 because lib/ is empty. -->
+    <IncludeSymbols>false</IncludeSymbols>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
 
     <NoWarn>$(NoWarn);RS1041;RS1038;RS2008;CS1591</NoWarn>

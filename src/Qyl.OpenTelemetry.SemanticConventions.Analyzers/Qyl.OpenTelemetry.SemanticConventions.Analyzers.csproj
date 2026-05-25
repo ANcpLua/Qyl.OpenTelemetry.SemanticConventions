@@ -15,6 +15,10 @@
     <GenerateDependencyFile>false</GenerateDependencyFile>
     <DevelopmentDependency>true</DevelopmentDependency>
     <NoPackageAnalysis>true</NoPackageAnalysis>
+    <!-- Analyzer DLL ships via the _AddAnalyzersToPackage target into analyzers/dotnet/cs,
+         not lib/. The default symbol packager expects lib/ and errors NU5017 when there
+         is nothing there; turn off snupkg for analyzer-style packages. -->
+    <IncludeSymbols>false</IncludeSymbols>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
     <NeutralLanguage>en</NeutralLanguage>
 
