@@ -8,6 +8,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Qyl.OpenTelemetry.SemanticConventions.Pipeline.Tests/Qyl.OpenTelemetry.SemanticConventions.Pipeline.Tests.csproj"/>
+    <Project Path="tests/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Tests/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Tests.csproj"/>
   </Folder>
 
   <Folder Name="/eng/">

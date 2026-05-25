@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Tests</RootNamespace>
+    <AssemblyName>Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Tests</AssemblyName>
+    <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CA1707;CA2007;CS1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit.v3.mtp-v2"/>
+    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport"/>
+    <PackageReference Include="AwesomeAssertions"/>
+    <PackageReference Include="ANcpLua.Roslyn.Utilities.Testing"/>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Byte-identity snapshots loaded via Assembly.GetManifestResourceStream
+         using the stable LogicalName. .txt extension keeps these out of the
+         C# compile pipeline. Naming: qyl.<surface>.<prefix>.<tier>.expected.txt -->
+    <EmbeddedResource Include="Snapshots\qyl.attributes.http.stable.expected.txt"
+                      LogicalName="qyl.attributes.http.stable.expected.txt"/>
+    <EmbeddedResource Include="Snapshots\qyl.attributes.http.incubating.expected.txt"
+                      LogicalName="qyl.attributes.http.incubating.expected.txt"/>
+    <EmbeddedResource Include="Snapshots\qyl.metrics.http-server.stable.expected.txt"
+                      LogicalName="qyl.metrics.http-server.stable.expected.txt"/>
+    <EmbeddedResource Include="Snapshots\qyl.metrics.http-server.incubating.expected.txt"
+                      LogicalName="qyl.metrics.http-server.incubating.expected.txt"/>
+    <EmbeddedResource Include="Snapshots\qyl.events.exception.stable.expected.txt"
+                      LogicalName="qyl.events.exception.stable.expected.txt"/>
+    <EmbeddedResource Include="Snapshots\qyl.events.session.incubating.expected.txt"
+                      LogicalName="qyl.events.session.incubating.expected.txt"/>
+    <EmbeddedResource Include="Snapshots\qyl.meters.http-server.stable.expected.txt"
+                      LogicalName="qyl.meters.http-server.stable.expected.txt"/>
+    <EmbeddedResource Include="Snapshots\qyl.meters.http-server.incubating.expected.txt"
+                      LogicalName="qyl.meters.http-server.incubating.expected.txt"/>
+    <EmbeddedResource Include="Snapshots\qyl.activities.http.stable.expected.txt"
+                      LogicalName="qyl.activities.http.stable.expected.txt"/>
+    <EmbeddedResource Include="Snapshots\qyl.activities.http.incubating.expected.txt"
+                      LogicalName="qyl.activities.http.incubating.expected.txt"/>
+  </ItemGroup>
+
+</Project>
