@@ -7,51 +7,51 @@
 
 Rule ID | Category | Severity | Notes
 --------|----------|----------|------
-QYL0001 | OpenTelemetry.SemanticConventions | Info | graphql.document is opt-in
-QYL0002 | OpenTelemetry.SemanticConventions | Warning | RPC server span must not include client.address / client.port
-QYL0003 | OpenTelemetry.SemanticConventions | Warning | Deprecated semantic-convention constant
-QYL0004 | OpenTelemetry.SemanticConventions | Info | Prefer typed semantic-convention constant over string literal
-QYL0005 | OpenTelemetry.SemanticConventions | Warning | String literal matches a deprecated semantic-convention name
-QYL0006 | OpenTelemetry | Warning | Missing telemetry schema URL
-QYL0007 | OpenTelemetry.SemanticConventions | Warning | Deprecated semantic-convention value
-QYL0008 | OpenTelemetry.SemanticConventions | Warning | Incubating semantic-convention member used in a library
-QYL0009 | OpenTelemetry.SemanticConventions | Error | Obsolete semantic convention has an exact replacement
-QYL0010 | OpenTelemetry.SemanticConventions | Warning | Semantic convention migration needs review
-QYL0011 | OpenTelemetry.SemanticConventions | Info | Legacy semantic convention appears in compatibility or test code
-QYL0012 | OpenTelemetry | Error | Invalid attribute value
-QYL0013 | OpenTelemetry | Warning | Incorrect attribute type
-QYL0100 | OpenTelemetry | Warning | Activity/Span missing semantic convention attributes
-QYL0101 | OpenTelemetry | Warning | ActivitySource should be registered with AddSource()
-QYL0102 | OpenTelemetry | Error | [Traced] attribute requires non-empty ActivitySourceName
-QYL0103 | OpenTelemetry | Warning | Duplicate instrumentation detected
-QYL0104 | OpenTelemetry | Error | Invalid ActivitySource name
-QYL0105 | OpenTelemetry | Info | Manual span recommended
-QYL0106 | OpenTelemetry | Warning | Orphaned [TracedTag]
-QYL0107 | OpenTelemetry | Info | Redundant [NoTrace]
-QYL0108 | OpenTelemetry | Warning | Non-interceptable [Traced]
-QYL0109 | OpenTelemetry | Error | [TracedTag] on out/ref parameter
-QYL0110 | OpenTelemetry | Warning | Missing exception recording on Activity error status
-QYL0200 | Metrics | Warning | Meter should be registered with AddMeter()
-QYL0201 | Metrics | Warning | Metric instrument name should follow naming conventions
-QYL0202 | Metrics | Warning | High-cardinality tag on metric
-QYL0300 | Configuration | Warning | ServiceDefaults configuration incomplete
-QYL0301 | Configuration | Warning | Collector endpoint should use OTLP protocol
-QYL0302 | OpenTelemetry | Warning | Missing OpenTelemetry configuration
-QYL0303 | OpenTelemetry | Warning | Missing resource attributes
-QYL0304 | Configuration | Warning | Enable EventSourceSupport for AOT with telemetry
-QYL0305 | OpenTelemetry | Warning | Replace legacy SemanticConventions accessor
-QYL0400 | OpenTelemetry.SemanticConventions | Warning | gen_ai.execute_tool span requires gen_ai.tool.name
-QYL0401 | GenAI | Warning | GenAI span missing required attributes
-QYL0402 | GenAI | Warning | Use gen_ai.client.token.usage histogram for token metrics
-QYL0403 | GenAI | Warning | GenAI operation name should follow semantic conventions
-QYL0404 | GenAI | Warning | Deprecated GenAI semantic convention
-QYL0405 | GenAI | Warning | Non-interceptable [AgentTraced]
-QYL0406 | GenAI | Warning | Direct GenAI SDK call bypasses automatic OTel instrumentation
-QYL0500 | Metrics | Error | [Meter] class must be partial static
-QYL0501 | Metrics | Error | Metric method must be partial
-QYL0600 | Configuration | Warning | Insecure endpoint
-QYL0601 | OpenTelemetry | Warning | Sensitive data in span attribute
-QYL0700 | OpenTelemetry | Warning | Missing OTLP configuration
-QYL0701 | OpenTelemetry | Warning | Uncompressed OTLP export
-QYL0702 | OpenTelemetry | Warning | Batch export disabled
-QYL0703 | OpenTelemetry | Info | Consider configuring sampling
+QYL0001 | OpenTelemetry.SemanticConventions | Info | GraphqlDocumentOptInAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0001)
+QYL0002 | OpenTelemetry.SemanticConventions | Warning | RpcServerClientAttributeAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0002)
+QYL0003 | OpenTelemetry.SemanticConventions | Warning | DeprecatedSemconvAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0003)
+QYL0004 | OpenTelemetry.SemanticConventions | Info | PreferSemconvConstantAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0004)
+QYL0005 | OpenTelemetry.SemanticConventions | Warning | LiteralMatchesDeprecatedSemconvAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0005)
+QYL0006 | OpenTelemetry | Warning | Qyl0006MissingSchemaUrlAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0006)
+QYL0007 | OpenTelemetry.SemanticConventions | Warning | DeprecatedSemconvValueAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0007)
+QYL0008 | OpenTelemetry.SemanticConventions | Warning | IncubatingSemconvInLibraryAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0008)
+QYL0009 | OpenTelemetry.SemanticConventions | Error | SupplementalSemconvMigrationAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0009)
+QYL0010 | OpenTelemetry.SemanticConventions | Warning | SupplementalSemconvMigrationAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0010)
+QYL0011 | OpenTelemetry.SemanticConventions | Info | SupplementalSemconvMigrationAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0011)
+QYL0012 | OpenTelemetry | Error | Qyl0012InvalidAttributeValueAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0012)
+QYL0013 | OpenTelemetry | Warning | Qyl0013IncorrectAttributeTypeAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0013)
+QYL0100 | OpenTelemetry | Warning | Qyl0100ActivityMissingSemconvAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0100)
+QYL0101 | OpenTelemetry | Warning | Qyl0101UnregisteredActivitySourceAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0101)
+QYL0102 | OpenTelemetry | Error | Qyl0102TracedActivitySourceNameAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0102)
+QYL0103 | OpenTelemetry | Warning | Qyl0103DuplicateInstrumentationAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0103)
+QYL0104 | OpenTelemetry | Error | Qyl0104InvalidActivitySourceNameAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0104)
+QYL0105 | OpenTelemetry | Info | Qyl0105ManualSpanRecommendedAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0105)
+QYL0106 | OpenTelemetry | Warning | Qyl0106OrphanedTracedTagAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0106)
+QYL0107 | OpenTelemetry | Info | Qyl0107RedundantNoTraceAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0107)
+QYL0108 | OpenTelemetry | Warning | Qyl0108NonInterceptableTracedAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0108)
+QYL0109 | OpenTelemetry | Error | Qyl0109TracedTagOnOutRefParameterAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0109)
+QYL0110 | OpenTelemetry | Warning | Qyl0110MissingExceptionRecordingOnActivityAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0110)
+QYL0200 | Metrics | Warning | Qyl0200UnregisteredMeterAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0200)
+QYL0201 | Metrics | Warning | Qyl0201InvalidMetricNameAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0201)
+QYL0202 | Metrics | Warning | Qyl0202HighCardinalityMetricTagAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0202)
+QYL0300 | Configuration | Warning | Qyl0300IncompleteServiceDefaultsAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0300)
+QYL0301 | Configuration | Warning | Qyl0301NonOtlpCollectorEndpointAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0301)
+QYL0302 | OpenTelemetry | Warning | Qyl0302MissingOTelConfigurationAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0302)
+QYL0303 | OpenTelemetry | Warning | Qyl0303MissingResourceAttributesAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0303)
+QYL0304 | Configuration | Warning | Qyl0304EnableEventSourceSupportAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0304)
+QYL0305 | OpenTelemetry | Warning | Qyl0305LegacySemanticConventionsAccessorAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0305)
+QYL0400 | OpenTelemetry.SemanticConventions | Warning | GenAiExecuteToolNameAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0400)
+QYL0401 | GenAI | Warning | Qyl0401GenAiMissingRequiredAttributesAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0401)
+QYL0402 | GenAI | Warning | Qyl0402UseTokenUsageHistogramAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0402)
+QYL0403 | GenAI | Warning | Qyl0403InvalidGenAiOperationNameAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0403)
+QYL0404 | GenAI | Warning | Qyl0404DeprecatedGenAiAttributeAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0404)
+QYL0405 | GenAI | Warning | Qyl0405NonInterceptableAgentTracedAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0405)
+QYL0406 | GenAI | Warning | Qyl0406DirectGenAiSdkUsageAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0406)
+QYL0500 | Metrics | Error | Qyl0500MeterClassMustBePartialStaticAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0500)
+QYL0501 | Metrics | Error | Qyl0501MetricMethodMustBePartialAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0501)
+QYL0600 | Configuration | Warning | Qyl0600InsecureEndpointAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0600)
+QYL0601 | OpenTelemetry | Warning | Qyl0601SensitiveDataInAttributeAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0601)
+QYL0700 | OpenTelemetry | Warning | Qyl0700MissingOtlpConfigurationAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0700)
+QYL0701 | OpenTelemetry | Warning | Qyl0701UncompressedExportAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0701)
+QYL0702 | OpenTelemetry | Warning | Qyl0702BatchExportDisabledAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0702)
+QYL0703 | OpenTelemetry | Info | Qyl0703ConsiderSamplingAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0703)

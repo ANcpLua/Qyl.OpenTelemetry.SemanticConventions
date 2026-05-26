@@ -31,6 +31,12 @@ file static class DocsGenerator
         if (mode is Mode.EnforceIdsCheck or Mode.EnforceIdsApply)
             return EnforceIds(repoRoot, apply: mode == Mode.EnforceIdsApply);
 
+        // RewriteShipped also bypasses the catalog — it just walks DiagnosticAnalyzer
+        // subclasses via reflection to map Id → ClassName for the AnalyzerReleases.Shipped.md
+        // Notes column.
+        if (mode == Mode.RewriteShipped)
+            return RewriteShipped(repoRoot);
+
         var stats = CatalogStatistics.Compute();
         return mode switch
         {
@@ -76,8 +82,26 @@ file static class DocsGenerator
             }
         }
 
+        // AnalyzerReleases.Shipped.md Notes column carries the
+        //   "ClassName, [Documentation](url)" Microsoft-pattern attribution. RS2008
+        // already enforces that rows exist for every descriptor; this check
+        // additionally enforces the Notes shape so the file can't drift via hand-edit.
+        var shippedPath = ShippedReleasesPath(repoRoot);
+        if (File.Exists(shippedPath))
+        {
+            var existingShipped = File.ReadAllText(shippedPath);
+            var expectedShipped = RewriteShippedNotes(existingShipped);
+            if (!string.Equals(existingShipped, expectedShipped, StringComparison.Ordinal))
+            {
+                Console.Error.WriteLine(
+                    $"Shipped.md Notes column is stale (run --rewrite-shipped): {Path.GetRelativePath(repoRoot, shippedPath)}");
+                return 1;
+            }
+        }
+
         Console.WriteLine($"Generated docs are up to date: {Path.GetRelativePath(repoRoot, outputPath)}");
         Console.WriteLine($"Editorconfig profiles are up to date.");
+        Console.WriteLine($"Shipped.md Notes column is up to date.");
         return 0;
     }
 
@@ -166,6 +190,8 @@ file static class DocsGenerator
         var enforce = flat.Any(a => IsFlag(a, "enforce-ids"));
         var apply = flat.Any(a => IsFlag(a, "apply"));
         if (enforce) return apply ? Mode.EnforceIdsApply : Mode.EnforceIdsCheck;
+
+        if (flat.Any(a => IsFlag(a, "rewrite-shipped"))) return Mode.RewriteShipped;
 
         foreach (var arg in flat)
         {
@@ -326,6 +352,86 @@ file static class DocsGenerator
         Console.WriteLine(
             $"--enforce-ids: {totalIssues} mismatches ({totalRenames} class renames, {totalPerFile} per-file fixes).");
         return totalIssues == 0 ? 0 : 1;
+    }
+
+    /// <summary>
+    ///   Rewrites the <c>Notes</c> column of
+    ///   <c>src/Qyl.OpenTelemetry.SemanticConventions.Analyzers/AnalyzerReleases.Shipped.md</c>
+    ///   from free-form rule titles to the Microsoft pattern
+    ///   <c>ClassName, [Documentation](url)</c>, where <c>ClassName</c> is the
+    ///   <see cref="DiagnosticAnalyzer"/> subclass registering the id and <c>url</c> is
+    ///   the <c>HelpLinkUri</c> anchor the descriptor itself uses. Multi-id analyzers
+    ///   (e.g., the supplemental QYL0009/0010/0011 family) get the same class name in
+    ///   every row, matching MS NetAnalyzers' rendering. RS2008 already enforces that
+    ///   rows exist for every descriptor; this rewrite owns the Notes shape.
+    /// </summary>
+    private static int RewriteShipped(string repoRoot)
+    {
+        var shippedPath = ShippedReleasesPath(repoRoot);
+        if (!File.Exists(shippedPath))
+        {
+            Console.Error.WriteLine($"Missing Shipped.md: {shippedPath}");
+            return 1;
+        }
+        var existing = File.ReadAllText(shippedPath);
+        var expected = RewriteShippedNotes(existing);
+        if (string.Equals(existing, expected, StringComparison.Ordinal))
+        {
+            Console.WriteLine($"Shipped.md Notes already up to date: {Path.GetRelativePath(repoRoot, shippedPath)}");
+            return 0;
+        }
+        File.WriteAllText(shippedPath, expected);
+        Console.WriteLine($"Rewrote Shipped.md Notes column: {Path.GetRelativePath(repoRoot, shippedPath)}");
+        return 0;
+    }
+
+    private static string ShippedReleasesPath(string repoRoot) => Path.Combine(repoRoot,
+        "src", "Qyl.OpenTelemetry.SemanticConventions.Analyzers", "AnalyzerReleases.Shipped.md");
+
+    private static string RewriteShippedNotes(string existing)
+    {
+        var idToClass = BuildIdToClassMap();
+        var lineEnding = existing.Contains("\r\n", StringComparison.Ordinal) ? "\r\n" : "\n";
+        var lines = existing.Split([lineEnding], StringSplitOptions.None);
+        var rowRx = new Regex(@"^(QYL\d{4})\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*.*$");
+        for (var i = 0; i < lines.Length; i++)
+        {
+            var m = rowRx.Match(lines[i]);
+            if (!m.Success) continue;
+            var id = m.Groups[1].Value;
+            if (!idToClass.TryGetValue(id, out var className)) continue;
+            var category = m.Groups[2].Value.Trim();
+            var severity = m.Groups[3].Value.Trim();
+            var url = AlAnalyzer.HelpLinkBase + id.ToLowerInvariant();
+            lines[i] = $"{id} | {category} | {severity} | {className}, [Documentation]({url})";
+        }
+        return string.Join(lineEnding, lines);
+    }
+
+    /// <summary>
+    ///   Walks every concrete <see cref="DiagnosticAnalyzer"/> in the analyzer assembly
+    ///   and builds <c>Id → ClassName</c>. Analyzers that register multiple ids point
+    ///   all of those ids at the same class — matching the
+    ///   <c>AL1003ToAl1004SpanComparisonAnalyzer</c> shape in ANcpLua.Analyzers' Shipped.md.
+    /// </summary>
+    private static Dictionary<string, string> BuildIdToClassMap()
+    {
+        var map = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var type in typeof(DiagnosticDescriptors).Assembly.GetTypes())
+        {
+            if (type.IsAbstract) continue;
+            if (!typeof(DiagnosticAnalyzer).IsAssignableFrom(type)) continue;
+            try
+            {
+                if (Activator.CreateInstance(type) is DiagnosticAnalyzer a)
+                {
+                    foreach (var d in a.SupportedDiagnostics)
+                        map[d.Id] = type.Name;
+                }
+            }
+            catch { /* analyzers with non-default ctors are skipped */ }
+        }
+        return map;
     }
 
     private static (Dictionary<string, string> AnalyzerIds, Dictionary<string, string> CodeFixIds) BuildClassMaps()
@@ -747,7 +853,7 @@ file static class DocsGenerator
             .Replace("|", "\\|", StringComparison.Ordinal);
 }
 
-file enum Mode { Generate, Check, Audit, EnforceIdsCheck, EnforceIdsApply }
+file enum Mode { Generate, Check, Audit, EnforceIdsCheck, EnforceIdsApply, RewriteShipped }
 
 file readonly record struct CatalogStatistics(
     ImmutableArray<SemconvMigrationCatalogEntry> Entries,
