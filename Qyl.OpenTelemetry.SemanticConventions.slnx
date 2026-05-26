@@ -4,7 +4,6 @@
     <Project Path="src/Qyl.OpenTelemetry.SemanticConventions.Incubating/Qyl.OpenTelemetry.SemanticConventions.Incubating.csproj"/>
     <Project Path="src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.csproj"/>
     <Project Path="src/Qyl.OpenTelemetry.SemanticConventions.Analyzers/Qyl.OpenTelemetry.SemanticConventions.Analyzers.csproj"/>
-    <Project Path="src/Qyl.OpenTelemetry.SemanticConventions.Nuke/Qyl.OpenTelemetry.SemanticConventions.Nuke.csproj"/>
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Qyl.OpenTelemetry.SemanticConventions.Pipeline.Tests/Qyl.OpenTelemetry.SemanticConventions.Pipeline.Tests.csproj"/>
@@ -13,6 +12,9 @@
 
   <Folder Name="/eng/">
     <Project Path="eng/build/_build.csproj"/>
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator/Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator.csproj"/>
   </Folder>
   <Folder Name="/solution-items/">
     <File Path="README.md"/>
@@ -23,6 +25,5 @@
     <File Path="global.json"/>
     <File Path="nuget.config"/>
     <File Path=".editorconfig"/>
-    <File Path="master-programmatic.yaml"/>
   </Folder>
 </Solution>

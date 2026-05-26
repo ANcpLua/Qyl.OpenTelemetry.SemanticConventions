@@ -9,10 +9,12 @@ internal static class DiagnosticDescriptors
 
     // Each rule anchors into the single generated docs file:
     //   docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0003
-    // The DocsGenerator emits a "### QYL0003" sub-section per descriptor so the
-    // GitHub-style anchor exists. Keep this base in sync with that generator.
+    // tools/Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator emits a
+    // "### QYL0003" sub-section per descriptor; GitHub renders that as the lowercase
+    // anchor #qyl0003. Run `./build.sh CheckDocs` to verify the committed markdown
+    // still matches what the descriptors would emit; drift fails CI.
     private const string HelpLinkBase =
-        "https://github.com/ANcpLua/ANcpLua.OpenTelemetry.SemanticConventions.Analyzers"
+        "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions"
         + "/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#";
 
     public static readonly DiagnosticDescriptor DeprecatedSemconvConstant = new(

@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Renders docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md by reflecting on the
+    analyzer assembly's DiagnosticDescriptors + SemconvMigrationCatalog. Every QYL rule's
+    HelpLinkUri deep-links into a "### QYL00XX" sub-section of that file, so the generator
+    output IS the contract the descriptors anchor into.
+
+    Invoked via Nuke targets in eng/build/Build.cs:
+      ./build.sh AuditDocs       — print catalog statistics, no file I/O
+      ./build.sh GenerateDocs    — re-render the markdown
+      ./build.sh CheckDocs       — fail if the committed markdown is stale (CI guard)
+
+    Roslyn-version isolation: this tool runs on the full .NET SDK (net10.0) and is free
+    to depend on the modern Microsoft.CodeAnalysis.CSharp.Workspaces. The analyzer
+    project itself stays on netstandard2.0 for analyzer-host compatibility. Workspaces
+    deps are PrivateAssets="all" so they never leak through the ProjectReference.
+  -->
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator</RootNamespace>
+    <AssemblyName>Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator</AssemblyName>
+
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!-- Internal tool: relax the analyzer surface that's tuned for shipped library code.
+         CA1305 (IFormatProvider on StringBuilder.AppendLine interpolations + LocalizableString.ToString):
+           the generator emits ASCII markdown anchored to invariant English titles; no localised numbers
+           appear in the output, and forcing CultureInfo.InvariantCulture on every interpolation triples
+           the call-site noise for zero correctness gain.
+         CA1859 (prefer concrete return types): the descriptor list is an internal seam, IReadOnlyList<>
+           is correct documentation of intent for a small fixed-size collection. -->
+    <NoWarn>$(NoWarn);CA1050;CA1305;CA1707;CA1822;CA1859;CA2007;CS1591;IDE0055</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Qyl.OpenTelemetry.SemanticConventions.Analyzers\Qyl.OpenTelemetry.SemanticConventions.Analyzers.csproj"/>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" PrivateAssets="all"/>
+  </ItemGroup>
+
+</Project>

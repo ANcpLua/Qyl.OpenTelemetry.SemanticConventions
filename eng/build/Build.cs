@@ -12,7 +12,7 @@ using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
-using Qyl.OpenTelemetry.SemanticConventions.Nuke;
+using ANcpLua.OpenTelemetry.Conventions.Nuke;
 using Serilog;
 
 namespace Qyl.OpenTelemetry.SemanticConventions.Build;
@@ -42,6 +42,11 @@ internal sealed class Build : NukeBuild, IUpstreamConventions
     AbsolutePath IncubatingAttributesDir =>
         RootDirectory / "src" / "Qyl.OpenTelemetry.SemanticConventions.Incubating" / "Attributes";
 
+    AbsolutePath DocsGeneratorProject =>
+        RootDirectory / "tools"
+        / "Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator"
+        / "Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator.csproj";
+
     /// <summary>Restore + compile every project in the solution.</summary>
     Target Compile => _ => _
         .Executes(() =>
@@ -56,10 +61,11 @@ internal sealed class Build : NukeBuild, IUpstreamConventions
     ///   Hash the committed Weaver-emitted attribute files and compare against the
     ///   manifest at <c>eng/semconv/attributes.lock.sha256</c>. Fails the build if
     ///   anyone hand-edited a generated file or forgot to re-seed the lock after a
-    ///   legitimate regeneration. Also exercises
-    ///   <see cref="LockstepPolicy.ParseSemconvSuffixVersion"/> on the configured
-    ///   <c>{SemconvVersion}-{LockstepRevision}</c> pair as a smoke-check that the
-    ///   shipped Nuke component is wired in correctly.
+    ///   legitimate regeneration. Also parses the configured
+    ///   <c>{SemconvVersion}-{LockstepRevision}</c> pair with
+    ///   <see cref="LockstepPolicy.ParseSemconvSuffixVersion"/> and logs the result;
+    ///   this exercises the type binding from the shipped Nuke component but does
+    ///   not itself assert on the parsed values.
     /// </summary>
     Target VerifyAttributesHash => _ => _
         .Executes(() =>
@@ -102,6 +108,44 @@ internal sealed class Build : NukeBuild, IUpstreamConventions
             File.WriteAllText(AttributesHashFile, hash + Environment.NewLine);
             Log.Information("SeedAttributesHash: wrote {Hash} to {Path}.", hash, AttributesHashFile);
         });
+
+    /// <summary>
+    ///   Re-render <c>docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md</c> from the
+    ///   analyzer assembly's <c>DiagnosticDescriptors</c> + <c>SemconvMigrationCatalog</c>.
+    ///   Every QYL rule's <c>HelpLinkUri</c> deep-links into a <c>### QYL00XX</c> sub-section
+    ///   of that file, so the generator output is the contract the descriptors anchor into.
+    /// </summary>
+    Target GenerateDocs => _ => _
+        .Description("Re-render docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md from the analyzer assembly.")
+        .DependsOn(Compile)
+        .Executes(() => RunDocsGenerator(applicationArguments: null));
+
+    /// <summary>CI guard: fail when the committed markdown drifts from what the generator would emit now.</summary>
+    Target CheckDocs => _ => _
+        .Description("Fail if docs are stale relative to the analyzer assembly.")
+        .DependsOn(Compile)
+        .Executes(() => RunDocsGenerator("--check"));
+
+    /// <summary>Print catalog statistics (curated vs supplemental, fixable counts, ...). No file I/O.</summary>
+    Target AuditDocs => _ => _
+        .Description("Print analyzer catalog statistics.")
+        .DependsOn(Compile)
+        .Executes(() => RunDocsGenerator("--audit"));
+
+    void RunDocsGenerator(string? applicationArguments)
+    {
+        var settings = new DotNetRunSettings()
+            .SetProjectFile(DocsGeneratorProject)
+            .SetConfiguration("Release")
+            .EnableNoBuild()
+            .EnableNoRestore();
+
+        if (applicationArguments is not null)
+            settings = settings.SetApplicationArguments(applicationArguments);
+
+        DotNetTasks.DotNetRun(settings);
+        Log.Information("DocsGenerator finished ({Mode}).", applicationArguments ?? "generate");
+    }
 
     string ComputeAttributesManifestHash()
     {

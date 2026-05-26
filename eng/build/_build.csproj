@@ -20,17 +20,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Dogfood: the build host references the Nuke component this repo SHIPS.
-         IUpstreamConventions, LockstepPolicy and friends come from here — the
-         very same package consumers will get from nuget.org. -->
-    <ProjectReference Include="../../src/Qyl.OpenTelemetry.SemanticConventions.Nuke/Qyl.OpenTelemetry.SemanticConventions.Nuke.csproj"/>
+    <!-- Canonical Nuke build component from the O-ANcppLua org, shared across the
+         qyl OpenTelemetry-conventions toolchain. Provides IUpstreamConventions,
+         IDomainConventionsApi, and LockstepPolicy. -->
+    <PackageReference Include="ANcpLua.OpenTelemetry.Conventions.Nuke"/>
   </ItemGroup>
 
-  <!-- The Nuke component pins NuGet.Packaging 7.3.1 and System.Security.Cryptography.Xml
-       10.0.7 with PrivateAssets=all (security overrides for GHSA-g4vj-cjjj-v7hg /
-       GHSA-37gx-xxp4-5rgx). Because PrivateAssets=all suppresses transitive flow, the
-       build host re-resolves Nuke.Common's vulnerable defaults instead of inheriting the
-       patches. Re-declare here so the dotnet-run executable also gets the patched DLLs. -->
+  <!-- Transitive security overrides for Nuke.Common 10.1.0
+       (GHSA-g4vj-cjjj-v7hg / GHSA-37gx-xxp4-5rgx). The canonical Nuke component pins
+       these with PrivateAssets="all", which suppresses transitive flow into the build
+       host, so we re-declare them here for the dotnet-run executable. -->
   <ItemGroup>
     <PackageReference Include="NuGet.Packaging"/>
     <PackageReference Include="System.Security.Cryptography.Xml"/>

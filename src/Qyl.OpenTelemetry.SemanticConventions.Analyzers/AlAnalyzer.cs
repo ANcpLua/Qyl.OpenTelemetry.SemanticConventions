@@ -5,11 +5,22 @@
 ///     Extends <see cref="DiagnosticAnalyzerBase"/> with resource-based rule creation.
 /// </summary>
 public abstract class AlAnalyzer : DiagnosticAnalyzerBase {
-    /// <summary>Base URL for diagnostic help links.</summary>
-    public const string HelpLinkBase = "https://ancplua.mintlify.app/analyzers/rules/";
+    /// <summary>
+    ///     Base URL for diagnostic help links. Resolves to a <c>### QYL00XX</c>
+    ///     sub-section in <c>docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md</c>,
+    ///     emitted by <c>tools/Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator</c>.
+    /// </summary>
+    public const string HelpLinkBase =
+        "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions"
+        + "/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#";
 
-    /// <summary>Returns the full help link URL for a specific diagnostic ID.</summary>
-    public static string HelpLink(string id) => HelpLinkBase + id;
+    /// <summary>
+    ///     Returns the full help link URL for a specific diagnostic ID. The id is
+    ///     lower-cased to match the anchor GitHub renders from the <c>### QYL00XX</c>
+    ///     heading.
+    /// </summary>
+    public static string HelpLink(string id) =>
+        HelpLinkBase + id.ToLowerInvariant();
 
     /// <inheritdoc />
     protected sealed override void InitializeCore(AnalysisContext context) => RegisterActions(context);

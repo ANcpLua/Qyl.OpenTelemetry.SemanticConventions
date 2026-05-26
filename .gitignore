@@ -17,6 +17,3 @@ obj/
 # Tooling
 .tools/
 node_modules/
-
-# Upstream snapshot (pin via scripts/seed-catalog.sh)
-.semconv-cache/

@@ -13,8 +13,9 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 /// <see cref="SemconvMigrationCatalogEntry"/>. Both shapes coexist: <c>ChangelogEvidence</c>
 /// remains the human-readable summary surfaced in docs and diagnostic messages,
 /// while <see cref="SemconvChangelogEvidence"/> is the machine-checkable origin
-/// (commit SHA + permalink + raw quote) that the docs generator renders as a
-/// hyperlink and the seeding script always emits.
+/// (commit SHA + permalink + raw quote). New entries should populate this struct
+/// directly in the inline constructor calls in
+/// <c>SemconvMigrationCatalog.BuildEntries()</c>; there is no seeding script.
 /// </summary>
 internal readonly struct SemconvChangelogEvidence : IEquatable<SemconvChangelogEvidence>
 {

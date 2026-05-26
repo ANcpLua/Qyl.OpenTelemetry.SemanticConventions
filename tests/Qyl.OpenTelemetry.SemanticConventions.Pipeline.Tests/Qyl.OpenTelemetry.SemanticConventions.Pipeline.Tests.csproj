@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../src/Qyl.OpenTelemetry.SemanticConventions.Nuke/Qyl.OpenTelemetry.SemanticConventions.Nuke.csproj"/>
+    <PackageReference Include="ANcpLua.OpenTelemetry.Conventions.Nuke"/>
   </ItemGroup>
 
 </Project>

@@ -20,6 +20,7 @@
   <ItemGroup Label="Build (Nuke component + eng/build host)">
     <PackageVersion Include="Nuke.Common" Version="$(NukeVersion)"/>
     <PackageVersion Include="Nuke.Components" Version="$(NukeVersion)"/>
+    <PackageVersion Include="ANcpLua.OpenTelemetry.Conventions.Nuke" Version="$(ANcpLuaOpenTelemetryConventionsNukeVersion)"/>
     <PackageVersion Include="YamlDotNet" Version="$(YamlDotNetVersion)"/>
     <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="$(MicrosoftBclAsyncInterfacesVersion)"/>
   </ItemGroup>
