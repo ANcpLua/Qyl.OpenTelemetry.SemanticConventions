@@ -24,8 +24,12 @@
 
     <!-- NU5017: analyzer packs ship via _AddAnalyzersToPackage into analyzers/dotnet/cs/
          (not lib/), so the pack target's content check fires before the custom target
-         runs. The nupkg is produced correctly; the warning is spurious here. -->
-    <NoWarn>$(NoWarn);NU5017;RS1041;RS1025;RS1026;RS0030;RS1038;RS2000;RS2008;IDE0055;CA2249;CS1591;CS1570;CS1572;CS1573;CS1574</NoWarn>
+         runs. The nupkg is produced correctly; the warning is spurious here.
+         RS2000/RS2008 are intentionally NOT suppressed: they enforce that every public
+         DiagnosticDescriptor has a corresponding row in AnalyzerReleases.{Shipped,
+         Unshipped}.md. tools/Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator
+         relies on that contract being live. -->
+    <NoWarn>$(NoWarn);NU5017;RS1041;RS1025;RS1026;RS0030;RS1038;IDE0055;CA2249;CS1591;CS1570;CS1572;CS1573;CS1574</NoWarn>
   </PropertyGroup>
 
   <ItemGroup Label="Global usings consumed by imported analyzer + codefix sources">
@@ -89,6 +93,41 @@
       <TfmSpecificPackageFile Include="$(OutputPath)$(AssemblyName).dll"          PackagePath="analyzers/dotnet/cs"/>
       <TfmSpecificPackageFile Include="$(OutputPath)ANcpLua.Roslyn.Utilities.dll" PackagePath="analyzers/dotnet/cs"/>
     </ItemGroup>
+  </Target>
+
+  <!--
+    After-build drift guard. Every dotnet build of this project (and therefore every
+    ./build.sh solution build) invokes the DocsGenerator twice:
+
+      1. enforce-ids mode: verify every analyzer/codefix class name, XML doc summary, and
+         DiagnosticId-const doc agrees with the runtime DiagnosticDescriptor it registers.
+      2. check mode:       verify docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md
+                           and the editorconfig profiles under docs/editorconfig/ match
+                           what the generator would emit now.
+
+    Both run as exec calls into the DocsGenerator project; nested dotnet runs are
+    cached by the SDK so the cost on a clean build is one nested compile, after which
+    each invocation is sub-second.
+
+    Opt out with -p:SkipAnalyzerConsistencyCheck=true during inner-loop iteration.
+    CI must leave it on.
+  -->
+  <Target Name="_VerifyAnalyzerConsistency"
+          AfterTargets="Build"
+          Condition="'$(SkipAnalyzerConsistencyCheck)' != 'true' AND '$(_QylInsideConsistencyCheck)' != 'true'">
+    <PropertyGroup>
+      <_DocsGenProject>$(MSBuildThisFileDirectory)../../tools/Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator/Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator.csproj</_DocsGenProject>
+    </PropertyGroup>
+    <!-- _QylInsideConsistencyCheck breaks the AfterBuild recursion: the nested
+         `dotnet run` rebuilds the DocsGenerator, which transitively re-evaluates
+         this analyzer csproj. Without the sentinel, AfterBuild fires inside the
+         nested build and detonates into hundreds of duplicated errors. -->
+    <Exec Command="dotnet run --project &quot;$(_DocsGenProject)&quot; --configuration $(Configuration) -- --enforce-ids"
+          WorkingDirectory="$(MSBuildThisFileDirectory)../.."
+          EnvironmentVariables="_QylInsideConsistencyCheck=true"/>
+    <Exec Command="dotnet run --project &quot;$(_DocsGenProject)&quot; --configuration $(Configuration) -- --check"
+          WorkingDirectory="$(MSBuildThisFileDirectory)../.."
+          EnvironmentVariables="_QylInsideConsistencyCheck=true"/>
   </Target>
 
 </Project>
