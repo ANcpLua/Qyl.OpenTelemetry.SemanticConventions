@@ -116,6 +116,7 @@ The property is exposed via the analyzer NuGet's `buildTransitive/Qyl.OpenTeleme
 - [Per-rule pages](rules/) — one markdown file per `QYL00xx` rule with severity, category, code-fix status, and description.
 - [Migration catalog](migration-catalog.md) — curated migration inventory, supplemental attribute-value rows, and coverage-by-version × domain tables that don't fit per-rule pages.
 - [Editorconfig profiles](editorconfig/) — three drop-in severity profiles: `Default`, `AllRulesAsErrors`, `AllRulesDisabled`. Same content ships inside the NuGet under `buildTransitive/editorconfig/`.
+- [SARIF rule manifest](Qyl.OpenTelemetry.SemanticConventions.Analyzers.sarif) — SARIF v2.1.0 catalog of every `QYL00xx` rule (id, name, severity, category, helpUri). Consume from Sonar bridges, GitHub Advanced Security uploads, or IDE rule-catalog tools.
 - [`AnalyzerReleases.Shipped.md`](../src/Qyl.OpenTelemetry.SemanticConventions.Analyzers/AnalyzerReleases.Shipped.md) — release-tracking manifest with `ClassName, [Documentation](url)` attribution per Microsoft NetAnalyzers convention.
 
 ## Generated File

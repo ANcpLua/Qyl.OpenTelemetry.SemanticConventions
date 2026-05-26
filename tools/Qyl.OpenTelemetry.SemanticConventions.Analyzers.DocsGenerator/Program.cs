@@ -4,6 +4,8 @@
 using System.Collections.Immutable;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -130,6 +132,20 @@ file static class DocsGenerator
             return 1;
         }
 
+        // (3b) SARIF v2.1.0 rule manifest for tool interop (Sonar bridges, GitHub
+        // Advanced Security uploads, IDE rule catalogs).
+        var sarifPath = SarifPath(repoRoot);
+        if (!File.Exists(sarifPath))
+        {
+            Console.Error.WriteLine($"Missing SARIF manifest: {Path.GetRelativePath(repoRoot, sarifPath)}");
+            return 1;
+        }
+        if (!string.Equals(File.ReadAllText(sarifPath), RenderSarif(descriptors, idToClass), StringComparison.Ordinal))
+        {
+            Console.Error.WriteLine($"SARIF manifest is stale: {Path.GetRelativePath(repoRoot, sarifPath)}");
+            return 1;
+        }
+
         // (4) Editorconfig profiles must also be up to date — these ship in the NuGet as
         // ready-made severity profiles consumers can drop into their repo.
         foreach (var (relPath, expected) in EnumerateEditorconfigProfiles(repoRoot))
@@ -212,6 +228,11 @@ file static class DocsGenerator
         File.WriteAllText(catalogPath, RenderMigrationCatalog(stats));
         Console.WriteLine($"Wrote {Path.GetRelativePath(repoRoot, catalogPath)}");
 
+        // SARIF v2.1.0 rule manifest.
+        var sarifPath = SarifPath(repoRoot);
+        File.WriteAllText(sarifPath, RenderSarif(descriptors, idToClass));
+        Console.WriteLine($"Wrote {Path.GetRelativePath(repoRoot, sarifPath)}");
+
         // Editorconfig profiles (unchanged).
         foreach (var (path, content) in EnumerateEditorconfigProfiles(repoRoot))
         {
@@ -224,6 +245,82 @@ file static class DocsGenerator
 
     private static string MigrationCatalogPath(string repoRoot) =>
         Path.Combine(repoRoot, "docs", "migration-catalog.md");
+
+    private static string SarifPath(string repoRoot) =>
+        Path.Combine(repoRoot, "docs", PackageName + ".sarif");
+
+    /// <summary>
+    ///   Emits a SARIF v2.1.0 rule manifest describing every <see cref="DiagnosticDescriptor"/>
+    ///   this package ships. Each descriptor maps to one <c>reportingDescriptor</c> entry
+    ///   inside <c>runs[0].tool.driver.rules</c>. The file is run-results-free —
+    ///   <c>runs[0].results</c> is empty — because this is a *rule catalog* for tool
+    ///   interop (Sonar bridges, GitHub Advanced Security uploads, IDE rule catalogs),
+    ///   not an analyzer execution result. Indent + sort-by-id keeps the output
+    ///   deterministic for <c>--check</c> drift detection.
+    ///
+    ///   Spec: https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html
+    /// </summary>
+    private static string RenderSarif(
+        IReadOnlyList<DiagnosticDescriptor> descriptors,
+        Dictionary<string, string> idToClass)
+    {
+        var rulesArray = new JsonArray();
+        foreach (var d in descriptors)
+        {
+            var ruleName = idToClass.TryGetValue(d.Id, out var className)
+                ? ToSymbolicName(className)
+                : d.Id;
+
+            var rule = new JsonObject
+            {
+                ["id"] = d.Id,
+                ["name"] = ruleName,
+                ["shortDescription"] = new JsonObject { ["text"] = d.Title.ToString() },
+                ["fullDescription"] = new JsonObject { ["text"] = d.Description.ToString() },
+                ["helpUri"] = d.HelpLinkUri,
+            };
+
+            var defaultConfig = new JsonObject { ["level"] = SarifLevel(d.DefaultSeverity) };
+            if (!d.IsEnabledByDefault)
+                defaultConfig["enabled"] = false;
+            rule["defaultConfiguration"] = defaultConfig;
+
+            rule["properties"] = new JsonObject { ["category"] = d.Category };
+            rulesArray.Add(rule);
+        }
+
+        var doc = new JsonObject
+        {
+            ["$schema"] = "https://json.schemastore.org/sarif-2.1.0.json",
+            ["version"] = "2.1.0",
+            ["runs"] = new JsonArray(
+                new JsonObject
+                {
+                    ["tool"] = new JsonObject
+                    {
+                        ["driver"] = new JsonObject
+                        {
+                            ["name"] = PackageName,
+                            ["informationUri"] = "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions",
+                            ["rules"] = rulesArray,
+                        },
+                    },
+                    ["results"] = new JsonArray(),
+                }),
+        };
+
+        var json = doc.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
+        return json.ReplaceLineEndings("\n") + "\n";
+    }
+
+    private static string SarifLevel(DiagnosticSeverity severity) => severity switch
+    {
+        DiagnosticSeverity.Error => "error",
+        DiagnosticSeverity.Warning => "warning",
+        DiagnosticSeverity.Info => "note",
+        DiagnosticSeverity.Hidden => "none",
+        _ => "none",
+    };
 
     /// <summary>
     ///   Emits the three canonical editorconfig severity profiles consumers can drop into
@@ -532,9 +629,6 @@ file static class DocsGenerator
         return name;
     }
 
-    private static string PerRulePath(string id, string symbolic) =>
-        Path.Combine("docs", "rules", $"{id}_{symbolic}.md");
-
     /// <summary>
     ///   Walks every concrete <see cref="DiagnosticAnalyzer"/> in the analyzer assembly
     ///   and builds <c>Id → ClassName</c>. Analyzers that register multiple ids point
@@ -778,6 +872,7 @@ file static class DocsGenerator
         sb.AppendLine("- [Per-rule pages](rules/) — one markdown file per `QYL00xx` rule with severity, category, code-fix status, and description.");
         sb.AppendLine("- [Migration catalog](migration-catalog.md) — curated migration inventory, supplemental attribute-value rows, and coverage-by-version × domain tables that don't fit per-rule pages.");
         sb.AppendLine("- [Editorconfig profiles](editorconfig/) — three drop-in severity profiles: `Default`, `AllRulesAsErrors`, `AllRulesDisabled`. Same content ships inside the NuGet under `buildTransitive/editorconfig/`.");
+        sb.AppendLine($"- [SARIF rule manifest]({PackageName}.sarif) — SARIF v2.1.0 catalog of every `QYL00xx` rule (id, name, severity, category, helpUri). Consume from Sonar bridges, GitHub Advanced Security uploads, or IDE rule-catalog tools.");
         sb.AppendLine("- [`AnalyzerReleases.Shipped.md`](../src/Qyl.OpenTelemetry.SemanticConventions.Analyzers/AnalyzerReleases.Shipped.md) — release-tracking manifest with `ClassName, [Documentation](url)` attribution per Microsoft NetAnalyzers convention.");
     }
 
