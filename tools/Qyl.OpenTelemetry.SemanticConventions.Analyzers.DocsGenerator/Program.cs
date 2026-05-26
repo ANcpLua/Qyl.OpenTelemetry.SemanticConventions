@@ -754,11 +754,30 @@ file static class DocsGenerator
 
     private static void WriteRelatedDocs(StringBuilder sb)
     {
+        sb.AppendLine("## Consumer-side severity profile (`OtelSemConvAnalysisMode`)");
+        sb.AppendLine();
+        sb.AppendLine("Set `<OtelSemConvAnalysisMode>` in your csproj to switch the whole `QYL00xx` band in one line instead of dropping editorconfig files:");
+        sb.AppendLine();
+        sb.AppendLine("```xml");
+        sb.AppendLine("<PropertyGroup>");
+        sb.AppendLine("  <OtelSemConvAnalysisMode>AllAsErrors</OtelSemConvAnalysisMode>");
+        sb.AppendLine("</PropertyGroup>");
+        sb.AppendLine("```");
+        sb.AppendLine();
+        sb.AppendLine("| Value | Behavior |");
+        sb.AppendLine("| -- | -- |");
+        sb.AppendLine("| `Default` | Every rule at its descriptor-declared default severity. Useful to override an ambient stricter config. |");
+        sb.AppendLine("| `AllAsErrors` | Every QYL rule promoted to error. Use for strict CI. |");
+        sb.AppendLine("| `Disabled` | Every QYL rule silenced. |");
+        sb.AppendLine("| _(unset)_ | No editorconfig injection; descriptor severities apply and any consumer-side editorconfig stays authoritative. |");
+        sb.AppendLine();
+        sb.AppendLine("The property is exposed via the analyzer NuGet's `buildTransitive/Qyl.OpenTelemetry.SemanticConventions.Analyzers.props`, which appends the matching editorconfig from `buildTransitive/editorconfig/` to `$(EditorConfigFiles)` on consumer restore. The name is deliberately not bare `<AnalysisMode>` — that property is owned by `Microsoft.CodeAnalysis.NetAnalyzers` and clashing would force consumers into one-or-the-other choices.");
+        sb.AppendLine();
         sb.AppendLine("## See also");
         sb.AppendLine();
         sb.AppendLine("- [Per-rule pages](rules/) — one markdown file per `QYL00xx` rule with severity, category, code-fix status, and description.");
         sb.AppendLine("- [Migration catalog](migration-catalog.md) — curated migration inventory, supplemental attribute-value rows, and coverage-by-version × domain tables that don't fit per-rule pages.");
-        sb.AppendLine("- [Editorconfig profiles](editorconfig/) — three drop-in severity profiles: `Default`, `AllRulesAsErrors`, `AllRulesDisabled`.");
+        sb.AppendLine("- [Editorconfig profiles](editorconfig/) — three drop-in severity profiles: `Default`, `AllRulesAsErrors`, `AllRulesDisabled`. Same content ships inside the NuGet under `buildTransitive/editorconfig/`.");
         sb.AppendLine("- [`AnalyzerReleases.Shipped.md`](../src/Qyl.OpenTelemetry.SemanticConventions.Analyzers/AnalyzerReleases.Shipped.md) — release-tracking manifest with `ClassName, [Documentation](url)` attribution per Microsoft NetAnalyzers convention.");
     }
 

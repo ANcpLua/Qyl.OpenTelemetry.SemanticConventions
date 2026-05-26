@@ -92,11 +92,30 @@ Each ID links to a per-rule page under [`docs/rules/`](rules/) with severity, ca
 - Generated semconv constant libraries may intentionally retain deprecated constants. Their existence is not itself a package bug.
 - Schema URL translators and code that explicitly emits older schemas are compatibility contexts and should not be escalated to production errors.
 
+## Consumer-side severity profile (`OtelSemConvAnalysisMode`)
+
+Set `<OtelSemConvAnalysisMode>` in your csproj to switch the whole `QYL00xx` band in one line instead of dropping editorconfig files:
+
+```xml
+<PropertyGroup>
+  <OtelSemConvAnalysisMode>AllAsErrors</OtelSemConvAnalysisMode>
+</PropertyGroup>
+```
+
+| Value | Behavior |
+| -- | -- |
+| `Default` | Every rule at its descriptor-declared default severity. Useful to override an ambient stricter config. |
+| `AllAsErrors` | Every QYL rule promoted to error. Use for strict CI. |
+| `Disabled` | Every QYL rule silenced. |
+| _(unset)_ | No editorconfig injection; descriptor severities apply and any consumer-side editorconfig stays authoritative. |
+
+The property is exposed via the analyzer NuGet's `buildTransitive/Qyl.OpenTelemetry.SemanticConventions.Analyzers.props`, which appends the matching editorconfig from `buildTransitive/editorconfig/` to `$(EditorConfigFiles)` on consumer restore. The name is deliberately not bare `<AnalysisMode>` — that property is owned by `Microsoft.CodeAnalysis.NetAnalyzers` and clashing would force consumers into one-or-the-other choices.
+
 ## See also
 
 - [Per-rule pages](rules/) — one markdown file per `QYL00xx` rule with severity, category, code-fix status, and description.
 - [Migration catalog](migration-catalog.md) — curated migration inventory, supplemental attribute-value rows, and coverage-by-version × domain tables that don't fit per-rule pages.
-- [Editorconfig profiles](editorconfig/) — three drop-in severity profiles: `Default`, `AllRulesAsErrors`, `AllRulesDisabled`.
+- [Editorconfig profiles](editorconfig/) — three drop-in severity profiles: `Default`, `AllRulesAsErrors`, `AllRulesDisabled`. Same content ships inside the NuGet under `buildTransitive/editorconfig/`.
 - [`AnalyzerReleases.Shipped.md`](../src/Qyl.OpenTelemetry.SemanticConventions.Analyzers/AnalyzerReleases.Shipped.md) — release-tracking manifest with `ClassName, [Documentation](url)` attribution per Microsoft NetAnalyzers convention.
 
 ## Generated File
