@@ -3,7 +3,7 @@ using MsOperationExtensions = Microsoft.CodeAnalysis.Operations.OperationExtensi
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0077: Detects duplicate instrumentation - methods with both auto-instrumentation and manual spans.
+///     QYL0103: Detects duplicate instrumentation - methods with both auto-instrumentation and manual spans.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -31,8 +31,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0077DuplicateInstrumentationAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0077.</summary>
+public sealed class Qyl0103DuplicateInstrumentationAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0103.</summary>
     private const string DiagnosticId = "QYL0103";
 
     private const string TracedAttributeFullName = "Qyl.Instrumentation.Instrumentation.TracedAttribute";

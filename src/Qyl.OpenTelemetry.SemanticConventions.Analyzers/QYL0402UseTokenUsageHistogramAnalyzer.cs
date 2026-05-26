@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0065: Detects token usage metrics that don't use the standard histogram.
+///     QYL0402: Detects token usage metrics that don't use the standard histogram.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -14,7 +14,7 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0065UseTokenUsageHistogramAnalyzer : AlAnalyzer {
+public sealed class Qyl0402UseTokenUsageHistogramAnalyzer : AlAnalyzer {
     private const string CorrectMetricName = "gen_ai.client.token.usage";
     private const string HistogramAttributeFullName = "Qyl.Instrumentation.Instrumentation.HistogramAttribute";
 
@@ -22,7 +22,7 @@ public sealed class Al0065UseTokenUsageHistogramAnalyzer : AlAnalyzer {
         "token", "input_token", "output_token", "prompt_token", "completion_token"
     ];
 
-    /// <summary>The diagnostic identifier for AL0065.</summary>
+    /// <summary>The diagnostic identifier for QYL0402.</summary>
     private const string DiagnosticId = "QYL0402";
 
     private static readonly DiagnosticDescriptor s_rule = CreateRule(

@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0086: Detects OpenTelemetry attributes set with incorrect types.
+///     QYL0013: Detects OpenTelemetry attributes set with incorrect types.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -26,8 +26,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0086IncorrectAttributeTypeAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0086.</summary>
+public sealed class Qyl0013IncorrectAttributeTypeAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0013.</summary>
     private const string DiagnosticId = "QYL0013";
 
     private static readonly DiagnosticDescriptor s_rule = CreateRule(

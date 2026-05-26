@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0131: Warns when application code calls GenAI SDK APIs directly, bypassing the
+///     QYL0406: Warns when application code calls GenAI SDK APIs directly, bypassing the
 ///     <c>IChatClient</c> abstraction and the automatic OpenTelemetry instrumentation pipeline.
 /// </summary>
 /// <remarks>
@@ -19,8 +19,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     — bypass this pipeline and emit no telemetry.
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0131DirectGenAiSdkUsageAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0131.</summary>
+public sealed class Qyl0406DirectGenAiSdkUsageAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0406.</summary>
     private const string DiagnosticId = "QYL0406";
 
     private const string IChatClientMetadataName = "Microsoft.Extensions.AI.IChatClient";

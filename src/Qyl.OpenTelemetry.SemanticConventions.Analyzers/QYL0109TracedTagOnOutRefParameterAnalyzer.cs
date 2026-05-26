@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0110: Detects [TracedTag] on parameters with out or ref modifiers.
+///     QYL0109: Detects [TracedTag] on parameters with out or ref modifiers.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -26,8 +26,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0110TracedTagOnOutRefParameterAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0110.</summary>
+public sealed class Qyl0109TracedTagOnOutRefParameterAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0109.</summary>
     public const string DiagnosticId = "QYL0109";
 
     private const string TracedTagAttributeFullName = "Qyl.Instrumentation.Instrumentation.TracedTagAttribute";

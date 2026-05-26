@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0090: Detects OTLP exporter configurations using HTTP protocol without compression.
+///     QYL0701: Detects OTLP exporter configurations using HTTP protocol without compression.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -27,8 +27,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0090UncompressedExportAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0090.</summary>
+public sealed class Qyl0701UncompressedExportAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0701.</summary>
     private const string DiagnosticId = "QYL0701";
 
     private static readonly DiagnosticDescriptor s_rule = CreateRule(

@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0013: Detects OpenTelemetry configurations that don't set the schema URL.
+///     QYL0006: Detects OpenTelemetry configurations that don't set the schema URL.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -24,8 +24,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0013MissingSchemaUrlAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0013.</summary>
+public sealed class Qyl0006MissingSchemaUrlAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0006.</summary>
     private const string DiagnosticId = "QYL0006";
 
     private static readonly DiagnosticDescriptor s_rule = CreateRule(

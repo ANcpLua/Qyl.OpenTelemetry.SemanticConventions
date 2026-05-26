@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0071: Detects [Meter] classes that are not declared as partial static.
+///     QYL0500: Detects [Meter] classes that are not declared as partial static.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -26,8 +26,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0071MeterClassMustBePartialStaticAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0071.</summary>
+public sealed class Qyl0500MeterClassMustBePartialStaticAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0500.</summary>
     public const string DiagnosticId = "QYL0500";
 
     private const string MeterAttributeFullName = "Qyl.Instrumentation.Instrumentation.MeterAttribute";

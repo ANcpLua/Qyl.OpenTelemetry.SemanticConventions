@@ -5,11 +5,11 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.CodeFixes;
 /// <summary>
 ///     Code fix provider for AL0071: Adds 'partial static' modifiers to [Meter] class.
 /// </summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(Al0071MeterClassCodeFixProvider))]
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(Qyl0500MeterClassCodeFixProvider))]
 [Shared]
-public sealed class Al0071MeterClassCodeFixProvider : CodeFixProvider {
+public sealed class Qyl0500MeterClassCodeFixProvider : CodeFixProvider {
     /// <summary>Gets the diagnostic IDs this provider can fix.</summary>
-    public override ImmutableArray<string> FixableDiagnosticIds => [Al0071MeterClassMustBePartialStaticAnalyzer.DiagnosticId];
+    public override ImmutableArray<string> FixableDiagnosticIds => [Qyl0500MeterClassMustBePartialStaticAnalyzer.DiagnosticId];
 
     /// <summary>Gets the FixAll provider for batch fixing.</summary>
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
@@ -33,7 +33,7 @@ public sealed class Al0071MeterClassCodeFixProvider : CodeFixProvider {
             CodeAction.Create(
                 CodeFixResources.QYL0500CodeFixTitle,
                 c => MakePartialStaticAsync(context.Document, classDeclaration, root, c),
-                nameof(Al0071MeterClassCodeFixProvider)),
+                nameof(Qyl0500MeterClassCodeFixProvider)),
             diagnostic);
     }
 

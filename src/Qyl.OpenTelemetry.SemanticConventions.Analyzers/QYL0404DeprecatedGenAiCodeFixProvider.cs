@@ -5,12 +5,12 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.CodeFixes;
 /// <summary>
 ///     Code fix provider for AL0074: Replaces deprecated GenAI attribute names with current ones.
 /// </summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(Al0074DeprecatedGenAiCodeFixProvider))]
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(Qyl0404DeprecatedGenAiCodeFixProvider))]
 [Shared]
-public sealed class Al0074DeprecatedGenAiCodeFixProvider
+public sealed class Qyl0404DeprecatedGenAiCodeFixProvider
     : AlCodeFixProvider<LiteralExpressionSyntax> {
     /// <summary>Gets the diagnostic IDs this provider can fix.</summary>
-    public override ImmutableArray<string> FixableDiagnosticIds => [Al0074DeprecatedGenAiAttributeAnalyzer.DiagnosticId];
+    public override ImmutableArray<string> FixableDiagnosticIds => [Qyl0404DeprecatedGenAiAttributeAnalyzer.DiagnosticId];
 
     /// <summary>Creates the code action for this fix.</summary>
     protected override CodeAction? CreateCodeAction(
@@ -25,7 +25,7 @@ public sealed class Al0074DeprecatedGenAiCodeFixProvider
         return CodeAction.Create(
             string.Format(System.Globalization.CultureInfo.InvariantCulture, CodeFixResources.QYL0404CodeFixTitle, replacement),
             _ => ReplaceAttributeNameAsync(document, literal, replacement, root),
-            nameof(Al0074DeprecatedGenAiCodeFixProvider));
+            nameof(Qyl0404DeprecatedGenAiCodeFixProvider));
     }
 
     private static Task<Document> ReplaceAttributeNameAsync(

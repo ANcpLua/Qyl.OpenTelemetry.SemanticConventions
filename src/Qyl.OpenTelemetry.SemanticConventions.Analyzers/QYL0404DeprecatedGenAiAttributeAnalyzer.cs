@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0074: Detects deprecated GenAI semantic convention attribute names.
+///     QYL0404: Detects deprecated GenAI semantic convention attribute names.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -22,12 +22,12 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0074DeprecatedGenAiAttributeAnalyzer : AlAnalyzer {
+public sealed class Qyl0404DeprecatedGenAiAttributeAnalyzer : AlAnalyzer {
     /// <summary>
     ///     Mapping of deprecated GenAI attribute names to their replacements.
     /// </summary>
 
-    /// <summary>The diagnostic identifier for AL0074.</summary>
+    /// <summary>The diagnostic identifier for QYL0404.</summary>
     public const string DiagnosticId = "QYL0404";
 
     private static readonly DiagnosticDescriptor s_rule = CreateRule(

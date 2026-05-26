@@ -132,6 +132,26 @@ internal sealed class Build : NukeBuild, IUpstreamConventions
         .DependsOn(Compile)
         .Executes(() => RunDocsGenerator("--audit"));
 
+    /// <summary>
+    ///   Read-only consistency check: every analyzer .cs file's class name, class XML doc summary,
+    ///   and DiagnosticId const must agree with the runtime <c>DiagnosticDescriptor.Id</c> it
+    ///   registers. Fails the build on mismatches without touching files.
+    /// </summary>
+    Target EnforceIds => _ => _
+        .Description("Verify analyzer class/doc/id-const consistency against runtime descriptors.")
+        .DependsOn(Compile)
+        .Executes(() => RunDocsGenerator("--enforce-ids"));
+
+    /// <summary>
+    ///   Rewrite analyzer source files in-place to make class names, class XML doc summaries, and
+    ///   DiagnosticId-const docs match the runtime <c>DiagnosticDescriptor.Id</c> they register.
+    ///   Run after an intentional rule-id change; review the diff before committing.
+    /// </summary>
+    Target EnforceIdsApply => _ => _
+        .Description("Rewrite analyzer files to align class/doc/id-const with runtime descriptors.")
+        .DependsOn(Compile)
+        .Executes(() => RunDocsGenerator("--enforce-ids --apply"));
+
     void RunDocsGenerator(string? applicationArguments)
     {
         var settings = new DotNetRunSettings()

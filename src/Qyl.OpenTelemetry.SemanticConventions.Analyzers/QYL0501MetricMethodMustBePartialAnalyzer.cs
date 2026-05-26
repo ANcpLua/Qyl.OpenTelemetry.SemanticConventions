@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0072: Detects [Counter]/[Histogram] methods that are not declared as partial.
+///     QYL0501: Detects [Counter]/[Histogram] methods that are not declared as partial.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -25,8 +25,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0072MetricMethodMustBePartialAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0072.</summary>
+public sealed class Qyl0501MetricMethodMustBePartialAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0501.</summary>
     public const string DiagnosticId = "QYL0501";
 
     private const string CounterAttributeFullName = "Qyl.Instrumentation.Instrumentation.CounterAttribute";

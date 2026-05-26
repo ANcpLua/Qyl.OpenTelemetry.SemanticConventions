@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0124: Detects [AgentTraced] on abstract, extern, or partial definition methods that cannot be intercepted.
+///     QYL0405: Detects [AgentTraced] on abstract, extern, or partial definition methods that cannot be intercepted.
 /// </summary>
 /// <remarks>
 ///     The [AgentTraced] attribute on a method triggers compile-time interception to create agent spans.
@@ -16,8 +16,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     mislead developers into thinking agent spans are being created.
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0124NonInterceptableAgentTracedAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0124.</summary>
+public sealed class Qyl0405NonInterceptableAgentTracedAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0405.</summary>
     public const string DiagnosticId = "QYL0405";
 
     private const string AgentTracedAttributeFullName = "Qyl.Instrumentation.Instrumentation.AgentTracedAttribute";

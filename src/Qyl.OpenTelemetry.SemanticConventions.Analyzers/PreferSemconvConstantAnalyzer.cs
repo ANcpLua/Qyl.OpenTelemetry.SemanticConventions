@@ -4,7 +4,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-/// QYL0011: When a string literal used as a telemetry attribute key matches a
+/// QYL0004: When a string literal used as a telemetry attribute key matches a
 /// known <c>const string</c> field exposed by
 /// <c>OpenTelemetry.SemanticConventions.Attributes.*</c>, suggest the typed constant.
 /// </summary>

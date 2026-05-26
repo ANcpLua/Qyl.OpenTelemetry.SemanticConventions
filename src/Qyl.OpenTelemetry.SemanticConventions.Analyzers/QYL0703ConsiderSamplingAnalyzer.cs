@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0092: Detects OpenTelemetry tracing configurations without sampling configured.
+///     QYL0703: Detects OpenTelemetry tracing configurations without sampling configured.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -23,8 +23,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </list>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0092ConsiderSamplingAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0092.</summary>
+public sealed class Qyl0703ConsiderSamplingAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0703.</summary>
     private const string DiagnosticId = "QYL0703";
 
     /// <summary>Array of known OTel tracer builder type names.</summary>

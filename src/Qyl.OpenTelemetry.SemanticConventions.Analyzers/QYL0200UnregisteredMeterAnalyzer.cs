@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0067: Detects Meter instances that are not registered with AddMeter() anywhere in the compilation.
+///     QYL0200: Detects Meter instances that are not registered with AddMeter() anywhere in the compilation.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -16,8 +16,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0067UnregisteredMeterAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0067.</summary>
+public sealed class Qyl0200UnregisteredMeterAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0200.</summary>
     private const string DiagnosticId = "QYL0200";
 
     private const string MeterTypeName = "System.Diagnostics.Metrics.Meter";

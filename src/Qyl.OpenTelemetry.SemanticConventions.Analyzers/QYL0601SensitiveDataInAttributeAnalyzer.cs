@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0088: Detects potential PII or credential data in span attributes.
+///     QYL0601: Detects potential PII or credential data in span attributes.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -24,7 +24,7 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0088SensitiveDataInAttributeAnalyzer : AlAnalyzer {
+public sealed class Qyl0601SensitiveDataInAttributeAnalyzer : AlAnalyzer {
     /// <summary>
     ///     Patterns in attribute names that indicate sensitive data.
     /// </summary>
@@ -90,7 +90,7 @@ public sealed class Al0088SensitiveDataInAttributeAnalyzer : AlAnalyzer {
             "SetCustomProperty"
         };
 
-    /// <summary>The diagnostic identifier for AL0088.</summary>
+    /// <summary>The diagnostic identifier for QYL0601.</summary>
     private const string DiagnosticId = "QYL0601";
 
     private static readonly DiagnosticDescriptor s_rule = CreateRule(

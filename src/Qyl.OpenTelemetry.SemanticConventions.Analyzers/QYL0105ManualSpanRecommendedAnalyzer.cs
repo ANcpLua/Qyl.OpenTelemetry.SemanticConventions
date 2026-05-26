@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0079: Detects complex async patterns in [Traced] methods where manual instrumentation
+///     QYL0105: Detects complex async patterns in [Traced] methods where manual instrumentation
 ///     may provide better observability than auto-instrumentation.
 /// </summary>
 /// <remarks>
@@ -22,8 +22,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed partial class Al0079ManualSpanRecommendedAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0079.</summary>
+public sealed partial class Qyl0105ManualSpanRecommendedAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0105.</summary>
     private const string DiagnosticId = "QYL0105";
 
     private const string TracedAttributeFullName = "Qyl.Instrumentation.Instrumentation.TracedAttribute";

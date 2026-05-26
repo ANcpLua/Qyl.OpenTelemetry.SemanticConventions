@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0070: Detects collector endpoint configurations that don't use OTLP protocol.
+///     QYL0301: Detects collector endpoint configurations that don't use OTLP protocol.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -14,7 +14,7 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0070NonOtlpCollectorEndpointAnalyzer : AlAnalyzer {
+public sealed class Qyl0301NonOtlpCollectorEndpointAnalyzer : AlAnalyzer {
     private static readonly string[] s_otlpPatterns = [
         "4317", // gRPC default port
         "4318", // HTTP default port
@@ -28,7 +28,7 @@ public sealed class Al0070NonOtlpCollectorEndpointAnalyzer : AlAnalyzer {
         "Endpoint", "CollectorEndpoint", "OtlpEndpoint", "ExporterEndpoint"
     ];
 
-    /// <summary>The diagnostic identifier for AL0070.</summary>
+    /// <summary>The diagnostic identifier for QYL0301.</summary>
     private const string DiagnosticId = "QYL0301";
 
     private static readonly DiagnosticDescriptor s_rule = CreateRule(

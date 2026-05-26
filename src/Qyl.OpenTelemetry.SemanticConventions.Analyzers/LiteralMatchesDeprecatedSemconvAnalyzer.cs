@@ -4,7 +4,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-/// QYL0012: Flags telemetry attribute key literals whose values match a
+/// QYL0005: Flags telemetry attribute key literals whose values match a
 /// semantic-convention attribute name that is marked <c>[Obsolete]</c> in the
 /// consumer's resolved <c>OpenTelemetry.SemanticConventions</c> assembly.
 /// </summary>

@@ -4,8 +4,11 @@
 using System.Collections.Immutable;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
@@ -21,9 +24,15 @@ file static class DocsGenerator
     {
         var repoRoot = FindRepoRoot(AppContext.BaseDirectory);
         var outputPath = Path.Combine(repoRoot, "docs", PackageName + ".md");
-        var stats = CatalogStatistics.Compute();
+        var mode = ParseMode(args);
 
-        return ParseMode(args) switch
+        // EnforceIds modes don't need the catalog (they walk source files), and we
+        // want them to run on a clean assembly load even if the catalog has issues.
+        if (mode is Mode.EnforceIdsCheck or Mode.EnforceIdsApply)
+            return EnforceIds(repoRoot, apply: mode == Mode.EnforceIdsApply);
+
+        var stats = CatalogStatistics.Compute();
+        return mode switch
         {
             Mode.Audit => Audit(stats),
             Mode.Check => Check(stats, outputPath, repoRoot),
@@ -65,7 +74,18 @@ file static class DocsGenerator
 
     private static Mode ParseMode(string[] args)
     {
-        foreach (var arg in args)
+        // Nuke's DotNetRunSettings.SetApplicationArguments passes a single quoted
+        // string, so "--enforce-ids --apply" arrives as args[0] instead of two
+        // separate args. Flatten on whitespace so both invocation shapes work.
+        var flat = args
+            .SelectMany(a => a.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries))
+            .ToArray();
+
+        var enforce = flat.Any(a => IsFlag(a, "enforce-ids"));
+        var apply = flat.Any(a => IsFlag(a, "apply"));
+        if (enforce) return apply ? Mode.EnforceIdsApply : Mode.EnforceIdsCheck;
+
+        foreach (var arg in flat)
         {
             if (IsFlag(arg, "audit")) return Mode.Audit;
             if (IsFlag(arg, "check") || Eq(arg, "validate")) return Mode.Check;
@@ -74,6 +94,203 @@ file static class DocsGenerator
 
         static bool IsFlag(string arg, string name) => Eq(arg, name) || Eq(arg, "--" + name);
         static bool Eq(string a, string b) => string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>
+    ///   Walks every analyzer source file under <c>src/Qyl.OpenTelemetry.SemanticConventions.Analyzers/</c>
+    ///   and aligns class names, XML doc summaries, and <c>DiagnosticId</c>-const docs with the runtime
+    ///   <c>DiagnosticDescriptor</c> each analyzer/code-fix-provider registers. The runtime descriptor
+    ///   is the source of truth — RS2008 plus <c>AnalyzerReleases.Shipped.md</c> already lock that
+    ///   surface, so this tool just propagates that authority into source.
+    ///
+    ///   Class renames are global within the analyzer project (covers cross-file references such as a
+    ///   code-fix provider that reads <c>Foo.DiagnosticId</c>), driven by both <see cref="DiagnosticAnalyzer"/>
+    ///   subclasses (via <c>SupportedDiagnostics</c>) and <see cref="CodeFixProvider"/> subclasses
+    ///   (via <c>FixableDiagnosticIds</c>). Per-file fixes (XML doc summary, const doc, const value
+    ///   sanity) are anchored on the relevant syntax node's trivia so cross-references like
+    ///   <c>see QYL0009</c> elsewhere in a file are never rewritten.
+    /// </summary>
+    private static int EnforceIds(string repoRoot, bool apply)
+    {
+        var analyzersDir = Path.Combine(repoRoot,
+            "src", "Qyl.OpenTelemetry.SemanticConventions.Analyzers");
+
+        var (analyzerIds, codeFixIds) = BuildClassMaps();
+
+        var perFileFixes = new Dictionary<string, List<(string Description, Func<string, string> Apply)>>(
+            StringComparer.Ordinal);
+        var classRenames = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        foreach (var path in Directory.EnumerateFiles(analyzersDir, "*.cs", SearchOption.TopDirectoryOnly))
+        {
+            var src = File.ReadAllText(path);
+            var tree = CSharpSyntaxTree.ParseText(src);
+            var classNode = tree.GetCompilationUnitRoot()
+                .DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
+            if (classNode is null) continue;
+
+            var className = classNode.Identifier.Text;
+
+            string? realId = null;
+            var isAnalyzer = false;
+            if (analyzerIds.TryGetValue(className, out var id))
+            {
+                realId = id;
+                isAnalyzer = true;
+            }
+            else if (codeFixIds.TryGetValue(className, out id))
+            {
+                realId = id;
+            }
+            else continue;
+
+            // (1) Class rename when name carries an Al/Qyl/QYL numeric prefix.
+            var prefixMatch = Regex.Match(className, @"^(?:Al|Qyl|QYL)(\d{4})(.+)$");
+            if (prefixMatch.Success)
+            {
+                var expectedClassName = $"Qyl{realId[3..]}{prefixMatch.Groups[2].Value}";
+                if (className != expectedClassName)
+                    classRenames[className] = expectedClassName;
+            }
+
+            // (2) Class XML doc summary: rewrite "/// AL00XX:" / "/// QYL00XX:" tokens that disagree
+            //     with realId. Anchored on the class's leading trivia.
+            var classTrivia = classNode.GetLeadingTrivia().ToFullString();
+            var fixedClassTrivia = Regex.Replace(
+                classTrivia,
+                @"(///\s*)(?:AL|QYL)\d{4}:",
+                m => m.Groups[1].Value + realId + ":");
+            if (fixedClassTrivia != classTrivia)
+            {
+                var oldT = classTrivia;
+                var newT = fixedClassTrivia;
+                AddFix(perFileFixes, path,
+                    $"class XML doc summary -> {realId}:",
+                    s => s.Replace(oldT, newT));
+            }
+
+            // (3) DiagnosticId const docs + value — only on analyzer classes.
+            if (isAnalyzer)
+            {
+                var diagIdField = classNode.Members.OfType<FieldDeclarationSyntax>()
+                    .FirstOrDefault(f => f.Declaration.Variables
+                        .Any(v => v.Identifier.Text == "DiagnosticId"));
+                if (diagIdField is not null)
+                {
+                    var fieldTrivia = diagIdField.GetLeadingTrivia().ToFullString();
+                    var fixedFieldTrivia = Regex.Replace(
+                        fieldTrivia,
+                        @"\bfor (?:AL|QYL)\d{4}\b",
+                        $"for {realId}");
+                    if (fixedFieldTrivia != fieldTrivia)
+                    {
+                        var oldT = fieldTrivia;
+                        var newT = fixedFieldTrivia;
+                        AddFix(perFileFixes, path,
+                            $"DiagnosticId const doc -> for {realId}",
+                            s => s.Replace(oldT, newT));
+                    }
+
+                    if (diagIdField.Declaration.Variables.First().Initializer?.Value is LiteralExpressionSyntax lit
+                        && lit.IsKind(SyntaxKind.StringLiteralExpression))
+                    {
+                        var constId = lit.Token.ValueText;
+                        if (constId != realId)
+                        {
+                            AddFix(perFileFixes, path,
+                                $"DiagnosticId const value {constId} -> {realId}",
+                                s => s.Replace($"\"{constId}\"", $"\"{realId}\""));
+                        }
+                    }
+                }
+            }
+        }
+
+        var totalRenames = classRenames.Count;
+        var totalPerFile = perFileFixes.Values.Sum(l => l.Count);
+        var totalIssues = totalRenames + totalPerFile;
+
+        if (apply)
+        {
+            // Apply per-file fixes + global class renames in one pass per file.
+            foreach (var path in Directory.EnumerateFiles(analyzersDir, "*.cs", SearchOption.TopDirectoryOnly))
+            {
+                var src = File.ReadAllText(path);
+                var original = src;
+
+                if (perFileFixes.TryGetValue(path, out var fixes))
+                    foreach (var (_, applyFn) in fixes)
+                        src = applyFn(src);
+
+                foreach (var (oldName, newName) in classRenames)
+                    src = Regex.Replace(src, @"\b" + Regex.Escape(oldName) + @"\b", newName);
+
+                if (src != original)
+                    File.WriteAllText(path, src);
+            }
+            Console.WriteLine(
+                $"--enforce-ids --apply: {totalRenames} class renames + {totalPerFile} per-file fixes.");
+            return 0;
+        }
+
+        foreach (var (oldName, newName) in classRenames.OrderBy(kv => kv.Key, StringComparer.Ordinal))
+            Console.WriteLine($"  class rename: {oldName} -> {newName}");
+        foreach (var (path, fixes) in perFileFixes.OrderBy(kv => kv.Key, StringComparer.Ordinal))
+        {
+            var rel = Path.GetRelativePath(repoRoot, path);
+            foreach (var (desc, _) in fixes)
+                Console.WriteLine($"  {rel}: {desc}");
+        }
+        Console.WriteLine(
+            $"--enforce-ids: {totalIssues} mismatches ({totalRenames} class renames, {totalPerFile} per-file fixes).");
+        return totalIssues == 0 ? 0 : 1;
+    }
+
+    private static (Dictionary<string, string> AnalyzerIds, Dictionary<string, string> CodeFixIds) BuildClassMaps()
+    {
+        var analyzers = new Dictionary<string, string>(StringComparer.Ordinal);
+        var codeFixes = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        foreach (var type in typeof(DiagnosticDescriptors).Assembly.GetTypes())
+        {
+            if (type.IsAbstract) continue;
+
+            if (typeof(DiagnosticAnalyzer).IsAssignableFrom(type))
+            {
+                try
+                {
+                    if (Activator.CreateInstance(type) is DiagnosticAnalyzer a && a.SupportedDiagnostics.Length > 0)
+                        analyzers[type.Name] = a.SupportedDiagnostics
+                            .OrderBy(d => d.Id, StringComparer.Ordinal).First().Id;
+                }
+                catch { /* analyzers with non-default ctors are skipped */ }
+            }
+            else if (typeof(CodeFixProvider).IsAssignableFrom(type))
+            {
+                try
+                {
+                    if (Activator.CreateInstance(type) is CodeFixProvider p && p.FixableDiagnosticIds.Length > 0)
+                        codeFixes[type.Name] = p.FixableDiagnosticIds
+                            .OrderBy(s => s, StringComparer.Ordinal).First();
+                }
+                catch { }
+            }
+        }
+        return (analyzers, codeFixes);
+    }
+
+    private static void AddFix(
+        Dictionary<string, List<(string Description, Func<string, string> Apply)>> bucket,
+        string path,
+        string description,
+        Func<string, string> apply)
+    {
+        if (!bucket.TryGetValue(path, out var list))
+        {
+            list = [];
+            bucket[path] = list;
+        }
+        list.Add((description, apply));
     }
 
     private static string RenderMarkdown(CatalogStatistics stats)
@@ -472,7 +689,7 @@ file static class DocsGenerator
             .Replace("|", "\\|", StringComparison.Ordinal);
 }
 
-file enum Mode { Generate, Check, Audit }
+file enum Mode { Generate, Check, Audit, EnforceIdsCheck, EnforceIdsApply }
 
 file readonly record struct CatalogStatistics(
     ImmutableArray<SemconvMigrationCatalogEntry> Entries,

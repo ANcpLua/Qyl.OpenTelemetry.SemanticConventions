@@ -4,7 +4,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-/// QYL0002: Flags <c>SetTag/AddTag/SetAttribute("graphql.document", …)</c>. v1.41.0
+/// QYL0001: Flags <c>SetTag/AddTag/SetAttribute("graphql.document", …)</c>. v1.41.0
 /// demoted <c>graphql.document</c> from <c>recommended</c> to <c>opt_in</c> due to
 /// its high-cardinality and PII risk. Diagnostic surfaces as a hint, not a hard
 /// failure — capture is still legal when explicitly enabled with sanitization.

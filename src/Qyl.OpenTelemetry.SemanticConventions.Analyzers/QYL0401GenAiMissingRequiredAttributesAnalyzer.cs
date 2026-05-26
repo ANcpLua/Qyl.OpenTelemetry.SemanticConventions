@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0064: Detects GenAI spans that are missing required semantic convention attributes.
+///     QYL0401: Detects GenAI spans that are missing required semantic convention attributes.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -15,8 +15,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0064GenAiMissingRequiredAttributesAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0064.</summary>
+public sealed class Qyl0401GenAiMissingRequiredAttributesAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0401.</summary>
     private const string DiagnosticId = "QYL0401";
 
     private static readonly string[] s_requiredGenAiAttributes = OpenTelemetryGenAiSemconvFacts.s_requiredAttributeKeys;

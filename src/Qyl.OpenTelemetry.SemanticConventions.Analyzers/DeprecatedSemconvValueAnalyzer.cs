@@ -4,7 +4,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-/// QYL0014: Flags telemetry attribute payloads where the value is a constant
+/// QYL0007: Flags telemetry attribute payloads where the value is a constant
 /// string that matches a deprecated member of the corresponding
 /// <c>*Values</c> nested class on the SemConv attribute type.
 /// </summary>

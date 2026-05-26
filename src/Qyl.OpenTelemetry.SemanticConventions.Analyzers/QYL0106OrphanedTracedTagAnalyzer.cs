@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0107: Detects [TracedTag] on parameters where neither the method nor its declaring type has [Traced].
+///     QYL0106: Detects [TracedTag] on parameters where neither the method nor its declaring type has [Traced].
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -26,8 +26,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0107OrphanedTracedTagAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0107.</summary>
+public sealed class Qyl0106OrphanedTracedTagAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0106.</summary>
     public const string DiagnosticId = "QYL0106";
 
     private const string TracedAttributeFullName = "Qyl.Instrumentation.Instrumentation.TracedAttribute";

@@ -12,11 +12,11 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.CodeFixes;
 ///         would get the ActivitySourceName <c>"MyApp.Services.OrderService"</c>.
 ///     </para>
 /// </remarks>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(Al0073TracedCodeFixProvider))]
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(Qyl0102TracedCodeFixProvider))]
 [Shared]
-public sealed class Al0073TracedCodeFixProvider : CodeFixProvider {
+public sealed class Qyl0102TracedCodeFixProvider : CodeFixProvider {
     /// <summary>Gets the diagnostic IDs this provider can fix.</summary>
-    public override ImmutableArray<string> FixableDiagnosticIds => [Al0073TracedActivitySourceNameAnalyzer.DiagnosticId];
+    public override ImmutableArray<string> FixableDiagnosticIds => [Qyl0102TracedActivitySourceNameAnalyzer.DiagnosticId];
 
     /// <summary>Gets the FixAll provider for batch fixing.</summary>
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
@@ -49,7 +49,7 @@ public sealed class Al0073TracedCodeFixProvider : CodeFixProvider {
             CodeAction.Create(
                 string.Format(System.Globalization.CultureInfo.InvariantCulture, CodeFixResources.QYL0102CodeFixTitle, suggestedName),
                 c => AddActivitySourceNameAsync(context.Document, attributeSyntax, suggestedName, root, c),
-                nameof(Al0073TracedCodeFixProvider)),
+                nameof(Qyl0102TracedCodeFixProvider)),
             diagnostic);
     }
 

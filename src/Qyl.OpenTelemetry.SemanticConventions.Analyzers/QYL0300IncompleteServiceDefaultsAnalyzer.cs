@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0069: Detects incomplete ServiceDefaults configuration.
+///     QYL0300: Detects incomplete ServiceDefaults configuration.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -15,8 +15,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0069IncompleteServiceDefaultsAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0069.</summary>
+public sealed class Qyl0300IncompleteServiceDefaultsAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0300.</summary>
     private const string DiagnosticId = "QYL0300";
 
     private static readonly string[] s_tracingMethods = ["AddOpenTelemetry", "WithTracing", "AddTracing"];

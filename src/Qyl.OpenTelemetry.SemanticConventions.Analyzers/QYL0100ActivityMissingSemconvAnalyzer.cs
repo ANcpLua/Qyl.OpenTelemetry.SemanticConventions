@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0061: Detects Activity/Span creation without semantic convention attributes.
+///     QYL0100: Detects Activity/Span creation without semantic convention attributes.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -11,8 +11,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0061ActivityMissingSemconvAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0061.</summary>
+public sealed class Qyl0100ActivityMissingSemconvAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0100.</summary>
     private const string DiagnosticId = "QYL0100";
 
     // Operation types and their expected semantic convention prefixes

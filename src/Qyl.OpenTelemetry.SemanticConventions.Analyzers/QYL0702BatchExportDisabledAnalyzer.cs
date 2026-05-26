@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0091: Detects usage of SimpleSpanProcessor or SimpleActivityExportProcessor which exports
+///     QYL0702: Detects usage of SimpleSpanProcessor or SimpleActivityExportProcessor which exports
 ///     spans one at a time instead of batching.
 /// </summary>
 /// <remarks>
@@ -20,8 +20,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0091BatchExportDisabledAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0091.</summary>
+public sealed class Qyl0702BatchExportDisabledAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0702.</summary>
     private const string DiagnosticId = "QYL0702";
 
     private static readonly string[] s_simpleProcessorTypeNames = [

@@ -5,11 +5,11 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.CodeFixes;
 /// <summary>
 ///     Code fix provider for AL0107: Removes orphaned [TracedTag] attribute from parameters.
 /// </summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(Al0107OrphanedTracedTagCodeFixProvider))]
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(Qyl0106OrphanedTracedTagCodeFixProvider))]
 [Shared]
-public sealed class Al0107OrphanedTracedTagCodeFixProvider : CodeFixProvider {
+public sealed class Qyl0106OrphanedTracedTagCodeFixProvider : CodeFixProvider {
     /// <summary>Gets the diagnostic IDs this provider can fix.</summary>
-    public override ImmutableArray<string> FixableDiagnosticIds => [Al0107OrphanedTracedTagAnalyzer.DiagnosticId];
+    public override ImmutableArray<string> FixableDiagnosticIds => [Qyl0106OrphanedTracedTagAnalyzer.DiagnosticId];
 
     /// <summary>Gets the FixAll provider for batch fixing.</summary>
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
@@ -35,7 +35,7 @@ public sealed class Al0107OrphanedTracedTagCodeFixProvider : CodeFixProvider {
             CodeAction.Create(
                 CodeFixResources.QYL0106CodeFixTitle,
                 _ => RemoveAttributeAsync(context.Document, root, attributeSyntax),
-                nameof(Al0107OrphanedTracedTagCodeFixProvider)),
+                nameof(Qyl0106OrphanedTracedTagCodeFixProvider)),
             diagnostic);
     }
 

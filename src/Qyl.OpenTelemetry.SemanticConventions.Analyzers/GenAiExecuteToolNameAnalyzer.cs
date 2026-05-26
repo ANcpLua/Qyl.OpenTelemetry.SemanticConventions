@@ -4,7 +4,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-/// QYL0001: A method that sets <c>gen_ai.operation.name = "execute_tool"</c> must
+/// QYL0400: A method that sets <c>gen_ai.operation.name = "execute_tool"</c> must
 /// also set <c>gen_ai.tool.name</c>. v1.41.0 made the tool-name attribute required
 /// because the canonical span name format is <c>execute_tool {gen_ai.tool.name}</c>.
 /// </summary>

@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0068: Detects metric instrument names that don't follow naming conventions.
+///     QYL0201: Detects metric instrument names that don't follow naming conventions.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -16,7 +16,7 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0068InvalidMetricNameAnalyzer : AlAnalyzer {
+public sealed class Qyl0201InvalidMetricNameAnalyzer : AlAnalyzer {
     private const string CounterAttributeFullName = "Qyl.Instrumentation.Instrumentation.CounterAttribute";
     private const string HistogramAttributeFullName = "Qyl.Instrumentation.Instrumentation.HistogramAttribute";
 
@@ -26,7 +26,7 @@ public sealed class Al0068InvalidMetricNameAnalyzer : AlAnalyzer {
         @"^[a-z][a-z0-9_.]*\.[a-z][a-z0-9_.]*$",
         RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
-    /// <summary>The diagnostic identifier for AL0068.</summary>
+    /// <summary>The diagnostic identifier for QYL0201.</summary>
     private const string DiagnosticId = "QYL0201";
 
     private static readonly DiagnosticDescriptor s_rule = CreateRule(

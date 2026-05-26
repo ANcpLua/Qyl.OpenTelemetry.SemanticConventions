@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0096: Enable EventSourceSupport for AOT with telemetry.
+///     QYL0304: Enable EventSourceSupport for AOT with telemetry.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -17,8 +17,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0096EnableEventSourceSupportAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0096.</summary>
+public sealed class Qyl0304EnableEventSourceSupportAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0304.</summary>
     private const string DiagnosticId = "QYL0304";
 
     private const string PublishAotProperty = "build_property.PublishAot";

@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0089: Detects OTLP exporter calls without explicit endpoint configuration.
+///     QYL0700: Detects OTLP exporter calls without explicit endpoint configuration.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -27,8 +27,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0089MissingOtlpConfigurationAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0089.</summary>
+public sealed class Qyl0700MissingOtlpConfigurationAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0700.</summary>
     private const string DiagnosticId = "QYL0700";
 
     private static readonly string[] s_otlpExporterMethods = [

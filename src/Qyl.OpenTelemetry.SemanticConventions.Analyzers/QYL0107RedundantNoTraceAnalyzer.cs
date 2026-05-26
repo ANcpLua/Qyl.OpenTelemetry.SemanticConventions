@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0108: Detects [NoTrace] on a method whose declaring type has no class-level [Traced].
+///     QYL0107: Detects [NoTrace] on a method whose declaring type has no class-level [Traced].
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -27,8 +27,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0108RedundantNoTraceAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0108.</summary>
+public sealed class Qyl0107RedundantNoTraceAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0107.</summary>
     public const string DiagnosticId = "QYL0107";
 
     private const string TracedAttributeFullName = "Qyl.Instrumentation.Instrumentation.TracedAttribute";

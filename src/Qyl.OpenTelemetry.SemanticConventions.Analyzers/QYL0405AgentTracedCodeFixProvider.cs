@@ -5,11 +5,11 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.CodeFixes;
 /// <summary>
 ///     Code fix provider for AL0124 - removes [AgentTraced] attribute from non-interceptable methods.
 /// </summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(Al0124AgentTracedCodeFixProvider))]
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(Qyl0405AgentTracedCodeFixProvider))]
 [Shared]
-public sealed class Al0124AgentTracedCodeFixProvider : CodeFixProvider {
+public sealed class Qyl0405AgentTracedCodeFixProvider : CodeFixProvider {
     public override ImmutableArray<string> FixableDiagnosticIds =>
-        [Al0124NonInterceptableAgentTracedAnalyzer.DiagnosticId];
+        [Qyl0405NonInterceptableAgentTracedAnalyzer.DiagnosticId];
 
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 

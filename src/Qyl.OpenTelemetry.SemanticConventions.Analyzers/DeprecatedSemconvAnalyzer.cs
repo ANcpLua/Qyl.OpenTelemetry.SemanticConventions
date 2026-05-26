@@ -4,7 +4,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-/// QYL0010: Flags references to <c>[Obsolete]</c> <c>const string</c> fields under
+/// QYL0003: Flags references to <c>[Obsolete]</c> <c>const string</c> fields under
 /// <c>OpenTelemetry.SemanticConventions.Attributes.*</c>.
 /// </summary>
 /// <remarks>

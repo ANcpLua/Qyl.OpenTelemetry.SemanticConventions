@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     QYL0093: Detects when OpenTelemetry is configured without essential resource attributes.
+///     QYL0303: Detects when OpenTelemetry is configured without essential resource attributes.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -21,8 +21,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0093MissingResourceAttributesAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for QYL0093.</summary>
+public sealed class Qyl0303MissingResourceAttributesAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0303.</summary>
     private const string DiagnosticId = "QYL0303";
 
     private static readonly string[] s_oTelSetupMethods = [

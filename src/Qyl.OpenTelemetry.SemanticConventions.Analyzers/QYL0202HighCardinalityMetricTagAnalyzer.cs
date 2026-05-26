@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0075: Warns about high-cardinality tags on metrics.
+///     QYL0202: Warns about high-cardinality tags on metrics.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -25,7 +25,7 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0075HighCardinalityMetricTagAnalyzer : AlAnalyzer {
+public sealed class Qyl0202HighCardinalityMetricTagAnalyzer : AlAnalyzer {
     private enum KnownType { TagAttribute, CounterAttribute, HistogramAttribute }
 
     private static readonly string[] s_knownTypeNames = [
@@ -54,7 +54,7 @@ public sealed class Al0075HighCardinalityMetricTagAnalyzer : AlAnalyzer {
         "timestamp", "uuid", "guid"
     ];
 
-    /// <summary>The diagnostic identifier for AL0075.</summary>
+    /// <summary>The diagnostic identifier for QYL0202.</summary>
     private const string DiagnosticId = "QYL0202";
 
     private static readonly DiagnosticDescriptor s_highCardinalityMetricTagRule = CreateRule(

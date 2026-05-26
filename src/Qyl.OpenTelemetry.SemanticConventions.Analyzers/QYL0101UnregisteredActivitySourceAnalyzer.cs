@@ -1,7 +1,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0063: Detects ActivitySource instances that are not registered with AddSource().
+///     QYL0101: Detects ActivitySource instances that are not registered with AddSource().
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -15,7 +15,7 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0063UnregisteredActivitySourceAnalyzer : AlAnalyzer {
+public sealed class Qyl0101UnregisteredActivitySourceAnalyzer : AlAnalyzer {
     /// <summary>The diagnostic identifier for QYL0101.</summary>
     private const string DiagnosticId = "QYL0101";
 

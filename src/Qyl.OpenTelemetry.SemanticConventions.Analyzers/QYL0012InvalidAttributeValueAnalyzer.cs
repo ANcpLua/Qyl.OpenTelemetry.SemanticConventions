@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0085: Detects attribute values that violate OTel semantic convention specifications.
+///     QYL0012: Detects attribute values that violate OTel semantic convention specifications.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -15,7 +15,7 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed partial class Al0085InvalidAttributeValueAnalyzer : AlAnalyzer {
+public sealed partial class Qyl0012InvalidAttributeValueAnalyzer : AlAnalyzer {
     /// <summary>Attribute validators by attribute name.</summary>
     private static readonly Dictionary<string, AttributeValidator> s_validators = new(StringComparer.OrdinalIgnoreCase) {
         ["http.response.status_code"] = new AttributeValidator(
@@ -56,7 +56,7 @@ public sealed partial class Al0085InvalidAttributeValueAnalyzer : AlAnalyzer {
             "one of: http, https, ftp, ws, wss")
     };
 
-    /// <summary>The diagnostic identifier for AL0085.</summary>
+    /// <summary>The diagnostic identifier for QYL0012.</summary>
     private const string DiagnosticId = "QYL0012";
 
     private static readonly DiagnosticDescriptor s_rule = CreateRule(

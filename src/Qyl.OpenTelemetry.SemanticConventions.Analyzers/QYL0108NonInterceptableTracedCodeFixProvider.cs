@@ -5,11 +5,11 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.CodeFixes;
 /// <summary>
 ///     Code fix provider for AL0109: Removes [Traced] attribute from non-interceptable methods.
 /// </summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(Al0109NonInterceptableTracedCodeFixProvider))]
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(Qyl0108NonInterceptableTracedCodeFixProvider))]
 [Shared]
-public sealed class Al0109NonInterceptableTracedCodeFixProvider : CodeFixProvider {
+public sealed class Qyl0108NonInterceptableTracedCodeFixProvider : CodeFixProvider {
     /// <summary>Gets the diagnostic IDs this provider can fix.</summary>
-    public override ImmutableArray<string> FixableDiagnosticIds => [Al0109NonInterceptableTracedAnalyzer.DiagnosticId];
+    public override ImmutableArray<string> FixableDiagnosticIds => [Qyl0108NonInterceptableTracedAnalyzer.DiagnosticId];
 
     /// <summary>Gets the FixAll provider for batch fixing.</summary>
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
@@ -35,7 +35,7 @@ public sealed class Al0109NonInterceptableTracedCodeFixProvider : CodeFixProvide
             CodeAction.Create(
                 CodeFixResources.QYL0108CodeFixTitle,
                 _ => RemoveAttributeAsync(context.Document, root, attributeSyntax),
-                nameof(Al0109NonInterceptableTracedCodeFixProvider)),
+                nameof(Qyl0108NonInterceptableTracedCodeFixProvider)),
             diagnostic);
     }
 

@@ -5,11 +5,11 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.CodeFixes;
 /// <summary>
 ///     Code fix provider for AL0108: Removes redundant [NoTrace] attribute from methods.
 /// </summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(Al0108RedundantNoTraceCodeFixProvider))]
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(Qyl0107RedundantNoTraceCodeFixProvider))]
 [Shared]
-public sealed class Al0108RedundantNoTraceCodeFixProvider : CodeFixProvider {
+public sealed class Qyl0107RedundantNoTraceCodeFixProvider : CodeFixProvider {
     /// <summary>Gets the diagnostic IDs this provider can fix.</summary>
-    public override ImmutableArray<string> FixableDiagnosticIds => [Al0108RedundantNoTraceAnalyzer.DiagnosticId];
+    public override ImmutableArray<string> FixableDiagnosticIds => [Qyl0107RedundantNoTraceAnalyzer.DiagnosticId];
 
     /// <summary>Gets the FixAll provider for batch fixing.</summary>
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
@@ -35,7 +35,7 @@ public sealed class Al0108RedundantNoTraceCodeFixProvider : CodeFixProvider {
             CodeAction.Create(
                 CodeFixResources.QYL0107CodeFixTitle,
                 _ => RemoveAttributeAsync(context.Document, root, attributeSyntax),
-                nameof(Al0108RedundantNoTraceCodeFixProvider)),
+                nameof(Qyl0107RedundantNoTraceCodeFixProvider)),
             diagnostic);
     }
 

@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0113: Detects Activity.SetStatus(Error) inside catch blocks without recording the exception.
+///     QYL0110: Detects Activity.SetStatus(Error) inside catch blocks without recording the exception.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -16,8 +16,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0113MissingExceptionRecordingOnActivityAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0113.</summary>
+public sealed class Qyl0110MissingExceptionRecordingOnActivityAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0110.</summary>
     private const string DiagnosticId = "QYL0110";
 
     private static readonly DiagnosticDescriptor s_rule = CreateRule(

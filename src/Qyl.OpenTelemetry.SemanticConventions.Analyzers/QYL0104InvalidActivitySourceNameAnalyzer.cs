@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0078: Detects ActivitySource names that don't follow reverse-DNS naming convention.
+///     QYL0104: Detects ActivitySource names that don't follow reverse-DNS naming convention.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -21,8 +21,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0078InvalidActivitySourceNameAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0078.</summary>
+public sealed class Qyl0104InvalidActivitySourceNameAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0104.</summary>
     private const string DiagnosticId = "QYL0104";
 
     private const string ActivitySourceTypeName = "System.Diagnostics.ActivitySource";

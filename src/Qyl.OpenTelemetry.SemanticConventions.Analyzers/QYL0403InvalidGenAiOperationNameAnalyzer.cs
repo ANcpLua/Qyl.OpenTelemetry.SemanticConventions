@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0066: Detects GenAI operation names that don't follow semantic conventions.
+///     QYL0403: Detects GenAI operation names that don't follow semantic conventions.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -18,8 +18,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0066InvalidGenAiOperationNameAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for AL0066.</summary>
+public sealed class Qyl0403InvalidGenAiOperationNameAnalyzer : AlAnalyzer {
+    /// <summary>The diagnostic identifier for QYL0403.</summary>
     private const string DiagnosticId = "QYL0403";
 
     private static readonly DiagnosticDescriptor s_rule = CreateRule(

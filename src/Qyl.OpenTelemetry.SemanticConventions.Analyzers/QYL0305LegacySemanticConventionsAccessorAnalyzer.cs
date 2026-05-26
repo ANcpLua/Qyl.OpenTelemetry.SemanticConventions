@@ -1,7 +1,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0135: Flags usage of the legacy aggregated semantic-convention accessor types
+///     QYL0305: Flags usage of the legacy aggregated semantic-convention accessor types
 ///     (<c>SemanticConventions</c>, <c>TraceSemanticConventions</c>, <c>ResourceSemanticConventions</c>)
 ///     and steers callers toward the per-domain grouped classes published under
 ///     <c>OpenTelemetry.SemanticConventions.Attributes.*</c>.
@@ -18,7 +18,7 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     grouped class per field.
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0135LegacySemanticConventionsAccessorAnalyzer : AlAnalyzer {
+public sealed class Qyl0305LegacySemanticConventionsAccessorAnalyzer : AlAnalyzer {
     private const string DiagnosticId = "QYL0305";
 
     private static readonly DiagnosticDescriptor s_rule = CreateRule(

@@ -2,7 +2,7 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     AL0076: Detects when AddServiceDefaults() or similar setup is called but AddOpenTelemetry() is missing.
+///     QYL0302: Detects when AddServiceDefaults() or similar setup is called but AddOpenTelemetry() is missing.
 /// </summary>
 /// <remarks>
 ///     <para>
@@ -27,7 +27,7 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Al0076MissingOTelConfigurationAnalyzer : AlAnalyzer {
+public sealed class Qyl0302MissingOTelConfigurationAnalyzer : AlAnalyzer {
     private static readonly string[] s_serviceDefaultsMethods = [
         "AddServiceDefaults",
         "AddQylServiceDefaults",
@@ -40,7 +40,7 @@ public sealed class Al0076MissingOTelConfigurationAnalyzer : AlAnalyzer {
         "UseOpenTelemetry"
     ];
 
-    /// <summary>The diagnostic identifier for AL0076.</summary>
+    /// <summary>The diagnostic identifier for QYL0302.</summary>
     private const string DiagnosticId = "QYL0302";
 
     private static readonly DiagnosticDescriptor s_rule = CreateRule(
