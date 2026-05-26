@@ -7,15 +7,12 @@ internal static class DiagnosticDescriptors
 {
     private const string Category = "OpenTelemetry.SemanticConventions";
 
-    // Each rule anchors into the single generated docs file:
-    //   docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#qyl0003
-    // tools/Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator emits a
-    // "### QYL0003" sub-section per descriptor; GitHub renders that as the lowercase
-    // anchor #qyl0003. Run `./build.sh CheckDocs` to verify the committed markdown
-    // still matches what the descriptors would emit; drift fails CI.
-    private const string HelpLinkBase =
-        "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions"
-        + "/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#";
+    // Each rule deep-links to its own per-rule page at
+    //   docs/rules/QYL00XX_<SymbolicName>.md
+    // where SymbolicName is the analyzer class-name suffix after stripping the QYL
+    // prefix + "Analyzer" suffix. tools/.../DocsGenerator emits those files; --check
+    // verifies the helpLinkUri here matches what reflection on the analyzer class
+    // would compute. Drift fails CI.
 
     public static readonly DiagnosticDescriptor DeprecatedSemconvConstant = new(
         id: "QYL0003",
@@ -25,7 +22,7 @@ internal static class DiagnosticDescriptors
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "References to constants in OpenTelemetry.SemanticConventions.Attributes.* that carry [Obsolete]. Migrate to the replacement attribute named in the deprecation message.",
-        helpLinkUri: HelpLinkBase + "qyl0003");
+        helpLinkUri: RuleDocs.HelpLink("QYL0003", "DeprecatedSemconv"));
 
     public static readonly DiagnosticDescriptor RpcServerHasClientAddressAttribute = new(
         id: "QYL0002",
@@ -35,7 +32,7 @@ internal static class DiagnosticDescriptors
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "From v1.41.0, RPC server spans extend the rpc base group directly and no longer include client.address or client.port. Use server.address / server.port instead.",
-        helpLinkUri: HelpLinkBase + "qyl0002");
+        helpLinkUri: RuleDocs.HelpLink("QYL0002", "RpcServerClientAttribute"));
 
     public static readonly DiagnosticDescriptor GenAiExecuteToolMissingToolName = new(
         id: "QYL0400",
@@ -45,7 +42,7 @@ internal static class DiagnosticDescriptors
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "v1.41.0 made gen_ai.tool.name a required attribute on the gen_ai.execute_tool internal span; the canonical span name is 'execute_tool {gen_ai.tool.name}'.",
-        helpLinkUri: HelpLinkBase + "qyl0400");
+        helpLinkUri: RuleDocs.HelpLink("QYL0400", "GenAiExecuteToolName"));
 
     public static readonly DiagnosticDescriptor GraphqlDocumentIsOptIn = new(
         id: "QYL0001",
@@ -55,7 +52,7 @@ internal static class DiagnosticDescriptors
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         description: "graphql.document carries user-inputted, potentially sensitive, high-cardinality content. v1.41.0 moved its requirement level from recommended to opt_in. Capture only behind an explicit opt-in flag with sanitization.",
-        helpLinkUri: HelpLinkBase + "qyl0001");
+        helpLinkUri: RuleDocs.HelpLink("QYL0001", "GraphqlDocumentOptIn"));
 
     public static readonly DiagnosticDescriptor PreferSemconvConstant = new(
         id: "QYL0004",
@@ -65,7 +62,7 @@ internal static class DiagnosticDescriptors
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         description: "When a telemetry attribute key literal matches a known semantic-convention attribute name from OpenTelemetry.SemanticConventions.Attributes.*, prefer the typed constant for refactor-safety and discoverability.",
-        helpLinkUri: HelpLinkBase + "qyl0004");
+        helpLinkUri: RuleDocs.HelpLink("QYL0004", "PreferSemconvConstant"));
 
     public static readonly DiagnosticDescriptor LiteralMatchesDeprecatedSemconv = new(
         id: "QYL0005",
@@ -75,7 +72,7 @@ internal static class DiagnosticDescriptors
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "When a telemetry attribute key literal matches a semantic-convention attribute that is marked [Obsolete] in the consumer's referenced OpenTelemetry.SemanticConventions package, the call site needs migration regardless of whether a typed constant is being used.",
-        helpLinkUri: HelpLinkBase + "qyl0005");
+        helpLinkUri: RuleDocs.HelpLink("QYL0005", "LiteralMatchesDeprecatedSemconv"));
 
     public static readonly DiagnosticDescriptor DeprecatedSemconvValue = new(
         id: "QYL0007",
@@ -85,7 +82,7 @@ internal static class DiagnosticDescriptors
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "A constant string used as the value of a known semantic-convention telemetry attribute matches a value member that is marked [Obsolete] in the consumer's referenced *Values enum class.",
-        helpLinkUri: HelpLinkBase + "qyl0007");
+        helpLinkUri: RuleDocs.HelpLink("QYL0007", "DeprecatedSemconvValue"));
 
     public static readonly DiagnosticDescriptor IncubatingSemconvInLibrary = new(
         id: "QYL0008",
@@ -95,7 +92,7 @@ internal static class DiagnosticDescriptors
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "Members under any *.SemanticConventions.Incubating namespace may rename or change values across minor package releases. Library projects (non-exe, non-test) baking direct references push that volatility onto every downstream consumer.",
-        helpLinkUri: HelpLinkBase + "qyl0008");
+        helpLinkUri: RuleDocs.HelpLink("QYL0008", "IncubatingSemconvInLibrary"));
 
     public static readonly DiagnosticDescriptor SupplementalExactSemconvMigration = new(
         id: "QYL0009",
@@ -105,7 +102,7 @@ internal static class DiagnosticDescriptors
         defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true,
         description: "A hard-coded semantic-convention name or value matches the supplemental OpenTelemetry migration catalog and has a one-to-one replacement. This supplements, but does not replace, [Obsolete] metadata from OpenTelemetry.SemanticConventions.",
-        helpLinkUri: HelpLinkBase + "qyl0009");
+        helpLinkUri: RuleDocs.HelpLink("QYL0009", "SupplementalSemconvMigration"));
 
     public static readonly DiagnosticDescriptor SupplementalManualSemconvMigration = new(
         id: "QYL0010",
@@ -115,7 +112,7 @@ internal static class DiagnosticDescriptors
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "A hard-coded semantic-convention name or value matches the supplemental OpenTelemetry migration catalog, but the migration is context-sensitive or has no safe automatic replacement.",
-        helpLinkUri: HelpLinkBase + "qyl0010");
+        helpLinkUri: RuleDocs.HelpLink("QYL0010", "SupplementalSemconvMigration"));
 
     public static readonly DiagnosticDescriptor SupplementalCompatibilitySemconvMigration = new(
         id: "QYL0011",
@@ -125,5 +122,5 @@ internal static class DiagnosticDescriptors
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         description: "A hard-coded semantic-convention name or value appears in test, fixture, compatibility, translator, generated, or catalog code. Keep it only when the old schema is intentionally modeled.",
-        helpLinkUri: HelpLinkBase + "qyl0011");
+        helpLinkUri: RuleDocs.HelpLink("QYL0011", "SupplementalSemconvMigration"));
 }

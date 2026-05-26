@@ -1,27 +1,12 @@
-﻿namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
+﻿using System.Runtime.CompilerServices;
+
+namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
 ///     Base class for all ANcpLua analyzers.
 ///     Extends <see cref="DiagnosticAnalyzerBase"/> with resource-based rule creation.
 /// </summary>
 public abstract class AlAnalyzer : DiagnosticAnalyzerBase {
-    /// <summary>
-    ///     Base URL for diagnostic help links. Resolves to a <c>### QYL00XX</c>
-    ///     sub-section in <c>docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md</c>,
-    ///     emitted by <c>tools/Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator</c>.
-    /// </summary>
-    public const string HelpLinkBase =
-        "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions"
-        + "/blob/main/docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md#";
-
-    /// <summary>
-    ///     Returns the full help link URL for a specific diagnostic ID. The id is
-    ///     lower-cased to match the anchor GitHub renders from the <c>### QYL00XX</c>
-    ///     heading.
-    /// </summary>
-    public static string HelpLink(string id) =>
-        HelpLinkBase + id.ToLowerInvariant();
-
     /// <inheritdoc />
     protected sealed override void InitializeCore(AnalysisContext context) => RegisterActions(context);
 
@@ -31,17 +16,28 @@ public abstract class AlAnalyzer : DiagnosticAnalyzerBase {
 
     /// <summary>
     ///     Creates a <see cref="DiagnosticDescriptor"/> using resource-based localization.
+    ///     The <c>helpLinkUri</c> is derived from <paramref name="callerFile"/>
+    ///     (compiler-supplied via <see cref="CallerFilePathAttribute"/>): the file's
+    ///     basename minus the <c>Analyzer</c> suffix and the <c>(QYL|Qyl)NNNN</c>
+    ///     prefix becomes the symbolic name in the URL. This relies on the
+    ///     "file basename equals class name" convention that the <c>--enforce-ids</c>
+    ///     DocsGenerator mode already locks down. URL composition lives in
+    ///     <see cref="RuleDocs"/> so the docs generator (which doesn't link against
+    ///     <c>ANcpLua.Roslyn.Utilities</c>) can call it without resolving this class.
     /// </summary>
     /// <param name="id">The diagnostic ID (e.g., "QYL0036").</param>
     /// <param name="category">The diagnostic category from <see cref="DiagnosticCategories"/>.</param>
     /// <param name="severity">The diagnostic severity.</param>
     /// <param name="isEnabledByDefault">Whether the diagnostic is enabled by default.</param>
+    /// <param name="callerFile">Compiler-injected; do not pass.</param>
     /// <returns>A configured <see cref="DiagnosticDescriptor"/>.</returns>
     protected static DiagnosticDescriptor CreateRule(
         string id,
         string category,
         DiagnosticSeverity severity,
-        bool isEnabledByDefault = true) {
+        bool isEnabledByDefault = true,
+        [CallerFilePath] string callerFile = "") {
+        var symbolic = RuleDocs.SymbolicNameFromFile(callerFile);
         return new DiagnosticDescriptor(
             id,
             new LocalizableResourceString($"{id}AnalyzerTitle", Resources.ResourceManager, typeof(Resources)),
@@ -50,6 +46,6 @@ public abstract class AlAnalyzer : DiagnosticAnalyzerBase {
             severity,
             isEnabledByDefault,
             new LocalizableResourceString($"{id}AnalyzerDescription", Resources.ResourceManager, typeof(Resources)),
-            HelpLink(id));
+            RuleDocs.HelpLink(id, symbolic));
     }
 }

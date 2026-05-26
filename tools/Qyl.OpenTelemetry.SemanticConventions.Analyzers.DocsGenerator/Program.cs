@@ -54,19 +54,83 @@ file static class DocsGenerator
 
     private static int Check(CatalogStatistics stats, string outputPath, string repoRoot)
     {
+        var descriptors = GetDescriptors();
+        var fixableIds = GetFixableDiagnosticIds();
+        var idToClass = BuildIdToClassMap();
+
+        // (1) Slim index file (formerly the monolithic docs page).
         if (!File.Exists(outputPath))
         {
             Console.Error.WriteLine($"Missing generated docs: {outputPath}");
             return 1;
         }
-
-        if (!string.Equals(File.ReadAllText(outputPath), RenderMarkdown(stats), StringComparison.Ordinal))
+        if (!string.Equals(File.ReadAllText(outputPath), RenderIndex(descriptors, fixableIds, idToClass), StringComparison.Ordinal))
         {
-            Console.Error.WriteLine($"Generated docs are stale: {outputPath}");
+            Console.Error.WriteLine($"Index docs are stale: {Path.GetRelativePath(repoRoot, outputPath)}");
             return 1;
         }
 
-        // Editorconfig profiles must also be up to date — these ship in the NuGet as
+        // (2) Per-rule pages under docs/rules/.
+        var rulesDir = Path.Combine(repoRoot, "docs", "rules");
+        var expectedRuleFiles = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var d in descriptors)
+        {
+            if (!idToClass.TryGetValue(d.Id, out var className))
+            {
+                Console.Error.WriteLine($"Descriptor {d.Id} has no owning DiagnosticAnalyzer class — cannot place per-rule page.");
+                return 1;
+            }
+            var symbolic = ToSymbolicName(className);
+            var rulePath = Path.Combine(rulesDir, $"{d.Id}_{symbolic}.md");
+            expectedRuleFiles.Add(Path.GetFileName(rulePath));
+
+            if (!File.Exists(rulePath))
+            {
+                Console.Error.WriteLine($"Missing per-rule page: {Path.GetRelativePath(repoRoot, rulePath)}");
+                return 1;
+            }
+            if (!string.Equals(File.ReadAllText(rulePath), RenderRulePage(d, className, fixableIds), StringComparison.Ordinal))
+            {
+                Console.Error.WriteLine($"Per-rule page is stale: {Path.GetRelativePath(repoRoot, rulePath)}");
+                return 1;
+            }
+
+            // HelpLinkUri drift: descriptor's URL must equal what the generator would emit now.
+            var expectedUri = RuleDocs.HelpLink(d.Id, symbolic);
+            if (!string.Equals(d.HelpLinkUri, expectedUri, StringComparison.Ordinal))
+            {
+                Console.Error.WriteLine($"HelpLinkUri drift on {d.Id}: descriptor='{d.HelpLinkUri}' expected='{expectedUri}'");
+                return 1;
+            }
+        }
+
+        // Fail on stale files left over in docs/rules/ that no descriptor produces.
+        if (Directory.Exists(rulesDir))
+        {
+            foreach (var file in Directory.EnumerateFiles(rulesDir, "*.md"))
+            {
+                if (!expectedRuleFiles.Contains(Path.GetFileName(file)))
+                {
+                    Console.Error.WriteLine($"Stale per-rule page (no matching descriptor): {Path.GetRelativePath(repoRoot, file)}");
+                    return 1;
+                }
+            }
+        }
+
+        // (3) Migration catalog (qyl-specific tables that don't fit per-rule pages).
+        var catalogPath = MigrationCatalogPath(repoRoot);
+        if (!File.Exists(catalogPath))
+        {
+            Console.Error.WriteLine($"Missing migration catalog: {Path.GetRelativePath(repoRoot, catalogPath)}");
+            return 1;
+        }
+        if (!string.Equals(File.ReadAllText(catalogPath), RenderMigrationCatalog(stats), StringComparison.Ordinal))
+        {
+            Console.Error.WriteLine($"Migration catalog is stale: {Path.GetRelativePath(repoRoot, catalogPath)}");
+            return 1;
+        }
+
+        // (4) Editorconfig profiles must also be up to date — these ship in the NuGet as
         // ready-made severity profiles consumers can drop into their repo.
         foreach (var (relPath, expected) in EnumerateEditorconfigProfiles(repoRoot))
         {
@@ -82,7 +146,7 @@ file static class DocsGenerator
             }
         }
 
-        // AnalyzerReleases.Shipped.md Notes column carries the
+        // (5) AnalyzerReleases.Shipped.md Notes column carries the
         //   "ClassName, [Documentation](url)" Microsoft-pattern attribution. RS2008
         // already enforces that rows exist for every descriptor; this check
         // additionally enforces the Notes shape so the file can't drift via hand-edit.
@@ -99,18 +163,56 @@ file static class DocsGenerator
             }
         }
 
-        Console.WriteLine($"Generated docs are up to date: {Path.GetRelativePath(repoRoot, outputPath)}");
+        Console.WriteLine($"Index docs are up to date: {Path.GetRelativePath(repoRoot, outputPath)}");
+        Console.WriteLine($"Per-rule pages are up to date ({descriptors.Count}).");
+        Console.WriteLine($"Migration catalog is up to date: {Path.GetRelativePath(repoRoot, catalogPath)}");
         Console.WriteLine($"Editorconfig profiles are up to date.");
         Console.WriteLine($"Shipped.md Notes column is up to date.");
+        Console.WriteLine($"HelpLinkUri values match per-rule page URLs.");
         return 0;
     }
 
     private static int Generate(CatalogStatistics stats, string outputPath, string repoRoot)
     {
+        var descriptors = GetDescriptors();
+        var fixableIds = GetFixableDiagnosticIds();
+        var idToClass = BuildIdToClassMap();
+
+        // Slim index.
         Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
-        File.WriteAllText(outputPath, RenderMarkdown(stats));
+        File.WriteAllText(outputPath, RenderIndex(descriptors, fixableIds, idToClass));
         Console.WriteLine($"Wrote {Path.GetRelativePath(repoRoot, outputPath)}");
 
+        // Per-rule pages.
+        var rulesDir = Path.Combine(repoRoot, "docs", "rules");
+        Directory.CreateDirectory(rulesDir);
+        var expectedRuleFiles = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var d in descriptors)
+        {
+            if (!idToClass.TryGetValue(d.Id, out var className)) continue;
+            var symbolic = ToSymbolicName(className);
+            var rulePath = Path.Combine(rulesDir, $"{d.Id}_{symbolic}.md");
+            expectedRuleFiles.Add(Path.GetFileName(rulePath));
+            File.WriteAllText(rulePath, RenderRulePage(d, className, fixableIds));
+        }
+        // Clean up stale rule pages from prior renames (otherwise --check fails afterward).
+        foreach (var file in Directory.EnumerateFiles(rulesDir, "*.md"))
+        {
+            if (!expectedRuleFiles.Contains(Path.GetFileName(file)))
+            {
+                File.Delete(file);
+                Console.WriteLine($"Removed stale {Path.GetRelativePath(repoRoot, file)}");
+            }
+        }
+        Console.WriteLine($"Wrote {descriptors.Count} per-rule pages under docs/rules/");
+
+        // Migration catalog (qyl-specific tables).
+        var catalogPath = MigrationCatalogPath(repoRoot);
+        Directory.CreateDirectory(Path.GetDirectoryName(catalogPath)!);
+        File.WriteAllText(catalogPath, RenderMigrationCatalog(stats));
+        Console.WriteLine($"Wrote {Path.GetRelativePath(repoRoot, catalogPath)}");
+
+        // Editorconfig profiles (unchanged).
         foreach (var (path, content) in EnumerateEditorconfigProfiles(repoRoot))
         {
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
@@ -119,6 +221,9 @@ file static class DocsGenerator
         }
         return 0;
     }
+
+    private static string MigrationCatalogPath(string repoRoot) =>
+        Path.Combine(repoRoot, "docs", "migration-catalog.md");
 
     /// <summary>
     ///   Emits the three canonical editorconfig severity profiles consumers can drop into
@@ -402,11 +507,33 @@ file static class DocsGenerator
             if (!idToClass.TryGetValue(id, out var className)) continue;
             var category = m.Groups[2].Value.Trim();
             var severity = m.Groups[3].Value.Trim();
-            var url = AlAnalyzer.HelpLinkBase + id.ToLowerInvariant();
+            var url = RuleDocs.HelpLink(id, ToSymbolicName(className));
             lines[i] = $"{id} | {category} | {severity} | {className}, [Documentation]({url})";
         }
         return string.Join(lineEnding, lines);
     }
+
+    /// <summary>
+    ///   Mirror of <c>AlAnalyzer.SymbolicNameFromFile</c> for the docs side. Strips the
+    ///   <c>Analyzer</c> suffix and any <c>(QYL|Qyl|AL|Al)NNNN</c> prefix off the class
+    ///   name; the remainder is the symbolic part used in per-rule docs filenames
+    ///   <c>docs/rules/{id}_{symbolic}.md</c> and in the help-link URL. Keeping the
+    ///   transform identical on both sides is what lets <c>--check</c> verify the
+    ///   descriptor's <c>HelpLinkUri</c> against the file the generator would emit.
+    /// </summary>
+    private static string ToSymbolicName(string className)
+    {
+        var name = className;
+        if (name.EndsWith("Analyzer", StringComparison.Ordinal))
+            name = name[..^"Analyzer".Length];
+        var prefix = Regex.Match(name, @"^(?:QYL|Qyl|AL|Al)\d{4}");
+        if (prefix.Success)
+            name = name[prefix.Length..];
+        return name;
+    }
+
+    private static string PerRulePath(string id, string symbolic) =>
+        Path.Combine("docs", "rules", $"{id}_{symbolic}.md");
 
     /// <summary>
     ///   Walks every concrete <see cref="DiagnosticAnalyzer"/> in the analyzer assembly
@@ -481,20 +608,38 @@ file static class DocsGenerator
         list.Add((description, apply));
     }
 
-    private static string RenderMarkdown(CatalogStatistics stats)
+    private static string RenderIndex(
+        IReadOnlyList<DiagnosticDescriptor> descriptors,
+        HashSet<string> fixableIds,
+        Dictionary<string, string> idToClass)
     {
-        var descriptors = GetDescriptors();
-        var fixableIds = GetFixableDiagnosticIds();
         var sb = new StringBuilder();
-
         var sections = new Action<StringBuilder>[]
         {
             WriteHeader,
-            b => WriteDiagnostics(b, descriptors, fixableIds),
-            b => WriteDiagnosticAnchors(b, descriptors, fixableIds),
+            b => WriteDiagnostics(b, descriptors, fixableIds, idToClass),
+            WriteConfiguration,
             WritePrecedenceAndSuppression,
             WriteSeverityPolicy,
-            WriteConfiguration,
+            WriteRelatedDocs,
+            WriteGeneratedFile,
+        };
+
+        foreach (var section in sections)
+        {
+            if (sb.Length > 0) sb.AppendLine();
+            section(sb);
+        }
+
+        return sb.ToString().ReplaceLineEndings("\n");
+    }
+
+    private static string RenderMigrationCatalog(CatalogStatistics stats)
+    {
+        var sb = new StringBuilder();
+        var sections = new Action<StringBuilder>[]
+        {
+            WriteCatalogHeader,
             b => WriteCuratedSummary(b, stats),
             b => WriteCompletionAudit(b, stats),
             b => WriteVersionDomainTable(b, stats),
@@ -512,13 +657,72 @@ file static class DocsGenerator
         return sb.ToString().ReplaceLineEndings("\n");
     }
 
+    /// <summary>
+    ///   Emits one markdown page per rule, keyed by id + symbolic name. Each page is
+    ///   small (header + property table + description + see-also) so IDE Quick-Fix
+    ///   "Show error help" links resolve onto a focused page rather than the
+    ///   multi-thousand-line aggregate. Examples live in the analyzer test fixtures,
+    ///   not here — keeping per-rule pages content-light is intentional so they don't
+    ///   silently rot relative to the analyzer.
+    /// </summary>
+    private static string RenderRulePage(
+        DiagnosticDescriptor descriptor,
+        string className,
+        HashSet<string> fixableIds)
+    {
+        var sb = new StringBuilder();
+        var title = Escape(descriptor.Title.ToString());
+        var description = Escape(descriptor.Description.ToString());
+        var codeFix = GetCodeFixLabel(descriptor.Id, fixableIds);
+        var sourceBasename = FileBasenameForClass(className);
+
+        sb.AppendLine($"# {descriptor.Id}: {title}");
+        sb.AppendLine();
+        sb.AppendLine($"<!-- <auto-generated /> This file is generated by {ProjectRelativePath}. -->");
+        sb.AppendLine();
+        sb.AppendLine("| Property | Value |");
+        sb.AppendLine("| -- | -- |");
+        sb.AppendLine($"| Severity | {descriptor.DefaultSeverity} |");
+        sb.AppendLine($"| Category | `{descriptor.Category}` |");
+        sb.AppendLine($"| Code fix | {codeFix} |");
+        sb.AppendLine($"| Analyzer | `{className}` |");
+        sb.AppendLine($"| Enabled by default | {(descriptor.IsEnabledByDefault ? "Yes" : "No")} |");
+        sb.AppendLine();
+        sb.AppendLine("## Description");
+        sb.AppendLine();
+        sb.AppendLine(description);
+        sb.AppendLine();
+        sb.AppendLine("## See also");
+        sb.AppendLine();
+        sb.AppendLine($"- [Rule index](../{PackageName}.md)");
+        sb.AppendLine("- [Migration catalog](../migration-catalog.md)");
+        sb.AppendLine($"- [Source: `{sourceBasename}.cs`](../../src/{PackageName}/{sourceBasename}.cs)");
+        return sb.ToString().ReplaceLineEndings("\n");
+    }
+
+    /// <summary>
+    ///   Maps an analyzer class name to its on-disk source filename. Reflected class
+    ///   names use Pascal-case <c>Qyl</c> (e.g., <c>Qyl0006MissingSchemaUrlAnalyzer</c>),
+    ///   but git tracks the files with uppercase <c>QYL</c> prefix
+    ///   (<c>QYL0006MissingSchemaUrlAnalyzer.cs</c>). macOS's case-insensitive default
+    ///   masks this locally; GitHub's case-sensitive URL space does not. This lifts
+    ///   <c>Qyl{4-digit}</c> to <c>QYL{4-digit}</c> so per-rule Source links resolve
+    ///   on GitHub. Non-prefixed names (e.g., <c>GraphqlDocumentOptInAnalyzer</c>) pass
+    ///   through unchanged because the class name already matches the file name.
+    /// </summary>
+    private static string FileBasenameForClass(string className)
+    {
+        var m = Regex.Match(className, @"^Qyl(\d{4})(.*)$");
+        return m.Success ? $"QYL{m.Groups[1].Value}{m.Groups[2].Value}" : className;
+    }
+
     private static void WriteHeader(StringBuilder sb)
     {
         sb.AppendLine($"# {PackageName}");
         sb.AppendLine();
         sb.AppendLine($"<!-- <auto-generated /> This file is generated by {ProjectRelativePath}. -->");
         sb.AppendLine();
-        sb.AppendLine("This package analyzes OpenTelemetry semantic-convention usage in C# consumers. The consumer's referenced `OpenTelemetry.SemanticConventions` assembly remains the primary source of truth: rules that read `[Obsolete]` metadata report what that package actually generated. The curated inventory below separates live-metadata coverage from supplemental diagnostics for changelog/model entries that are not reliably visible through live metadata.");
+        sb.AppendLine("This package analyzes OpenTelemetry semantic-convention usage in C# consumers. The consumer's referenced `OpenTelemetry.SemanticConventions` assembly remains the primary source of truth: rules that read `[Obsolete]` metadata report what that package actually generated. The [migration catalog](migration-catalog.md) supplements live-metadata coverage with curated diagnostics for changelog/model entries that are not reliably visible through live metadata.");
         sb.AppendLine();
         sb.AppendLine("## Package family");
         sb.AppendLine();
@@ -529,39 +733,42 @@ file static class DocsGenerator
     private static void WriteDiagnostics(
         StringBuilder sb,
         IReadOnlyList<DiagnosticDescriptor> descriptors,
-        HashSet<string> fixableIds)
+        HashSet<string> fixableIds,
+        Dictionary<string, string> idToClass)
     {
         sb.AppendLine("## Diagnostics");
         sb.AppendLine();
-        sb.AppendLine("| ID | Severity | Title | Code fix | Description |");
-        sb.AppendLine("| -- | -- | -- | -- | -- |");
+        sb.AppendLine("Each ID links to a per-rule page under [`docs/rules/`](rules/) with severity, category, code-fix status, and description. The descriptor's `HelpLinkUri` resolves to the same page, so IDE Quick-Fix \"Show error help\" lands on the focused rule, not on this index.");
+        sb.AppendLine();
+        sb.AppendLine("| ID | Severity | Title | Code fix |");
+        sb.AppendLine("| -- | -- | -- | -- |");
         foreach (var d in descriptors)
         {
             var codeFix = GetCodeFixLabel(d.Id, fixableIds);
-            sb.AppendLine($"| {d.Id} | {d.DefaultSeverity} | {Escape(d.Title.ToString())} | {codeFix} | {Escape(d.Description.ToString())} |");
+            var link = idToClass.TryGetValue(d.Id, out var className)
+                ? $"[{d.Id}](rules/{d.Id}_{ToSymbolicName(className)}.md)"
+                : d.Id;
+            sb.AppendLine($"| {link} | {d.DefaultSeverity} | {Escape(d.Title.ToString())} | {codeFix} |");
         }
     }
 
-    private static void WriteDiagnosticAnchors(
-        StringBuilder sb,
-        IReadOnlyList<DiagnosticDescriptor> descriptors,
-        HashSet<string> fixableIds)
+    private static void WriteRelatedDocs(StringBuilder sb)
     {
-        sb.AppendLine("## Rule Reference");
+        sb.AppendLine("## See also");
         sb.AppendLine();
-        sb.AppendLine("Each rule below has a stable GitHub anchor (`#qyl0010`, `#qyl0011`, …) that every `DiagnosticDescriptor.HelpLinkUri` resolves to. Quick-fix \"Show error help\" links and IDE diagnostic tooltips deep-link straight to the matching sub-section.");
+        sb.AppendLine("- [Per-rule pages](rules/) — one markdown file per `QYL00xx` rule with severity, category, code-fix status, and description.");
+        sb.AppendLine("- [Migration catalog](migration-catalog.md) — curated migration inventory, supplemental attribute-value rows, and coverage-by-version × domain tables that don't fit per-rule pages.");
+        sb.AppendLine("- [Editorconfig profiles](editorconfig/) — three drop-in severity profiles: `Default`, `AllRulesAsErrors`, `AllRulesDisabled`.");
+        sb.AppendLine("- [`AnalyzerReleases.Shipped.md`](../src/Qyl.OpenTelemetry.SemanticConventions.Analyzers/AnalyzerReleases.Shipped.md) — release-tracking manifest with `ClassName, [Documentation](url)` attribution per Microsoft NetAnalyzers convention.");
+    }
+
+    private static void WriteCatalogHeader(StringBuilder sb)
+    {
+        sb.AppendLine("# Migration catalog");
         sb.AppendLine();
-        foreach (var d in descriptors)
-        {
-            sb.AppendLine($"### {d.Id}");
-            sb.AppendLine();
-            sb.AppendLine($"**{Escape(d.Title.ToString())}** — *{d.DefaultSeverity}, category `{d.Category}`*");
-            sb.AppendLine();
-            sb.AppendLine(Escape(d.Description.ToString()));
-            sb.AppendLine();
-            sb.AppendLine($"Code fix: {GetCodeFixLabel(d.Id, fixableIds)}.");
-            sb.AppendLine();
-        }
+        sb.AppendLine($"<!-- <auto-generated /> This file is generated by {ProjectRelativePath}. -->");
+        sb.AppendLine();
+        sb.AppendLine($"qyl-specific tables that supplement the [{PackageName} index]({PackageName}.md). Live `[Obsolete]` metadata from the referenced OpenTelemetry.SemanticConventions package remains the primary source of truth; the supplemental rows below are used only when live metadata is absent.");
     }
 
     private static string GetCodeFixLabel(string diagnosticId, HashSet<string> fixableIds)
