@@ -4,6 +4,11 @@
 
 This package analyzes OpenTelemetry semantic-convention usage in C# consumers. The consumer's referenced `OpenTelemetry.SemanticConventions` assembly remains the primary source of truth: rules that read `[Obsolete]` metadata report what that package actually generated. The curated inventory below separates live-metadata coverage from supplemental diagnostics for changelog/model entries that are not reliably visible through live metadata.
 
+## Package family
+
+- **[Qyl OTel-conventions repo](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions)** — this analyzer (`QYL00xx` rules), the stable + incubating attribute-key packages, and the source generator that emits typed `Activity`/`Event`/`Meter`/`Metric` projections.
+- **[ANcpLua framework](https://www.nuget.org/profiles/ANcpLua)** — upstream Roslyn infrastructure consumed by this package: `ANcpLua.Roslyn.Utilities` (shared helpers + `Guard.*` API), `ANcpLua.Analyzers` (general-purpose `AL00xx` band), `ANcpLua.NET.Sdk` (MSBuild SDK that auto-injects the framework's analyzers + `.editorconfig` defaults), `ANcpLua.Agents` (Microsoft Agent Framework toolkit). `QYL00xx` rules are scoped to OTel-conventions consumers; framework rules live in `ANcpLua.Analyzers`.
+
 ## Diagnostics
 
 | ID | Severity | Title | Code fix | Description |
@@ -16,9 +21,9 @@ This package analyzes OpenTelemetry semantic-convention usage in C# consumers. T
 | QYL0006 | Info | Missing telemetry schema URL | No | Setting the schema URL allows collectors and backends to understand which version of semantic conventions your telemetry uses. |
 | QYL0007 | Warning | Deprecated semantic-convention value | Yes | A constant string used as the value of a known semantic-convention telemetry attribute matches a value member that is marked [Obsolete] in the consumer's referenced *Values enum class. |
 | QYL0008 | Warning | Incubating semantic-convention member used in a library | No | Members under any *.SemanticConventions.Incubating namespace may rename or change values across minor package releases. Library projects (non-exe, non-test) baking direct references push that volatility onto every downstream consumer. |
-| QYL0009 | Error | Obsolete semantic convention has an exact replacement | Yes | A hard-coded semantic-convention name or value matches the supplemental OpenTelemetry migration catalog and has a one-to-one replacement. This supplements, but does not replace, [Obsolete] metadata from OpenTelemetry.SemanticConventions. |
-| QYL0010 | Warning | Semantic convention migration needs review | Yes | A hard-coded semantic-convention name or value matches the supplemental OpenTelemetry migration catalog, but the migration is context-sensitive or has no safe automatic replacement. |
-| QYL0011 | Info | Legacy semantic convention appears in compatibility or test code | Yes | A hard-coded semantic-convention name or value appears in test, fixture, compatibility, translator, generated, or catalog code. Keep it only when the old schema is intentionally modeled. |
+| QYL0009 | Error | Obsolete semantic convention has an exact replacement | Exact replacements only | A hard-coded semantic-convention name or value matches the supplemental OpenTelemetry migration catalog and has a one-to-one replacement. This supplements, but does not replace, [Obsolete] metadata from OpenTelemetry.SemanticConventions. |
+| QYL0010 | Warning | Semantic convention migration needs review | Exact replacements only | A hard-coded semantic-convention name or value matches the supplemental OpenTelemetry migration catalog, but the migration is context-sensitive or has no safe automatic replacement. |
+| QYL0011 | Info | Legacy semantic convention appears in compatibility or test code | Exact replacements only | A hard-coded semantic-convention name or value appears in test, fixture, compatibility, translator, generated, or catalog code. Keep it only when the old schema is intentionally modeled. |
 | QYL0012 | Error | Invalid attribute value | No | Attribute values must conform to the expected format defined by OpenTelemetry semantic conventions. For example, http.response.status_code must be an integer, gen_ai.system must be a known provider (openai, anthropic, etc.), and error.type should be an exception type or error code. Invalid values may cause issues with telemetry backends and dashboards. |
 | QYL0013 | Warning | Incorrect attribute type | No | OpenTelemetry semantic conventions specify expected types for attributes. For example, gen_ai.usage.input_tokens should be an integer, not a string. Using incorrect types may cause issues with telemetry backends or dashboards that expect specific types for aggregation and visualization. |
 | QYL0100 | Warning | Activity/Span missing semantic convention attributes | No | OpenTelemetry Activities (Spans) should include semantic convention attributes appropriate for their operation type. This enables correlation, filtering, and analysis in observability backends. |
@@ -131,7 +136,7 @@ Code fix: No.
 
 A hard-coded semantic-convention name or value matches the supplemental OpenTelemetry migration catalog and has a one-to-one replacement. This supplements, but does not replace, [Obsolete] metadata from OpenTelemetry.SemanticConventions.
 
-Code fix: Yes.
+Code fix: Exact replacements only.
 
 ### QYL0010
 
@@ -139,7 +144,7 @@ Code fix: Yes.
 
 A hard-coded semantic-convention name or value matches the supplemental OpenTelemetry migration catalog, but the migration is context-sensitive or has no safe automatic replacement.
 
-Code fix: Yes.
+Code fix: Exact replacements only.
 
 ### QYL0011
 
@@ -147,7 +152,7 @@ Code fix: Yes.
 
 A hard-coded semantic-convention name or value appears in test, fixture, compatibility, translator, generated, or catalog code. Keep it only when the old schema is intentionally modeled.
 
-Code fix: Yes.
+Code fix: Exact replacements only.
 
 ### QYL0012
 
@@ -448,7 +453,7 @@ Code fix: No.
 
 ## Precedence and Suppression
 
-**Live metadata wins over the supplemental catalog.** When the consumer's referenced `OpenTelemetry.SemanticConventions` package marks a constant or value `[Obsolete]`, the supplemental catalog diagnostics (`QYL0030`/`QYL0031`/`QYL0032`) skip that symbol entirely — only the live-metadata rules (`QYL0010`/`QYL0012`/`QYL0014`) fire. No symbol produces two diagnostics for the same root cause.
+**Live metadata wins over the supplemental catalog.** When the consumer's referenced `OpenTelemetry.SemanticConventions` package marks a constant or value `[Obsolete]`, the supplemental catalog diagnostics (`QYL0009`/`QYL0010`/`QYL0011`) skip that symbol entirely — only the live-metadata rules (`QYL0003`/`QYL0005`/`QYL0007`) fire. No symbol produces two diagnostics for the same root cause.
 
 **Multi-hop renames resolve to the terminal symbol.** `SemconvMigrationCatalog.ResolveTerminalReplacement` walks `ExactRename` / `ExactValueRename` chains so a code fix on `http.host → net.host.name → server.address` lands consumers on `server.address`, not on the still-deprecated `net.host.name` mid-state. Cycles and chains over 8 hops bail at the last safe step.
 
@@ -459,10 +464,10 @@ Code fix: No.
 
 ## Severity Policy
 
-- `QYL0010`, `QYL0012`, and `QYL0014` read `[Obsolete]` metadata from the referenced semantic-conventions assembly and keep their descriptor severities.
-- `QYL0030` is reserved for production telemetry emission where a supplemental catalog item has an exact one-to-one replacement, including exact attribute-value replacements when live metadata is absent.
-- `QYL0031` is used for context-sensitive migrations, removed/no-replacement entries, guidance-only cases, ambiguous payload dictionaries, and `compatibility` mode downgrades.
-- `QYL0032` is used for tests, fixtures, snapshots, migration maps, schema translators, compatibility shims, generated sources, and catalog-like code.
+- `QYL0003`, `QYL0005`, and `QYL0007` read `[Obsolete]` metadata from the referenced semantic-conventions assembly and keep their descriptor severities.
+- `QYL0009` is reserved for production telemetry emission where a supplemental catalog item has an exact one-to-one replacement, including exact attribute-value replacements when live metadata is absent.
+- `QYL0010` is used for context-sensitive migrations, removed/no-replacement entries, guidance-only cases, ambiguous payload dictionaries, and `compatibility` mode downgrades.
+- `QYL0011` is used for tests, fixtures, snapshots, migration maps, schema translators, compatibility shims, generated sources, and catalog-like code.
 - Generated semconv constant libraries may intentionally retain deprecated constants. Their existence is not itself a package bug.
 - Schema URL translators and code that explicitly emits older schemas are compatibility contexts and should not be escalated to production errors.
 
@@ -471,35 +476,8 @@ Code fix: No.
 | Option | Values | Behavior |
 | -- | -- | -- |
 | `build_property.OtelSemConvLegacyMode` | `production` (default), `compatibility`, `off` | `production` keeps production errors for exact supplemental migrations. `compatibility` downgrades production supplemental errors to warnings and keeps fixture contexts informational. `off` disables supplemental catalog diagnostics while leaving live `[Obsolete]` metadata rules enabled. |
-| `build_property.IsTestProject` | `true`, `false` | Test projects downgrade supplemental catalog findings to `QYL0032` info. Assembly names ending in `.Tests`, paths under `tests/`, and xUnit/NUnit/MSTest attributes are also treated as test context. |
-| `build_property.OtelSemConvNonAttributesTiers` | `false` (default), `true` | When `true`, extends `QYL0010` beyond `*Attributes` classes to also scan the four other Weaver source-generation tiers (`*Metrics`, `*Meters`, `*Events`, `*Activities`) under the SemConv namespace. Default `false` preserves the historic surface so existing consumers see no behaviour change. |
-
-## Examples
-
-```csharp
-activity.SetTag(HttpAttributes.AttributeHttpMethod, "GET"); // QYL0010 from live [Obsolete] metadata.
-activity.SetTag("http.method", "GET");        // QYL0012 when the referenced SemConv package marks the matching constant [Obsolete].
-activity.SetBaggage("http.method", "GET");    // QYL0012 in baggage-like key/value APIs.
-tagList.Add("http.method", "GET");            // QYL0012 in TagList/ActivityTagsCollection payloads.
-activityTags["message.id"] = "42";            // QYL0031 in ActivityTagsCollection indexer payloads.
-resourceBuilder.AddAttributes(new Dictionary<string, object?> { ["http.method"] = "GET" }); // QYL0012 from live metadata in payloads.
-activitySource.StartActivity("GET /users", tags: new[] { new KeyValuePair<string, object?>("http.method", "GET") }); // QYL0012 in span-start tag payloads.
-activitySource.StartActivity("GET /users", tags: [new KeyValuePair<string, object?>("message.id", "42")]); // QYL0031 in C# collection-expression payloads.
-var tags = new Dictionary<string, object?> { ["cloud.platform"] = "azure_aks" }; activitySource.StartActivity("GET /users", tags: tags); // QYL0030 after local payload initializer expansion.
-tags.Add("cloud.platform", "azure_aks"); activitySource.StartActivity("GET /users", tags: tags); // QYL0030 after mutable local payload flow is proven.
-new ActivityEvent("legacy.event", tags: new Dictionary<string, object?> { ["http.request.method"] = "_LEGACY_GET" }); // QYL0014 from live value metadata.
-new ActivityLink(context, tags: new[] { new KeyValuePair<string, object?>("message.id", "42") }); // QYL0031 in span link attribute payloads.
-counter.Add(1, new KeyValuePair<string, object?>("http.method", "GET")); // QYL0012 in metric instrument tag payloads.
-histogram.Record(1, new KeyValuePair<string, object?>("cloud.platform", "azure_aks")); // QYL0030 supplemental value fallback in metric tag payloads.
-logger.Log(LogLevel.Information, eventId, new[] { new KeyValuePair<string, object?>("event.name", "legacy.event") }, exception, formatter); // QYL0031 in visible ILogger state payloads.
-logger.BeginScope(new[] { new KeyValuePair<string, object?>("cloud.platform", "azure_aks") }); // QYL0030 supplemental value fallback in logging scopes.
-activity.SetTag("cloud.platform", "azure_aks"); // QYL0030 supplemental value fallback when live value metadata is absent.
-activity.SetTag("error.message", message);      // QYL0031 because the replacement is domain-specific.
-tags.Add("message.id", "42");                 // QYL0031 for ambiguous dictionaries until the payload flow is proven.
-resourceBuilder.AddAttributes(new Dictionary<string, object?> { ["message.id"] = "42" }); // QYL0031 in a production resource payload.
-new ActivityEvent("cache.prune", tags: new Dictionary<string, object?> { ["message.id"] = "42" }); // QYL0031 in event attribute payloads.
-meter.CreateHistogram<long>("system.memory.shared"); // QYL0030; use "system.memory.linux.shared".
-```
+| `build_property.IsTestProject` | `true`, `false` | Test projects downgrade supplemental catalog findings to `QYL0011` info. Assembly names ending in `.Tests`, paths under `tests/`, and xUnit/NUnit/MSTest attributes are also treated as test context. |
+| `build_property.OtelSemConvNonAttributesTiers` | `false` (default), `true` | When `true`, extends `QYL0003` beyond `*Attributes` classes to also scan the four other Weaver source-generation tiers (`*Metrics`, `*Meters`, `*Events`, `*Activities`) under the SemConv namespace. Default `false` preserves the historic surface so existing consumers see no behaviour change. |
 
 ## Curated Migration Inventory Summary
 
@@ -513,12 +491,12 @@ This section is generated from the analyzer descriptors and migration catalog. I
 | Requirement | Current generated evidence |
 | -- | -- |
 | Preserve the 156 curated changelog-entry scope | `SemconvMigrationCatalog.Validate()` requires exactly `156` curated rows; current generated count is `156`. |
-| Prefer live `[Obsolete]` metadata where available | `105` of `156` curated rows are classified as `DeprecatedButGenerated`; `QYL0010`, `QYL0012`, and `QYL0014` remain the live-metadata diagnostics. |
+| Prefer live `[Obsolete]` metadata where available | `105` of `156` curated rows are classified as `DeprecatedButGenerated`; `QYL0003`, `QYL0005`, and `QYL0007` remain the live-metadata diagnostics. |
 | Use supplemental diagnostics only where metadata is insufficient | `51` curated rows are supplemental diagnostics: `1` exact replacement, `26` manual/context-sensitive, `24` removed/no-replacement, `0` guidance-only. |
 | Keep attribute-value fallback separate from the curated name/key/event/metric count | `21` supplemental attribute-value rows are outside the 156-entry inventory and are used only when live value metadata is absent. |
-| Keep severity context-sensitive | `QYL0030` is production exact replacement error, `QYL0031` is production manual-review warning, and `QYL0032` is compatibility/test/generated info. |
+| Keep severity context-sensitive | `QYL0009` is production exact replacement error, `QYL0010` is production manual-review warning, and `QYL0011` is compatibility/test/generated info. |
 | Keep code fixes exact-only | `LiveSemconvMetadataCodeFixProvider` registers fixes only when live `[Obsolete]` metadata exposes an exact replacement; `SupplementalSemconvMigrationCodeFixProvider` registers fixes only when diagnostic properties mark `ExactRename` or `ExactValueRename` and provide one replacement literal. |
-| Keep old-schema compatibility non-error | Test, fixture, migration, compatibility, translator, generated, catalog, and explicit older schema URL contexts select `QYL0032`. |
+| Keep old-schema compatibility non-error | Test, fixture, migration, compatibility, translator, generated, catalog, and explicit older schema URL contexts select `QYL0011`. |
 
 | Migration kind | Curated count |
 | -- | --: |
@@ -541,6 +519,10 @@ This section is generated from the analyzer descriptors and migration catalog. I
 | Span/event/link/resource payloads | `ActivitySource.StartActivity(tags:)`, `ActivityEvent` tags, `ActivityLink` tags, and `ResourceBuilder.AddAttributes` are recognized. |
 | Metric payloads and names | `Counter<T>.Add`, `Histogram<T>.Record`, `UpDownCounter<T>.Add`, `Measurement<T>` tags, and `Meter.CreateCounter/Histogram/Gauge/Observable*` names are recognized. |
 | Logging payloads | Visible `ILogger.Log` state and `ILogger.BeginScope` state payloads are recognized when the key/value is statically visible. |
+
+## Coverage by Version × Domain
+
+Rows whose Version is `unknown` are catalog entries that don't yet carry `ChangelogVersion` or `SinceVersion` fields in `SemconvMigrationCatalog.BuildEntries()`. Backfilling these from upstream `open-telemetry/semantic-conventions` CHANGELOG.md is a separate hardening task; the analyzers still surface the migrations correctly — only the per-version attribution is missing.
 
 | Version | Domain | Total | Live metadata | Supplemental | Exact supplemental | Manual/context | Removed/no replacement |
 | -- | -- | --: | --: | --: | --: | --: | --: |
@@ -760,7 +742,7 @@ This section is generated from the analyzer descriptors and migration catalog. I
 
 ## Supplemental Attribute Value Fallback
 
-These value rows are intentionally separate from the 156-entry name/key/event/metric inventory. `QYL0014` remains primary when the referenced package exposes `[Obsolete]` value constants; the supplemental analyzer uses this table only when live value metadata is absent.
+These value rows are intentionally separate from the 156-entry name/key/event/metric inventory. `QYL0007` remains primary when the referenced package exposes `[Obsolete]` value constants; the supplemental analyzer uses this table only when live value metadata is absent.
 
 | Old value | Signal | Domain | Migration | Replacement | Evidence |
 | -- | -- | -- | -- | -- | -- |
