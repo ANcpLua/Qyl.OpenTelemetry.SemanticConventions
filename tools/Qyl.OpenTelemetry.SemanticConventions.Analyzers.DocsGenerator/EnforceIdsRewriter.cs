@@ -31,10 +31,6 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator;
 /// </summary>
 internal static partial class EnforceIdsRewriter
 {
-    private static readonly Regex ClassPrefixRegex = MyRegex();
-    private static readonly Regex XmlDocIdRegex = MyRegex1();
-    private static readonly Regex FieldDocIdRegex = MyRegex2();
-
     public static int Run(string repoRoot, bool apply)
     {
         var analyzersDir = RepoLayout.AnalyzersSourceDir(repoRoot);
@@ -69,7 +65,7 @@ internal static partial class EnforceIdsRewriter
             else continue;
 
             // (1) Class rename when name carries an Al/Qyl/QYL numeric prefix.
-            var prefixMatch = ClassPrefixRegex.Match(className);
+            var prefixMatch = ClassPrefixRegex().Match(className);
             if (prefixMatch.Success)
             {
                 var expectedClassName = $"Qyl{realId[3..]}{prefixMatch.Groups[2].Value}";
@@ -80,7 +76,7 @@ internal static partial class EnforceIdsRewriter
             // (2) Class XML doc summary: rewrite "/// AL00XX:" / "/// QYL00XX:" tokens
             //     that disagree with realId. Anchored on the class's leading trivia.
             var classTrivia = classNode.GetLeadingTrivia().ToFullString();
-            var fixedClassTrivia = XmlDocIdRegex.Replace(
+            var fixedClassTrivia = XmlDocIdRegex().Replace(
                 classTrivia,
                 m => m.Groups[1].Value + realId + ":");
             if (fixedClassTrivia != classTrivia)
@@ -101,7 +97,7 @@ internal static partial class EnforceIdsRewriter
                 if (diagIdField is not null)
                 {
                     var fieldTrivia = diagIdField.GetLeadingTrivia().ToFullString();
-                    var fixedFieldTrivia = FieldDocIdRegex.Replace(
+                    var fixedFieldTrivia = FieldDocIdRegex().Replace(
                         fieldTrivia,
                         $"for {realId}");
                     if (fixedFieldTrivia != fieldTrivia)
@@ -183,9 +179,9 @@ internal static partial class EnforceIdsRewriter
     }
 
     [GeneratedRegex(@"^(?:Al|Qyl|QYL)(\d{4})(.+)$")]
-    private static partial Regex MyRegex();
+    private static partial Regex ClassPrefixRegex();
     [GeneratedRegex(@"(///\s*)(?:AL|QYL)\d{4}:")]
-    private static partial Regex MyRegex1();
+    private static partial Regex XmlDocIdRegex();
     [GeneratedRegex(@"\bfor (?:AL|QYL)\d{4}\b")]
-    private static partial Regex MyRegex2();
+    private static partial Regex FieldDocIdRegex();
 }

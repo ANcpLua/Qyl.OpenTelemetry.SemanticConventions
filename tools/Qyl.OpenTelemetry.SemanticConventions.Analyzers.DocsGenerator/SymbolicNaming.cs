@@ -13,11 +13,6 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator;
 /// </summary>
 internal static partial class SymbolicNaming
 {
-    // [GeneratedRegex] partial methods (declared below) — patterns compiled at build time;
-    // cached in static readonly fields so call sites read as plain field access.
-    private static readonly Regex SymbolicPrefix = MyRegex();
-    private static readonly Regex FileBasenamePrefix = MyRegex1();
-
     /// <summary>
     ///   Mirror of <c>AlAnalyzer.SymbolicNameFromFile</c> for the docs side. Strips the
     ///   <c>Analyzer</c> suffix and any <c>(QYL|Qyl|AL|Al)NNNN</c> prefix off the class
@@ -31,7 +26,7 @@ internal static partial class SymbolicNaming
         var name = className;
         if (name.EndsWith("Analyzer", StringComparison.Ordinal))
             name = name[..^"Analyzer".Length];
-        var prefix = SymbolicPrefix.Match(name);
+        var prefix = SymbolicPrefixRegex().Match(name);
         if (prefix.Success)
             name = name[prefix.Length..];
         return name;
@@ -49,12 +44,12 @@ internal static partial class SymbolicNaming
     /// </summary>
     public static string FileBasenameForClass(string className)
     {
-        var m = FileBasenamePrefix.Match(className);
+        var m = FileBasenamePrefixRegex().Match(className);
         return m.Success ? $"QYL{m.Groups[1].Value}{m.Groups[2].Value}" : className;
     }
 
     [GeneratedRegex(@"^(?:QYL|Qyl|AL|Al)\d{4}", RegexOptions.Compiled)]
-    private static partial Regex MyRegex();
+    private static partial Regex SymbolicPrefixRegex();
     [GeneratedRegex(@"^Qyl(\d{4})(.*)$", RegexOptions.Compiled)]
-    private static partial Regex MyRegex1();
+    private static partial Regex FileBasenamePrefixRegex();
 }

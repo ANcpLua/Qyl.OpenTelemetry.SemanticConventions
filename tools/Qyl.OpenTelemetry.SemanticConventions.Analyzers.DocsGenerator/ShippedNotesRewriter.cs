@@ -22,8 +22,6 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator;
 /// </summary>
 internal static partial class ShippedNotesRewriter
 {
-    private static readonly Regex RowRegex = MyRegex();
-
     /// <summary>
     ///   Rewrites the Notes column in-memory. Preserves the input's line ending so a
     ///   CRLF-checked-in file stays CRLF and an LF-checked-in file stays LF — the file
@@ -36,7 +34,7 @@ internal static partial class ShippedNotesRewriter
         var lines = existing.Split([lineEnding], StringSplitOptions.None);
         for (var i = 0; i < lines.Length; i++)
         {
-            var m = RowRegex.Match(lines[i]);
+            var m = RowRegex().Match(lines[i]);
             if (!m.Success) continue;
             var id = m.Groups[1].Value;
             if (!idToClass.TryGetValue(id, out var className)) continue;
@@ -69,5 +67,5 @@ internal static partial class ShippedNotesRewriter
     }
 
     [GeneratedRegex(@"^(QYL\d{4})\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*.*$")]
-    private static partial Regex MyRegex();
+    private static partial Regex RowRegex();
 }
