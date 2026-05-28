@@ -20,9 +20,9 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator;
 ///   the file-level <see cref="Run"/> driver so <see cref="DocsGenerator"/>'s
 ///   <c>--check</c> mode can compare rewritten-vs-existing without touching disk.
 /// </summary>
-internal static class ShippedNotesRewriter
+internal static partial class ShippedNotesRewriter
 {
-    private static readonly Regex RowRegex = new(@"^(QYL\d{4})\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*.*$");
+    private static readonly Regex RowRegex = MyRegex();
 
     /// <summary>
     ///   Rewrites the Notes column in-memory. Preserves the input's line ending so a
@@ -60,11 +60,14 @@ internal static class ShippedNotesRewriter
         var expected = Rewrite(existing);
         if (string.Equals(existing, expected, StringComparison.Ordinal))
         {
-            Console.WriteLine($"Shipped.md Notes already up to date: {Path.GetRelativePath(repoRoot, shippedPath)}");
+            Console.WriteLine($@"Shipped.md Notes already up to date: {Path.GetRelativePath(repoRoot, shippedPath)}");
             return 0;
         }
         File.WriteAllText(shippedPath, expected);
-        Console.WriteLine($"Rewrote Shipped.md Notes column: {Path.GetRelativePath(repoRoot, shippedPath)}");
+        Console.WriteLine($@"Rewrote Shipped.md Notes column: {Path.GetRelativePath(repoRoot, shippedPath)}");
         return 0;
     }
+
+    [GeneratedRegex(@"^(QYL\d{4})\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*.*$")]
+    private static partial Regex MyRegex();
 }

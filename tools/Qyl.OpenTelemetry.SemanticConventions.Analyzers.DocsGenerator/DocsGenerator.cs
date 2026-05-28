@@ -178,13 +178,13 @@ internal static class DocsGenerator
             }
         }
 
-        Console.WriteLine($"Index docs are up to date: {Path.GetRelativePath(repoRoot, outputPath)}");
-        Console.WriteLine($"Per-rule pages are up to date ({descriptors.Count}).");
-        Console.WriteLine($"Migration catalog is up to date: {Path.GetRelativePath(repoRoot, catalogPath)}");
-        Console.WriteLine($"SARIF manifest is up to date: {Path.GetRelativePath(repoRoot, sarifPath)}");
-        Console.WriteLine("Editorconfig profiles are up to date.");
-        Console.WriteLine("Shipped.md Notes column is up to date.");
-        Console.WriteLine("HelpLinkUri values match per-rule page URLs.");
+        Console.WriteLine($@"Index docs are up to date: {Path.GetRelativePath(repoRoot, outputPath)}");
+        Console.WriteLine($@"Per-rule pages are up to date ({descriptors.Count}).");
+        Console.WriteLine($@"Migration catalog is up to date: {Path.GetRelativePath(repoRoot, catalogPath)}");
+        Console.WriteLine($@"SARIF manifest is up to date: {Path.GetRelativePath(repoRoot, sarifPath)}");
+        Console.WriteLine(@"Editorconfig profiles are up to date.");
+        Console.WriteLine(@"Shipped.md Notes column is up to date.");
+        Console.WriteLine(@"HelpLinkUri values match per-rule page URLs.");
         return 0;
     }
 
@@ -202,7 +202,7 @@ internal static class DocsGenerator
         // (1) Slim index.
         Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
         File.WriteAllText(outputPath, IndexDocsRenderer.Render(descriptors, fixableIds, idToClass));
-        Console.WriteLine($"Wrote {Path.GetRelativePath(repoRoot, outputPath)}");
+        Console.WriteLine($@"Wrote {Path.GetRelativePath(repoRoot, outputPath)}");
 
         // (2) Per-rule pages.
         var rulesDir = RepoLayout.RulesDir(repoRoot);
@@ -222,28 +222,28 @@ internal static class DocsGenerator
             if (!expectedRuleFiles.Contains(Path.GetFileName(file)))
             {
                 File.Delete(file);
-                Console.WriteLine($"Removed stale {Path.GetRelativePath(repoRoot, file)}");
+                Console.WriteLine($@"Removed stale {Path.GetRelativePath(repoRoot, file)}");
             }
         }
-        Console.WriteLine($"Wrote {descriptors.Count} per-rule pages under docs/rules/");
+        Console.WriteLine($@"Wrote {descriptors.Count} per-rule pages under docs/rules/");
 
         // (3) Migration catalog.
         var catalogPath = RepoLayout.MigrationCatalogPath(repoRoot);
         Directory.CreateDirectory(Path.GetDirectoryName(catalogPath)!);
         File.WriteAllText(catalogPath, MigrationCatalogRenderer.Render(stats));
-        Console.WriteLine($"Wrote {Path.GetRelativePath(repoRoot, catalogPath)}");
+        Console.WriteLine($@"Wrote {Path.GetRelativePath(repoRoot, catalogPath)}");
 
         // (4) SARIF v2.1.0 rule manifest.
         var sarifPath = RepoLayout.SarifPath(repoRoot);
         File.WriteAllText(sarifPath, SarifRenderer.Render(descriptors, idToClass));
-        Console.WriteLine($"Wrote {Path.GetRelativePath(repoRoot, sarifPath)}");
+        Console.WriteLine($@"Wrote {Path.GetRelativePath(repoRoot, sarifPath)}");
 
         // (5) Editorconfig profiles.
         foreach (var (path, content) in EditorconfigRenderer.EnumerateProfiles(repoRoot, descriptors))
         {
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             File.WriteAllText(path, content);
-            Console.WriteLine($"Wrote {Path.GetRelativePath(repoRoot, path)}");
+            Console.WriteLine($@"Wrote {Path.GetRelativePath(repoRoot, path)}");
         }
         return 0;
     }

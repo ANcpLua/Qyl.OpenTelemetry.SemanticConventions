@@ -11,13 +11,12 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator;
 ///   <c>HelpLinkUri</c> anchor, and the GitHub-case-sensitive source filename all have
 ///   to agree byte-for-byte for <c>--check</c> drift detection to mean anything.
 /// </summary>
-internal static class SymbolicNaming
+internal static partial class SymbolicNaming
 {
-    // Static fields rather than [GeneratedRegex] because the docs generator's containing
-    // types are file/internal-scoped — the source generator can't extend them across files.
-    // Compile-once caching here is functionally equivalent for a ~10-call-per-run path.
-    private static readonly Regex SymbolicPrefix = new(@"^(?:QYL|Qyl|AL|Al)\d{4}", RegexOptions.Compiled);
-    private static readonly Regex FileBasenamePrefix = new(@"^Qyl(\d{4})(.*)$", RegexOptions.Compiled);
+    // [GeneratedRegex] partial methods (declared below) — patterns compiled at build time;
+    // cached in static readonly fields so call sites read as plain field access.
+    private static readonly Regex SymbolicPrefix = MyRegex();
+    private static readonly Regex FileBasenamePrefix = MyRegex1();
 
     /// <summary>
     ///   Mirror of <c>AlAnalyzer.SymbolicNameFromFile</c> for the docs side. Strips the
@@ -53,4 +52,9 @@ internal static class SymbolicNaming
         var m = FileBasenamePrefix.Match(className);
         return m.Success ? $"QYL{m.Groups[1].Value}{m.Groups[2].Value}" : className;
     }
+
+    [GeneratedRegex(@"^(?:QYL|Qyl|AL|Al)\d{4}", RegexOptions.Compiled)]
+    private static partial Regex MyRegex();
+    [GeneratedRegex(@"^Qyl(\d{4})(.*)$", RegexOptions.Compiled)]
+    private static partial Regex MyRegex1();
 }

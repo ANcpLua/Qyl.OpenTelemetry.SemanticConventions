@@ -29,11 +29,11 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator;
 ///   the per-file loop. The apply/check dichotomy is owned at the bottom of this method,
 ///   so new fixes participate in both modes without touching the orchestrator.
 /// </summary>
-internal static class EnforceIdsRewriter
+internal static partial class EnforceIdsRewriter
 {
-    private static readonly Regex ClassPrefixRegex = new(@"^(?:Al|Qyl|QYL)(\d{4})(.+)$");
-    private static readonly Regex XmlDocIdRegex = new(@"(///\s*)(?:AL|QYL)\d{4}:");
-    private static readonly Regex FieldDocIdRegex = new(@"\bfor (?:AL|QYL)\d{4}\b");
+    private static readonly Regex ClassPrefixRegex = MyRegex();
+    private static readonly Regex XmlDocIdRegex = MyRegex1();
+    private static readonly Regex FieldDocIdRegex = MyRegex2();
 
     public static int Run(string repoRoot, bool apply)
     {
@@ -55,7 +55,7 @@ internal static class EnforceIdsRewriter
 
             var className = classNode.Identifier.Text;
 
-            string? realId = null;
+            string? realId;
             var isAnalyzer = false;
             if (analyzerIds.TryGetValue(className, out var id))
             {
@@ -151,20 +151,20 @@ internal static class EnforceIdsRewriter
                     File.WriteAllText(path, src);
             }
             Console.WriteLine(
-                $"--enforce-ids --apply: {totalRenames} class renames + {totalPerFile} per-file fixes.");
+                $@"--enforce-ids --apply: {totalRenames} class renames + {totalPerFile} per-file fixes.");
             return 0;
         }
 
         foreach (var (oldName, newName) in classRenames.OrderBy(kv => kv.Key, StringComparer.Ordinal))
-            Console.WriteLine($"  class rename: {oldName} -> {newName}");
+            Console.WriteLine($@"  class rename: {oldName} -> {newName}");
         foreach (var (path, fixes) in perFileFixes.OrderBy(kv => kv.Key, StringComparer.Ordinal))
         {
             var rel = Path.GetRelativePath(repoRoot, path);
             foreach (var (desc, _) in fixes)
-                Console.WriteLine($"  {rel}: {desc}");
+                Console.WriteLine($@"  {rel}: {desc}");
         }
         Console.WriteLine(
-            $"--enforce-ids: {totalIssues} mismatches ({totalRenames} class renames, {totalPerFile} per-file fixes).");
+            $@"--enforce-ids: {totalIssues} mismatches ({totalRenames} class renames, {totalPerFile} per-file fixes).");
         return totalIssues == 0 ? 0 : 1;
     }
 
@@ -181,4 +181,11 @@ internal static class EnforceIdsRewriter
         }
         list.Add((description, apply));
     }
+
+    [GeneratedRegex(@"^(?:Al|Qyl|QYL)(\d{4})(.+)$")]
+    private static partial Regex MyRegex();
+    [GeneratedRegex(@"(///\s*)(?:AL|QYL)\d{4}:")]
+    private static partial Regex MyRegex1();
+    [GeneratedRegex(@"\bfor (?:AL|QYL)\d{4}\b")]
+    private static partial Regex MyRegex2();
 }
