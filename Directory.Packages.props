@@ -22,7 +22,6 @@
     <PackageVersion Include="Nuke.Components" Version="$(NukeVersion)"/>
     <PackageVersion Include="ANcpLua.OpenTelemetry.Conventions.Nuke" Version="$(ANcpLuaOpenTelemetryConventionsNukeVersion)"/>
     <PackageVersion Include="YamlDotNet" Version="$(YamlDotNetVersion)"/>
-    <PackageVersion Include="Microsoft.Bcl.AsyncInterfaces" Version="$(MicrosoftBclAsyncInterfacesVersion)"/>
   </ItemGroup>
 
   <ItemGroup Label="Transitive security overrides (Nuke.Common 10.1.0)">

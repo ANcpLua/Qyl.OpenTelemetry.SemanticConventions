@@ -2,7 +2,7 @@
   <PropertyGroup Label="Central Versions">
     <SemConvSchemaVersion>1.41.0</SemConvSchemaVersion>
 
-    <ANcpLuaRoslynUtilitiesVersion>2.2.22</ANcpLuaRoslynUtilitiesVersion>
+    <ANcpLuaRoslynUtilitiesVersion>2.2.24</ANcpLuaRoslynUtilitiesVersion>
     <MicrosoftCodeAnalysisVersion>5.3.0</MicrosoftCodeAnalysisVersion>
 
     <NukeVersion>10.1.0</NukeVersion>
@@ -13,12 +13,6 @@
     <AwesomeAssertionsVersion>9.4.0</AwesomeAssertionsVersion>
 
     <YamlDotNetVersion>17.1.0</YamlDotNetVersion>
-
-    <!-- Provides IAsyncEnumerator<T> for netstandard2.0 (needed by
-         ANcpLua.Roslyn.Utilities.Sources/Enumerator.cs). -->
-    <!-- Pinned to 10.0.7 to satisfy ANcpLua.Roslyn.Utilities 2.2.22's transitive
-         floor (>= 10.0.7); lower values trip NU1109 under CPM. -->
-    <MicrosoftBclAsyncInterfacesVersion>10.0.7</MicrosoftBclAsyncInterfacesVersion>
 
     <NuGetPackagingVersion>7.3.1</NuGetPackagingVersion>
     <SystemSecurityCryptographyXmlVersion>10.0.7</SystemSecurityCryptographyXmlVersion>

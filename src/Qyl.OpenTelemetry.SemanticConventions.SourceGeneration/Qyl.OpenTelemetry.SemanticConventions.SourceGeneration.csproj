@@ -60,10 +60,6 @@
          so adding the separate Polyfills package would create CS0121 duplicates
          of CallerArgumentExpressionAttribute etc. -->
     <PackageReference Include="ANcpLua.Roslyn.Utilities.Sources" PrivateAssets="all"/>
-    <!-- IAsyncEnumerator<T> lives in System.Collections.Generic on .NET Core 3+
-         but is supplied via Microsoft.Bcl.AsyncInterfaces on netstandard2.0;
-         ANcpLua.Roslyn.Utilities.Sources/Enumerator.cs depends on it. -->
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" PrivateAssets="all"/>
     <!-- Microsoft.CodeAnalysis.CSharp: PrivateAssets="contentfiles;analyzers"
          (NOT "all") deliberately surfaces this as a public dependency on the
          emitted package. Satisfies NU5017's "package has dependencies or content"
