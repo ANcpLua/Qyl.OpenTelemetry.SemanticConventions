@@ -112,8 +112,6 @@ internal static class MigrationCatalogRenderer
         sb.AppendLine();
         sb.AppendLine("| Version | Domain | Total | Live metadata | Supplemental | Exact supplemental | Manual/context | Removed/no replacement |");
         sb.AppendLine("| -- | -- | --: | --: | --: | --: | --: | --: |");
-        // SemconvMigrationCatalog.Normalize() guarantees ChangelogVersion is non-empty
-        // (real version, else SinceVersion, else "unknown"), so no renderer-side fallback is needed.
         foreach (var g in stats.Entries
             .GroupBy(e => (Version: e.ChangelogVersion, e.Domain))
             .OrderByDescending(g => VersionSortKey(g.Key.Version), StringComparer.Ordinal)

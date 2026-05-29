@@ -87,7 +87,7 @@ Rows whose Version is `unknown` are catalog entries that don't yet carry `Change
 | 1.25.0 | system | 1 | 1 | 0 | 0 | 0 | 0 |
 | 1.22.0 | otel | 1 | 1 | 0 | 0 | 0 | 0 |
 | 1.21.0 | http | 5 | 5 | 0 | 0 | 0 | 0 |
-| 1.21.0 | net | 6 | 6 | 0 | 0 | 0 | 0 |
+| 1.21.0 | net | 9 | 9 | 0 | 0 | 0 | 0 |
 | 1.19.0 | http | 1 | 1 | 0 | 0 | 0 | 0 |
 | 1.13.0 | net | 2 | 2 | 0 | 0 | 0 | 0 |
 | unknown | code | 2 | 0 | 2 | 0 | 2 | 0 |
@@ -100,7 +100,7 @@ Rows whose Version is `unknown` are catalog entries that don't yet carry `Change
 | unknown | http | 8 | 3 | 5 | 0 | 5 | 0 |
 | unknown | message | 4 | 0 | 4 | 0 | 0 | 4 |
 | unknown | messaging | 4 | 0 | 4 | 0 | 1 | 3 |
-| unknown | net | 7 | 3 | 4 | 0 | 3 | 1 |
+| unknown | net | 4 | 0 | 4 | 0 | 3 | 1 |
 | unknown | otel | 2 | 2 | 0 | 0 | 0 | 0 |
 | unknown | rpc | 8 | 0 | 8 | 0 | 4 | 4 |
 
@@ -217,10 +217,10 @@ Rows whose Version is `unknown` are catalog entries that don't yet carry `Change
 | `net.sock.family` | AttributeKey | any | net | unknown | ContextSensitive | - | Split to `network.transport` and `network.type`. |
 | `net.sock.host.addr` | AttributeKey | any | net | 1.21.0 | DeprecatedButGenerated | `network.local.address` | Covered by generated [Obsolete] metadata when the consumer references OpenTelemetry.SemanticConventions. semantic-conventions/model deprecated attribute |
 | `net.sock.host.port` | AttributeKey | any | net | 1.21.0 | DeprecatedButGenerated | `network.local.port` | Covered by generated [Obsolete] metadata when the consumer references OpenTelemetry.SemanticConventions. semantic-conventions/model deprecated attribute |
-| `net.sock.peer.addr` | AttributeKey | any | net | unknown | DeprecatedButGenerated | `network.peer.address` | Covered by generated [Obsolete] metadata when the consumer references OpenTelemetry.SemanticConventions. semantic-conventions/model deprecated attribute |
+| `net.sock.peer.addr` | AttributeKey | any | net | 1.21.0 | DeprecatedButGenerated | `network.peer.address` | Covered by generated [Obsolete] metadata when the consumer references OpenTelemetry.SemanticConventions. semantic-conventions/model deprecated attribute |
 | `net.sock.peer.name` | AttributeKey | any | net | unknown | RemovedNoReplacement | - | Removed. No replacement at this time. |
-| `net.sock.peer.port` | AttributeKey | any | net | unknown | DeprecatedButGenerated | `network.peer.port` | Covered by generated [Obsolete] metadata when the consumer references OpenTelemetry.SemanticConventions. semantic-conventions/model deprecated attribute |
-| `net.transport` | AttributeKey | any | net | unknown | DeprecatedButGenerated | `network.transport` | Covered by generated [Obsolete] metadata when the consumer references OpenTelemetry.SemanticConventions. semantic-conventions/model deprecated attribute |
+| `net.sock.peer.port` | AttributeKey | any | net | 1.21.0 | DeprecatedButGenerated | `network.peer.port` | Covered by generated [Obsolete] metadata when the consumer references OpenTelemetry.SemanticConventions. semantic-conventions/model deprecated attribute |
+| `net.transport` | AttributeKey | any | net | 1.21.0 | DeprecatedButGenerated | `network.transport` | Covered by generated [Obsolete] metadata when the consumer references OpenTelemetry.SemanticConventions. semantic-conventions/model deprecated attribute |
 | `otel.library.name` | AttributeKey | resource | otel | unknown | DeprecatedButGenerated | `otel.scope.name` | Covered by generated [Obsolete] metadata when the consumer references OpenTelemetry.SemanticConventions. semantic-conventions/model deprecated attribute |
 | `otel.library.version` | AttributeKey | resource | otel | unknown | DeprecatedButGenerated | `otel.scope.version` | Covered by generated [Obsolete] metadata when the consumer references OpenTelemetry.SemanticConventions. semantic-conventions/model deprecated attribute |
 | `state` | AttributeKey | any | otel | 1.22.0 | DeprecatedButGenerated | `db.client.connection.state` | Covered by generated [Obsolete] metadata when the consumer references OpenTelemetry.SemanticConventions. semantic-conventions/model deprecated attribute |
