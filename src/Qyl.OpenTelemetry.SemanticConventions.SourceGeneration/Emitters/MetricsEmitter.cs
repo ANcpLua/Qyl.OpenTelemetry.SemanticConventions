@@ -45,8 +45,8 @@ internal static class MetricsEmitter
         var matched = new List<MetricDescriptorModel>();
         foreach (var metric in instruments.Metrics)
         {
-            if (!string.Equals(metric.MetricName, prefix, StringComparison.Ordinal) &&
-                !metric.MetricName.StartsWith(dotted, StringComparison.Ordinal))
+            if (!metric.MetricName.EqualsOrdinal(prefix) &&
+                !metric.MetricName.StartsWithOrdinal(dotted))
             {
                 continue;
             }

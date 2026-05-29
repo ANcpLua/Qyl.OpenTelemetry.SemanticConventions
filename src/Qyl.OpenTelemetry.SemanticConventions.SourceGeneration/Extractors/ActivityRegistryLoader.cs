@@ -131,7 +131,7 @@ internal static class ActivityRegistryLoader
     {
         if (typeValue is JsonString s)
         {
-            if (s.Value.StartsWith("template[", StringComparison.Ordinal))
+            if (s.Value.StartsWithOrdinal("template["))
             {
                 var inner = ExtractTemplateInner(s.Value);
                 return (MapPrimitive(inner), true, false, default);
@@ -175,7 +175,7 @@ internal static class ActivityRegistryLoader
     {
         // raw is e.g. "template[string]" or "template[string[]]"
         const string prefix = "template[";
-        if (!raw.StartsWith(prefix, StringComparison.Ordinal) || !raw.EndsWith("]", StringComparison.Ordinal))
+        if (!raw.StartsWithOrdinal(prefix) || !raw.EndsWithOrdinal("]"))
             return "string";
         return raw.Substring(prefix.Length, raw.Length - prefix.Length - 1);
     }

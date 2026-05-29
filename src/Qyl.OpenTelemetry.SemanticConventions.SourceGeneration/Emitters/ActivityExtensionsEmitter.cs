@@ -66,9 +66,9 @@ internal static class ActivityExtensionsEmitter
 
     private static bool PrefixMatches(string key, string prefix)
     {
-        if (string.Equals(key, prefix, StringComparison.Ordinal)) return true;
+        if (key.EqualsOrdinal(prefix)) return true;
         if (key.Length <= prefix.Length) return false;
-        if (!key.StartsWith(prefix, StringComparison.Ordinal)) return false;
+        if (!key.StartsWithOrdinal(prefix)) return false;
         return key[prefix.Length] == '.';
     }
 

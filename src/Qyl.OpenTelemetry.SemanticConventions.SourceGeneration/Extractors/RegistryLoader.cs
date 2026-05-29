@@ -346,7 +346,7 @@ internal static class RegistryLoader
     {
         if (value is JsonString s)
         {
-            return s.Value.StartsWith("template[", StringComparison.Ordinal)
+            return s.Value.StartsWithOrdinal("template[")
                 ? new AttributeTypeModel.Template(s.Value)
                 : new AttributeTypeModel.Primitive(s.Value);
         }

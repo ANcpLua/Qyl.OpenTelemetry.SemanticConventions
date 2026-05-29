@@ -50,8 +50,8 @@ internal static class EventsEmitter
         var matched = new List<EventGroupModel>();
         foreach (var ev in instruments.Events)
         {
-            if (!string.Equals(ev.EventName, prefix, StringComparison.Ordinal) &&
-                !ev.EventName.StartsWith(dotted, StringComparison.Ordinal))
+            if (!ev.EventName.EqualsOrdinal(prefix) &&
+                !ev.EventName.StartsWithOrdinal(dotted))
             {
                 continue;
             }

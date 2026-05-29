@@ -35,7 +35,7 @@ internal static class AttributesEmitter
     {
         foreach (var group in registry.Groups)
         {
-            if (string.Equals(group.Prefix, prefix, StringComparison.Ordinal))
+            if (group.Prefix.EqualsOrdinal(prefix))
                 return group;
         }
         return null;
@@ -69,8 +69,8 @@ internal static class AttributesEmitter
         var dotted = prefix + ".";
         foreach (var attr in registry.Catalog)
         {
-            if (string.Equals(attr.Key, prefix, StringComparison.Ordinal) ||
-                attr.Key.StartsWith(dotted, StringComparison.Ordinal))
+            if (attr.Key.EqualsOrdinal(prefix) ||
+                attr.Key.StartsWithOrdinal(dotted))
             {
                 if (!StabilityFiltering.IsIncludedOrDeprecated(attr.Stability, attr.Deprecated, filter))
                     continue;

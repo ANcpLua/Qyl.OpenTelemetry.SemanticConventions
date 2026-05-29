@@ -138,8 +138,8 @@ internal static class MeterValueTypeRules
 {
     public static string SelectValueType(string instrument, string unit)
     {
-        if (string.Equals(instrument, "gauge", StringComparison.Ordinal) ||
-            string.Equals(instrument, "observablegauge", StringComparison.Ordinal))
+        if (instrument.EqualsOrdinal("gauge") ||
+            instrument.EqualsOrdinal("observablegauge"))
             return "double";
 
         return unit switch
@@ -153,5 +153,5 @@ internal static class MeterValueTypeRules
     }
 
     private static bool IsCountingUnit(string unit)
-        => !string.IsNullOrEmpty(unit) && unit.StartsWith("{", StringComparison.Ordinal);
+        => !string.IsNullOrEmpty(unit) && unit.StartsWithOrdinal("{");
 }

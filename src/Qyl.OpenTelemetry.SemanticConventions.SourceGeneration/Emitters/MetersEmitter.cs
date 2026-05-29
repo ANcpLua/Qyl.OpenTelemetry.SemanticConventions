@@ -62,9 +62,9 @@ internal static class MetersEmitter
 
     private static bool PrefixMatches(string metricName, string prefix)
     {
-        if (string.Equals(metricName, prefix, StringComparison.Ordinal)) return true;
+        if (metricName.EqualsOrdinal(prefix)) return true;
         if (metricName.Length <= prefix.Length) return false;
-        if (!metricName.StartsWith(prefix, StringComparison.Ordinal)) return false;
+        if (!metricName.StartsWithOrdinal(prefix)) return false;
         return metricName[prefix.Length] == '.';
     }
 
