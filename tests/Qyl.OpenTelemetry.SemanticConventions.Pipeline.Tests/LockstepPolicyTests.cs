@@ -3,7 +3,7 @@
 
 using System;
 using AwesomeAssertions;
-using ANcpLua.OpenTelemetry.Conventions.Nuke;
+using Qyl.OpenTelemetry.SemanticConventions.Nuke;
 using Xunit;
 
 namespace Qyl.OpenTelemetry.SemanticConventions.Pipeline.Tests;

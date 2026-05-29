@@ -4,6 +4,7 @@
     <Project Path="src/Qyl.OpenTelemetry.SemanticConventions.Incubating/Qyl.OpenTelemetry.SemanticConventions.Incubating.csproj"/>
     <Project Path="src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.csproj"/>
     <Project Path="src/Qyl.OpenTelemetry.SemanticConventions.Analyzers/Qyl.OpenTelemetry.SemanticConventions.Analyzers.csproj"/>
+    <Project Path="src/Qyl.OpenTelemetry.SemanticConventions.Nuke/Qyl.OpenTelemetry.SemanticConventions.Nuke.csproj"/>
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Qyl.OpenTelemetry.SemanticConventions.Pipeline.Tests/Qyl.OpenTelemetry.SemanticConventions.Pipeline.Tests.csproj"/>

@@ -12,7 +12,7 @@ using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
-using ANcpLua.OpenTelemetry.Conventions.Nuke;
+using Qyl.OpenTelemetry.SemanticConventions.Nuke;
 using Serilog;
 
 namespace Qyl.OpenTelemetry.SemanticConventions.Build;

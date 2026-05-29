@@ -20,10 +20,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Canonical Nuke build component from the O-ANcppLua org, shared across the
-         qyl OpenTelemetry-conventions toolchain. Provides IUpstreamConventions,
-         IDomainConventionsApi, and LockstepPolicy. -->
-    <PackageReference Include="ANcpLua.OpenTelemetry.Conventions.Nuke"/>
+    <!-- Dogfood: the build host references the Nuke component this repo SHIPS.
+         IUpstreamConventions, LockstepPolicy and friends come from here — the
+         very same package consumers will get from nuget.org. -->
+    <ProjectReference Include="../../src/Qyl.OpenTelemetry.SemanticConventions.Nuke/Qyl.OpenTelemetry.SemanticConventions.Nuke.csproj"/>
   </ItemGroup>
 
   <!-- Transitive security overrides for Nuke.Common 10.1.0
