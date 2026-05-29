@@ -36,8 +36,27 @@ internal static partial class HttpActivityExtensions;
 //   public static Activity SetHttpRoute(this Activity activity, string value)
 ```
 
-The marker attribute is itself generated (via `RegisterPostInitializationOutput`);
-no runtime dependency is added by consuming this package.
+## Generator surfaces
+
+All five source generators use the same Roslyn shape: publish stable and
+incubating marker attributes during post-initialization, discover annotated
+partial classes with `ForAttributeWithMetadataName`, extract the requested
+semantic-convention prefix into a marker model, then emit source from the
+matching registry projection.
+
+| Surface | Marker attributes | Registry projection | Emitter | Generated shape |
+|---|---|---|---|---|
+| Attributes | `SemanticConventionAttributes`, `SemanticConventionIncubatingAttributes` | `RegistryLoader.Registry` | `AttributesEmitter` | Attribute-key constants and typed enum-value helpers. |
+| Activities | `SemanticConventionActivities`, `SemanticConventionIncubatingActivities` | `ActivityRegistryLoader.Registry` | `ActivityExtensionsEmitter` | `Activity` extension methods that set typed semantic tags. |
+| Metrics | `SemanticConventionMetrics`, `SemanticConventionIncubatingMetrics` | `RegistryLoader.Instruments` | `MetricsEmitter` | Metric names, descriptors, units, instrument kinds, and attribute keys. |
+| Meters | `SemanticConventionMeters`, `SemanticConventionIncubatingMeters` | `RegistryLoader.Instruments` | `MetersEmitter` | `Meter` extension methods that create semantic instruments. |
+| Events | `SemanticConventionEvents`, `SemanticConventionIncubatingEvents` | `RegistryLoader.Instruments` | `EventsEmitter` | Event names, descriptors, and payload record structs. |
+
+The marker attributes are themselves generated via
+`RegisterPostInitializationOutput`; no runtime dependency is added by consuming
+this package. The events generator also emits
+`SemanticConventionEvents.IsExternalInit.g.cs` so generated record structs work
+on older target frameworks.
 
 Stable markers emit stable rows plus deprecated migration symbols. Incubating
 markers are supersets: stable + development/alpha/beta/release-candidate +

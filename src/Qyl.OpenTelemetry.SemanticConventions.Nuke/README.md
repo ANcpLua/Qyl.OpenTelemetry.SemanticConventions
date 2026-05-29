@@ -19,7 +19,7 @@ Exposes `IUpstreamConventions` (Weaver-based generator pipeline with lockstep ve
 |---|---|---|
 | stable | [`Qyl.OpenTelemetry.SemanticConventions`](https://www.nuget.org/packages/Qyl.OpenTelemetry.SemanticConventions/) | Stable attribute-key constants + embedded resolved schema |
 | stable | [`Qyl.OpenTelemetry.SemanticConventions.Incubating`](https://www.nuget.org/packages/Qyl.OpenTelemetry.SemanticConventions.Incubating/) | Incubating attribute-key constants (opt-in, breaking between minors) |
-| stable | [`Qyl.OpenTelemetry.SemanticConventions.SourceGeneration`](https://www.nuget.org/packages/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/) | Roslyn source generators for Activity tags, Meter factories, metrics, events |
+| stable | [`Qyl.OpenTelemetry.SemanticConventions.SourceGeneration`](https://www.nuget.org/packages/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/) | Roslyn source generators for attribute constants, Activity tag setters, metric descriptors, Meter factories, and event payloads |
 | stable | [`Qyl.OpenTelemetry.SemanticConventions.Analyzers`](https://www.nuget.org/packages/Qyl.OpenTelemetry.SemanticConventions.Analyzers/) | Roslyn diagnostic analyzers + code fixes |
 | stable | [`Qyl.OpenTelemetry.SemanticConventions.Nuke`](https://www.nuget.org/packages/Qyl.OpenTelemetry.SemanticConventions.Nuke/) | Nuke build component exposing the Weaver and TypeSpec pipelines |
 
