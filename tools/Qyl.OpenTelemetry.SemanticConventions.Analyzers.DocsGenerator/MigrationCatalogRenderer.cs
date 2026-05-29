@@ -112,8 +112,10 @@ internal static class MigrationCatalogRenderer
         sb.AppendLine();
         sb.AppendLine("| Version | Domain | Total | Live metadata | Supplemental | Exact supplemental | Manual/context | Removed/no replacement |");
         sb.AppendLine("| -- | -- | --: | --: | --: | --: | --: | --: |");
+        // SemconvMigrationCatalog.Normalize() guarantees ChangelogVersion is non-empty
+        // (real version, else SinceVersion, else "unknown"), so no renderer-side fallback is needed.
         foreach (var g in stats.Entries
-            .GroupBy(e => (Version: NormalizeVersion(e.ChangelogVersion, e.SinceVersion), e.Domain))
+            .GroupBy(e => (Version: e.ChangelogVersion, e.Domain))
             .OrderByDescending(g => VersionSortKey(g.Key.Version), StringComparer.Ordinal)
             .ThenBy(g => g.Key.Domain, StringComparer.Ordinal))
         {
@@ -140,7 +142,7 @@ internal static class MigrationCatalogRenderer
             .OrderBy(x => x.Domain, StringComparer.Ordinal)
             .ThenBy(x => x.OldName, StringComparer.Ordinal))
         {
-            var since = string.IsNullOrEmpty(e.SinceVersion) ? "-" : MarkdownFormatting.Escape(e.SinceVersion);
+            var since = MarkdownFormatting.Escape(e.SinceVersion);
             var replacement = MarkdownFormatting.FormatReplacement(e.ReplacementNames);
             sb.AppendLine($"| `{e.OldName}` | {e.Kind} | {e.Signal} | {e.Domain} | {since} | {e.MigrationKind} | {replacement} | {MarkdownFormatting.Escape(e.ChangelogEvidence)} |");
         }
@@ -176,13 +178,8 @@ internal static class MigrationCatalogRenderer
         sb.AppendLine("```");
     }
 
-    private static string NormalizeVersion(string changelogVersion, string sinceVersion) =>
-        !string.IsNullOrWhiteSpace(changelogVersion) ? changelogVersion
-        : !string.IsNullOrWhiteSpace(sinceVersion) ? sinceVersion
-        : "unspecified";
-
     private static string VersionSortKey(string version) =>
-        version is "unspecified" or "unknown" ? "0.0.0" : version;
+        version is "unknown" ? "0.0.0" : version;
 }
 
 /// <summary>
