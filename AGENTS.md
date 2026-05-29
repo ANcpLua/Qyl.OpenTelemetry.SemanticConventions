@@ -12,6 +12,14 @@ Published to nuget.org via **trusted publishing** on `v*` tag push (or
 `workflow_dispatch` with a `version` input): the workflow packs the whole
 solution at the tag version and pushes every `.nupkg` with `--skip-duplicate`.
 
+**Current version state — the next `v3.0.1` tag is safe (no action needed).**
+`Qyl.OpenTelemetry.SemanticConventions.Nuke` is already on nuget at **3.0.1**
+(published out-of-band when the component was re-vendored), while the other four
+packages are still at **3.0.0**. Tagging `v3.0.1` will pack all five at 3.0.1 and,
+thanks to `--skip-duplicate`, skip the already-published Nuke 3.0.1 while
+publishing the other four — so the family converges to 3.0.1 with no conflict and
+no special handling.
+
 ## The Nuke build component lives in THIS repo — do not re-externalize it
 
 `src/Qyl.OpenTelemetry.SemanticConventions.Nuke/` is the build component
