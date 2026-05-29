@@ -15,8 +15,8 @@ internal static class RegistryParsing
 
         return reason switch
         {
-            "renamed" => new DeprecatedModel.Renamed(obj.GetString("renamed_to"), note),
-            "obsoleted" => new DeprecatedModel.Obsoleted(note),
+            "renamed" => new DeprecatedModel.Renamed(obj.GetString("renamed_to")),
+            "obsoleted" => new DeprecatedModel.Obsoleted(),
             _ => new DeprecatedModel.Uncategorized(note)
         };
     }

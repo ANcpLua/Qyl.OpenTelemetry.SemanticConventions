@@ -22,7 +22,6 @@ internal readonly record struct MetricDescriptorModel(
     string Note,
     StabilityModel Stability,
     DeprecatedModel? Deprecated,
-    EquatableArray<string> AttributeRefs,
     EquatableArray<SignalAttributeModel> Attributes,
     EquatableArray<string> EntityAssociations);
 
@@ -62,7 +61,6 @@ internal readonly record struct SignalAttributeModel(
     RequirementLevelModel RequirementLevel,
     string Brief,
     string Note,
-    StabilityModel Stability,
     DeprecatedModel? Deprecated,
     EquatableArray<string> Examples);
 

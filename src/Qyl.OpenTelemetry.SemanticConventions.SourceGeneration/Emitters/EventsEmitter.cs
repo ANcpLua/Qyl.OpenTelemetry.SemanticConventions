@@ -285,8 +285,6 @@ internal static class EventsEmitter
         var baseType = type switch
         {
             AttributeTypeModel.Primitive p => MapPrimitive(p.Name),
-            AttributeTypeModel.Template => "string",
-            AttributeTypeModel.EnumType => "string",
             _ => "string"
         };
 

@@ -106,15 +106,6 @@ internal static class RegistryLoader
         {
             if (item is not JsonObject metric) continue;
 
-            var refs = new List<string>();
-            if (metric.TryGetArray("attribute_refs") is { } refsArr)
-            {
-                foreach (var value in refsArr.Items)
-                {
-                    if (value is JsonString s) refs.Add(s.Value);
-                }
-            }
-
             var attributes = metric.TryGetArray("attributes") is { } attributesArr
                 ? ParseSignalAttributes(attributesArr, defaultStability: RegistryParsing.ParseStability(metric.GetString("stability")))
                 : default;
@@ -128,7 +119,6 @@ internal static class RegistryLoader
                 Note: metric.GetString("note"),
                 Stability: RegistryParsing.ParseStability(metric.GetString("stability")),
                 Deprecated: RegistryParsing.ParseDeprecated(metric.TryGet("deprecated") as JsonObject),
-                AttributeRefs: refs.ToEquatableArray(),
                 Attributes: attributes,
                 EntityAssociations: ParseStringArray(metric.TryGetArray("entity_associations"))));
         }
@@ -167,18 +157,12 @@ internal static class RegistryLoader
                         : attributeIndex.TryGetValue(key, out var noteAttr)
                             ? noteAttr.Note
                             : string.Empty;
-                    var stability = RegistryParsing.ParseStability(p.GetString("stability"),
-                        attributeIndex.TryGetValue(key, out var stabilityAttr)
-                            ? stabilityAttr.Stability
-                            : StabilityModel.Development);
-
                     payload.Add(new SignalAttributeModel(
                         Key: key,
                         Type: type,
                         RequirementLevel: RegistryParsing.ParseRequirementLevel(p.TryGet("requirement_level")),
                         Brief: brief,
                         Note: note,
-                        Stability: stability,
                         Deprecated: RegistryParsing.ParseDeprecated(p.TryGet("deprecated") as JsonObject),
                         Examples: RegistryParsing.ParseExamples(p.TryGetArray("examples"))));
                 }
@@ -214,7 +198,6 @@ internal static class RegistryLoader
                 RequirementLevel: RegistryParsing.ParseRequirementLevel(attr.TryGet("requirement_level")),
                 Brief: attr.GetString("brief"),
                 Note: attr.GetString("note"),
-                Stability: stability,
                 Deprecated: RegistryParsing.ParseDeprecated(attr.TryGet("deprecated") as JsonObject),
                 Examples: RegistryParsing.ParseExamples(attr.TryGetArray("examples"))));
         }
@@ -238,63 +221,11 @@ internal static class RegistryLoader
                 }
             }
 
-            var attributes = group.TryGetArray("attributes") is { } attributesArr
-                ? ParseGroupAttributes(attributesArr)
-                : default;
-
             groups.Add(new GroupModel(
-                Id: group.GetString("id"),
-                Type: group.GetString("type"),
-                Brief: group.GetString("brief"),
-                Note: group.GetString("note"),
-                DisplayName: group.GetString("display_name"),
-                Extends: group.GetString("extends"),
-                Stability: RegistryParsing.ParseStability(group.GetString("stability")),
-                Deprecated: RegistryParsing.ParseDeprecated(group.TryGet("deprecated") as JsonObject),
-                AnnotationsJson: group.TryGet("annotations") is { } annotations ? RegistryParsing.ToCompactJson(annotations) : string.Empty,
-                LineageJson: group.TryGet("lineage") is { } lineage ? RegistryParsing.ToCompactJson(lineage) : string.Empty,
                 Prefix: group.GetString("prefix"),
-                MetricName: group.GetString("metric_name"),
-                Instrument: group.GetString("instrument"),
-                Unit: group.GetString("unit"),
-                MetricRequirementLevel: RegistryParsing.ParseRequirementLevel(group.TryGet("metric_requirement_level")),
-                EventName: group.GetString("event_name"),
-                SpanKind: group.GetString("span_kind"),
-                SpanNameNote: group.GetString("span_name_note"),
-                BodyJson: group.TryGet("body") is { } body ? RegistryParsing.ToCompactJson(body) : string.Empty,
-                EntityAssociations: ParseStringArray(group.TryGetArray("entity_associations")),
-                Events: ParseStringArray(group.TryGetArray("events")),
-                AttributeRefs: refs.ToEquatableArray(),
-                Attributes: attributes));
+                AttributeRefs: refs.ToEquatableArray()));
         }
         return groups.ToEquatableArray();
-    }
-
-    private static EquatableArray<GroupAttributeModel> ParseGroupAttributes(JsonArray attributesArr)
-    {
-        var attributes = new List<GroupAttributeModel>(attributesArr.Items.Count);
-        foreach (var item in attributesArr.Items)
-        {
-            if (item is not JsonObject attr) continue;
-
-            var stability = RegistryParsing.ParseStability(attr.GetString("stability"));
-            attributes.Add(new GroupAttributeModel(
-                Key: attr.GetString("key"),
-                Type: ParseType(attr.TryGet("type"), stability),
-                RequirementLevel: RegistryParsing.ParseRequirementLevel(attr.TryGet("requirement_level")),
-                Brief: attr.GetString("brief"),
-                Note: attr.GetString("note"),
-                Stability: stability,
-                Deprecated: RegistryParsing.ParseDeprecated(attr.TryGet("deprecated") as JsonObject),
-                Tag: attr.GetString("tag"),
-                SamplingRelevant: attr.TryGet("sampling_relevant") is JsonBool samplingRelevant && samplingRelevant.Value,
-                Namespace: attr.GetString("namespace"),
-                Inherited: attr.TryGet("inherited") is JsonBool inherited && inherited.Value,
-                LineageJson: attr.TryGet("lineage") is { } lineage ? RegistryParsing.ToCompactJson(lineage) : string.Empty,
-                Examples: RegistryParsing.ParseExamples(attr.TryGetArray("examples"))));
-        }
-
-        return attributes.ToEquatableArray();
     }
 
     private static EquatableArray<string> ParseStringArray(JsonArray? array)
@@ -347,7 +278,7 @@ internal static class RegistryLoader
         if (value is JsonString s)
         {
             return s.Value.StartsWithOrdinal("template[")
-                ? new AttributeTypeModel.Template(s.Value)
+                ? new AttributeTypeModel.Template()
                 : new AttributeTypeModel.Primitive(s.Value);
         }
 

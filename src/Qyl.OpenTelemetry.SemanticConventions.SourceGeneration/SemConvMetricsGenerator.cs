@@ -23,8 +23,6 @@ public sealed class SemConvMetricsGenerator : IIncrementalGenerator
     internal const string IncubatingAttributeFullName =
         "Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.SemanticConventionIncubatingMetricsAttribute";
 
-    internal const string AttributeFullName = StableAttributeFullName;
-
     /// <inheritdoc/>
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {

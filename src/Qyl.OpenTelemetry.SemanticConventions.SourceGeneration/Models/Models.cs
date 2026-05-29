@@ -8,54 +8,16 @@ internal readonly record struct RegistryModel(
     EquatableArray<AttributeModel> Catalog);
 
 /// <summary>
-/// A semconv group: a set of attributes sharing a prefix, e.g. "disk", "http.client".
-/// <see cref="AttributeRefs"/> stores attribute keys (e.g. "disk.io.direction"), which
-/// the emitter resolves against <see cref="RegistryModel.Catalog"/>.
+/// A semconv group projected for the attributes surface: a set of attributes sharing a
+/// prefix (e.g. "disk", "http.client"). <see cref="AttributeRefs"/> stores attribute keys
+/// (e.g. "disk.io.direction") that the emitter resolves against
+/// <see cref="RegistryModel.Catalog"/>. Only the two fields the attributes emitter consumes
+/// are projected; the metric/event/span facets of an upstream group are carried by
+/// <see cref="InstrumentRegistryModel"/> instead.
 /// </summary>
 internal readonly record struct GroupModel(
-    string Id,
-    string Type,
-    string Brief,
-    string Note,
-    string DisplayName,
-    string Extends,
-    StabilityModel Stability,
-    DeprecatedModel? Deprecated,
-    string AnnotationsJson,
-    string LineageJson,
     string Prefix,
-    string MetricName,
-    string Instrument,
-    string Unit,
-    RequirementLevelModel MetricRequirementLevel,
-    string EventName,
-    string SpanKind,
-    string SpanNameNote,
-    string BodyJson,
-    EquatableArray<string> EntityAssociations,
-    EquatableArray<string> Events,
-    EquatableArray<string> AttributeRefs,
-    EquatableArray<GroupAttributeModel> Attributes);
-
-/// <summary>
-/// One attribute reference inside a semconv group. Requirement level is
-/// contextual: the same catalog attribute can have different requirements in
-/// different metrics, events, spans, resources, or shared attribute groups.
-/// </summary>
-internal readonly record struct GroupAttributeModel(
-    string Key,
-    AttributeTypeModel Type,
-    RequirementLevelModel RequirementLevel,
-    string Brief,
-    string Note,
-    StabilityModel Stability,
-    DeprecatedModel? Deprecated,
-    string Tag,
-    bool SamplingRelevant,
-    string Namespace,
-    bool Inherited,
-    string LineageJson,
-    EquatableArray<string> Examples);
+    EquatableArray<string> AttributeRefs);
 
 /// <summary>
 /// One semconv attribute definition. Keys are dotted (e.g. "disk.io.direction"); the emitter
@@ -77,7 +39,7 @@ internal readonly record struct AttributeModel(
 internal abstract record AttributeTypeModel
 {
     public sealed record Primitive(string Name) : AttributeTypeModel;
-    public sealed record Template(string Name) : AttributeTypeModel;
+    public sealed record Template : AttributeTypeModel;
     public sealed record EnumType(EquatableArray<EnumMemberModel> Members) : AttributeTypeModel;
 }
 
@@ -100,8 +62,8 @@ internal enum StabilityModel
 
 internal abstract record DeprecatedModel
 {
-    public sealed record Renamed(string RenamedTo, string Note) : DeprecatedModel;
-    public sealed record Obsoleted(string Note) : DeprecatedModel;
+    public sealed record Renamed(string RenamedTo) : DeprecatedModel;
+    public sealed record Obsoleted : DeprecatedModel;
     public sealed record Uncategorized(string Note) : DeprecatedModel;
 }
 
