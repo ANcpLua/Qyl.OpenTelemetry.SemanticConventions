@@ -146,6 +146,7 @@ internal static partial class EnforceIdsRewriter
                 if (src != original)
                     File.WriteAllText(path, src);
             }
+
             Console.WriteLine(
                 $@"--enforce-ids --apply: {totalRenames} class renames + {totalPerFile} per-file fixes.");
             return 0;
@@ -159,6 +160,7 @@ internal static partial class EnforceIdsRewriter
             foreach (var (desc, _) in fixes)
                 Console.WriteLine($@"  {rel}: {desc}");
         }
+
         Console.WriteLine(
             $@"--enforce-ids: {totalIssues} mismatches ({totalRenames} class renames, {totalPerFile} per-file fixes).");
         return totalIssues == 0 ? 0 : 1;
@@ -175,13 +177,16 @@ internal static partial class EnforceIdsRewriter
             list = [];
             bucket[path] = list;
         }
+
         list.Add((description, apply));
     }
 
     [GeneratedRegex(@"^(?:Al|Qyl|QYL)(\d{4})(.+)$")]
     private static partial Regex ClassPrefixRegex();
+
     [GeneratedRegex(@"(///\s*)(?:AL|QYL)\d{4}:")]
     private static partial Regex XmlDocIdRegex();
+
     [GeneratedRegex(@"\bfor (?:AL|QYL)\d{4}\b")]
     private static partial Regex FieldDocIdRegex();
 }
