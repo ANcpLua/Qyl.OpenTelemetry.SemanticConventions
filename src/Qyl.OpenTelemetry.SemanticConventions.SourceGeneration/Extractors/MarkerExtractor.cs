@@ -3,9 +3,16 @@ using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Models;
 
 namespace Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Extractors;
 
+/// <summary>
+/// Shared marker extraction for every semantic-convention surface. All five marker
+/// attributes (attributes, metrics, events, meters, activities) take the same
+/// <c>(string prefix)</c> constructor and project to the same <see cref="SemConvMarkerModel"/>,
+/// so a single extractor serves them all — the owning generator supplies the
+/// <see cref="StabilityFilter"/> that distinguishes the stable from the incubating pipeline.
+/// </summary>
 internal static class MarkerExtractor
 {
-    public static MarkerModel? Extract(
+    public static SemConvMarkerModel? Extract(
         GeneratorAttributeSyntaxContext context,
         StabilityFilter filter,
         CancellationToken cancellationToken)
@@ -29,6 +36,6 @@ internal static class MarkerExtractor
             ? string.Empty
             : typeSymbol.ContainingNamespace.ToDisplayString();
 
-        return new MarkerModel(ns, typeSymbol.Name, prefix, filter);
+        return new SemConvMarkerModel(ns, typeSymbol.Name, prefix, filter);
     }
 }

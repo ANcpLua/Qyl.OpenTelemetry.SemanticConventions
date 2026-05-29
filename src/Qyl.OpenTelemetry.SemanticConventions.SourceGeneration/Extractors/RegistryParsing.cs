@@ -61,6 +61,24 @@ internal static class RegistryParsing
         _ => RequirementLevelKind.Unspecified
     };
 
+    /// <summary>
+    /// Maps the registry's textual stability tier to <see cref="StabilityModel"/>.
+    /// Unknown/absent values fall back to <paramref name="defaultStability"/>
+    /// (Development unless the caller knows a tighter default applies).
+    /// </summary>
+    public static StabilityModel ParseStability(
+        string value,
+        StabilityModel defaultStability = StabilityModel.Development) => value switch
+    {
+        "stable" => StabilityModel.Stable,
+        "development" => StabilityModel.Development,
+        "deprecated" => StabilityModel.Deprecated,
+        "alpha" => StabilityModel.Alpha,
+        "beta" => StabilityModel.Beta,
+        "release_candidate" => StabilityModel.ReleaseCandidate,
+        _ => defaultStability
+    };
+
     public static string ToCompactJson(JsonValue value) => value switch
     {
         JsonNull => "null",

@@ -106,13 +106,16 @@ internal abstract record DeprecatedModel
 }
 
 /// <summary>
-/// Extracted state from a single attributes-marker application — either
-/// <c>[SemanticConventionAttributes("&lt;prefix&gt;")]</c> (stable surface) or
-/// <c>[SemanticConventionIncubatingAttributes("&lt;prefix&gt;")]</c> (all-stabilities surface).
-/// Identifies the user's partial class, the prefix it requested, and which
-/// stability projection the surface emits (<see cref="Extractors.StabilityFilter"/>).
+/// Extracted state from a single semantic-convention marker application — the
+/// stable surface (e.g. <c>[SemanticConventionAttributes("&lt;prefix&gt;")]</c>) or its
+/// incubating counterpart (e.g. <c>[SemanticConventionIncubatingAttributes("&lt;prefix&gt;")]</c>).
+/// Every marker surface (attributes, metrics, events, meters, activities) carries the
+/// same four facts, so they share this one model: the user's partial class, the prefix
+/// it requested, and which stability projection the surface emits
+/// (<see cref="Extractors.StabilityFilter"/>). The generator that owns the pipeline picks
+/// the emitter and registry; the marker payload itself is surface-agnostic.
 /// </summary>
-internal readonly record struct MarkerModel(
+internal readonly record struct SemConvMarkerModel(
     string ContainingNamespace,
     string ClassName,
     string Prefix,

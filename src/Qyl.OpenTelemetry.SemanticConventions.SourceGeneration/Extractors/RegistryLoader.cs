@@ -29,6 +29,13 @@ internal static class RegistryLoader
 
     public static InstrumentRegistryModel Instruments => _instruments.Value;
 
+    /// <summary>
+    /// The embedded registry parsed once into its JSON object root. Shared with
+    /// <see cref="ActivityRegistryLoader"/> so the embedded resource is read and
+    /// parsed a single time per analyzer-assembly load rather than once per loader.
+    /// </summary>
+    internal static JsonObject? Root => _root.Value;
+
     private static JsonObject? LoadRootFromEmbeddedResource()
     {
         var assembly = typeof(RegistryLoader).GetTypeInfo().Assembly;
@@ -109,7 +116,7 @@ internal static class RegistryLoader
             }
 
             var attributes = metric.TryGetArray("attributes") is { } attributesArr
-                ? ParseSignalAttributes(attributesArr, defaultStability: ParseStability(metric.GetString("stability")))
+                ? ParseSignalAttributes(attributesArr, defaultStability: RegistryParsing.ParseStability(metric.GetString("stability")))
                 : default;
 
             metrics.Add(new MetricDescriptorModel(
@@ -119,7 +126,7 @@ internal static class RegistryLoader
                 MetricRequirementLevel: RegistryParsing.ParseRequirementLevel(metric.TryGet("metric_requirement_level")),
                 Brief: metric.GetString("brief"),
                 Note: metric.GetString("note"),
-                Stability: ParseStability(metric.GetString("stability")),
+                Stability: RegistryParsing.ParseStability(metric.GetString("stability")),
                 Deprecated: RegistryParsing.ParseDeprecated(metric.TryGet("deprecated") as JsonObject),
                 AttributeRefs: refs.ToEquatableArray(),
                 Attributes: attributes,
@@ -146,7 +153,7 @@ internal static class RegistryLoader
 
                     var key = p.GetString("key");
                     var type = p.TryGet("type") is { } typeNode
-                        ? ParseType(typeNode, ParseStability(p.GetString("stability"), defaultStability: StabilityModel.Development))
+                        ? ParseType(typeNode, RegistryParsing.ParseStability(p.GetString("stability"), defaultStability: StabilityModel.Development))
                         : attributeIndex.TryGetValue(key, out var catalogAttr)
                             ? catalogAttr.Type
                             : new AttributeTypeModel.Primitive("string");
@@ -160,7 +167,7 @@ internal static class RegistryLoader
                         : attributeIndex.TryGetValue(key, out var noteAttr)
                             ? noteAttr.Note
                             : string.Empty;
-                    var stability = ParseStability(p.GetString("stability"),
+                    var stability = RegistryParsing.ParseStability(p.GetString("stability"),
                         attributeIndex.TryGetValue(key, out var stabilityAttr)
                             ? stabilityAttr.Stability
                             : StabilityModel.Development);
@@ -181,7 +188,7 @@ internal static class RegistryLoader
                 EventName: ev.GetString("event_name"),
                 Brief: ev.GetString("brief"),
                 Note: ev.GetString("note"),
-                Stability: ParseStability(ev.GetString("stability")),
+                Stability: RegistryParsing.ParseStability(ev.GetString("stability")),
                 Deprecated: RegistryParsing.ParseDeprecated(ev.TryGet("deprecated") as JsonObject),
                 EmissionTarget: ParseEventEmissionTarget(ev.GetString("emission_target")),
                 BodyJson: ev.TryGet("body") is { } body ? RegistryParsing.ToCompactJson(body) : string.Empty,
@@ -200,7 +207,7 @@ internal static class RegistryLoader
         {
             if (item is not JsonObject attr) continue;
 
-            var stability = ParseStability(attr.GetString("stability"), defaultStability);
+            var stability = RegistryParsing.ParseStability(attr.GetString("stability"), defaultStability);
             attributes.Add(new SignalAttributeModel(
                 Key: attr.GetString("key"),
                 Type: ParseType(attr.TryGet("type"), stability),
@@ -242,7 +249,7 @@ internal static class RegistryLoader
                 Note: group.GetString("note"),
                 DisplayName: group.GetString("display_name"),
                 Extends: group.GetString("extends"),
-                Stability: ParseStability(group.GetString("stability")),
+                Stability: RegistryParsing.ParseStability(group.GetString("stability")),
                 Deprecated: RegistryParsing.ParseDeprecated(group.TryGet("deprecated") as JsonObject),
                 AnnotationsJson: group.TryGet("annotations") is { } annotations ? RegistryParsing.ToCompactJson(annotations) : string.Empty,
                 LineageJson: group.TryGet("lineage") is { } lineage ? RegistryParsing.ToCompactJson(lineage) : string.Empty,
@@ -270,7 +277,7 @@ internal static class RegistryLoader
         {
             if (item is not JsonObject attr) continue;
 
-            var stability = ParseStability(attr.GetString("stability"));
+            var stability = RegistryParsing.ParseStability(attr.GetString("stability"));
             attributes.Add(new GroupAttributeModel(
                 Key: attr.GetString("key"),
                 Type: ParseType(attr.TryGet("type"), stability),
@@ -312,7 +319,7 @@ internal static class RegistryLoader
         {
             if (item is not JsonObject attr) continue;
 
-            var stability = ParseStability(attr.GetString("stability"));
+            var stability = RegistryParsing.ParseStability(attr.GetString("stability"));
 
             attributes.Add(new AttributeModel(
                 Key: attr.GetString("key"),
@@ -354,7 +361,7 @@ internal static class RegistryLoader
                     Id: member.GetString("id"),
                     Value: member.GetString("value"),
                     Brief: member.GetString("brief"),
-                    Stability: ParseStability(member.GetString("stability"), defaultStability),
+                    Stability: RegistryParsing.ParseStability(member.GetString("stability"), defaultStability),
                     Deprecated: RegistryParsing.ParseDeprecated(member.TryGet("deprecated") as JsonObject)));
             }
             return new AttributeTypeModel.EnumType(members.ToEquatableArray());
@@ -362,18 +369,4 @@ internal static class RegistryLoader
 
         return new AttributeTypeModel.Primitive("string");
     }
-
-    private static StabilityModel ParseStability(
-        string value,
-        StabilityModel defaultStability = StabilityModel.Development) => value switch
-    {
-        "stable" => StabilityModel.Stable,
-        "development" => StabilityModel.Development,
-        "deprecated" => StabilityModel.Deprecated,
-        "alpha" => StabilityModel.Alpha,
-        "beta" => StabilityModel.Beta,
-        "release_candidate" => StabilityModel.ReleaseCandidate,
-        _ => defaultStability
-    };
-
 }

@@ -38,25 +38,3 @@ internal readonly record struct ActivityAttributeContextModel(
     string GroupType,
     string Prefix,
     RequirementLevelModel RequirementLevel);
-
-/// <summary>
-/// Extracted state from a single meters-marker application — either
-/// <c>[SemanticConventionMeters("&lt;prefix&gt;")]</c> (stable surface) or
-/// <c>[SemanticConventionIncubatingMeters("&lt;prefix&gt;")]</c> (all-stabilities surface).
-/// </summary>
-internal readonly record struct MetersMarkerModel(
-    string ContainingNamespace,
-    string ClassName,
-    string Prefix,
-    Extractors.StabilityFilter Filter);
-
-/// <summary>
-/// Extracted state from a single activities-marker application — either
-/// <c>[SemanticConventionActivities("&lt;prefix&gt;")]</c> (stable surface) or
-/// <c>[SemanticConventionIncubatingActivities("&lt;prefix&gt;")]</c> (all-stabilities surface).
-/// </summary>
-internal readonly record struct ActivitiesMarkerModel(
-    string ContainingNamespace,
-    string ClassName,
-    string Prefix,
-    Extractors.StabilityFilter Filter);

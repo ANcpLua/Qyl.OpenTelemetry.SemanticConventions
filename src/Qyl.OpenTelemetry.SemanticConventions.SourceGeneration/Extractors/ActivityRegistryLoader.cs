@@ -1,5 +1,3 @@
-using System.IO;
-using System.Reflection;
 using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Models;
 
 namespace Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Extractors;
@@ -7,30 +5,18 @@ namespace Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Extractors;
 /// <summary>
 /// Loads the attribute-shaped projection of the embedded resolved registry for
 /// PR-E (<c>System.Diagnostics.Activity</c> typed setters). Returns the catalog
-/// flat — the activity emitter filters by marker prefix.
+/// flat — the activity emitter filters by marker prefix. Shares the single parsed
+/// JSON root with <see cref="RegistryLoader"/>, so the embedded resource is parsed
+/// once per analyzer-assembly load and projected three ways
+/// (<see cref="RegistryModel"/>, <see cref="InstrumentRegistryModel"/>, and this).
 /// </summary>
 internal static class ActivityRegistryLoader
 {
-    private const string ResourceName = "Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.resolved-registry.json";
-
-    private static readonly Lazy<ActivityRegistryModel> _registry = new(LoadFromEmbeddedResource);
+    private static readonly Lazy<ActivityRegistryModel> _registry = new(static () => ParseRegistry(RegistryLoader.Root));
 
     public static ActivityRegistryModel Registry => _registry.Value;
 
-    private static ActivityRegistryModel LoadFromEmbeddedResource()
-    {
-        var assembly = typeof(ActivityRegistryLoader).GetTypeInfo().Assembly;
-        using var stream = assembly.GetManifestResourceStream(ResourceName)
-                           ?? throw new InvalidOperationException(
-                               $"Embedded resource '{ResourceName}' not found in {assembly.FullName}.");
-
-        using var reader = new StreamReader(stream);
-        var text = reader.ReadToEnd();
-        var root = JsonReader.Parse(text);
-        return ParseRegistry(root);
-    }
-
-    internal static ActivityRegistryModel ParseRegistry(JsonValue root)
+    internal static ActivityRegistryModel ParseRegistry(JsonValue? root)
     {
         // Fail loud: silently returning an empty registry on shape regressions
         // means the generator emits nothing with no diagnostic and consumers
@@ -54,7 +40,7 @@ internal static class ActivityRegistryLoader
             if (item is not JsonObject attr) continue;
 
             var key = attr.GetString("key");
-            var stability = ParseStability(attr.GetString("stability"));
+            var stability = RegistryParsing.ParseStability(attr.GetString("stability"));
             var typeValue = attr.TryGet("type");
             var (parameterType, isTemplate, isEnum, enumMembers) = ResolveSetterShape(typeValue, stability);
 
@@ -163,7 +149,7 @@ internal static class ActivityRegistryLoader
                     Id: member.GetString("id"),
                     Value: member.GetString("value"),
                     Brief: member.GetString("brief"),
-                    Stability: ParseStability(member.GetString("stability"), defaultStability),
+                    Stability: RegistryParsing.ParseStability(member.GetString("stability"), defaultStability),
                     Deprecated: RegistryParsing.ParseDeprecated(member.TryGet("deprecated") as JsonObject)));
             }
             return ("string", false, true, members.ToEquatableArray());
@@ -193,17 +179,4 @@ internal static class ActivityRegistryLoader
             return "string";
         return raw.Substring(prefix.Length, raw.Length - prefix.Length - 1);
     }
-
-    private static StabilityModel ParseStability(
-        string value,
-        StabilityModel defaultStability = StabilityModel.Development) => value switch
-    {
-        "stable" => StabilityModel.Stable,
-        "development" => StabilityModel.Development,
-        "deprecated" => StabilityModel.Deprecated,
-        "alpha" => StabilityModel.Alpha,
-        "beta" => StabilityModel.Beta,
-        "release_candidate" => StabilityModel.ReleaseCandidate,
-        _ => defaultStability
-    };
 }

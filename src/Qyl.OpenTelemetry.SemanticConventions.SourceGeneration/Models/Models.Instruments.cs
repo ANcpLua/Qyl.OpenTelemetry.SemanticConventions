@@ -78,27 +78,3 @@ internal enum RequirementLevelKind
     OptIn,
     ConditionallyRequired
 }
-
-/// <summary>
-/// Extracted state from a single metrics-marker application — either
-/// <c>[SemanticConventionMetrics("&lt;prefix&gt;")]</c> (stable surface) or
-/// <c>[SemanticConventionIncubatingMetrics("&lt;prefix&gt;")]</c> (all-stabilities surface).
-/// Mirrors <see cref="MarkerModel"/> for the metrics generator.
-/// </summary>
-internal readonly record struct MetricsMarkerModel(
-    string ContainingNamespace,
-    string ClassName,
-    string Prefix,
-    Extractors.StabilityFilter Filter);
-
-/// <summary>
-/// Extracted state from a single events-marker application — either
-/// <c>[SemanticConventionEvents("&lt;prefix&gt;")]</c> (stable surface) or
-/// <c>[SemanticConventionIncubatingEvents("&lt;prefix&gt;")]</c> (all-stabilities surface).
-/// Mirrors <see cref="MarkerModel"/> for the events generator.
-/// </summary>
-internal readonly record struct EventsMarkerModel(
-    string ContainingNamespace,
-    string ClassName,
-    string Prefix,
-    Extractors.StabilityFilter Filter);
