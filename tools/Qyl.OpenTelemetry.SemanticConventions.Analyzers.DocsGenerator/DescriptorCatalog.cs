@@ -103,7 +103,6 @@ internal static class DescriptorCatalog
         {
             if (type.IsAbstract) continue;
             if (!typeof(DiagnosticAnalyzer).IsAssignableFrom(type)) continue;
-            try
             {
                 if (Activator.CreateInstance(type) is DiagnosticAnalyzer a)
                 {
@@ -111,7 +110,6 @@ internal static class DescriptorCatalog
                         map[d.Id] = type.Name;
                 }
             }
-            catch { /* analyzers with non-default ctors are skipped */ }
         }
         return map;
     }
@@ -143,13 +141,11 @@ internal static class DescriptorCatalog
             }
             else if (typeof(CodeFixProvider).IsAssignableFrom(type))
             {
-                try
                 {
                     if (Activator.CreateInstance(type) is CodeFixProvider p && p.FixableDiagnosticIds.Length > 0)
                         codeFixes[type.Name] = p.FixableDiagnosticIds
                             .OrderBy(s => s, StringComparer.Ordinal).First();
                 }
-                catch { }
             }
         }
         return (analyzers, codeFixes);

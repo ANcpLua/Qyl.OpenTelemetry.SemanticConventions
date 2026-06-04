@@ -1,0 +1,13 @@
+﻿services:
+  telemetry.example:
+    image: telemetry.example
+    build:
+      context: .
+      dockerfile: src/Telemetry.Example/Dockerfile
+
+  tournament.demos:
+    image: tournament.demos
+    build:
+      context: .
+      dockerfile: src/Tournament.Demos/Dockerfile
+

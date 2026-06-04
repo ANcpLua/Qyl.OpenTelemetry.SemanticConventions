@@ -249,7 +249,7 @@ internal static class EventsEmitter
             builder.Append(pad).AppendLine("/// Examples:");
             foreach (var example in member.Examples)
             {
-                SourceWriter.AppendDocLine(builder, pad, "- " + example);
+                SourceWriter.AppendExample(builder, pad, example);
             }
         }
         builder.Append(pad).AppendLine("/// </remarks>");
