@@ -70,8 +70,20 @@ internal static class SourceWriter
         builder.Append(pad).AppendLine("/// <remarks>");
         builder.Append(pad).AppendLine("/// Examples:");
         foreach (var example in examples)
-            AppendDocLine(builder, pad, "- " + example);
+            AppendExample(builder, pad, example);
         builder.Append(pad).AppendLine("/// </remarks>");
+    }
+
+    /// <summary>
+    /// Writes one example as a <c>- </c> bullet, splitting on the example's own
+    /// newlines so multi-line values (e.g. a JSON-array example) stay inside the
+    /// XML doc comment instead of leaking raw lines into compilable source.
+    /// </summary>
+    public static void AppendExample(StringBuilder builder, string pad, string example)
+    {
+        var lines = example.Replace("\r", string.Empty).Split('\n');
+        for (var i = 0; i < lines.Length; i++)
+            AppendDocLine(builder, pad, i == 0 ? "- " + lines[i] : lines[i]);
     }
 
     public static void AppendDocLine(StringBuilder builder, string pad, string line)
