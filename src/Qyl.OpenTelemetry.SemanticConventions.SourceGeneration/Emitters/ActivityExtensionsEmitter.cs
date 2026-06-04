@@ -204,7 +204,10 @@ internal static class ActivityExtensionsEmitter
             if (!string.IsNullOrEmpty(context.RequirementLevel.Condition))
                 line += " - " + context.RequirementLevel.Condition;
 
-            SourceWriter.AppendDocLine(builder, pad, line);
+            // Condition is free-form and may be multi-line; split so it stays inside
+            // the doc comment instead of leaking raw lines into source.
+            foreach (var physical in SourceWriter.SplitLines(line))
+                SourceWriter.AppendDocLine(builder, pad, physical);
         }
 
         if (writtenHeader)
