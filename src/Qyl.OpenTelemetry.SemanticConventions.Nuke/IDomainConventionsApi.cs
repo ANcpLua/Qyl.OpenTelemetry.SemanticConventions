@@ -14,8 +14,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Nuke;
 
 /// <summary>
 /// Nuke build component implemented by the downstream API-surface repository
-/// (<c>O-ANcppLua/ANcpLua.OtelConventions.Api</c>, publishing
-/// <c>@o-ancpplua/otel-conventions-api</c> to GitHub Packages npm).
+/// (<c>ANcpLua/ANcpLua.OtelConventions.Api</c>, publishing
+/// <c>@ancplua/otel-conventions-api</c> to GitHub Packages npm).
 /// </summary>
 /// <remarks>
 /// <para>

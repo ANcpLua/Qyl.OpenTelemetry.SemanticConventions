@@ -31,7 +31,7 @@ via `ProjectReference`, and the build host **dogfoods** it
 History worth knowing before you "tidy" this:
 - `4f7434e` (2026-05-26) swapped the local project out for the external
   **`ANcpLua.OpenTelemetry.Conventions.Nuke`** 0.1.0 package.
-- That package's repo (`O-ANcppLua/ANcpLua.OpenTelemetry.Conventions.Nuke`) is
+- That package's repo (`ANcpLua/ANcpLua.OpenTelemetry.Conventions.Nuke`) is
   **archived** (frozen at 0.1.0), so on 2026-05-29 it was **re-vendored back**
   (`21db20f`). The two are the same component; only the namespace differed
   (`Qyl.OpenTelemetry.SemanticConventions.Nuke` vs `ANcpLua.OpenTelemetry.Conventions.Nuke`).
