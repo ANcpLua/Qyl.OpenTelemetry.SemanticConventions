@@ -1,5 +1,12 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 #
+# CANONICAL-DEPARTURE: this repo's nuget.org Trusted Publisher policies require
+# Environment = 'nuget' (OIDC token exchange returns HTTP 401 "Environment mismatch ...
+# expected 'nuget', actual ''" without it), but the canonical template sets no
+# `environment:`. Added `environment: nuget` on the publish job below to match the policy.
+# Durable fix: add `environment: nuget` to the canonical template in
+# ANcpLua/github-settings-automation, then remove this departure marker.
+#
 # CANONICAL — owned by ANcpLua/github-settings-automation/templates/nuget-publish.yml.
 # DO NOT EDIT in the consumer repo. Edits will be overwritten by the next
 # sync run of enforce-repo-settings.yml.
@@ -64,6 +71,7 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    environment: nuget   # CANONICAL-DEPARTURE: required by the nuget.org Trusted Publisher policy (see header)
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
         with:
