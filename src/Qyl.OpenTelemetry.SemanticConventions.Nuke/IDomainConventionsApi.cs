@@ -55,10 +55,13 @@ public interface IDomainConventionsApi : INukeBuild
     string OtelKeysVersion => TryGetValue(() => OtelKeysVersion)!;
 
     /// <summary>
-    /// Set of emitters to run during <c>EmitAll</c>. Defaults to
-    /// <c>csharp</c>, <c>ts-types</c>, <c>lint</c>.
+    /// Emitter names used for emitter-package resolution and the per-emitter determinism
+    /// check (<see cref="VerifyEmitDeterministic"/>). Defaults to <c>csharp</c>, <c>ts-types</c>,
+    /// <c>lint</c>. Note: <see cref="EmitAll"/> runs a fixed static dependency graph of the standard
+    /// emitters (it cannot vary its Nuke target graph by this runtime value); a consumer needing a
+    /// different set overrides the <c>Emit*</c> targets and/or <see cref="EmitAll"/>.
     /// </summary>
-    [Parameter("Emitter names to invoke (default: csharp, ts-types, lint).")]
+    [Parameter("Emitter names for resolution + VerifyEmitDeterministic (default: csharp, ts-types, lint).")]
     string[] Emitters => TryGetValue(() => Emitters) ?? new[] { "csharp", "ts-types", "lint" };
 
     /// <summary>Root directory under which all emitters write their output.</summary>
@@ -183,8 +186,11 @@ public interface IDomainConventionsApi : INukeBuild
         .Executes(() => RunDomainEmitter(this, "lint"));
 
     /// <summary>
-    /// Aggregate target that runs every emitter in <see cref="Emitters"/>: by default
-    /// <see cref="EmitCSharp"/>, <see cref="EmitTsTypes"/>, and <see cref="LintConventions"/>.
+    /// Aggregate target that runs the standard emitters as a fixed dependency graph —
+    /// <see cref="EmitCSharp"/>, <see cref="EmitTsTypes"/>, and <see cref="LintConventions"/>
+    /// (matching the default <see cref="Emitters"/>). This graph is static; it does not vary by the
+    /// <see cref="Emitters"/> parameter at run time. A consumer needing a different set overrides
+    /// this target (as the downstream API repo does).
     /// </summary>
     Target EmitAll => _ => _
         .DependsOn(EmitCSharp, EmitTsTypes, LintConventions)
