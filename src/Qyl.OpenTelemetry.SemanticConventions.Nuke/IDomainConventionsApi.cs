@@ -14,15 +14,15 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Nuke;
 
 /// <summary>
 /// Nuke build component implemented by the downstream API-surface repository
-/// (<c>ANcpLua/ANcpLua.OtelConventions.Api</c>, publishing
-/// <c>@ancplua/otel-conventions-api</c> to GitHub Packages npm).
+/// (<c>ANcpLua/qyl-api-schema</c>, publishing <c>@ancplua/qyl-api-schema</c> to
+/// npmjs.org via OIDC trusted publishing).
 /// </summary>
 /// <remarks>
 /// <para>
 /// This interface enforces the lockstep guarantee from the consumer side: the
 /// downstream API package must consume an exact pinned version of
 /// <c>@ancplua/typespec-otel-semconv</c> and must not allow manual edits to
-/// generated files. Multiple emitters (C#, DuckDB, TypeScript types, lint)
+/// generated files. Multiple emitters (C#, TypeScript types, lint)
 /// run from the same generated input.
 /// </para>
 /// <code>
@@ -55,11 +55,14 @@ public interface IDomainConventionsApi : INukeBuild
     string OtelKeysVersion => TryGetValue(() => OtelKeysVersion)!;
 
     /// <summary>
-    /// Set of emitters to run during <c>EmitAll</c>. Defaults to
-    /// <c>csharp</c>, <c>duckdb</c>, <c>ts-types</c>, <c>lint</c>.
+    /// Emitter names used for emitter-package resolution and the per-emitter determinism
+    /// check (<see cref="VerifyEmitDeterministic"/>). Defaults to <c>csharp</c>, <c>ts-types</c>,
+    /// <c>lint</c>. Note: <see cref="EmitAll"/> runs a fixed static dependency graph of the standard
+    /// emitters (it cannot vary its Nuke target graph by this runtime value); a consumer needing a
+    /// different set overrides the <c>Emit*</c> targets and/or <see cref="EmitAll"/>.
     /// </summary>
-    [Parameter("Emitter names to invoke (default: csharp, duckdb, ts-types, lint).")]
-    string[] Emitters => TryGetValue(() => Emitters) ?? new[] { "csharp", "duckdb", "ts-types", "lint" };
+    [Parameter("Emitter names for resolution + VerifyEmitDeterministic (default: csharp, ts-types, lint).")]
+    string[] Emitters => TryGetValue(() => Emitters) ?? new[] { "csharp", "ts-types", "lint" };
 
     /// <summary>Root directory under which all emitters write their output.</summary>
     [Parameter("Root directory for all emitter outputs (default: ./emitters).")]
@@ -72,6 +75,13 @@ public interface IDomainConventionsApi : INukeBuild
     /// <summary>Root of the downstream TypeSpec domain spec (i.e. directory containing <c>index.tsp</c>).</summary>
     [Parameter("Root directory of the downstream TypeSpec domain spec (default: RootDirectory).")]
     AbsolutePath DomainSpecRoot => TryGetValue(() => DomainSpecRoot) ?? RootDirectory;
+
+    /// <summary>
+    /// npm registry that <see cref="PublishApiPackage"/> publishes the downstream API package to
+    /// (default: the public registry <c>https://registry.npmjs.org</c>). Override for a private feed.
+    /// </summary>
+    [Parameter("npm registry for PublishApiPackage (default: https://registry.npmjs.org).")]
+    string ApiPackageRegistry => TryGetValue(() => ApiPackageRegistry) ?? "https://registry.npmjs.org";
 
     /// <summary>Run <c>npm ci</c> to restore TypeSpec dependencies from the lockfile.</summary>
     Target RestoreTypeSpecDeps => _ => _
@@ -165,11 +175,6 @@ public interface IDomainConventionsApi : INukeBuild
         .DependsOn(CompileDomainSpec)
         .Executes(() => RunDomainEmitter(this, "csharp"));
 
-    /// <summary>Run the DuckDB emitter, writing under <c>{EmitOutputDir}/duckdb</c>.</summary>
-    Target EmitDuckDb => _ => _
-        .DependsOn(CompileDomainSpec)
-        .Executes(() => RunDomainEmitter(this, "duckdb"));
-
     /// <summary>Run the TypeScript types emitter, writing under <c>{EmitOutputDir}/ts-types</c>.</summary>
     Target EmitTsTypes => _ => _
         .DependsOn(CompileDomainSpec)
@@ -181,12 +186,14 @@ public interface IDomainConventionsApi : INukeBuild
         .Executes(() => RunDomainEmitter(this, "lint"));
 
     /// <summary>
-    /// Aggregate target that runs every emitter in <see cref="Emitters"/>: by default
-    /// <see cref="EmitCSharp"/>, <see cref="EmitDuckDb"/>, <see cref="EmitTsTypes"/>,
-    /// and <see cref="LintConventions"/>.
+    /// Aggregate target that runs the standard emitters as a fixed dependency graph —
+    /// <see cref="EmitCSharp"/>, <see cref="EmitTsTypes"/>, and <see cref="LintConventions"/>
+    /// (matching the default <see cref="Emitters"/>). This graph is static; it does not vary by the
+    /// <see cref="Emitters"/> parameter at run time. A consumer needing a different set overrides
+    /// this target (as the downstream API repo does).
     /// </summary>
     Target EmitAll => _ => _
-        .DependsOn(EmitCSharp, EmitDuckDb, EmitTsTypes, LintConventions)
+        .DependsOn(EmitCSharp, EmitTsTypes, LintConventions)
         .Executes(() =>
         {
             Log.Information("EmitAll: dependency graph complete.");
@@ -292,8 +299,13 @@ public interface IDomainConventionsApi : INukeBuild
         });
 
     /// <summary>
-    /// Run <c>npm publish --provenance</c> against the GitHub Packages npm registry
-    /// for the <c>@o-ancpplua</c> scope.
+    /// Run <c>npm publish --access public --provenance</c> against the configured
+    /// <see cref="ApiPackageRegistry"/> (default npmjs.org), authenticating with
+    /// <c>NODE_AUTH_TOKEN</c>. This is a token-based local/manual publish helper; the
+    /// canonical release path is the consumer's OIDC trusted-publishing workflow. A consumer
+    /// whose committed <c>.npmrc</c> maps its package scope to a different registry should
+    /// override this target with a scope-specific <c>--@scope:registry</c> flag, since a plain
+    /// <c>--registry</c> does not override a <c>@scope:registry</c> entry.
     /// </summary>
     Target PublishApiPackage => _ => _
         .DependsOn(PackApiPackage)
@@ -303,10 +315,10 @@ public interface IDomainConventionsApi : INukeBuild
             if (string.IsNullOrWhiteSpace(token))
                 throw new InvalidOperationException(
                     "PublishApiPackage: NODE_AUTH_TOKEN env var is required " +
-                    "(GitHub Packages npm token with write:packages scope).");
+                    $"(npm publish token for {ApiPackageRegistry}).");
 
             NpmTasks.Npm(
-                "publish --access public --provenance --registry=https://npm.pkg.github.com",
+                $"publish --access public --provenance --registry={ApiPackageRegistry}",
                 workingDirectory: DomainSpecRoot);
         });
 
