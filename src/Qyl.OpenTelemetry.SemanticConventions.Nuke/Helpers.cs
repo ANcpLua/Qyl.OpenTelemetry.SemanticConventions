@@ -128,7 +128,6 @@ internal static class Helpers
     internal static string ResolveDomainEmitterPackage(string name) => name switch
     {
         "csharp" => "@typespec/http-client-csharp",
-        "duckdb" => "@ancplua/typespec-emit-duckdb",
         "ts-types" => "@ancplua/typespec-emit-ts-types",
         "lint" => "@ancplua/typespec-otelconventions-lint",
         _ => throw new ArgumentException(
