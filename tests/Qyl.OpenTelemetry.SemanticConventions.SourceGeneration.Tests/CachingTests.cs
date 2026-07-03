@@ -86,8 +86,6 @@ public sealed class CachingTests
         }
     }
 
-    // Collapsed from four per-generator [Fact]s into one [Theory] — the per-signal
-    // duplicates only varied by generator type + marker source line.
     public static TheoryData<string, Func<IIncrementalGenerator>, string> SignalGenerators => new()
     {
         {

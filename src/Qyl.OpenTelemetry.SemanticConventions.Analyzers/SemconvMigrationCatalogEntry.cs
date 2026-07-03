@@ -120,8 +120,7 @@ internal readonly struct SemconvMigrationCatalogEntry
     /// <see cref="SemconvChangelogEvidence.IsPresent"/> is true, the docs
     /// generator renders it as a hyperlink; auditors can verify the catalog
     /// claim against the pinned upstream commit without re-parsing the
-    /// CHANGELOG.md by hand. Optional for back-compat with older catalog
-    /// entries — older entries default to <see cref="SemconvChangelogEvidence.None"/>.
+    /// CHANGELOG.md by hand. Defaults to <see cref="SemconvChangelogEvidence.None"/>.
     /// </summary>
     public SemconvChangelogEvidence Evidence { get; }
 

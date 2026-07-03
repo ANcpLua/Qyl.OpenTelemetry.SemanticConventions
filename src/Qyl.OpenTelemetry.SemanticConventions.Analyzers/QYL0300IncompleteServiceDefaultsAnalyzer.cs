@@ -37,18 +37,15 @@ public sealed class Qyl0300IncompleteServiceDefaultsAnalyzer : AlAnalyzer {
     private static void AnalyzeInvocation(SyntaxNodeAnalysisContext context) {
         var invocation = (InvocationExpressionSyntax)context.Node;
 
-        // Look for ConfigureOpenTelemetry or AddServiceDefaults calls
         var methodName = GetMethodName(invocation);
         if (methodName is not ("ConfigureOpenTelemetry" or "AddServiceDefaults" or "AddOpenTelemetry")) {
             return;
         }
 
-        // Check if this is in a method body (likely configuration code)
         if (invocation.Ancestors().OfType<MethodDeclarationSyntax>().FirstOrDefault() is not { } containingMethod) {
             return;
         }
 
-        // Collect all method invocations in the same method
         var allInvocations = new HashSet<string>();
         foreach (var inv in containingMethod.DescendantNodes().OfType<InvocationExpressionSyntax>()) {
             var name = GetMethodName(inv);
@@ -57,11 +54,9 @@ public sealed class Qyl0300IncompleteServiceDefaultsAnalyzer : AlAnalyzer {
             }
         }
 
-        // Check for tracing configuration
         var hasTracing = s_tracingMethods.Any(allInvocations.Contains);
         var hasMetrics = s_metricsMethods.Any(allInvocations.Contains);
 
-        // Report missing components
         if (!hasTracing) {
             context.ReportDiagnostic(Diagnostic.Create(
                 s_rule,

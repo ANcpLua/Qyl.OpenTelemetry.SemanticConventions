@@ -23,7 +23,6 @@ public sealed class Qyl0501MetricMethodCodeFixProvider : CodeFixProvider {
 
         var diagnostic = context.Diagnostics[0];
 
-        // Find the method declaration identified by the diagnostic
         if (root.FindToken(diagnostic.Location.SourceSpan.Start).Parent?
                 .AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault() is not { } methodDeclaration) {
             return;
@@ -44,18 +43,13 @@ public sealed class Qyl0501MetricMethodCodeFixProvider : CodeFixProvider {
         CancellationToken _) {
         var modifiers = methodDeclaration.Modifiers;
 
-        // Check if partial is already present
         if (modifiers.Any(SyntaxKind.PartialKeyword)) {
             return Task.FromResult(document);
         }
 
-        // Add partial modifier before the return type
         var partialToken = SyntaxFactory.Token(SyntaxKind.PartialKeyword).WithTrailingTrivia(SyntaxFactory.Space);
         var newModifiers = modifiers.Add(partialToken);
 
-        // For partial methods, we also need to:
-        // 1. Remove the method body and replace with semicolon
-        // 2. Keep the method signature
 
         var newMethodDeclaration = methodDeclaration
             .WithModifiers(newModifiers)

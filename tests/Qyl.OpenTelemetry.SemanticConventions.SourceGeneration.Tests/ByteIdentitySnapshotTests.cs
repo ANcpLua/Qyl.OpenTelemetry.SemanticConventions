@@ -62,9 +62,8 @@ public sealed class ByteIdentitySnapshotTests
 
         // Contiguous block check: assert the disk.io.direction member region
         // appears as one uninterrupted run of lines, not just that the substrings
-        // are present anywhere in the file. The original .And.Contain chain would
-        // have passed even if the lines were reordered or had unrelated members
-        // interleaved between them — a byte-shape regression with green tests.
+        // are present anywhere in the file — reordered or interleaved members
+        // would be a byte-shape regression that substring checks miss.
         //
         // Whitespace is normalized per-line (leading trim) because the generator
         // emits inside a user-declared partial class, while the contrib reference
