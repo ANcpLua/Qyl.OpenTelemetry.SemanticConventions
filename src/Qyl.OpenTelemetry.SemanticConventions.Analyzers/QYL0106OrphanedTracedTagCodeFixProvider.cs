@@ -64,12 +64,10 @@ public sealed class Qyl0106OrphanedTracedTagCodeFixProvider : CodeFixProvider {
             return root;
         }
 
-        // If this is the only attribute in the list, remove the entire list
         if (attributeList.Attributes.Count == 1) {
             return root.RemoveNode(attributeList, SyntaxRemoveOptions.KeepNoTrivia)!;
         }
 
-        // Otherwise, remove just this attribute from the list
         var newList = attributeList.WithAttributes(attributeList.Attributes.Remove(attribute));
         return root.ReplaceNode(attributeList, newList);
     }

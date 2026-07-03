@@ -23,7 +23,6 @@ public sealed class Qyl0500MeterClassCodeFixProvider : CodeFixProvider {
 
         var diagnostic = context.Diagnostics[0];
 
-        // Find the class declaration identified by the diagnostic
         if (root.FindToken(diagnostic.Location.SourceSpan.Start).Parent?
                 .AncestorsAndSelf().OfType<ClassDeclarationSyntax>().FirstOrDefault() is not { } classDeclaration) {
             return;
@@ -44,22 +43,18 @@ public sealed class Qyl0500MeterClassCodeFixProvider : CodeFixProvider {
         CancellationToken _) {
         var modifiers = classDeclaration.Modifiers;
 
-        // Check what modifiers we need to add
         var hasPartial = modifiers.Any(SyntaxKind.PartialKeyword);
         var hasStatic = modifiers.Any(SyntaxKind.StaticKeyword);
 
         var newModifiers = modifiers;
 
-        // Add static modifier if missing (before partial if partial exists, or at end)
         if (!hasStatic) {
             var staticToken = SyntaxFactory.Token(SyntaxKind.StaticKeyword).WithTrailingTrivia(SyntaxFactory.Space);
 
-            // Find position to insert: after access modifiers, before 'partial' or 'class'
             var insertIndex = GetStaticInsertIndex(modifiers);
             newModifiers = newModifiers.Insert(insertIndex, staticToken);
         }
 
-        // Add partial modifier if missing (should be right before 'class')
         if (!hasPartial) {
             var partialToken = SyntaxFactory.Token(SyntaxKind.PartialKeyword).WithTrailingTrivia(SyntaxFactory.Space);
             newModifiers = newModifiers.Add(partialToken);
@@ -72,7 +67,6 @@ public sealed class Qyl0500MeterClassCodeFixProvider : CodeFixProvider {
     }
 
     private static int GetStaticInsertIndex(SyntaxTokenList modifiers) {
-        // Insert static after access modifiers (public, private, protected, internal)
         for (var i = 0; i < modifiers.Count; i++) {
             var kind = modifiers[i].Kind();
             if (kind is not (SyntaxKind.PublicKeyword or SyntaxKind.PrivateKeyword or

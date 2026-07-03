@@ -30,19 +30,16 @@ public sealed class Qyl0102TracedCodeFixProvider : CodeFixProvider {
 
         var diagnostic = context.Diagnostics[0];
 
-        // Find the attribute syntax
         if (root.FindNode(diagnostic.Location.SourceSpan)
                 .AncestorsAndSelf().OfType<AttributeSyntax>().FirstOrDefault() is not { } attributeSyntax) {
             return;
         }
 
-        // Get semantic model to determine the containing type's name
         if (await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false) is not
             { } semanticModel) {
             return;
         }
 
-        // Determine the suggested source name based on context
         var suggestedName = GetSuggestedActivitySourceName(attributeSyntax, semanticModel, context.CancellationToken);
 
         context.RegisterCodeFix(
@@ -57,7 +54,6 @@ public sealed class Qyl0102TracedCodeFixProvider : CodeFixProvider {
         SyntaxNode attribute,
         SemanticModel semanticModel,
         CancellationToken cancellationToken) {
-        // Find the containing type
         if (attribute.Ancestors().OfType<TypeDeclarationSyntax>().FirstOrDefault() is not { } containingType) {
             return "MyApp";
         }
@@ -66,7 +62,6 @@ public sealed class Qyl0102TracedCodeFixProvider : CodeFixProvider {
             return containingType.Identifier.Text;
         }
 
-        // Use the fully qualified name without global:: prefix
         var fullName = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         return fullName.ReplaceOrdinal("global::", "") ?? fullName;
     }
@@ -79,9 +74,7 @@ public sealed class Qyl0102TracedCodeFixProvider : CodeFixProvider {
         CancellationToken _) {
         AttributeSyntax newAttribute;
 
-        // Check if attribute has argument list
         if (attribute.ArgumentList is null || attribute.ArgumentList.Arguments.Count is 0) {
-            // Create new argument list with the source name
             var argument = SyntaxFactory.AttributeArgument(
                 SyntaxFactory.LiteralExpression(
                     SyntaxKind.StringLiteralExpression,
@@ -92,7 +85,6 @@ public sealed class Qyl0102TracedCodeFixProvider : CodeFixProvider {
 
             newAttribute = attribute.WithArgumentList(argumentList);
         } else {
-            // Check if first argument is empty string - replace it
             var firstArg = attribute.ArgumentList.Arguments[0];
             if (firstArg.Expression is LiteralExpressionSyntax { Token.ValueText: "" or " " or "  " }) {
                 var newArg = SyntaxFactory.AttributeArgument(
@@ -104,7 +96,6 @@ public sealed class Qyl0102TracedCodeFixProvider : CodeFixProvider {
                 var newArgumentList = attribute.ArgumentList.WithArguments(newArguments);
                 newAttribute = attribute.WithArgumentList(newArgumentList);
             } else {
-                // Has non-empty arguments but missing ActivitySourceName - add as named argument
                 var namedArg = SyntaxFactory.AttributeArgument(
                     SyntaxFactory.NameEquals("ActivitySourceName"),
                     null,
@@ -112,7 +103,6 @@ public sealed class Qyl0102TracedCodeFixProvider : CodeFixProvider {
                         SyntaxKind.StringLiteralExpression,
                         SyntaxFactory.Literal(sourceName)));
 
-                // Insert at the beginning
                 var newArguments = attribute.ArgumentList.Arguments.Insert(0, namedArg);
                 var newArgumentList = attribute.ArgumentList.WithArguments(newArguments);
                 newAttribute = attribute.WithArgumentList(newArgumentList);
