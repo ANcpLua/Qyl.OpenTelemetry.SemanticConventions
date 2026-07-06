@@ -542,7 +542,7 @@
                 "text": "Enable EventSourceSupport for AOT with telemetry"
               },
               "fullDescription": {
-                "text": "Native AOT trims EventSource/EventPipe infrastructure by default. If the application uses OpenTelemetry, dotnet-trace, dotnet-counters, or other EventPipe-based diagnostics, set EventSourceSupport to true in the project file to preserve this infrastructure."
+                "text": "Native AOT trims EventSource/EventPipe infrastructure by default. This matters only if you consume EventPipe-based diagnostics (dotnet-trace, dotnet-counters) or bridge EventSource/EventCounters into telemetry \u2014 OpenTelemetry\u0027s OTLP export (ActivitySource plus Meter/MeterListener) does not depend on EventSource, and enabling EventSourceSupport increases Native AOT output size. Set EventSourceSupport=true in the project file only when you actually rely on EventPipe."
               },
               "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0304_EnableEventSourceSupport.md",
               "defaultConfiguration": {
@@ -780,7 +780,7 @@
                 "text": "Uncompressed OTLP export"
               },
               "fullDescription": {
-                "text": "OTLP HTTP protocol does not enable compression by default, unlike gRPC which uses compression automatically. For HTTP exports, especially with large payloads like gen_ai.content attributes, enabling gzip compression significantly reduces bandwidth usage and export latency. Configure ExportProcessorOptions or OtlpExporterOptions to enable compression."
+                "text": "OTLP does not enable compression by default on either transport: the specification mandates no default, and gRPC is not compressed automatically \u2014 both gRPC and HTTP/protobuf send uncompressed payloads unless configured. For exports with large payloads (especially gen_ai.content request and response text), gzip compression significantly reduces bandwidth usage and export latency. Enable it via the OTEL_EXPORTER_OTLP_COMPRESSION=gzip environment variable, or the exporter\u0027s compression option. This rule inspects the HTTP/protobuf configuration path."
               },
               "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0701_UncompressedExport.md",
               "defaultConfiguration": {

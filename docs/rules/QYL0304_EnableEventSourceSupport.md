@@ -12,7 +12,7 @@
 
 ## Description
 
-Native AOT trims EventSource/EventPipe infrastructure by default. If the application uses OpenTelemetry, dotnet-trace, dotnet-counters, or other EventPipe-based diagnostics, set EventSourceSupport to true in the project file to preserve this infrastructure.
+Native AOT trims EventSource/EventPipe infrastructure by default. This matters only if you consume EventPipe-based diagnostics (dotnet-trace, dotnet-counters) or bridge EventSource/EventCounters into telemetry — OpenTelemetry's OTLP export (ActivitySource plus Meter/MeterListener) does not depend on EventSource, and enabling EventSourceSupport increases Native AOT output size. Set EventSourceSupport=true in the project file only when you actually rely on EventPipe.
 
 ## See also
 
