@@ -46,7 +46,7 @@ Each ID links to a per-rule page under [`docs/rules/`](rules/) with severity, ca
 | [QYL0301](rules/QYL0301_NonOtlpCollectorEndpoint.md) | Warning | Collector endpoint should use OTLP protocol | No |
 | [QYL0302](rules/QYL0302_MissingOTelConfiguration.md) | Warning | Missing OpenTelemetry configuration | No |
 | [QYL0303](rules/QYL0303_MissingResourceAttributes.md) | Warning | Missing resource attributes | No |
-| [QYL0304](rules/QYL0304_EnableEventSourceSupport.md) | Warning | Enable EventSourceSupport for AOT with telemetry | No |
+| [QYL0304](rules/QYL0304_EnableEventSourceSupport.md) | Warning | EventSource instrumentation is trimmed under Native AOT without EventSourceSupport | No |
 | [QYL0305](rules/QYL0305_LegacySemanticConventionsAccessor.md) | Warning | Replace legacy SemanticConventions accessor | No |
 | [QYL0400](rules/QYL0400_GenAiExecuteToolName.md) | Warning | gen_ai.execute_tool span requires gen_ai.tool.name | No |
 | [QYL0401](rules/QYL0401_GenAiMissingRequiredAttributes.md) | Warning | GenAI span missing required attributes | No |
