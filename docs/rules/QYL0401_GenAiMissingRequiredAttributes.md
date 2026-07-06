@@ -12,7 +12,7 @@
 
 ## Description
 
-GenAI spans must include required semantic convention attributes (gen_ai.system, gen_ai.request.model, gen_ai.operation.name) to enable proper observability and correlation of LLM operations.
+GenAI spans must include the required semantic-convention attributes (gen_ai.provider.name, gen_ai.request.model, gen_ai.operation.name) to enable proper observability and correlation of LLM operations. Note: gen_ai.system was renamed to gen_ai.provider.name.
 
 ## See also
 

@@ -12,7 +12,7 @@
 
 ## Description
 
-GenAI operation names should follow the semantic conventions: 'chat' for chat completions, 'text_completion' for text completions, and 'embeddings' for embedding generation.
+GenAI operation names should follow the semantic conventions. Known values are chat, text_completion, embeddings, generate_content, retrieval, and the agent/workflow operations execute_tool, create_agent, invoke_agent, and invoke_workflow.
 
 ## See also
 
