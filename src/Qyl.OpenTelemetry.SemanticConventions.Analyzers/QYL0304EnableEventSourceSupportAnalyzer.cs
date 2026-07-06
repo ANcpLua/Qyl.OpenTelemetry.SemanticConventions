@@ -6,14 +6,18 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 /// </summary>
 /// <remarks>
 ///     <para>
-///         Native AOT trims EventSource/EventPipe infrastructure by default.
-///         If the application uses OpenTelemetry, dotnet-trace, dotnet-counters, or other
-///         EventPipe-based diagnostics, <c>&lt;EventSourceSupport&gt;true&lt;/EventSourceSupport&gt;</c>
-///         must be set in the project file to preserve this infrastructure.
+///         Native AOT trims EventSource/EventPipe infrastructure by default. This only
+///         matters if you consume EventPipe-based diagnostics (dotnet-trace, dotnet-counters)
+///         or bridge EventSource/EventCounters into telemetry. OpenTelemetry's OTLP export
+///         path (ActivitySource + Meter/MeterListener) does <b>not</b> depend on EventSource,
+///         and enabling <c>&lt;EventSourceSupport&gt;true&lt;/EventSourceSupport&gt;</c> increases
+///         Native AOT output size — so set it only when you actually rely on EventPipe.
 ///     </para>
 ///     <para>
 ///         This analyzer checks MSBuild properties exposed via <c>CompilerVisibleProperty</c> to detect
-///         when <c>PublishAot</c> is true but <c>EventSourceSupport</c> is not explicitly enabled.
+///         when <c>PublishAot</c> is true but <c>EventSourceSupport</c> is not explicitly enabled. It
+///         cannot tell whether an EventPipe consumer is actually present, so it fires on any AOT project
+///         without the switch; treat it as an informational reminder, not a mandate.
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]

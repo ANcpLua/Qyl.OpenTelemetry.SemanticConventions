@@ -12,7 +12,7 @@
 
 ## Description
 
-OTLP HTTP protocol does not enable compression by default, unlike gRPC which uses compression automatically. For HTTP exports, especially with large payloads like gen_ai.content attributes, enabling gzip compression significantly reduces bandwidth usage and export latency. Configure ExportProcessorOptions or OtlpExporterOptions to enable compression.
+OTLP does not enable compression by default on either transport: the specification mandates no default, and gRPC is not compressed automatically — both gRPC and HTTP/protobuf send uncompressed payloads unless configured. For exports with large payloads (especially gen_ai.content request and response text), gzip compression significantly reduces bandwidth usage and export latency. Enable it via the OTEL_EXPORTER_OTLP_COMPRESSION=gzip environment variable, or the exporter's compression option. This rule inspects the HTTP/protobuf configuration path.
 
 ## See also
 

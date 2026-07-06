@@ -6,24 +6,22 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 /// </summary>
 /// <remarks>
 ///     <para>
-///         OTLP supports two transport protocols: gRPC and HTTP/protobuf. While gRPC
-///         automatically handles compression via its underlying HTTP/2 transport,
-///         HTTP/protobuf exports use uncompressed payloads by default.
+///         OTLP supports two transports: gRPC and HTTP/protobuf. Neither enables
+///         compression by default — the OTLP specification mandates no default, and the
+///         .NET exporter leaves compression off on both transports unless configured.
+///         gRPC is not compressed automatically.
 ///     </para>
 ///     <para>
 ///         For services emitting large telemetry payloads (especially those using
 ///         gen_ai.content attributes with full request/response text), enabling
-///         gzip compression can reduce bandwidth usage by 70-90% and significantly
-///         decrease export latency.
+///         gzip compression can substantially reduce bandwidth usage and decrease
+///         export latency.
 ///     </para>
 ///     <para>
-///         The analyzer identifies OTLP exporter configurations that:
-///         1. Explicitly set Protocol to HttpProtobuf without enabling compression
-///         2. Use AddOtlpExporter/UseOtlpExporter without compression configuration
-///     </para>
-///     <para>
-///         gRPC protocol (OtlpExportProtocol.Grpc) is not flagged as it handles
-///         compression automatically.
+///         The analyzer flags OTLP exporter configurations that set Protocol to
+///         HttpProtobuf without enabling compression. The gRPC path is not currently
+///         inspected — a known scope limitation, not an implication that gRPC compresses
+///         on its own.
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
