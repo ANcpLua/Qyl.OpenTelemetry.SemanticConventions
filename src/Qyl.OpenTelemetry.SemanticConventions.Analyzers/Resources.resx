@@ -102,7 +102,7 @@
         <value>GenAI Activity '{0}' is missing required attribute '{1}'</value>
     </data>
     <data name="QYL0401AnalyzerDescription" xml:space="preserve">
-        <value>GenAI spans must include required semantic convention attributes (gen_ai.system, gen_ai.request.model, gen_ai.operation.name) to enable proper observability and correlation of LLM operations.</value>
+        <value>GenAI spans must include the required semantic-convention attributes (gen_ai.provider.name, gen_ai.request.model, gen_ai.operation.name) to enable proper observability and correlation of LLM operations. Note: gen_ai.system was renamed to gen_ai.provider.name.</value>
     </data>
     <!-- AL0065: Incorrect token usage metric -->
     <data name="QYL0402AnalyzerTitle" xml:space="preserve">
@@ -119,10 +119,10 @@
         <value>GenAI operation name should follow semantic conventions</value>
     </data>
     <data name="QYL0403AnalyzerMessageFormat" xml:space="preserve">
-        <value>GenAI operation name '{0}' should be one of: chat, text_completion, embeddings</value>
+        <value>GenAI operation name '{0}' is not a known semantic-convention value (chat, text_completion, embeddings, generate_content, retrieval, execute_tool, create_agent, invoke_agent, invoke_workflow)</value>
     </data>
     <data name="QYL0403AnalyzerDescription" xml:space="preserve">
-        <value>GenAI operation names should follow the semantic conventions: 'chat' for chat completions, 'text_completion' for text completions, and 'embeddings' for embedding generation.</value>
+        <value>GenAI operation names should follow the semantic conventions. Known values are chat, text_completion, embeddings, generate_content, retrieval, and the agent/workflow operations execute_tool, create_agent, invoke_agent, and invoke_workflow.</value>
     </data>
     <!-- AL0067: Unregistered Meter -->
     <data name="QYL0200AnalyzerTitle" xml:space="preserve">

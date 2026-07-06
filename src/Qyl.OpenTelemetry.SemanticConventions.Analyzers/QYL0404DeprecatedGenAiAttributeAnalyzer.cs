@@ -13,11 +13,11 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     <para>
 ///         Deprecated attributes detected:
 ///         <list type="bullet">
-///             <item>gen_ai.system -> gen_ai.system (still valid, but check usage)</item>
-///             <item>gen_ai.prompt.tokens -> gen_ai.usage.input_tokens</item>
-///             <item>gen_ai.completion.tokens -> gen_ai.usage.output_tokens</item>
-///             <item>prompt_tokens -> gen_ai.usage.input_tokens</item>
-///             <item>completion_tokens -> gen_ai.usage.output_tokens</item>
+///             <item>gen_ai.system -> gen_ai.provider.name</item>
+///             <item>gen_ai.usage.prompt_tokens -> gen_ai.usage.input_tokens</item>
+///             <item>gen_ai.usage.completion_tokens -> gen_ai.usage.output_tokens</item>
+///             <item>gen_ai.openai.request.response_format -> gen_ai.output.type</item>
+///             <item>gen_ai.prompt / gen_ai.completion -> removed (no replacement)</item>
 ///         </list>
 ///     </para>
 /// </remarks>

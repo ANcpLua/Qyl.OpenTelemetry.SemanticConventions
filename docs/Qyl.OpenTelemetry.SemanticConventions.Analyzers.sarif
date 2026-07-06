@@ -593,7 +593,7 @@
                 "text": "GenAI span missing required attributes"
               },
               "fullDescription": {
-                "text": "GenAI spans must include required semantic convention attributes (gen_ai.system, gen_ai.request.model, gen_ai.operation.name) to enable proper observability and correlation of LLM operations."
+                "text": "GenAI spans must include the required semantic-convention attributes (gen_ai.provider.name, gen_ai.request.model, gen_ai.operation.name) to enable proper observability and correlation of LLM operations. Note: gen_ai.system was renamed to gen_ai.provider.name."
               },
               "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0401_GenAiMissingRequiredAttributes.md",
               "defaultConfiguration": {
@@ -627,7 +627,7 @@
                 "text": "GenAI operation name should follow semantic conventions"
               },
               "fullDescription": {
-                "text": "GenAI operation names should follow the semantic conventions: \u0027chat\u0027 for chat completions, \u0027text_completion\u0027 for text completions, and \u0027embeddings\u0027 for embedding generation."
+                "text": "GenAI operation names should follow the semantic conventions. Known values are chat, text_completion, embeddings, generate_content, retrieval, and the agent/workflow operations execute_tool, create_agent, invoke_agent, and invoke_workflow."
               },
               "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0403_InvalidGenAiOperationName.md",
               "defaultConfiguration": {
