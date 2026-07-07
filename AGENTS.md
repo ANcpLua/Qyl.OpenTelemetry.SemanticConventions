@@ -52,6 +52,9 @@ Edit `LockstepPolicy` and friends here; this project ships as the `.Nuke` packag
   the generator is `tools/…DocsGenerator`, never hand-edit the markdown).
 - The `.Analyzers` and `.SourceGeneration` projects target **netstandard2.0**;
   `System.Index`/`System.Range`/`IsExternalInit` come from the
-  `ANcpLua.Roslyn.Utilities.Polyfills` source package, not the BCL.
-  (Rider may falsely flag `System.Range` "not resolved" on the **net10**
-  DocsGenerator — that's a ReSharper cross-project quirk; `dotnet build` is truth.)
+  `ANcpLua.Roslyn.Utilities.Polyfills` source package, not the BCL. Those polyfills
+  compile as `internal` types into the analyzer assembly, so any project that gets
+  `InternalsVisibleTo` from `.Analyzers` **and** targets a modern TFM must reference
+  it with `Aliases="analyzers"` (see the DocsGenerator's `ProjectReference`) —
+  otherwise the friend assembly's `System.Range` collides with the BCL's and the
+  IDE can't resolve the type.

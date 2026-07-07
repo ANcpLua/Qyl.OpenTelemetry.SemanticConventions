@@ -36,7 +36,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Qyl.OpenTelemetry.SemanticConventions.Analyzers\Qyl.OpenTelemetry.SemanticConventions.Analyzers.csproj"/>
+    <!-- Aliases: the netstandard2.0 analyzer assembly compiles internal System.Range/System.Index
+         polyfills, and InternalsVisibleTo would put them in this net10 project's global namespace
+         alongside the BCL types. The alias keeps the assembly out of the global namespace; the
+         internals we need are imported per-file via extern alias. -->
+    <ProjectReference Include="..\..\src\Qyl.OpenTelemetry.SemanticConventions.Analyzers\Qyl.OpenTelemetry.SemanticConventions.Analyzers.csproj" Aliases="analyzers"/>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" PrivateAssets="all"/>
   </ItemGroup>
 
