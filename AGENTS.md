@@ -12,12 +12,14 @@ Published to nuget.org via **trusted publishing** on `v*` tag push (or
 `workflow_dispatch` with a `version` input): the workflow packs the whole
 solution at the tag version and pushes every `.nupkg` with `--skip-duplicate`.
 
-**Current version state — the family is converged at `3.0.1`.** `v3.0.1` is
-tagged at `HEAD` and all five packages are published on nuget.org at **3.0.1**
+**Current version state — the family is converged at `3.1.0`.** `v3.1.0` is
+tagged on `main` and all five packages are published on nuget.org at **3.1.0**
 (`.`, `.Incubating`, `.SourceGeneration`, `.Analyzers`, `.Nuke`). The next
-release is `v3.0.2`/`v3.1.0`: bump `VersionPrefix` in `Directory.Build.props`
+release is `v3.1.1`/`v3.2.0`: bump `VersionPrefix` in `Directory.Build.props`
 (the local-restore fallback) to match, then tag — the workflow packs all five at
-the tag version and `--skip-duplicate` makes re-runs idempotent.
+the tag version and `--skip-duplicate` makes re-runs idempotent. (Note: the
+`v3.0.2` tag points at an orphaned commit not on `main`; 3.0.2 published fine
+and the tag stays as the historical release marker.)
 
 ## The Nuke build component lives in THIS repo — do not re-externalize it
 
