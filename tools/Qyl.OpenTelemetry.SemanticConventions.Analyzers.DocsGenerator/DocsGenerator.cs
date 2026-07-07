@@ -1,6 +1,10 @@
 // Copyright (c) Alexander Nachtmann
 // SPDX-License-Identifier: Apache-2.0
 
+extern alias analyzers;
+
+using RuleDocs = analyzers::Qyl.OpenTelemetry.SemanticConventions.Analyzers.RuleDocs;
+
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator;
 
 /// <summary>

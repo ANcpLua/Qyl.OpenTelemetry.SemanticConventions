@@ -1,8 +1,14 @@
 // Copyright (c) Alexander Nachtmann
 // SPDX-License-Identifier: Apache-2.0
 
+extern alias analyzers;
+
 using System.Collections.Immutable;
 using System.Text;
+using SemconvMigrationCatalog = analyzers::Qyl.OpenTelemetry.SemanticConventions.Analyzers.SemconvMigrationCatalog;
+using SemconvMigrationCatalogEntry = analyzers::Qyl.OpenTelemetry.SemanticConventions.Analyzers.SemconvMigrationCatalogEntry;
+using SemconvMigrationItemKind = analyzers::Qyl.OpenTelemetry.SemanticConventions.Analyzers.SemconvMigrationItemKind;
+using SemconvMigrationKind = analyzers::Qyl.OpenTelemetry.SemanticConventions.Analyzers.SemconvMigrationKind;
 
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator;
 

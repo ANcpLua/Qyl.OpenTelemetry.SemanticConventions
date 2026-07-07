@@ -1,10 +1,13 @@
 // Copyright (c) Alexander Nachtmann
 // SPDX-License-Identifier: Apache-2.0
 
+extern alias analyzers;
+
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
+using DiagnosticDescriptors = analyzers::Qyl.OpenTelemetry.SemanticConventions.Analyzers.DiagnosticDescriptors;
 
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator;
 
