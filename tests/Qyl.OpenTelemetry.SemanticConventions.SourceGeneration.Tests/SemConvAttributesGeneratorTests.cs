@@ -152,7 +152,7 @@ public sealed class SemConvAttributesGeneratorTests
         stable.Should()
             .Contain("public static class HttpRequestMethodValues")
             .And.NotContain("public const string Query = \"QUERY\";",
-                "http.request.method is stable but its QUERY enum member is development-stability in semconv v1.41.0");
+                "http.request.method is stable but its QUERY enum member is development-stability in semconv v1.43.0");
 
         incubating.Should()
             .Contain("public static class HttpRequestMethodValues")

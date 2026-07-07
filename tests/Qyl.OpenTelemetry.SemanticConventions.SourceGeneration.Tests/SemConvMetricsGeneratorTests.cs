@@ -46,7 +46,7 @@ public sealed class SemConvMetricsGeneratorTests
             .Single(static t => t.FilePath.EndsWith("HttpServerMetrics.g.cs", StringComparison.Ordinal))
             .ToString();
 
-        // Stable marker: only http.server.request.duration is stable in v1.41.0;
+        // Stable marker: only http.server.request.duration is stable in the current projection;
         // the other three http.server.* metrics are development-stability and
         // must be filtered out under StableOnly.
         generated.Should()
@@ -87,7 +87,7 @@ public sealed class SemConvMetricsGeneratorTests
             .Single(static t => t.FilePath.EndsWith("HttpServerIncubatingMetrics.g.cs", StringComparison.Ordinal))
             .ToString();
 
-        // Incubating marker: all four v1.41.0 http.server.* metrics must appear,
+        // Incubating marker: all current http.server.* metrics must appear,
         // covering the stable row plus three development-stability rows.
         generated.Should()
             .Contain("namespace MyApp;")
@@ -132,7 +132,7 @@ public sealed class SemConvMetricsGeneratorTests
     [Fact]
     public void Stable_Marker_Emits_Empty_When_All_Rows_Are_Development()
     {
-        // gen_ai.client.* metrics in v1.41.0 are all development-stability;
+        // gen_ai.client.* metrics are all development-stability;
         // the stable surface must therefore emit a class with no constants/descriptors.
         // The incubating surface for the same prefix should emit the development rows.
         const string source = """
@@ -159,7 +159,7 @@ public sealed class SemConvMetricsGeneratorTests
         stable.Should()
             .Contain("static partial class GenAiClientStableMetrics")
             .And.NotContain("public const string Metric",
-                "no gen_ai.client.* metric is stable in v1.41.0 — stable surface must emit no Metric* constants");
+                "no gen_ai.client.* metric is stable — stable surface must emit no Metric* constants");
 
         incubating.Should()
             .Contain("public const string Metric",

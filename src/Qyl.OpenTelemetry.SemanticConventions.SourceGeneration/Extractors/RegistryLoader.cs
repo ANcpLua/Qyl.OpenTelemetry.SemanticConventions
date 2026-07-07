@@ -8,7 +8,7 @@ namespace Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Extractors;
 /// Loads the embedded resolved-registry projection once per analyzer assembly load.
 /// The JSON shape is qyl-owned (not the upstream <c>resolved-registry-v2</c> contract);
 /// it is the minimum projection needed for source generation, emitted by a custom Jinja
-/// template pinned to semconv v1.41.0 + Weaver v0.23.0.
+/// template pinned to core semconv v1.43.0 plus the development GenAI registry.
 /// </summary>
 /// <remarks>
 /// Uses a minimal hand-rolled JSON reader rather than <c>System.Text.Json</c> because

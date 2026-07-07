@@ -44,7 +44,7 @@
 
     <IsPackable>true</IsPackable>
     <PackageId>Qyl.OpenTelemetry.SemanticConventions.SourceGeneration</PackageId>
-    <Description>Roslyn source generator that materialises OpenTelemetry semantic-conventions constants, descriptors, and thin helpers for user-declared partial classes. Emits stable/incubating projections for attributes, metrics, events, Meter factories, and Activity setters from the pinned OpenTelemetry semantic-conventions v1.41.0 Weaver registry.</Description>
+    <Description>Roslyn source generator that materialises OpenTelemetry semantic-conventions constants, descriptors, and thin helpers for user-declared partial classes. Emits stable/incubating projections for attributes, metrics, events, Meter factories, and Activity setters from the pinned OpenTelemetry semantic-conventions v1.43.0 core registry plus the pinned development GenAI registry.</Description>
     <PackageTags>opentelemetry;semantic-conventions;roslyn;source-generator;otel;weaver</PackageTags>
     <!-- IncludeSymbols=false: snupkg packer walks lib/, which is empty by design (see _AddGeneratorToAnalyzersPackage). -->
     <IncludeSymbols>false</IncludeSymbols>
@@ -77,9 +77,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Embedded resolved registry: qyl-owned projection of the full OTel
-         semantic-conventions registry, emitted from scripts/templates/registry/
-         resolved-registry.json.j2 pinned to semconv v1.41.0 + Weaver v0.23.0.
+    <!-- Embedded resolved registry: qyl-owned projection of core OTel
+         semantic-conventions v1.43.0 plus the pinned development GenAI registry,
+         emitted from scripts/templates/registry/resolved-registry.json.j2.
          The LogicalName is consumed by Extractors/RegistryLoader.cs — do not
          change without updating the loader. -->
     <EmbeddedResource Include="Resources/resolved-registry.json"

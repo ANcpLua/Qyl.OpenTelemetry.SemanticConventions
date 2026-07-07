@@ -31,7 +31,7 @@ public sealed class SemConvEventsGeneratorTests
     [Fact]
     public void Stable_Marker_Emits_Only_Stable_Exception_Event()
     {
-        // Only `exception` is stable in v1.41.0 — the stable surface for prefix "exception"
+        // Only `exception` is stable in the current projection — the stable surface for prefix "exception"
         // must emit it; all other event prefixes (session.*, gen_ai.*, http.*.exception, ...)
         // are non-stable and must yield empty stable surfaces.
         const string source = """
@@ -59,7 +59,7 @@ public sealed class SemConvEventsGeneratorTests
     [Fact]
     public void Stable_Marker_Filters_Out_Development_Session_Events()
     {
-        // session.start + session.end are both development-stability in v1.41.0;
+        // session.start + session.end are both development-stability;
         // the stable surface for "session" prefix must therefore emit zero events.
         const string source = """
             using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration;
@@ -115,7 +115,7 @@ public sealed class SemConvEventsGeneratorTests
     [Fact]
     public void Incubating_Marker_Emits_ReleaseCandidate_FeatureFlag_Event()
     {
-        // feature_flag.evaluation is release_candidate in v1.41.0 — the incubating
+        // feature_flag.evaluation is release_candidate — the incubating
         // surface (AllStabilities) must include it. The stable surface (StableOnly)
         // would not, since release_candidate != stable.
         const string source = """

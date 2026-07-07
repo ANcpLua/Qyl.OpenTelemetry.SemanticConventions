@@ -21,7 +21,7 @@ namespace Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Emitters;
 /// </summary>
 internal static class EventsEmitter
 {
-    // Event-emission target audit (semconv v1.41.0):
+    // Event-emission target audit:
     // The upstream event rows do not carry a stable discriminator that says
     // "ActivityEvent" vs "Logger/Event". We preserve that fact explicitly as
     // EventGroupModel.EmissionTarget=Unspecified instead of generating

@@ -47,7 +47,7 @@ public interface IDomainConventionsApi : INukeBuild
     string OtelKeysPackage => TryGetValue(() => OtelKeysPackage) ?? "@ancplua/typespec-otel-semconv";
 
     /// <summary>
-    /// Exact lockstep version (<c>{semconv}-{n}</c>, e.g. <c>1.41.0-3</c>) of
+    /// Exact lockstep version (<c>{semconv}-{n}</c>, e.g. <c>1.43.0-3</c>) of
     /// <see cref="OtelKeysPackage"/> the downstream package must pin in
     /// <c>package-lock.json</c>.
     /// </summary>

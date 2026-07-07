@@ -10,11 +10,11 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Nuke;
 /// </summary>
 /// <remarks>
 /// The upstream generator publishes its npm package using the version scheme
-/// <c>{semconv-version}-{n}</c>, for example <c>1.41.0-3</c>, where:
+/// <c>{semconv-version}-{n}</c>, for example <c>1.43.0-3</c>, where:
 /// <list type="bullet">
 ///   <item><description><c>semconv-version</c> is the pinned upstream OpenTelemetry
-///   semantic-conventions release tag (e.g. <c>1.41.0</c>, mirroring
-///   <c>open-telemetry/semantic-conventions@v1.41.0</c>).</description></item>
+///   semantic-conventions release tag (e.g. <c>1.43.0</c>, mirroring
+///   <c>open-telemetry/semantic-conventions@v1.43.0</c>).</description></item>
 ///   <item><description><c>n</c> is the monotonic generator-revision counter:
 ///   the first release for a given semconv version is <c>-1</c>, the next is
 ///   <c>-2</c>, and so on. It is bumped whenever generator output, Weaver
@@ -29,7 +29,7 @@ public static class LockstepPolicy
 {
     /// <summary>
     /// Parses a lockstep version string of the form <c>"{semconv}-{n}"</c>
-    /// (for example <c>"1.41.0-3"</c>) into its two components.
+    /// (for example <c>"1.43.0-3"</c>) into its two components.
     /// </summary>
     /// <param name="version">
     /// The version string to parse. Must contain exactly one <c>-</c> separator
@@ -39,7 +39,7 @@ public static class LockstepPolicy
     /// A tuple of:
     /// <list type="bullet">
     ///   <item><description><c>semconv</c>: the upstream OpenTelemetry semantic-conventions
-    ///   release tag, e.g. <c>"1.41.0"</c>.</description></item>
+    ///   release tag, e.g. <c>"1.43.0"</c>.</description></item>
     ///   <item><description><c>n</c>: the monotonic generator-revision counter, &gt;= 1.</description></item>
     /// </list>
     /// </returns>
@@ -53,8 +53,8 @@ public static class LockstepPolicy
     /// </exception>
     /// <example>
     /// <code>
-    /// var (semconv, n) = LockstepPolicy.ParseSemconvSuffixVersion("1.41.0-3");
-    /// // semconv == "1.41.0"
+    /// var (semconv, n) = LockstepPolicy.ParseSemconvSuffixVersion("1.43.0-3");
+    /// // semconv == "1.43.0"
     /// // n       == 3
     /// </code>
     /// </example>

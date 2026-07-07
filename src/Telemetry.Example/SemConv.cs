@@ -2,8 +2,8 @@ using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration;
 
 namespace Telemetry.Example;
 
-// The generator fills these partials from the pinned semantic-conventions v1.41.0
-// registry. gen_ai is incubating, so use the Incubating markers (stable + dev/alpha
+// The generator fills these partials from the pinned semantic-conventions v1.43.0
+// core registry plus the development GenAI registry. gen_ai is incubating, so use the Incubating markers (stable + dev/alpha
 // + deprecated). A named namespace is required: a global-namespace partial collides
 // with Program.cs's top-level statements (CS9348).
 

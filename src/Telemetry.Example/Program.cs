@@ -50,7 +50,7 @@ var directionChangeCounter = meter.CreateCounter<int>("robot_direction_change_to
 var directionChangeTracker = new DirectionChangeTracker(activitySource, directionChangeCounter);
 
 // gen_ai.client.token.usage histogram, created from the source-generated semantic-
-// convention factory (name/unit/description prefilled from semconv v1.41.0).
+// convention factory (name/unit/description prefilled from semconv v1.43.0 + GenAI).
 var genAiTokenUsage = meter.CreateGenAiClientTokenUsageHistogram();
 
 ColorHelper.PrintColoredLine("""

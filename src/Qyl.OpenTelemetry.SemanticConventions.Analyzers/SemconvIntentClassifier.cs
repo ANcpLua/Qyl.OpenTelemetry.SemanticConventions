@@ -7,7 +7,7 @@ internal static class SemconvIntentClassifier
 {
     private const string SchemaUrlPrefix = "https://opentelemetry.io/schemas/";
 
-    private static readonly Version CurrentSchemaVersion = new(1, 41, 0);
+    private static readonly Version CurrentSchemaVersion = new(1, 43, 0);
 
     private static readonly string[] DowngradeFragments =
     [

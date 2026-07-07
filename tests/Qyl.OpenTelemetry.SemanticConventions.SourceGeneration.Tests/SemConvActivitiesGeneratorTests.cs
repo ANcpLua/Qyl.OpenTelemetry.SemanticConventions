@@ -154,9 +154,10 @@ public sealed class SemConvActivitiesGeneratorTests
 
         generated.Should()
             .Contain("/// Semantic-convention contexts:")
-            .And.Contain("attributes.http.client (attribute_group, prefix <none>): required")
-            .And.Contain("attributes.http.server (attribute_group, prefix <none>): required")
-            .And.Contain("metric_attributes.http.server (attribute_group, prefix <none>): required")
+            .And.Contain("http.client (span, prefix <none>): required")
+            .And.Contain("http.server (span, prefix <none>): required")
+            .And.Contain("metric.http.server.request.duration (metric, prefix <none>): required")
+            .And.Contain("http.server.request.duration (metric_refinement, prefix <none>): required")
             .And.Contain("conditionally_required - If and only if one was received/sent.");
     }
 

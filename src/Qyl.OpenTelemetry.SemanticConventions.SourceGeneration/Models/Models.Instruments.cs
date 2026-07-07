@@ -40,8 +40,8 @@ internal readonly record struct EventGroupModel(
     EquatableArray<SignalAttributeModel> Payload);
 
 /// <summary>
-/// Event target information when upstream exposes it. The semconv v1.41.0
-/// registry projection does not carry a discriminator, so generated events
+/// Event target information when upstream exposes it. The current registry
+/// projection does not carry a discriminator, so generated events
 /// remain target-agnostic instead of pretending every event is an ActivityEvent.
 /// </summary>
 internal enum EventEmissionTargetModel

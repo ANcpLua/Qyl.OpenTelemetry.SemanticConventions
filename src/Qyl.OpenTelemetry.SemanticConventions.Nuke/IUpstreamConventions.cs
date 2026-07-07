@@ -44,12 +44,12 @@ public interface IUpstreamConventions : INukeBuild
     /// leading <c>v</c>. Default is the current pinned release.
     /// </summary>
     /// <remarks>
-    /// This is the pinned upstream release (e.g. <c>open-telemetry/semantic-conventions@v1.41.0</c>),
+    /// This is the pinned upstream release (e.g. <c>open-telemetry/semantic-conventions@v1.43.0</c>),
     /// NOT the declarative version-selection integer at
     /// <c>.instrumentation/development.general.&lt;domain&gt;.semconv</c>.
     /// </remarks>
-    [Parameter("Upstream OpenTelemetry semantic-conventions release tag to pin (e.g. '1.41.0').")]
-    string SemconvVersion => TryGetValue(() => SemconvVersion) ?? "1.41.0";
+    [Parameter("Upstream OpenTelemetry semantic-conventions release tag to pin (e.g. '1.43.0').")]
+    string SemconvVersion => TryGetValue(() => SemconvVersion) ?? "1.43.0";
 
     /// <summary>Pinned Weaver CLI version used to drive code generation.</summary>
     [Parameter("Pinned OpenTelemetry Weaver CLI version (must be set explicitly to keep generation reproducible).")]

@@ -1,10 +1,11 @@
 # Weaver template config for the Roslyn source generator's embedded
 # resolved-registry. Emits a minimal qyl-owned JSON projection (one file)
-# that the analyzer reads at compile time via System.Text.Json.
+# that the analyzer reads at compile time with the local JsonReader.
 #
 # This is NOT the resolved-registry-v2 contract; it is the smallest projection
-# that satisfies the analyzer's needs. See README of the generator package for
-# the consumer surface and `docs/dual-target-mapping.md` for upstream parity.
+# that satisfies the generator's needs. The projection is generated once for
+# core semconv and once for semantic-conventions-genai, then merged by
+# scripts/generate.sh.
 
 whitespace_control:
   trim_blocks: true
@@ -12,9 +13,12 @@ whitespace_control:
   keep_trailing_newline: true
 
 params:
-  schema_version: "1.41.0"
-  semconv_commit: "e018fe6f91862f5ed63c082f87697cddac596784"
-  weaver_version: "0.23.0"
+  schema_version: "1.43.0"
+  source_registry: "core"
+  source_ref: "v1.43.0"
+  source_commit: "89aae438b3b3b0a8dd33003c9d70592baf7dbd0d"
+  source_date_epoch: "0"
+  weaver_version: "0.24.2"
 
 templates:
   - template: resolved-registry.json.j2
