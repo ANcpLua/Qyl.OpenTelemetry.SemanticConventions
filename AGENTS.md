@@ -23,6 +23,29 @@ match, then tag — the workflow packs all five at the tag version and
 an orphaned commit not on `main`; 3.0.2 published fine and the tag stays as the
 historical release marker.)
 
+## GenAI registry: separate upstream repo, development-only, Incubating-only
+
+The GenAI conventions moved to their own upstream repo,
+**`open-telemetry/semantic-conventions-genai`** (cloned at
+`../semantic-conventions-genai`; see the workspace router `../CLAUDE.md`).
+Facts that matter here:
+
+- **Everything in that registry is `stability: development`** (registry-level
+  `stability: development` in `model/manifest.yaml`; zero stable entries).
+  Accordingly `gen_ai.*` keys generate into **`.Incubating` only** — if a
+  `gen_ai.*` constant ever appears in the stable package, the
+  `StabilityFilter.StableOnly` pipeline is broken, not the registry.
+- Its manifest declares a **dev schema family**
+  (`https://opentelemetry.io/schemas/gen-ai-dev/1.42.0-dev`) while the README
+  still says "Schema URL: TODO", and it builds against a **filtered core
+  registry pinned at 1.41.0** (gen-ai/mcp/openai dirs stripped upstream-side to
+  avoid duplicate group ids). This repo pins core semconv **1.43.0** — the skew
+  is expected and fine while GenAI is development.
+- **When the genai repo publishes a proper (non `-dev`) schema URL, that is a
+  future `Version.props` decision** for this repo: whether to pin the GenAI
+  registry version separately from `SemConvSchemaVersion` instead of treating
+  it as "the development GenAI registry" folded into the family version.
+
 ## The Nuke build component lives in THIS repo — do not re-externalize it
 
 `src/Qyl.OpenTelemetry.SemanticConventions.Nuke/` is the build component
