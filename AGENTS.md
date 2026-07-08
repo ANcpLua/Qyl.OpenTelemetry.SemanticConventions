@@ -12,16 +12,36 @@ Published to nuget.org via **trusted publishing** on `v*` tag push (or
 `workflow_dispatch` with a `version` input): the workflow packs the whole
 solution at the tag version and pushes every `.nupkg` with `--skip-duplicate`.
 
-**Current version state — the family is converged at `3.2.0`.** `v3.2.0` is
-tagged on `main` (the OpenTelemetry semconv **1.43.0** + development GenAI
-registry upgrade) and all five packages publish on nuget.org at **3.2.0**
-(`.`, `.Incubating`, `.SourceGeneration`, `.Analyzers`, `.Nuke`); `3.1.0` and
-earlier remain the prior published line. The next release is `v3.2.1`/`v3.3.0`:
-bump `VersionPrefix` in `Directory.Build.props` (the local-restore fallback) to
-match, then tag — the workflow packs all five at the tag version and
-`--skip-duplicate` makes re-runs idempotent. (Note: the `v3.0.2` tag points at
-an orphaned commit not on `main`; 3.0.2 published fine and the tag stays as the
-historical release marker.)
+**Current version state — the family is converged at `3.3.0`.** `v3.3.0`
+(tagged on `main`) ships the **full 1.43.0 attribute surface**: the `3.2.0`
+upgrade regenerated only `GenAiAttributes.g.cs`, leaving every other
+`Attributes/*.g.cs` a stale ~1.41-era fossil while `SchemaUrl.g.cs` already
+claimed 1.43.0. `3.3.0` regenerates the whole surface — the stable package gains
+the 1.43 graduations (K8s, Container, Net, System, Vcs, Messaging, Az, …) and
+incubating picks up all 1.42/1.43 additions. `3.2.0` and earlier remain the
+prior published line. The next release bumps `VersionPrefix` in
+`Directory.Build.props` (the local-restore fallback) and tags — the workflow
+packs all five at the tag version and `--skip-duplicate` makes re-runs
+idempotent. (Note: the `v3.0.2` tag points at an orphaned commit not on `main`;
+3.0.2 published fine and the tag stays as the historical release marker.)
+
+## Regenerating the shipped attribute surface (`emit_attributes.py`)
+
+The shipped constant packages (`.` + `.Incubating`) use a **compact** emitter
+distinct from the `.SourceGeneration` Roslyn generator (`AttributesEmitter`,
+contrib-shape `Attribute*` members). That compact emitter was ad-hoc and
+uncommitted until `3.3.0`; it now lives at
+`src/…SourceGeneration/scripts/emit_attributes.py`. It reads the embedded
+`Resources/resolved-registry.json` and regenerates BOTH `Attributes/` trees:
+`--stdout {root} {stable|incubating}` prints one file; `--write` rewrites both
+trees. Stable tier = `stable`/`deprecated` rows only (mirrors
+`StabilityFiltering.IsIncludedOrDeprecated`); incubating = all. It resolves
+`.`↔`_` deprecated-alias PascalCase collisions (keep canonical, drop the
+deprecated twin), escapes `<>`/`&` in doc comments (valid XML — malformed XML
+makes the compiler drop the whole doc comment), and self-checks doc-XML
+well-formedness. **After any registry bump, run `./…/emit_attributes.py --write`
+then `./build.sh SeedAttributesHash` — regenerate the whole surface, not one
+file** (that omission is exactly what left `3.2.0` stale).
 
 ## GenAI registry: separate upstream repo, development-only, Incubating-only
 
