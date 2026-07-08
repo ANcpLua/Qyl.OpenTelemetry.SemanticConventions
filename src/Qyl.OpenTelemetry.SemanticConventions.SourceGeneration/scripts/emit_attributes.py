@@ -4,14 +4,15 @@
 Reads the embedded resolved-registry.json and regenerates, per root namespace,
 `{Root}Attributes.g.cs` for both the stable and the incubating NuGet packages.
 
-The output shape is reverse-engineered from the checked-in golden file
+The output shape is reverse-engineered from the checked-in reference file
 `…Incubating/Attributes/GenAi/GenAiAttributes.g.cs`, which was produced by the
 project's (uncommitted) ad-hoc emitter from the genai registry. See the module
 docstring notes at the bottom for the rules and for the caveat that the
-currently-committed json has DRIFTED away from the json that produced the golden
-files (so byte-reproduction of the golden is not possible from this json — the
+currently-committed json has DRIFTED away from the json that produced that
+reference (so byte-reproduction of it is not possible from this json — the
 formatting logic here is validated on the attributes whose json content survived
-unchanged).
+unchanged). Ongoing drift is guarded by VerifyAttributesHash + the
+ByteIdentity snapshot tests, not by this reference.
 
 CLI:
     emit_attributes.py --stdout {root} {stable|incubating}
