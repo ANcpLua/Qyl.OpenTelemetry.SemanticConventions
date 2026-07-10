@@ -47,7 +47,7 @@ file** (that omission is exactly what left `3.2.0` stale).
 
 The GenAI conventions moved to their own upstream repo,
 **`open-telemetry/semantic-conventions-genai`** (cloned at
-`~/RiderProjects/qyl references/semantic-conventions-genai`; see the
+`~/RiderProjects/qyl-references/semantic-conventions-genai`; see the
 workspace router `../CLAUDE.md`).
 Facts that matter here:
 
