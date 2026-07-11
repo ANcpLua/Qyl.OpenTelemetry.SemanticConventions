@@ -43,6 +43,15 @@ well-formedness. **After any registry bump, run `./…/emit_attributes.py --writ
 then `./build.sh SeedAttributesHash` — regenerate the whole surface, not one
 file** (that omission is exactly what left `3.2.0` stale).
 
+A sibling emitter, `scripts/emit_typespec_keys.py`, projects the SAME
+`resolved-registry.json` into TypeSpec key constants for the external
+`qyl-api-schema` repo (`generated/otel-keys.gen.tsp`); it replaced the retired
+`@ancplua/typespec-otel-semconv` npm generator (2026-07-11). After a registry
+bump, also re-run it with `--write <qyl-api-schema>/generated/otel-keys.gen.tsp`
+so the TypeSpec and C# surfaces stay in lockstep (qyl-api-schema's
+`VerifyKeysLockstep` asserts the header pin against its `OtelKeysVersion`
+parameter).
+
 ## GenAI registry: separate upstream repo, development-only, Incubating-only
 
 The GenAI conventions moved to their own upstream repo,
