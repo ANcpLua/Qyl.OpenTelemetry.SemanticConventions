@@ -34,6 +34,7 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
             ["db.cosmosdb.request_content_length"] = ("azure.cosmosdb.request.body.size", "1.30.0"),
             ["db.cosmosdb.sub_status_code"] = ("azure.cosmosdb.response.sub_status_code", "1.30.0"),
             ["db.elasticsearch.cluster.name"] = ("db.namespace", "1.27.0"),
+            ["db.elasticsearch.path_parts"] = ("db.operation.parameter", "1.30.0"),
             ["db.elasticsearch.node.name"] = ("elasticsearch.node.name", "1.30.0"),
             ["db.mongodb.collection"] = ("db.collection.name", "1.25.0"),
             ["db.name"] = ("db.namespace", "1.25.0"),
@@ -131,6 +132,9 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
                 ["azure_functions"] = "Use 'azure.functions' instead.",
                 ["azure_openshift"] = "Use 'azure.openshift' instead.",
                 ["azure_vm"] = "Use 'azure.vm' instead.",
+            },
+            ["cpu.mode"] = new(StringComparer.OrdinalIgnoreCase) {
+                ["kernel"] = "Use 'system' instead.",
             },
             ["db.system"] = new(StringComparer.OrdinalIgnoreCase) {
                 ["cache"] = "Use 'intersystems_cache' instead.",

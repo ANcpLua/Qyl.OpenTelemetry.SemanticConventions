@@ -6,8 +6,8 @@ qyl-specific tables that supplement the [Qyl.OpenTelemetry.SemanticConventions.A
 
 ## Curated Migration Inventory Summary
 
-Curated changelog mentions: 156. Live metadata rows: 105. Supplemental diagnostic rows: 51. Exact supplemental replacements: 1. Manual/context-sensitive supplemental rows: 26. Removed/no-replacement supplemental rows: 24. Guidance-only rows: 0.
-Supplemental attribute-value fallback rows: 21. Exact value replacements: 19. Manual value rows: 0. Removed/no-replacement value rows: 2. These rows are used only when the same key/value is not covered by live `[Obsolete]` metadata from the referenced package.
+Curated changelog mentions: 157. Live metadata rows: 106. Supplemental diagnostic rows: 51. Exact supplemental replacements: 1. Manual/context-sensitive supplemental rows: 26. Removed/no-replacement supplemental rows: 24. Guidance-only rows: 0.
+Supplemental attribute-value fallback rows: 22. Exact value replacements: 20. Manual value rows: 0. Removed/no-replacement value rows: 2. These rows are used only when the same key/value is not covered by live `[Obsolete]` metadata from the referenced package.
 
 ## Completion Audit
 
@@ -15,10 +15,10 @@ This section is generated from the analyzer descriptors and migration catalog. I
 
 | Requirement | Current generated evidence |
 | -- | -- |
-| Preserve the 156 curated changelog-entry scope | `SemconvMigrationCatalog.Validate()` requires exactly `156` curated rows; current generated count is `156`. |
-| Prefer live `[Obsolete]` metadata where available | `105` of `156` curated rows are classified as `DeprecatedButGenerated`; `QYL0003`, `QYL0005`, and `QYL0007` remain the live-metadata diagnostics. |
+| Preserve the curated changelog-entry scope | `SemconvMigrationCatalog.Validate()` requires exactly `157` curated rows; current generated count is `157`. |
+| Prefer live `[Obsolete]` metadata where available | `106` of `157` curated rows are classified as `DeprecatedButGenerated`; `QYL0003`, `QYL0005`, and `QYL0007` remain the live-metadata diagnostics. |
 | Use supplemental diagnostics only where metadata is insufficient | `51` curated rows are supplemental diagnostics: `1` exact replacement, `26` manual/context-sensitive, `24` removed/no-replacement, `0` guidance-only. |
-| Keep attribute-value fallback separate from the curated name/key/event/metric count | `21` supplemental attribute-value rows are outside the 156-entry inventory and are used only when live value metadata is absent. |
+| Keep attribute-value fallback separate from the curated name/key/event/metric count | `22` supplemental attribute-value rows are outside the 156-entry inventory and are used only when live value metadata is absent. |
 | Keep severity context-sensitive | `QYL0009` is production exact replacement error, `QYL0010` is production manual-review warning, and `QYL0011` is compatibility/test/generated info. |
 | Keep code fixes exact-only | `LiveSemconvMetadataCodeFixProvider` registers fixes only when live `[Obsolete]` metadata exposes an exact replacement; `SupplementalSemconvMigrationCodeFixProvider` registers fixes only when diagnostic properties mark `ExactRename` or `ExactValueRename` and provide one replacement literal. |
 | Keep old-schema compatibility non-error | Test, fixture, migration, compatibility, translator, generated, catalog, and explicit older schema URL contexts select `QYL0011`. |
@@ -26,13 +26,13 @@ This section is generated from the analyzer descriptors and migration catalog. I
 | Migration kind | Curated count |
 | -- | --: |
 | ContextSensitive | 26 |
-| DeprecatedButGenerated | 105 |
+| DeprecatedButGenerated | 106 |
 | ExactRename | 1 |
 | RemovedNoReplacement | 24 |
 
 | Item kind | Curated count |
 | -- | --: |
-| AttributeKey | 147 |
+| AttributeKey | 148 |
 | EventName | 4 |
 | MetricName | 5 |
 
@@ -67,7 +67,7 @@ Rows whose Version is `unknown` are catalog entries that don't yet carry `Change
 | 1.31.0 | android | 1 | 1 | 0 | 0 | 0 | 0 |
 | 1.31.0 | system | 1 | 1 | 0 | 0 | 0 | 0 |
 | 1.30.0 | code | 3 | 3 | 0 | 0 | 0 | 0 |
-| 1.30.0 | db | 16 | 16 | 0 | 0 | 0 | 0 |
+| 1.30.0 | db | 17 | 17 | 0 | 0 | 0 | 0 |
 | 1.30.0 | system | 1 | 1 | 0 | 0 | 0 | 0 |
 | 1.29.0 | process | 1 | 1 | 0 | 0 | 0 | 0 |
 | 1.29.0 | vcs | 5 | 5 | 0 | 0 | 0 | 0 |
@@ -141,6 +141,7 @@ Rows whose Version is `unknown` are catalog entries that don't yet carry `Change
 | `db.cosmosdb.sub_status_code` | AttributeKey | any | db | 1.30.0 | DeprecatedButGenerated | `azure.cosmosdb.response.sub_status_code` | Covered by generated [Obsolete] metadata when the consumer references OpenTelemetry.SemanticConventions. semantic-conventions/model deprecated attribute |
 | `db.elasticsearch.cluster.name` | AttributeKey | any | db | 1.27.0 | DeprecatedButGenerated | `db.namespace` | Covered by generated [Obsolete] metadata when the consumer references OpenTelemetry.SemanticConventions. semantic-conventions/model deprecated attribute |
 | `db.elasticsearch.node.name` | AttributeKey | any | db | 1.30.0 | DeprecatedButGenerated | `elasticsearch.node.name` | Covered by generated [Obsolete] metadata when the consumer references OpenTelemetry.SemanticConventions. semantic-conventions/model deprecated attribute |
+| `db.elasticsearch.path_parts` | AttributeKey | any | db | 1.30.0 | DeprecatedButGenerated | `db.operation.parameter` | Covered by generated [Obsolete] metadata when the consumer references OpenTelemetry.SemanticConventions. semantic-conventions/model deprecated attribute |
 | `db.elasticsearch.path_parts.*` | AttributeKey | any | db | 1.30.0 | DeprecatedButGenerated | `db.operation.parameter.*` | Covered by generated [Obsolete] metadata when the consumer references OpenTelemetry.SemanticConventions. semantic-conventions/model deprecated attribute prefix |
 | `db.instance.id` | AttributeKey | any | db | unknown | ContextSensitive | - | Removed, no general replacement at this time. For Elasticsearch, use `db.elasticsearch.node.name` instead. |
 | `db.jdbc.driver_classname` | AttributeKey | any | db | unknown | RemovedNoReplacement | - | Removed, no replacement at this time. |
@@ -278,6 +279,7 @@ These value rows are intentionally separate from the 156-entry name/key/event/me
 | `cloud.platform=azure_functions` | any | cloud | ExactValueRename | `azure.functions` | Use 'azure.functions' instead. |
 | `cloud.platform=azure_openshift` | any | cloud | ExactValueRename | `azure.openshift` | Use 'azure.openshift' instead. |
 | `cloud.platform=azure_vm` | any | cloud | ExactValueRename | `azure.vm` | Use 'azure.vm' instead. |
+| `cpu.mode=kernel` | any | cpu | ExactValueRename | `system` | Use 'system' instead. |
 | `db.system=cache` | any | db | ExactValueRename | `intersystems_cache` | Use 'intersystems_cache' instead. |
 | `db.system=cloudscape` | any | db | ExactValueRename | `other_sql` | Use 'other_sql' instead. |
 | `db.system=coldfusion` | any | db | RemovedNoReplacement | - | No replacement exists at this time. |

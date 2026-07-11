@@ -43,6 +43,17 @@ well-formedness. **After any registry bump, run `./…/emit_attributes.py --writ
 then `./build.sh SeedAttributesHash` — regenerate the whole surface, not one
 file** (that omission is exactly what left `3.2.0` stale).
 
+The Analyzers' deprecation catalog
+(`OpenTelemetryDeprecatedSemconvCatalog.cs`) is hand-curated on purpose
+(since-versions, guidance prose, and mappings for keys upstream deleted
+outright — the registry knows none of that), but
+`scripts/verify_deprecated_catalog.py` (run in CI) cross-checks it against
+`resolved-registry.json`: every registry rename/deprecation/enum-member
+removal must have a matching, agreeing catalog entry. After a registry bump,
+run it and reconcile; changing catalog data also means bumping
+`SemconvMigrationCatalog.ExpectedCuratedMentionCount` and re-running
+`./build.sh GenerateDocs`.
+
 A sibling emitter, `scripts/emit_typespec_keys.py`, projects the SAME
 `resolved-registry.json` into TypeSpec key constants for the external
 `qyl-api-schema` repo (`generated/otel-keys.gen.tsp`); it replaced the retired

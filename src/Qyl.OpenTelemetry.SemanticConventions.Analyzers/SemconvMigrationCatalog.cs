@@ -7,7 +7,7 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 internal static class SemconvMigrationCatalog
 {
-    public const int ExpectedCuratedMentionCount = 156;
+    public const int ExpectedCuratedMentionCount = 157;
 
     public static ImmutableArray<SemconvMigrationCatalogEntry> Entries { get; } = BuildEntries();
 
