@@ -1,231 +1,134 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+#
+# CANONICAL — owned by ANcpLua/github-settings-automation/templates/nuget-publish.yml.
+# DO NOT EDIT in the consumer repo. Edits will be overwritten by the next
+# sync run of enforce-repo-settings.yml.
+#
+# Algorithm:
+#   - Triggered by `v*` tag push OR manual workflow_dispatch with an input
+#     `version` (without the leading `v`).
+#   - Discovers the repo's `.slnx` or `.sln` at the repo root, restores +
+#     builds it with the version override, packs the whole solution,
+#     pushes every produced `.nupkg` to nuget.org and GitHub Packages.
+#
+# Auth model: NuGet TRUSTED PUBLISHING via OIDC (no static API key).
+#   - `id-token: write` permission gives the runner a short-lived OIDC
+#     token. `NuGet/login@v1` exchanges it for a TEMPORARY (per-job) API
+#     key. That key is only valid for ~30 min and is used only on this
+#     single workflow run.
+#   - Requires three things to exist:
+#       a) A Trusted Publisher policy on nuget.org/account/trustedpublishers
+#          matching this repo + this workflow file (+ optional environment).
+#          Filling in the form with Workflow File = `nuget-publish.yml`
+#          authorizes every package owned by the same Package Owner.
+#       b) `NUGET_USER` repo secret on the consumer repo (the nuget.org
+#          username, e.g. `ANcpLua`). The `NuGet/login` action embeds
+#          this in the OIDC token exchange.
+#       c) The Trusted Publisher policy's "Package Owner" must own every
+#          package being pushed (PackageId mismatch = 401 on push).
+#   - No `NUGET_API_KEY` secret needed. Rotation is automatic — keys live
+#     only for the workflow run.
+#
+# Opt-out:
+#   - To deliberately diverge from canonical in one specific repo, add a
+#     line `# CANONICAL-DEPARTURE: <reason>` at the top of the consumer
+#     repo's copy. The sync script honors that marker and won't overwrite.
+#   - Valid reasons for departure: Authenticode signing, multi-stage
+#     release pipeline, custom PackageId override.
+
 name: Publish to NuGet
 
 on:
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
     inputs:
       version:
-        description: Version to publish, without a v prefix
+        description: 'Version to publish (without v prefix, e.g. 3.0.0)'
         required: true
-        type: string
 
 permissions:
-  contents: write
+  contents: read
   id-token: write
-
-concurrency:
-  group: semantic-conventions-release
-  cancel-in-progress: false
+  packages: write
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    environment: nuget
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        uses: actions/setup-dotnet@v5
         with:
           global-json-file: global.json
           cache: true
-          cache-dependency-path: Directory.Packages.props
+          cache-dependency-path: '**/Directory.Packages.props'
 
-      - name: Validate release input
-        id: release
-        env:
-          VERSION: ${{ inputs.version }}
+      - name: Determine version
+        id: version
         run: |
-          set -euo pipefail
-          if [[ "${GITHUB_REF}" != "refs/heads/main" ]]; then
-            echo "::error::releases must run from main"
-            exit 1
-          fi
-          if [[ ! "${VERSION}" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z][0-9A-Za-z.-]*)?$ ]]; then
-            echo "::error::invalid package version: ${VERSION}"
-            exit 1
-          fi
-          if git rev-parse --verify --quiet "refs/tags/v${VERSION}"; then
-            echo "::error::tag v${VERSION} already exists"
-            exit 1
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
           fi
 
-          package_ids=(
-            Qyl.OpenTelemetry.SemanticConventions
-            Qyl.OpenTelemetry.SemanticConventions.Incubating
-            Qyl.OpenTelemetry.SemanticConventions.SourceGeneration
-          )
-          mkdir -p artifacts/existing
-          for package_id in "${package_ids[@]}"; do
-            lower_id="$(printf '%s' "${package_id}" | tr '[:upper:]' '[:lower:]')"
-            lower_version="$(printf '%s' "${VERSION}" | tr '[:upper:]' '[:lower:]')"
-            url="https://api.nuget.org/v3-flatcontainer/${lower_id}/${lower_version}/${lower_id}.${lower_version}.nupkg"
-            archive="artifacts/existing/${lower_id}.${lower_version}.nupkg"
-            status="$(curl --silent --show-error --location --retry 5 --retry-all-errors \
-              --output "${archive}" --write-out '%{http_code}' "${url}")"
-            if [[ "${status}" == "404" ]]; then
-              rm -f "${archive}"
-              continue
-            fi
-            if [[ "${status}" != "200" ]]; then
-              echo "::error::nuget.org returned HTTP ${status} for ${package_id} ${VERSION}"
-              exit 1
-            fi
-
-            published_commit="$(unzip -p "${archive}" '*.nuspec' \
-              | sed -n 's/.*<repository[^>]*commit="\([^"]*\)".*/\1/p' \
-              | head -n 1)"
-            if [[ "${published_commit}" != "${GITHUB_SHA}" ]]; then
-              echo "::error::${package_id} ${VERSION} already exists from commit ${published_commit:-unknown}, not ${GITHUB_SHA}"
-              exit 1
-            fi
-            echo "Resuming the same release: ${package_id} ${VERSION} is already published from ${GITHUB_SHA}."
-          done
-          echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
-
-      - name: Restore
-        run: dotnet restore Qyl.OpenTelemetry.SemanticConventions.slnx
-
-      - name: Verify generated surfaces
+      - name: Discover solution
+        id: sln
         run: |
-          set -euo pipefail
-          ./build.sh VerifyAttributesHash
-          ./build.sh CheckDocs
-          python3 src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/scripts/verify_deprecated_catalog.py
+          slnx="$(find . -maxdepth 1 -type f -name '*.slnx' -print -quit | sed 's#^\./##')"
+          [ -z "$slnx" ] && slnx="$(find . -maxdepth 1 -type f -name '*.sln' -print -quit | sed 's#^\./##')"
+          [ -z "$slnx" ] && { echo "::error::no .slnx or .sln at repo root"; exit 1; }
+          echo "Solution: $slnx"
+          echo "slnx=$slnx" >> "$GITHUB_OUTPUT"
 
-      - name: Build
-        run: >-
-          dotnet build Qyl.OpenTelemetry.SemanticConventions.slnx
-          --configuration Release
-          --no-restore
-          -p:Version=${{ steps.release.outputs.version }}
+      - name: Restore (no Version override — uses last-published self-references)
+        run: dotnet restore "${{ steps.sln.outputs.slnx }}"
 
-      - name: Test analyzer pipeline
-        run: >-
-          dotnet run
-          --project tests/Qyl.OpenTelemetry.SemanticConventions.Pipeline.Tests
-          --configuration Release
-          --no-build
+      - name: Build (Version override applied here)
+        run: |
+          dotnet build "${{ steps.sln.outputs.slnx }}" \
+            -c Release --no-restore \
+            -p:Version=${{ steps.version.outputs.version }}
 
-      - name: Test source generation
-        run: >-
-          dotnet run
-          --project tests/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Tests
-          --configuration Release
-          --no-build
+      - name: Pack
+        run: |
+          dotnet pack "${{ steps.sln.outputs.slnx }}" \
+            -c Release --no-build \
+            -o artifacts \
+            -p:Version=${{ steps.version.outputs.version }}
+          ls -la artifacts/
 
-      - name: Pack supported packages
-        run: >-
-          dotnet pack Qyl.OpenTelemetry.SemanticConventions.slnx
-          --configuration Release
-          --no-build
-          --output artifacts/packages
-          -p:Version=${{ steps.release.outputs.version }}
-
-      - name: Inspect and smoke packed artifacts
-        run: >-
-          ./eng/release/verify-packages.sh
-          ${{ steps.release.outputs.version }}
-          "${GITHUB_WORKSPACE}/artifacts/packages"
-          "${GITHUB_WORKSPACE}/artifacts/packages"
-
-      - name: NuGet login
+      - name: NuGet login (OIDC → temp API key)
         id: nuget_login
-        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1
+        uses: NuGet/login@v1
         with:
           user: ${{ secrets.NUGET_USER }}
 
-      - name: Publish to nuget.org
-        env:
-          NUGET_API_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
+      - name: Push to nuget.org (trusted publishing)
         run: |
-          set -euo pipefail
-          for package in artifacts/packages/*.nupkg; do
-            dotnet nuget push "${package}" \
-              --source https://api.nuget.org/v3/index.json \
-              --api-key "${NUGET_API_KEY}" \
-              --skip-duplicate
-          done
+          shopt -s nullglob
+          pkgs=(artifacts/*.nupkg)
+          if [ ${#pkgs[@]} -eq 0 ]; then
+            echo "::warning::no .nupkg artifacts produced; nothing to publish"
+            exit 0
+          fi
+          for p in "${pkgs[@]}"; do echo "Pushing $p"; done
+          dotnet nuget push "${pkgs[@]}" \
+            --source https://api.nuget.org/v3/index.json \
+            --api-key "${{ steps.nuget_login.outputs.NUGET_API_KEY }}" \
+            --skip-duplicate
 
-      - name: Wait for nuget.org indexing
-        env:
-          VERSION: ${{ steps.release.outputs.version }}
+      - name: Push to GitHub Packages
         run: |
-          set -euo pipefail
-          package_ids=(
-            Qyl.OpenTelemetry.SemanticConventions
-            Qyl.OpenTelemetry.SemanticConventions.Incubating
-            Qyl.OpenTelemetry.SemanticConventions.SourceGeneration
-          )
-          for package_id in "${package_ids[@]}"; do
-            lower_id="$(printf '%s' "${package_id}" | tr '[:upper:]' '[:lower:]')"
-            lower_version="$(printf '%s' "${VERSION}" | tr '[:upper:]' '[:lower:]')"
-            url="https://api.nuget.org/v3/registration5-gz-semver2/${lower_id}/${lower_version}.json"
-            indexed=false
-            for attempt in $(seq 1 60); do
-              if curl --compressed --fail --silent --location "${url}?attempt=${attempt}" \
-                | jq -e --arg package_url \
-                  "https://api.nuget.org/v3-flatcontainer/${lower_id}/${lower_version}/${lower_id}.${lower_version}.nupkg" \
-                  '.listed == true and .packageContent == $package_url' >/dev/null; then
-                indexed=true
-                break
-              fi
-              echo "Waiting for ${package_id} ${VERSION} (${attempt}/60)"
-              sleep 10
-            done
-            if [[ "${indexed}" != true ]]; then
-              echo "::error::${package_id} ${VERSION} was not indexed within 10 minutes"
-              exit 1
-            fi
-          done
-
-      - name: Smoke published packages from a clean consumer
-        run: >-
-          ./eng/release/verify-packages.sh
-          ${{ steps.release.outputs.version }}
-          https://api.nuget.org/v3/index.json
-
-      - name: Unlist the retired Nuke component
-        env:
-          NUGET_API_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
-        run: |
-          set -euo pipefail
-          package_id="Qyl.OpenTelemetry.SemanticConventions.Nuke"
-          registration="https://api.nuget.org/v3/registration5-gz-semver2/qyl.opentelemetry.semanticconventions.nuke/index.json"
-
-          listed_versions="$(curl --compressed --fail --silent --show-error --location \
-            --retry 5 --retry-all-errors "${registration}" \
-            | jq -r '.items[].items[]?.catalogEntry | select(.listed != false) | .version')"
-          while IFS= read -r retired_version; do
-            [[ -z "${retired_version}" ]] && continue
-            dotnet nuget delete "${package_id}" "${retired_version}" \
-              --source https://api.nuget.org/v3/index.json \
-              --api-key "${NUGET_API_KEY}" \
-              --non-interactive
-          done <<< "${listed_versions}"
-
-          for attempt in $(seq 1 30); do
-            still_listed="$(curl --compressed --fail --silent --show-error --location \
-              --retry 5 --retry-all-errors "${registration}?attempt=${attempt}" \
-              | jq '[.items[].items[]?.catalogEntry | select(.listed != false)] | length')"
-            [[ "${still_listed}" == "0" ]] && break
-            if [[ "${attempt}" == "30" ]]; then
-              echo "::error::${still_listed} retired ${package_id} version(s) remain listed"
-              exit 1
-            fi
-            sleep 10
-          done
-
-      - name: Tag and announce verified release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ steps.release.outputs.version }}
-        run: |
-          set -euo pipefail
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git tag --annotate "v${VERSION}" --message "v${VERSION}"
-          git push origin "v${VERSION}"
-          gh release create "v${VERSION}" --verify-tag --generate-notes --title "v${VERSION}"
+          shopt -s nullglob
+          pkgs=(artifacts/*.nupkg)
+          [ ${#pkgs[@]} -eq 0 ] && exit 0
+          dotnet nuget push "${pkgs[@]}" \
+            --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
+            --api-key ${{ secrets.GITHUB_TOKEN }} \
+            --skip-duplicate
