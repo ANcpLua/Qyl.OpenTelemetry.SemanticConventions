@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Regenerate Resources/resolved-registry.json from two source registries:
-#   1. core open-telemetry/semantic-conventions at v1.43.0
+#   1. core open-telemetry/semantic-conventions at the version in Version.props
 #   2. open-telemetry/semantic-conventions-genai at a pinned commit
 #
 # The generated projection is qyl-owned JSON consumed by the Roslyn source
@@ -14,13 +14,33 @@ templates_dir="${script_dir}/templates"
 output_file="${project_dir}/Resources/resolved-registry.json"
 work_dir="${repo_root}/.build/semconv-source-generation"
 
-CORE_REF="${SEMCONV_CORE_REF:-v1.43.0}"
+version_props="${repo_root}/Version.props"
+
+read_version_property() {
+  python3 - "${version_props}" "$1" <<'PY'
+import sys
+import xml.etree.ElementTree as ET
+
+root = ET.parse(sys.argv[1]).getroot()
+property_name = sys.argv[2]
+value = root.findtext(f".//{property_name}")
+if value is None or not value.strip():
+    raise SystemExit(f"error: Version.props does not define {property_name}")
+print(value.strip())
+PY
+}
+
+default_schema_version="$(read_version_property SemConvSchemaVersion)"
+default_weaver_version="$(read_version_property WeaverVersion)"
+
+SCHEMA_VERSION="${SEMCONV_SCHEMA_VERSION:-${default_schema_version}}"
+EXPECTED_WEAVER_VERSION="${SEMCONV_WEAVER_VERSION:-${default_weaver_version}}"
+CORE_REF="${SEMCONV_CORE_REF:-v${SCHEMA_VERSION}}"
 CORE_REPO="${SEMCONV_CORE_REPO:-${repo_root}/.tools/semantic-conventions}"
 CORE_REMOTE="${SEMCONV_CORE_REMOTE:-https://github.com/open-telemetry/semantic-conventions.git}"
 GENAI_REF="${SEMCONV_GENAI_REF:-c321d7eb4443ae1d1d88c2e24eda849f62049008}"
 GENAI_REPO="${SEMCONV_GENAI_REPO:-${repo_root}/.tools/semantic-conventions-genai}"
 GENAI_REMOTE="${SEMCONV_GENAI_REMOTE:-https://github.com/open-telemetry/semantic-conventions-genai.git}"
-SCHEMA_VERSION="${SEMCONV_SCHEMA_VERSION:-1.43.0}"
 
 # Set WEAVER to a command if the published container is unavailable, for example:
 #   WEAVER="/Users/.../weaver/target/release/weaver" ./scripts/generate.sh
@@ -234,6 +254,13 @@ Path(destination).write_text(json.dumps(merged, indent=2, ensure_ascii=False) + 
 PY
 }
 
+actual_weaver_version="$(weaver_version)"
+if [[ "${actual_weaver_version}" != "${EXPECTED_WEAVER_VERSION}" ]]; then
+  echo "error: Weaver ${EXPECTED_WEAVER_VERSION} is required; found ${actual_weaver_version}" >&2
+  echo "set WEAVER to the pinned binary or intentionally update WeaverVersion in Version.props" >&2
+  exit 1
+fi
+
 ensure_upstream_repo "${CORE_REPO}" "${CORE_REMOTE}" "core semantic-conventions"
 ensure_upstream_repo "${GENAI_REPO}" "${GENAI_REMOTE}" "semantic-conventions-genai"
 
@@ -241,7 +268,6 @@ core_commit="$(commit_for_ref "${CORE_REPO}" "${CORE_REF}")"
 genai_commit="$(commit_for_ref "${GENAI_REPO}" "${GENAI_REF}")"
 core_date_epoch="$(date_epoch_for_commit "${CORE_REPO}" "${core_commit}")"
 genai_date_epoch="$(date_epoch_for_commit "${GENAI_REPO}" "${genai_commit}")"
-actual_weaver_version="$(weaver_version)"
 
 rm -rf "${work_dir}"
 mkdir -p "${work_dir}"

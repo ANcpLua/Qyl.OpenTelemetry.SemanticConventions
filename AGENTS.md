@@ -1,128 +1,90 @@
-# AGENTS.md
+# Qyl.OpenTelemetry.SemanticConventions engineering contract
 
-Agent/contributor guide for **`Qyl.OpenTelemetry.SemanticConventions`**.
-`CLAUDE.md` is a symlink to this file — edit here once, every tool (Claude Code,
-Copilot, Gemini) sees it.
+This is the repository's only editable agent/contributor instruction file.
+`CLAUDE.md` is a symlink to it. Keep package guidance in the root or packaged
+README, released history in releases, and generated analyzer documentation under
+`docs/`. Do not add mission prompts, progress diaries, or a second rules file.
 
-## Shipped packages (5, all `Qyl.OpenTelemetry.SemanticConventions*`)
+## Purpose and compatibility
 
-`.` (main) · `.Incubating` · `.SourceGeneration` · `.Analyzers` · `.Nuke`
+This repository turns pinned OpenTelemetry semantic-convention registries into
+stable/incubating .NET constants, Roslyn source-generation APIs, analyzer rules, and
+the TypeSpec key projection consumed by `qyl-api-schema`.
 
-Published to nuget.org via **trusted publishing** on `v*` tag push (or
-`workflow_dispatch` with a `version` input): the workflow packs the whole
-solution at the tag version and pushes every `.nupkg` with `--skip-duplicate`.
+The packages are already public. Published NuGet artifacts are immutable. Breaking
+surface cleanup uses a new major version and migrates known consumers; do not add
+shims without a proven external requirement.
 
-**Current version state — the family is converged at `3.3.0`.** `v3.3.0`
-(tagged on `main`) ships the **full 1.43.0 attribute surface**: the `3.2.0`
-upgrade regenerated only `GenAiAttributes.g.cs`, leaving every other
-`Attributes/*.g.cs` a stale ~1.41-era fossil while `SchemaUrl.g.cs` already
-claimed 1.43.0. `3.3.0` regenerates the whole surface — the stable package gains
-the 1.43 graduations (K8s, Container, Net, System, Vcs, Messaging, Az, …) and
-incubating picks up all 1.42/1.43 additions. `3.2.0` and earlier remain the
-prior published line. The next release bumps `VersionPrefix` in
-`Directory.Build.props` (the local-restore fallback) and tags — the workflow
-packs all five at the tag version and `--skip-duplicate` makes re-runs
-idempotent. (Note: the `v3.0.2` tag points at an orphaned commit not on `main`;
-3.0.2 published fine and the tag stays as the historical release marker.)
+## One owner for every generated surface
 
-## Regenerating the shipped attribute surface (`emit_attributes.py`)
+- `Version.props` owns the core semantic-convention registry and Weaver pins.
+- `src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/scripts/generate.sh`
+  owns the Weaver-resolved registry embedded by the packages.
+- `emit_attributes.py` owns the committed stable and incubating constant trees.
+- `emit_typespec_keys.py` owns
+  `qyl-api-schema/generated/otel-keys.gen.tsp`; regenerate that sibling projection
+  from the same resolved registry after a pin change.
+- `DocsGenerator` owns the analyzer index, migration catalog, SARIF/editorconfig
+  artifacts, and per-rule HelpLink pages.
+- `AnalyzerReleases.Shipped.md` and `AnalyzerReleases.Unshipped.md` are maintained
+  analyzer inputs, not generated prose.
 
-The shipped constant packages (`.` + `.Incubating`) use a **compact** emitter
-distinct from the `.SourceGeneration` Roslyn generator (`AttributesEmitter`,
-contrib-shape `Attribute*` members). That compact emitter was ad-hoc and
-uncommitted until `3.3.0`; it now lives at
-`src/…SourceGeneration/scripts/emit_attributes.py`. It reads the embedded
-`Resources/resolved-registry.json` and regenerates BOTH `Attributes/` trees:
-`--stdout {root} {stable|incubating}` prints one file; `--write` rewrites both
-trees. Stable tier = `stable`/`deprecated` rows only (mirrors
-`StabilityFiltering.IsIncludedOrDeprecated`); incubating = all. It resolves
-`.`↔`_` deprecated-alias PascalCase collisions (keep canonical, drop the
-deprecated twin), escapes `<>`/`&` in doc comments (valid XML — malformed XML
-makes the compiler drop the whole doc comment), and self-checks doc-XML
-well-formedness. **After any registry bump, run `./…/emit_attributes.py --write`
-then `./build.sh SeedAttributesHash` — regenerate the whole surface, not one
-file** (that omission is exactly what left `3.2.0` stale).
+Never patch generated output. Change the registry input, generator, analyzer, or
+documentation generator, regenerate, and commit owner plus outputs together.
 
-The Analyzers' deprecation catalog
-(`OpenTelemetryDeprecatedSemconvCatalog.cs`) is hand-curated on purpose
-(since-versions, guidance prose, and mappings for keys upstream deleted
-outright — the registry knows none of that), but
-`scripts/verify_deprecated_catalog.py` (run in CI) cross-checks it against
-`resolved-registry.json`: every registry rename/deprecation/enum-member
-removal must have a matching, agreeing catalog entry. After a registry bump,
-run it and reconcile; changing catalog data also means bumping
-`SemconvMigrationCatalog.ExpectedCuratedMentionCount` and re-running
-`./build.sh GenerateDocs`.
+Stable constants contain stable and deprecated upstream entries. Incubating constants
+contain the unstable surface and may break between minor releases. Development GenAI
+conventions remain incubating until their upstream stability changes.
 
-A sibling emitter, `scripts/emit_typespec_keys.py`, projects the SAME
-`resolved-registry.json` into TypeSpec key constants for the external
-`qyl-api-schema` repo (`generated/otel-keys.gen.tsp`); it replaced the retired
-`@ancplua/typespec-otel-semconv` npm generator (2026-07-11). After a registry
-bump, also re-run it with `--write <qyl-api-schema>/generated/otel-keys.gen.tsp`
-so the TypeSpec and C# surfaces stay in lockstep (qyl-api-schema's
-`VerifyKeysLockstep` asserts the header pin against its `OtelKeysVersion`
-parameter).
+## Contract boundaries
 
-## GenAI registry: separate upstream repo, development-only, Incubating-only
+This repository owns telemetry vocabulary, not Qyl product API models and not OTLP
+wire messages. The TypeSpec key projection supplies names to `qyl-api-schema`; the
+schema repository owns every Qyl client-visible request, response, stream event, and
+error. Do not move AutoInstrumentation's internal capability catalog into the public
+product-contract repository.
 
-The GenAI conventions moved to their own upstream repo,
-**`open-telemetry/semantic-conventions-genai`** (cloned at
-`~/RiderProjects/qyl-references/semantic-conventions-genai`; see the
-workspace router `../CLAUDE.md`).
-Facts that matter here:
+A source-generation or analyzer API needs an executable consumer and tests for the
+complete contract. Marker-only declarations, unexecuted sample code, or a mock that
+only reproduces the expected string are not acceptance evidence.
 
-- **Everything in that registry is `stability: development`** (registry-level
-  `stability: development` in `model/manifest.yaml`; zero stable entries).
-  Accordingly `gen_ai.*` keys generate into **`.Incubating` only** — if a
-  `gen_ai.*` constant ever appears in the stable package, the
-  `StabilityFilter.StableOnly` pipeline is broken, not the registry.
-- Its manifest declares a **dev schema family**
-  (`https://opentelemetry.io/schemas/gen-ai-dev/1.42.0-dev`) while the README
-  still says "Schema URL: TODO", and it builds against a **filtered core
-  registry pinned at 1.41.0** (gen-ai/mcp/openai dirs stripped upstream-side to
-  avoid duplicate group ids). This repo pins core semconv **1.43.0** — the skew
-  is expected and fine while GenAI is development.
-- **When the genai repo publishes a proper (non `-dev`) schema URL, that is a
-  future `Version.props` decision** for this repo: whether to pin the GenAI
-  registry version separately from `SemConvSchemaVersion` instead of treating
-  it as "the development GenAI registry" folded into the family version.
+The analyzer project is preview-only: Qyl does not consume it and only one of its 48
+rules has executable behavior tests. Keep it out of stable packs. An explicit preview
+pack requires `PackPreviewAnalyzers=true` and a prerelease package version; promote it
+only after Qyl dogfoods the package and every rule has executable coverage.
 
-## The Nuke build component lives in THIS repo — do not re-externalize it
+## Build and regeneration
 
-`src/Qyl.OpenTelemetry.SemanticConventions.Nuke/` is the build component
-(`IUpstreamConventions`, `IDomainConventionsApi`, `LockstepPolicy`, `Helpers`,
-`ParameterDefaults`). `eng/build/_build.csproj` and the Pipeline.Tests consume it
-via `ProjectReference`, and the build host **dogfoods** it
-(`./build.sh VerifyAttributesHash` parses a `{semconv}-{n}` version through
-`LockstepPolicy`).
+Build all projects with warnings treated as errors:
 
-History worth knowing before you "tidy" this:
-- `4f7434e` (2026-05-26) swapped the local project out for the external
-  **`ANcpLua.OpenTelemetry.Conventions.Nuke`** 0.1.0 package.
-- That package's repo (`ANcpLua/ANcpLua.OpenTelemetry.Conventions.Nuke`) is
-  **archived** (frozen at 0.1.0), so on 2026-05-29 it was **re-vendored back**
-  (`21db20f`). The two are the same component; only the namespace differed
-  (`Qyl.OpenTelemetry.SemanticConventions.Nuke` vs `ANcpLua.OpenTelemetry.Conventions.Nuke`).
+```bash
+dotnet build Qyl.OpenTelemetry.SemanticConventions.slnx -c Release
+```
 
-**Do NOT** re-swap to `ANcpLua.OpenTelemetry.Conventions.Nuke` — it's archived.
-Edit `LockstepPolicy` and friends here; this project ships as the `.Nuke` package.
-(`Qyl…Nuke` 3.0.1 was published from this restored source; the orphaned 3.0.0 is deprecated.)
+Run both Microsoft Testing Platform executables:
 
-## Build / verify gotchas
+```bash
+dotnet run --project tests/Qyl.OpenTelemetry.SemanticConventions.Pipeline.Tests -c Release
+dotnet run --project tests/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Tests -c Release
+```
 
-- `dotnet build Qyl.OpenTelemetry.SemanticConventions.slnx` must be **0/0**
-  (`TreatWarningsAsErrors` is on).
-- **Tests are Microsoft.Testing.Platform (exe-style).** On the .NET 10 SDK,
-  `dotnet test` errors with a VSTest message — run them as the MTP executable:
-  `dotnet run --project tests/<proj>.csproj -c Debug`.
-- `./build.sh CheckDocs` fails if `docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md`
-  drifts from the analyzer assembly (regenerate with `./build.sh GenerateDocs`;
-  the generator is `tools/…DocsGenerator`, never hand-edit the markdown).
-- The `.Analyzers` and `.SourceGeneration` projects target **netstandard2.0**;
-  `System.Index`/`System.Range`/`IsExternalInit` come from the
-  `ANcpLua.Roslyn.Utilities.Polyfills` source package, not the BCL. Those polyfills
-  compile as `internal` types into the analyzer assembly, so any project that gets
-  `InternalsVisibleTo` from `.Analyzers` **and** targets a modern TFM must reference
-  it with `Aliases="analyzers"` (see the DocsGenerator's `ProjectReference`) —
-  otherwise the friend assembly's `System.Range` collides with the BCL's and the
-  IDE can't resolve the type.
+Important generation gates:
+
+```bash
+./build.sh VerifyAttributesHash
+./build.sh CheckDocs
+python3 src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/scripts/verify_deprecated_catalog.py
+```
+
+After an intentional attribute regeneration, reseed the manifest with
+`./build.sh SeedAttributesHash`. Regenerate analyzer documentation with
+`./build.sh GenerateDocs`; never edit generated rule pages directly.
+
+## Publishing
+
+Publication is GitHub Actions OIDC trusted publishing. Never add a long-lived NuGet
+API key or publish locally. The supported release set is the stable constants,
+incubating constants, and source generator. Release work builds, tests, packs,
+inspects, waits for registry indexing, restores into a clean consumer, executes it,
+and only then tags and announces the release. The committed local version is a
+development fallback; the release workflow owns the published version.

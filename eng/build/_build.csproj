@@ -20,16 +20,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Dogfood: the build host references the Nuke component this repo SHIPS.
-         IUpstreamConventions, LockstepPolicy and friends come from here — the
-         very same package consumers will get from nuget.org. -->
-    <ProjectReference Include="../../src/Qyl.OpenTelemetry.SemanticConventions.Nuke/Qyl.OpenTelemetry.SemanticConventions.Nuke.csproj"/>
+    <PackageReference Include="Nuke.Common"/>
   </ItemGroup>
 
   <!-- Transitive security overrides for Nuke.Common 10.1.0
-       (GHSA-g4vj-cjjj-v7hg / GHSA-37gx-xxp4-5rgx). The canonical Nuke component pins
-       these with PrivateAssets="all", which suppresses transitive flow into the build
-       host, so we re-declare them here for the dotnet-run executable. -->
+       (GHSA-g4vj-cjjj-v7hg / GHSA-37gx-xxp4-5rgx). -->
   <ItemGroup>
     <PackageReference Include="NuGet.Packaging"/>
     <PackageReference Include="System.Security.Cryptography.Xml"/>

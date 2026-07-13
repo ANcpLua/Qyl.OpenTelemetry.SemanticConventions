@@ -12,27 +12,20 @@ using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
-using Qyl.OpenTelemetry.SemanticConventions.Nuke;
 using Serilog;
 
 namespace Qyl.OpenTelemetry.SemanticConventions.Build;
 
 /// <summary>
-///   Monorepo build host. Dogfoods Qyl.OpenTelemetry.SemanticConventions.Nuke by
-///   implementing IUpstreamConventions on the same package consumers will install
-///   from nuget.org, and by exercising LockstepPolicy + the helper machinery in a
-///   VerifyAttributesHash target that guards the committed .g.cs files against
-///   undetected hand-edits.
+///   Repository-local build host. VerifyAttributesHash guards the committed
+///   generated attribute files against untracked edits.
 /// </summary>
-internal sealed class Build : NukeBuild, IUpstreamConventions
+internal sealed class Build : NukeBuild
 {
     public static int Main() => Execute<Build>(x => x.Compile);
 
     [Solution(GenerateProjects = false)]
     readonly Solution Solution = null!;
-
-    [Parameter("Generator-revision counter for lockstep validation ({semconv}-{n}, default 1).")]
-    readonly int LockstepRevision = 1;
 
     AbsolutePath AttributesHashFile => RootDirectory / "eng" / "semconv" / "attributes.lock.sha256";
 
@@ -61,21 +54,11 @@ internal sealed class Build : NukeBuild, IUpstreamConventions
     ///   Hash the committed Weaver-emitted attribute files and compare against the
     ///   manifest at <c>eng/semconv/attributes.lock.sha256</c>. Fails the build if
     ///   anyone hand-edited a generated file or forgot to re-seed the lock after a
-    ///   legitimate regeneration. Also parses the configured
-    ///   <c>{SemconvVersion}-{LockstepRevision}</c> pair with
-    ///   <see cref="LockstepPolicy.ParseSemconvSuffixVersion"/> and logs the result;
-    ///   this exercises the type binding from the shipped Nuke component but does
-    ///   not itself assert on the parsed values.
+    ///   legitimate regeneration.
     /// </summary>
     Target VerifyAttributesHash => _ => _
         .Executes(() =>
         {
-            string lockstep = $"{((IUpstreamConventions)this).SemconvVersion}-{LockstepRevision}";
-            (string semconv, int n) = LockstepPolicy.ParseSemconvSuffixVersion(lockstep);
-            Log.Information(
-                "VerifyAttributesHash: lockstep version {Lockstep} parsed as semconv={Semconv} n={N}.",
-                lockstep, semconv, n);
-
             string actual = ComputeAttributesManifestHash();
 
             if (!File.Exists(AttributesHashFile))

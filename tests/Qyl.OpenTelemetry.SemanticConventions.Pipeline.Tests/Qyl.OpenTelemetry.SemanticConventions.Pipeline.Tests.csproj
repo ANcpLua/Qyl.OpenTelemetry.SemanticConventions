@@ -23,7 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../src/Qyl.OpenTelemetry.SemanticConventions.Nuke/Qyl.OpenTelemetry.SemanticConventions.Nuke.csproj"/>
     <ProjectReference Include="../../src/Qyl.OpenTelemetry.SemanticConventions.Analyzers/Qyl.OpenTelemetry.SemanticConventions.Analyzers.csproj"/>
   </ItemGroup>
 

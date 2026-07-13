@@ -1,6 +1,7 @@
 <Project>
   <PropertyGroup Label="Central Versions">
     <SemConvSchemaVersion>1.43.0</SemConvSchemaVersion>
+    <WeaverVersion>0.24.2</WeaverVersion>
 
     <ANcpLuaRoslynUtilitiesVersion>2.2.24</ANcpLuaRoslynUtilitiesVersion>
     <MicrosoftCodeAnalysisVersion>5.3.0</MicrosoftCodeAnalysisVersion>

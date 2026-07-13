@@ -17,9 +17,8 @@
     <PackageVersion Include="ANcpLua.Roslyn.Utilities.Testing" Version="$(ANcpLuaRoslynUtilitiesVersion)"/>
   </ItemGroup>
 
-  <ItemGroup Label="Build (Nuke component + eng/build host)">
+  <ItemGroup Label="Repository build host">
     <PackageVersion Include="Nuke.Common" Version="$(NukeVersion)"/>
-    <PackageVersion Include="Nuke.Components" Version="$(NukeVersion)"/>
   </ItemGroup>
 
   <ItemGroup Label="Transitive security overrides (Nuke.Common 10.1.0)">

@@ -7,7 +7,9 @@ internal static class SemconvIntentClassifier
 {
     private const string SchemaUrlPrefix = "https://opentelemetry.io/schemas/";
 
-    private static readonly Version CurrentSchemaVersion = new(1, 43, 0);
+    private const string SchemaVersionMetadataKey = "OpenTelemetry.SemanticConventions.Version";
+
+    private static readonly Version CurrentSchemaVersion = LoadCurrentSchemaVersion();
 
     private static readonly string[] DowngradeFragments =
     [
@@ -238,5 +240,25 @@ internal static class SemconvIntentClassifier
         var versionText = value.Substring(versionStart, versionEnd - versionStart).TrimEnd('.');
         return Version.TryParse(versionText, out var version)
             && version < CurrentSchemaVersion;
+    }
+
+    private static Version LoadCurrentSchemaVersion()
+    {
+        object[] attributes = typeof(SemconvIntentClassifier).Assembly.GetCustomAttributes(
+            typeof(global::System.Reflection.AssemblyMetadataAttribute),
+            inherit: false);
+
+        foreach (object attribute in attributes)
+        {
+            if (attribute is global::System.Reflection.AssemblyMetadataAttribute metadata
+                && string.Equals(metadata.Key, SchemaVersionMetadataKey, StringComparison.Ordinal)
+                && Version.TryParse(metadata.Value, out Version? version))
+            {
+                return version;
+            }
+        }
+
+        throw new InvalidOperationException(
+            $"Missing or invalid assembly metadata '{SchemaVersionMetadataKey}'.");
     }
 }

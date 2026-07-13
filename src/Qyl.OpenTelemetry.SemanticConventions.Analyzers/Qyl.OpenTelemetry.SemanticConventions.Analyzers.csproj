@@ -10,7 +10,11 @@
     <Description>Roslyn diagnostic analyzers + code fixes for OpenTelemetry semantic-conventions consumers. Flags deprecated attributes, schema-url omission, missing required attributes (GenAI, HTTP), and a wider band of OTel observability/instrumentation patterns at compile time.</Description>
     <PackageTags>opentelemetry;semantic-conventions;roslyn;analyzer;codefix;otel</PackageTags>
 
-    <IsPackable>true</IsPackable>
+    <!-- The 48-rule analyzer surface is not yet dogfooded by Qyl and only one rule
+         has executable behavior tests. Keep building it, but exclude it from stable
+         package releases until that evidence exists. Explicit preview packs must opt in. -->
+    <PackPreviewAnalyzers Condition="'$(PackPreviewAnalyzers)' == ''">false</PackPreviewAnalyzers>
+    <IsPackable>$(PackPreviewAnalyzers)</IsPackable>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <GenerateDependencyFile>false</GenerateDependencyFile>
     <DevelopmentDependency>true</DevelopmentDependency>
@@ -31,6 +35,11 @@
          relies on that contract being live. -->
     <NoWarn>$(NoWarn);NU5017;RS1041;RS1025;RS1026;RS0030;RS1038;IDE0055;CA2249;CS1591;CS1570;CS1572;CS1573;CS1574</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyMetadata Include="OpenTelemetry.SemanticConventions.Version"
+                      Value="$(SemConvSchemaVersion)"/>
+  </ItemGroup>
 
   <ItemGroup Label="Global usings consumed by imported analyzer + codefix sources">
     <Using Include="System"/>
@@ -146,6 +155,12 @@
     <Exec Command="dotnet run --project &quot;$(_DocsGenProject)&quot; --configuration $(Configuration) -- --check"
           WorkingDirectory="$(MSBuildThisFileDirectory)../.."
           EnvironmentVariables="_QylInsideConsistencyCheck=true"/>
+  </Target>
+
+  <Target Name="_RequirePreviewAnalyzerVersion"
+          BeforeTargets="GenerateNuspec"
+          Condition="'$(IsPackable)' == 'true' AND !$([System.String]::Copy('$(PackageVersion)').Contains('-'))">
+    <Error Text="The analyzer package is preview-only. Use a prerelease PackageVersion while PackPreviewAnalyzers=true."/>
   </Target>
 
 </Project>

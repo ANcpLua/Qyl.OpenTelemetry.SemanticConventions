@@ -13,10 +13,10 @@ whitespace_control:
   keep_trailing_newline: true
 
 params:
-  schema_version: "1.43.0"
+  schema_version: ""
   source_registry: "core"
-  source_ref: "v1.43.0"
-  source_commit: "89aae438b3b3b0a8dd33003c9d70592baf7dbd0d"
+  source_ref: ""
+  source_commit: ""
   source_date_epoch: "0"
   weaver_version: "0.24.2"
 
