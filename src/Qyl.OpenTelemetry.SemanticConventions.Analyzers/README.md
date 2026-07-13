@@ -20,6 +20,12 @@ Targets: `netstandard2.0` (Roslyn host requirement)
 | stable | [`Qyl.OpenTelemetry.SemanticConventions.Analyzers`](https://www.nuget.org/packages/Qyl.OpenTelemetry.SemanticConventions.Analyzers/) | Roslyn diagnostic analyzers + code fixes |
 | stable | [`Qyl.OpenTelemetry.SemanticConventions.Nuke`](https://www.nuget.org/packages/Qyl.OpenTelemetry.SemanticConventions.Nuke/) | Nuke build component exposing the Weaver and TypeSpec pipelines |
 
+The deprecation/migration catalog is pinned to the same semantic-conventions registry as the
+generated constants — `SemConvSchemaVersion` in `Version.props` (currently **1.43.0**) — and is
+machine-verified against `resolved-registry.json` on every CI run by
+`verify_deprecated_catalog.py` (missing renames, missing deprecations, and removed enum members
+all fail the build).
+
 ## Domain bands
 
 | Range | Domain | Rules |
