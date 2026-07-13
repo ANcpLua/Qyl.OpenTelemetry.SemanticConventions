@@ -142,10 +142,38 @@ internal static class Program
 }
 EOF
 
-dotnet restore "${consumer_directory}/ReleaseSmoke.csproj" \
-  --configfile "${work_directory}/NuGet.Config" \
-  --packages "${work_directory}/packages" \
-  --no-cache
+restore_attempts=1
+if [[ "${package_source}" == "https://api.nuget.org/v3/index.json" ]]; then
+  restore_attempts=60
+fi
+
+restore_log="${work_directory}/restore.log"
+restored=false
+for attempt in $(seq 1 "${restore_attempts}"); do
+  rm -rf "${consumer_directory}/obj" "${work_directory}/packages"
+  if dotnet restore "${consumer_directory}/ReleaseSmoke.csproj" \
+    --configfile "${work_directory}/NuGet.Config" \
+    --packages "${work_directory}/packages" \
+    --no-cache >"${restore_log}" 2>&1; then
+    restored=true
+    break
+  fi
+
+  if [[ "${attempt}" == "${restore_attempts}" ]] \
+    || ! grep -Eq 'NU110[12].*Qyl\.OpenTelemetry\.SemanticConventions' "${restore_log}"; then
+    cat "${restore_log}" >&2
+    exit 1
+  fi
+
+  echo "Waiting for the published packages to become restorable (${attempt}/${restore_attempts})"
+  sleep 10
+done
+
+if [[ "${restored}" != true ]]; then
+  cat "${restore_log}" >&2
+  exit 1
+fi
+
 dotnet run --project "${consumer_directory}/ReleaseSmoke.csproj" \
   --configuration Release \
   --no-restore

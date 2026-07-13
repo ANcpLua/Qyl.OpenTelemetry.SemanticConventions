@@ -162,10 +162,13 @@ jobs:
           for package_id in "${package_ids[@]}"; do
             lower_id="$(printf '%s' "${package_id}" | tr '[:upper:]' '[:lower:]')"
             lower_version="$(printf '%s' "${VERSION}" | tr '[:upper:]' '[:lower:]')"
-            url="https://api.nuget.org/v3-flatcontainer/${lower_id}/${lower_version}/${lower_id}.${lower_version}.nupkg"
+            url="https://api.nuget.org/v3/registration5-gz-semver2/${lower_id}/${lower_version}.json"
             indexed=false
             for attempt in $(seq 1 60); do
-              if curl --fail --silent --location --output /dev/null "${url}"; then
+              if curl --compressed --fail --silent --location "${url}?attempt=${attempt}" \
+                | jq -e --arg package_url \
+                  "https://api.nuget.org/v3-flatcontainer/${lower_id}/${lower_version}/${lower_id}.${lower_version}.nupkg" \
+                  '.listed == true and .packageContent == $package_url' >/dev/null; then
                 indexed=true
                 break
               fi
