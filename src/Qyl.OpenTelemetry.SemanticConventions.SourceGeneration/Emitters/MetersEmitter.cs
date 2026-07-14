@@ -17,13 +17,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Emitters;
 /// per-symbol annotation for non-stable tiers — stable/incubating separation
 /// is handled at the Weaver-template/registry-filter layer, not the symbol
 /// layer.
-///
-/// Audit (pinned-goal directive, Phase B-2): this emitter writes extension
-/// methods on a consumer-provided <c>Meter</c> (<c>this Meter meter</c>) only.
-/// No generated global <c>Meter</c> singletons, no
-/// <c>private static readonly Meter ... = new Meter(...)</c>. Consumers own
-/// runtime <c>Meter</c> instances and pick their own name/version/scope; the
-/// generator only emits typed factory wrappers over the BCL surface.
+/// Consumers own each <c>Meter</c> and its name, version, and scope; generated
+/// code contains only typed factory extensions over the BCL surface.
 /// </summary>
 internal static class MetersEmitter
 {

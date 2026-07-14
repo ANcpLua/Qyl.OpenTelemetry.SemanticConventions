@@ -7,9 +7,6 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator;
 ///   The generator's operating modes. Each maps to a Nuke target in <c>eng/build/Build.cs</c>
 ///   (<c>GenerateDocs</c>, <c>CheckDocs</c>, <c>AuditDocs</c>, <c>EnforceIds</c>,
 ///   <c>EnforceIdsApply</c>) plus a <c>--rewrite-shipped</c> ad-hoc fixup.
-///
-///   Extension point: add a new mode by appending it here, wiring it in
-///   <see cref="CliModes.Parse"/>, and dispatching from <see cref="DocsGenerator.Run"/>.
 /// </summary>
 internal enum Mode
 {

@@ -17,10 +17,6 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator;
 ///   </list>
 ///   Yields (absolute path, content) pairs so both <c>Generate</c> and <c>Check</c> share
 ///   the source-of-truth content without re-deriving it.
-///
-///   Extension point: add a new profile by appending one <c>yield return</c>; the renderer
-///   itself is parameterised on a <c>severityFor</c> selector, so domain-specific profiles
-///   (per-band, per-severity floor, etc.) need no further code changes here.
 /// </summary>
 internal static class EditorconfigRenderer
 {

@@ -1,7 +1,4 @@
 <Project>
-  <!-- Version.props is imported by Directory.Build.props; MSBuild guarantees that
-       import has already run by the time Directory.Packages.props evaluates. -->
-
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>

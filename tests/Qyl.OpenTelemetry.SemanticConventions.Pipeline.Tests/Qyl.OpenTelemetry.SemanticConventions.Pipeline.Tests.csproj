@@ -9,8 +9,7 @@
     <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
     <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
     <NoWarn>$(NoWarn);CA1707;CA2007;CS1591</NoWarn>
-    <!-- Analyzer + ANcpLua.Roslyn.Utilities transitively drag Microsoft.CodeAnalysis.Workspaces,
-         which unifies Microsoft.Bcl.AsyncInterfaces 8.0.0 -> 9.0.0. Benign; tests run on 9.0.0. -->
+    <!-- The analyzer graph intentionally unifies Microsoft.Bcl.AsyncInterfaces to 9.0.0. -->
     <MSBuildWarningsAsMessages>$(MSBuildWarningsAsMessages);MSB3277</MSBuildWarningsAsMessages>
   </PropertyGroup>
 

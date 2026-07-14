@@ -20,14 +20,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Emitters;
 /// emitted as a nested static class of <c>const string</c>s so call sites are
 /// discoverable (e.g.
 /// <c>activity.SetHttpRequestMethod(HttpActivityExtensions.HttpRequestMethodValues.Get)</c>).
-///
-/// Audit (pinned-goal directive, Phase B-2): this emitter writes thin
-/// extension methods on a consumer-provided <c>Activity</c>
-/// (<c>this Activity activity</c>) that forward to <c>Activity.SetTag</c>.
-/// No generated <c>ActivitySource</c> singletons, no
-/// <c>private static readonly ActivitySource ... = new ActivitySource(...)</c>.
-/// Consumers own the <c>ActivitySource</c>/<c>Activity</c> lifecycle; the
-/// generator only provides typed setters over the BCL surface.
+/// Consumers own the <c>ActivitySource</c>/<c>Activity</c> lifecycle; generated
+/// code contains only typed extensions over the BCL surface.
 /// </summary>
 internal static class ActivityExtensionsEmitter
 {

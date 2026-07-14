@@ -19,10 +19,6 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator;
 ///   the completion audit. Live <c>[Obsolete]</c> metadata from the referenced
 ///   <c>OpenTelemetry.SemanticConventions</c> package remains the primary source of
 ///   truth — the rows here exist only where live metadata is insufficient or absent.
-///
-///   Extension point: every section is a <c>void(StringBuilder, CatalogStatistics)</c>
-///   in the <c>sections</c> array. New views (per-signal heat-map, evidence-quality
-///   audit, etc.) plug in by appending to that array.
 /// </summary>
 internal static class MigrationCatalogRenderer
 {

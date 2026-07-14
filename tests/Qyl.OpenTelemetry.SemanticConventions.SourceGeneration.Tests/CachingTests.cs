@@ -9,7 +9,7 @@ using Xunit;
 namespace Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Tests;
 
 /// <summary>
-/// Phase 2 caching gate: runs <see cref="SemConvAttributesGenerator"/> twice across
+/// Runs <see cref="SemConvAttributesGenerator"/> twice across
 /// independent <see cref="CSharpCompilation"/> instances built from the same source
 /// and asserts the user-defined pipeline steps reach a stable cached state on the
 /// second run. The forbidden-type analyzer doubles as a static guarantee that no

@@ -187,11 +187,7 @@ public sealed class SemConvActivitiesGeneratorTests
     [Fact]
     public void Emits_IncubatingActivities_For_Http_Marker()
     {
-        // Phase B-2 stability filter: the incubating marker surfaces
-        // non-deprecated development-stability attributes under http (e.g.
-        // http.connection.state, http.request.body.size); the stable marker
-        // drops those (it keeps stable rows + all deprecated rows, regardless
-        // of stability tier, so consumers can migrate at their pace).
+        // Stable output excludes development rows but retains deprecated migration rows.
         const string incubatingSource = """
             using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration;
 
@@ -227,25 +223,20 @@ public sealed class SemConvActivitiesGeneratorTests
             .And.Contain("SetHttpResponseBodySize")
             .And.Contain("SetHttpRequestSize")
             .And.Contain("SetHttpResponseSize")
-            // ...alongside the stable rows...
             .And.Contain("SetHttpRequestMethod")
             .And.Contain("SetHttpRoute")
-            // ...and deprecated rows survive (audit: contrib/Java/Python parity).
             .And.Contain("SetHttpClientIp")
             .And.Contain("[global::System.Obsolete(\"Replaced by client.address.\")]");
 
-        // Stable surface drops non-deprecated development rows...
         stable.Should()
             .NotContain("SetHttpConnectionState")
             .And.NotContain("SetHttpRequestBodySize")
             .And.NotContain("SetHttpResponseBodySize")
             .And.NotContain("SetHttpRequestSize")
             .And.NotContain("SetHttpResponseSize")
-            // ...keeps stable rows...
             .And.Contain("SetHttpRequestMethod")
             .And.Contain("SetHttpRoute")
             .And.Contain("SetHttpResponseStatusCode")
-            // ...and keeps deprecated rows for migration.
             .And.Contain("SetHttpClientIp")
             .And.Contain("[global::System.Obsolete(\"Replaced by client.address.\")]");
     }

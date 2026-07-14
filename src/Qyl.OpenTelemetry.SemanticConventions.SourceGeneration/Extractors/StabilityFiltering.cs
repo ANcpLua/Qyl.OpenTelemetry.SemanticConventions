@@ -8,12 +8,6 @@ namespace Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Extractors;
 /// projection; <see cref="AllStabilities"/> mirrors the "incubating package"
 /// projection (stable + development + deprecated + alpha + beta + release_candidate).
 /// </summary>
-/// <remarks>
-/// Phase A surfaces this enum on every marker model and through the per-signal
-/// loader/emitter signatures. Each emitter consumes the filter inside its row
-/// selection logic so stable and incubating projections stay consistent across
-/// attributes, metrics, events, meters, and activity helpers.
-/// </remarks>
 internal enum StabilityFilter
 {
     /// <summary>Emit only rows whose stability is <see cref="StabilityModel.Stable"/>.</summary>

@@ -7,12 +7,9 @@
     <AssemblyName>_build</AssemblyName>
 
     <IsPackable>false</IsPackable>
-    <!-- CA1707: Nuke convention requires the assembly to be named `_build` for the
-         entry-point discovery; the underscore is intentional. Other suppressions
-         are standard for a Nuke build host (top-level program, no async ctx). -->
+    <!-- Nuke requires the _build assembly name. -->
     <NoWarn>$(NoWarn);CA1050;CA1707;CA1822;CA2007;CS1591</NoWarn>
 
-    <!-- Build host: don't enforce documentation-comment generation. -->
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
 
     <NukeRootDirectory>../..</NukeRootDirectory>
@@ -23,8 +20,7 @@
     <PackageReference Include="Nuke.Common"/>
   </ItemGroup>
 
-  <!-- Transitive security overrides for Nuke.Common 10.1.0
-       (GHSA-g4vj-cjjj-v7hg / GHSA-37gx-xxp4-5rgx). -->
+  <!-- Override vulnerable Nuke.Common transitives. -->
   <ItemGroup>
     <PackageReference Include="NuGet.Packaging"/>
     <PackageReference Include="System.Security.Cryptography.Xml"/>

@@ -27,9 +27,6 @@ internal static class RepoLayout
     public static string MigrationCatalogPath(string repoRoot) =>
         Path.Combine(repoRoot, "docs", "migration-catalog.md");
 
-    // Extension point: SARIF v2.1.0 manifest. Sibling machine-readable catalogs
-    // (CodeQL pack, OWASP ASVS map, custom JSON for IDE rule pickers) plug in next to
-    // this path the same way — add a SiblingPath helper here and a Renderer class.
     public static string SarifPath(string repoRoot) =>
         Path.Combine(repoRoot, "docs", PackageName + ".sarif");
 

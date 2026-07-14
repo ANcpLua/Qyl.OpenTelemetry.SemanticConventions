@@ -26,9 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Byte-identity snapshots loaded via Assembly.GetManifestResourceStream
-         using the stable LogicalName. .txt extension keeps these out of the
-         C# compile pipeline. Naming: qyl.<surface>.<prefix>.<tier>.expected.txt -->
     <EmbeddedResource Include="Snapshots\qyl.attributes.http.stable.expected.txt"
                       LogicalName="qyl.attributes.http.stable.expected.txt"/>
     <EmbeddedResource Include="Snapshots\qyl.attributes.http.incubating.expected.txt"

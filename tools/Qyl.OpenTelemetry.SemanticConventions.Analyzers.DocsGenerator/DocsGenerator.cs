@@ -61,7 +61,6 @@ internal static class DocsGenerator
         var fixableIds = DescriptorCatalog.GetFixableDiagnosticIds();
         var idToClass = DescriptorCatalog.BuildIdToClassMap();
 
-        // (1) Slim index file.
         if (!File.Exists(outputPath))
         {
             Console.Error.WriteLine($"Missing generated docs: {outputPath}");
@@ -73,7 +72,6 @@ internal static class DocsGenerator
             return 1;
         }
 
-        // (2) Per-rule pages under docs/rules/.
         var rulesDir = RepoLayout.RulesDir(repoRoot);
         var expectedRuleFiles = new HashSet<string>(StringComparer.Ordinal);
         foreach (var d in descriptors)
@@ -120,7 +118,6 @@ internal static class DocsGenerator
             }
         }
 
-        // (3) Migration catalog (qyl-specific tables that don't fit per-rule pages).
         var catalogPath = RepoLayout.MigrationCatalogPath(repoRoot);
         if (!File.Exists(catalogPath))
         {
@@ -133,8 +130,6 @@ internal static class DocsGenerator
             return 1;
         }
 
-        // (4) SARIF v2.1.0 rule manifest for tool interop (Sonar bridges, GitHub
-        // Advanced Security uploads, IDE rule catalogs).
         var sarifPath = RepoLayout.SarifPath(repoRoot);
         if (!File.Exists(sarifPath))
         {
@@ -147,8 +142,6 @@ internal static class DocsGenerator
             return 1;
         }
 
-        // (5) Editorconfig profiles ship in the NuGet as ready-made severity profiles
-        // consumers can drop into their repo.
         foreach (var (path, expected) in EditorconfigRenderer.EnumerateProfiles(repoRoot, descriptors))
         {
             if (!File.Exists(path))
@@ -163,10 +156,7 @@ internal static class DocsGenerator
             }
         }
 
-        // (6) AnalyzerReleases.Shipped.md Notes column carries the
-        // "ClassName, [Documentation](url)" Microsoft-pattern attribution. RS2008
-        // already enforces rows-per-descriptor; this check enforces the Notes shape
-        // so the file can't drift via hand-edit.
+        // RS2008 covers rows; this additionally locks their documentation links.
         var shippedPath = RepoLayout.ShippedReleasesPath(repoRoot);
         if (File.Exists(shippedPath))
         {
@@ -201,12 +191,10 @@ internal static class DocsGenerator
         var fixableIds = DescriptorCatalog.GetFixableDiagnosticIds();
         var idToClass = DescriptorCatalog.BuildIdToClassMap();
 
-        // (1) Slim index.
         Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
         File.WriteAllText(outputPath, IndexDocsRenderer.Render(descriptors, fixableIds, idToClass));
         Console.WriteLine($@"Wrote {Path.GetRelativePath(repoRoot, outputPath)}");
 
-        // (2) Per-rule pages.
         var rulesDir = RepoLayout.RulesDir(repoRoot);
         Directory.CreateDirectory(rulesDir);
         var expectedRuleFiles = new HashSet<string>(StringComparer.Ordinal);
@@ -218,7 +206,6 @@ internal static class DocsGenerator
             expectedRuleFiles.Add(Path.GetFileName(rulePath));
             File.WriteAllText(rulePath, RulePageRenderer.Render(d, className, fixableIds));
         }
-        // Clean up stale rule pages from prior renames (otherwise --check fails afterward).
         foreach (var file in Directory.EnumerateFiles(rulesDir, "*.md"))
         {
             if (!expectedRuleFiles.Contains(Path.GetFileName(file)))
@@ -229,18 +216,15 @@ internal static class DocsGenerator
         }
         Console.WriteLine($@"Wrote {descriptors.Count} per-rule pages under docs/rules/");
 
-        // (3) Migration catalog.
         var catalogPath = RepoLayout.MigrationCatalogPath(repoRoot);
         Directory.CreateDirectory(Path.GetDirectoryName(catalogPath)!);
         File.WriteAllText(catalogPath, MigrationCatalogRenderer.Render(stats));
         Console.WriteLine($@"Wrote {Path.GetRelativePath(repoRoot, catalogPath)}");
 
-        // (4) SARIF v2.1.0 rule manifest.
         var sarifPath = RepoLayout.SarifPath(repoRoot);
         File.WriteAllText(sarifPath, SarifRenderer.Render(descriptors, idToClass));
         Console.WriteLine($@"Wrote {Path.GetRelativePath(repoRoot, sarifPath)}");
 
-        // (5) Editorconfig profiles.
         foreach (var (path, content) in EditorconfigRenderer.EnumerateProfiles(repoRoot, descriptors))
         {
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);

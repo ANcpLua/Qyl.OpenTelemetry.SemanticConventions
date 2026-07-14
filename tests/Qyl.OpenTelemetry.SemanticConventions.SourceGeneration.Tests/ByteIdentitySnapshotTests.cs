@@ -7,7 +7,7 @@ using Xunit;
 namespace Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Tests;
 
 /// <summary>
-/// Phase 1 byte-identity smoke against contrib's
+/// Byte-identity smoke against contrib's
 /// <c>OpenTelemetry.SemanticConventions/Attributes/Disk/DiskAttributes.cs</c>
 /// shape at <c>open-telemetry/opentelemetry-dotnet-contrib@55978aae</c>. The
 /// member region (constants + enum-value classes + XML doc comment layout) is

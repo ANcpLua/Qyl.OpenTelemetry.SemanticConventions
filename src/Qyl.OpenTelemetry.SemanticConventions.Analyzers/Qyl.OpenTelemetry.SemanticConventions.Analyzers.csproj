@@ -10,28 +10,18 @@
     <Description>Roslyn diagnostic analyzers + code fixes for OpenTelemetry semantic-conventions consumers. Flags deprecated attributes, schema-url omission, missing required attributes (GenAI, HTTP), and a wider band of OTel observability/instrumentation patterns at compile time.</Description>
     <PackageTags>opentelemetry;semantic-conventions;roslyn;analyzer;codefix;otel</PackageTags>
 
-    <!-- Qyl does not consume the 48-rule analyzer surface, and only one rule has executable
-         behavior tests. Stable packaging requires consumer evidence; preview packs opt in. -->
+    <!-- Stable packaging is blocked until the 48-rule surface has consumer evidence and behavior coverage. -->
     <PackPreviewAnalyzers Condition="'$(PackPreviewAnalyzers)' == ''">false</PackPreviewAnalyzers>
     <IsPackable>$(PackPreviewAnalyzers)</IsPackable>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <GenerateDependencyFile>false</GenerateDependencyFile>
     <DevelopmentDependency>true</DevelopmentDependency>
     <NoPackageAnalysis>true</NoPackageAnalysis>
-    <!-- Analyzer DLL ships via the _AddAnalyzersToPackage target into analyzers/dotnet/cs,
-         not lib/. The default symbol packager expects lib/ and errors NU5017 when there
-         is nothing there; turn off snupkg for analyzer-style packages. -->
     <IncludeSymbols>false</IncludeSymbols>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
     <NeutralLanguage>en</NeutralLanguage>
 
-    <!-- NU5017: analyzer packs ship via _AddAnalyzersToPackage into analyzers/dotnet/cs/
-         (not lib/), so the pack target's content check fires before the custom target
-         runs. The nupkg is produced correctly; the warning is spurious here.
-         RS2000/RS2008 are intentionally NOT suppressed: they enforce that every public
-         DiagnosticDescriptor has a corresponding row in AnalyzerReleases.{Shipped,
-         Unshipped}.md. tools/Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator
-         relies on that contract being live. -->
+    <!-- NU5017 is spurious for analyzer-only packages; RS2000/RS2008 remain active for release-manifest coverage. -->
     <NoWarn>$(NoWarn);NU5017;RS1041;RS1025;RS1026;RS0030;RS1038;IDE0055;CA2249;CS1591;CS1570;CS1572;CS1573;CS1574</NoWarn>
   </PropertyGroup>
 
@@ -88,9 +78,7 @@
     <AdditionalFiles Include="AnalyzerReleases.Unshipped.md"/>
   </ItemGroup>
 
-  <!-- Bundle the analyzer assembly + ANcpLua.Roslyn.Utilities into analyzers/dotnet/cs.
-       Microsoft.CodeAnalysis.CSharp[.Workspaces] are intentionally NOT bundled — they
-       are provided by every analyzer host. Polyfills is source-only. -->
+  <!-- Compiler assemblies come from the analyzer host; only runtime dependencies are bundled. -->
   <PropertyGroup>
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToPackage</TargetsForTfmSpecificContentInPackage>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -101,15 +89,7 @@
       <TfmSpecificPackageFile Include="$(OutputPath)$(AssemblyName).dll"          PackagePath="analyzers/dotnet/cs"/>
       <TfmSpecificPackageFile Include="$(OutputPath)ANcpLua.Roslyn.Utilities.dll" PackagePath="analyzers/dotnet/cs"/>
 
-      <!--
-        Pack the buildTransitive props that exposes $(OtelSemConvAnalysisMode) to
-        consumers. NuGet auto-imports buildTransitive/{PackageId}.props on restore;
-        the props file's ItemGroups switch on the property value and append the
-        matching editorconfig profile to $(EditorConfigFiles). Editorconfig
-        profiles live at docs/editorconfig/ (single source of truth, browsable on
-        GitHub) and ship under buildTransitive/editorconfig/ inside the NuGet so
-        $(MSBuildThisFileDirectory) inside the props resolves alongside them.
-      -->
+      <!-- Ship generated severity profiles beside the props file that imports them. -->
       <TfmSpecificPackageFile Include="$(MSBuildThisFileDirectory)buildTransitive/$(PackageId).props"
                               PackagePath="buildTransitive/$(PackageId).props"/>
       <TfmSpecificPackageFile Include="$(MSBuildThisFileDirectory)../../docs/editorconfig/Default.editorconfig"
@@ -121,33 +101,14 @@
     </ItemGroup>
   </Target>
 
-  <!--
-    After-build drift guard. Every dotnet build of this project (and therefore every
-    ./build.sh solution build) invokes the DocsGenerator twice:
-
-      1. enforce-ids mode: verify every analyzer/codefix class name, XML doc summary, and
-         DiagnosticId-const doc agrees with the runtime DiagnosticDescriptor it registers.
-      2. check mode:       verify docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md
-                           and the editorconfig profiles under docs/editorconfig/ match
-                           what the generator would emit now.
-
-    Both run as exec calls into the DocsGenerator project; nested dotnet runs are
-    cached by the SDK so the cost on a clean build is one nested compile, after which
-    each invocation is sub-second.
-
-    Opt out with -p:SkipAnalyzerConsistencyCheck=true during inner-loop iteration.
-    CI must leave it on.
-  -->
+  <!-- Keep diagnostic IDs and generated documentation synchronized on every normal build. -->
   <Target Name="_VerifyAnalyzerConsistency"
           AfterTargets="Build"
           Condition="'$(SkipAnalyzerConsistencyCheck)' != 'true' AND '$(_QylInsideConsistencyCheck)' != 'true'">
     <PropertyGroup>
       <_DocsGenProject>$(MSBuildThisFileDirectory)../../tools/Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator/Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator.csproj</_DocsGenProject>
     </PropertyGroup>
-    <!-- _QylInsideConsistencyCheck breaks the AfterBuild recursion: the nested
-         `dotnet run` rebuilds the DocsGenerator, which transitively re-evaluates
-         this analyzer csproj. Without the sentinel, AfterBuild fires inside the
-         nested build and detonates into hundreds of duplicated errors. -->
+    <!-- The sentinel prevents the nested DocsGenerator build from re-entering this target. -->
     <Exec Command="dotnet run --project &quot;$(_DocsGenProject)&quot; --configuration $(Configuration) -- --enforce-ids"
           WorkingDirectory="$(MSBuildThisFileDirectory)../.."
           EnvironmentVariables="_QylInsideConsistencyCheck=true"/>

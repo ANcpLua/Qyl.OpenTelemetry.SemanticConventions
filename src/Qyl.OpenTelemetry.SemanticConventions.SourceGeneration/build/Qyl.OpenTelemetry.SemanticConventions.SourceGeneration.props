@@ -1,6 +1,3 @@
 <Project>
-  <!-- This file intentionally declares no build-time properties. It gives the NuGet
-       package a buildTransitive payload (NU5017 satisfaction); the analyzer is
-       carried under analyzers/dotnet/cs and auto-discovered by the consumer's
-       Roslyn host. -->
+  <!-- No-op payload required by NuGet's analyzer-package content check. -->
 </Project>

@@ -24,10 +24,6 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator;
 ///   <c>FixableDiagnosticIds</c>). Per-file fixes (XML doc summary, const doc, const
 ///   value sanity) are anchored on the relevant syntax node's trivia so cross-references
 ///   like <c>see QYL0009</c> elsewhere in a file are never rewritten.
-///
-///   Extension point: add a new per-file fix by appending an AddFix(...) call inside
-///   the per-file loop. The apply/check dichotomy is owned at the bottom of this method,
-///   so new fixes participate in both modes without touching the orchestrator.
 /// </summary>
 internal static partial class EnforceIdsRewriter
 {

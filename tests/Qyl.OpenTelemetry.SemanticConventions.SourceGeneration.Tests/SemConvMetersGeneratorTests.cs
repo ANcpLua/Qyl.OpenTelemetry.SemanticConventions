@@ -63,8 +63,7 @@ public sealed class SemConvMetersGeneratorTests
     [Fact]
     public void Emits_UpDownCounter_For_HttpServer_ActiveRequests()
     {
-        // http.server.active_requests is stability=development — only the
-        // incubating marker surfaces it (Phase B-2 stability filter).
+        // Development metrics belong only to the incubating projection.
         const string source = """
             using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration;
 
@@ -90,8 +89,7 @@ public sealed class SemConvMetersGeneratorTests
     [Fact]
     public void Emits_ObservableGauge_With_ObserveCallback_For_SystemCpu()
     {
-        // system.cpu.utilization is stability=development — only the
-        // incubating marker surfaces it (Phase B-2 stability filter).
+        // Development metrics belong only to the incubating projection.
         const string source = """
             using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration;
 
@@ -118,9 +116,7 @@ public sealed class SemConvMetersGeneratorTests
     [Fact]
     public void Histogram_For_Byte_Unit_Selects_Long_ValueType()
     {
-        // The By-unit metric under http.client is http.client.request.body.size
-        // (stability=development); only the incubating marker surfaces it
-        // (Phase B-2 stability filter).
+        // The By-unit metric is development-stability and therefore incubating-only.
         const string source = """
             using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration;
 
@@ -144,9 +140,7 @@ public sealed class SemConvMetersGeneratorTests
     [Fact]
     public void Emits_IncubatingMeters_For_Http_Client_Marker()
     {
-        // Phase B-2 stability filter: the incubating marker surfaces
-        // development-stability metrics under http.client (e.g.
-        // http.client.request.body.size); the stable marker does not.
+        // The stable projection excludes development-stability metrics.
         const string incubatingSource = """
             using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration;
 
