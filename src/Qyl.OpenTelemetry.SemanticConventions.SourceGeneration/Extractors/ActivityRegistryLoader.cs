@@ -21,7 +21,9 @@ internal static class ActivityRegistryLoader
         // Fail loud: silently returning an empty registry on shape regressions
         // means the generator emits nothing with no diagnostic and consumers
         // think their markers "just don't work." A FormatException surfaces at
-        // analyzer-load time with a clear cause.
+        // analyzer-load time with a clear cause. Per-entry shape stays tolerant
+        // here (one odd entry must not crash the generator on consumer machines);
+        // RegistryShapeGateTests enforces per-entry shape at CI time instead.
         if (root is not JsonObject obj)
             throw new FormatException(
                 $"Embedded activity registry root must be a JSON object; got {root?.GetType().Name ?? "null"}.");
