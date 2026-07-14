@@ -5,9 +5,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Emitters;
 
 /// <summary>
 /// Shared text-emission primitives for every SemConv emitter (attributes, metrics,
-/// events, meters, activities). Each method is byte-identical to the per-emitter
-/// helper it replaced — the byte-identity snapshot tests gate any drift, so changes
-/// here are observable across all five surfaces at once.
+/// events, meters, activities). Byte-identity snapshot tests enforce stable output,
+/// so changes here are observable across all five surfaces at once.
 /// </summary>
 /// <remarks>
 /// Two deliberate distinctions are preserved as separate members rather than

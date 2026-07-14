@@ -432,6 +432,6 @@
         <value>'{0}' is a legacy OpenTelemetry semantic convention accessor. Use the grouped '{1}' constant instead.</value>
     </data>
     <data name="QYL0305AnalyzerDescription" xml:space="preserve">
-        <value>The aggregated SemanticConventions / TraceSemanticConventions / ResourceSemanticConventions static classes are deprecated in favour of per-domain grouped attribute classes (HttpAttributes, ServerAttributes, DbAttributes, etc.). The new grouping mirrors the upstream OpenTelemetry semantic conventions layout and produces smaller, more navigable diffs on convention upgrades.</value>
+        <value>The aggregated SemanticConventions / TraceSemanticConventions / ResourceSemanticConventions static classes are deprecated in favour of per-domain grouped attribute classes (HttpAttributes, ServerAttributes, DbAttributes, etc.). Per-domain grouping mirrors the upstream OpenTelemetry semantic conventions layout and produces smaller, more navigable diffs on convention upgrades.</value>
     </data>
 </root>

@@ -82,9 +82,8 @@ def escape_attribute(text: str) -> str:
 # output MUST be well-formed (unclosed/mismatched tags make the compiler SILENTLY
 # DROP the whole doc comment, which is worse than an error under the NoWarn band).
 # Every construct below therefore emits balanced/self-closing XML only:
-#   * paragraph break        -> a self-closing `<para/>` separator line (valid XML,
-#                               renders as a paragraph break in IntelliSense; the
-#                               earlier bare, never-closed `<p>` was the blocker bug)
+#   * paragraph break        -> a self-closing `<para/>` separator line (valid XML
+#                               and an IntelliSense paragraph break)
 #   * inline code `x`        -> <c>x</c>
 #   * fenced code ```...```  -> <code> … </code> block
 #   * link [t](u)            -> <a href="u">t</a>, with BALANCED-parenthesis URL

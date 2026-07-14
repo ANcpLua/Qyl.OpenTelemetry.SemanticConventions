@@ -8,13 +8,10 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 /// claim to a specific commit/version/URL/quote in the upstream
 /// open-telemetry/semantic-conventions repository so the catalog can be audited
 /// without re-parsing CHANGELOG.md by hand.
-///
-/// Backfills the older free-text <c>ChangelogEvidence</c> field on
-/// <see cref="SemconvMigrationCatalogEntry"/>. Both shapes coexist: <c>ChangelogEvidence</c>
-/// remains the human-readable summary surfaced in docs and diagnostic messages,
-/// while <see cref="SemconvChangelogEvidence"/> is the machine-checkable origin
-/// (commit SHA + permalink + raw quote). New entries should populate this struct
-/// directly in the inline constructor calls in
+/// <c>SemconvMigrationCatalogEntry.ChangelogEvidence</c> is the human-readable summary
+/// surfaced in docs and diagnostic messages; <see cref="SemconvChangelogEvidence"/> is
+/// the machine-checkable origin (commit SHA + permalink + raw quote). Catalog entries
+/// populate this struct directly in the inline constructor calls in
 /// <c>SemconvMigrationCatalog.BuildEntries()</c>; there is no seeding script.
 /// </summary>
 internal readonly struct SemconvChangelogEvidence : IEquatable<SemconvChangelogEvidence>

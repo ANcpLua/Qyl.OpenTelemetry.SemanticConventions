@@ -11,7 +11,7 @@ This repository turns pinned OpenTelemetry semantic-convention registries into
 stable/incubating .NET constants, Roslyn source-generation APIs, analyzer rules, and
 the TypeSpec key projection consumed by `qyl-api-schema`.
 
-The packages are already public. Published NuGet artifacts are immutable. Breaking
+The packages are public. Published NuGet artifacts are immutable. Breaking
 surface cleanup uses a new major version and migrates known consumers; do not add
 shims without a proven external requirement.
 
@@ -48,10 +48,10 @@ A source-generation or analyzer API needs an executable consumer and tests for t
 complete contract. Marker-only declarations, unexecuted sample code, or a mock that
 only reproduces the expected string are not acceptance evidence.
 
-The analyzer project is preview-only: Qyl does not consume it and only one of its 48
+The analyzer project is preview-only. Qyl does not consume it, and only one of its 48
 rules has executable behavior tests. Keep it out of stable packs. An explicit preview
-pack requires `PackPreviewAnalyzers=true` and a prerelease package version; promote it
-only after Qyl dogfoods the package and every rule has executable coverage.
+pack requires `PackPreviewAnalyzers=true` and a prerelease package version. Stable
+promotion requires Qyl consumption and executable coverage for every rule.
 
 ## Build and regeneration
 

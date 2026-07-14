@@ -93,15 +93,14 @@ internal sealed class Build : NukeBuild
         });
 
     /// <summary>
-    ///   Re-render <c>docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md</c> from the
-    ///   analyzer assembly's <c>DiagnosticDescriptors</c> + <c>SemconvMigrationCatalog</c>.
-    ///   Every QYL rule's <c>HelpLinkUri</c> deep-links into a <c>### QYL00XX</c> sub-section
-    ///   of that file, so the generator output is the contract the descriptors anchor into.
+    ///   Regenerate the analyzer index, per-rule pages, migration catalog, SARIF, and
+    ///   editorconfig profiles from <c>DiagnosticDescriptors</c> and
+    ///   <c>SemconvMigrationCatalog</c>. Every QYL rule's <c>HelpLinkUri</c> resolves to its
+    ///   generated per-rule page.
     /// </summary>
     Target GenerateDocs => _ => _
-        .Description("Re-render docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md from the analyzer assembly.")
-        .DependsOn(Compile)
-        .Executes(() => RunDocsGenerator(applicationArguments: null));
+        .Description("Regenerate analyzer documentation and machine-readable rule artifacts.")
+        .Executes(() => RunDocsGenerator(applicationArguments: null, buildGenerator: true));
 
     /// <summary>CI guard: fail when the committed markdown drifts from what the generator would emit now.</summary>
     Target CheckDocs => _ => _
@@ -135,13 +134,15 @@ internal sealed class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(() => RunDocsGenerator("--enforce-ids --apply"));
 
-    void RunDocsGenerator(string? applicationArguments)
+    void RunDocsGenerator(string? applicationArguments, bool buildGenerator = false)
     {
         var settings = new DotNetRunSettings()
             .SetProjectFile(DocsGeneratorProject)
-            .SetConfiguration("Release")
-            .EnableNoBuild()
-            .EnableNoRestore();
+            .SetConfiguration("Release");
+
+        settings = buildGenerator
+            ? settings.SetProcessEnvironmentVariable("_QylInsideConsistencyCheck", "true")
+            : settings.EnableNoBuild().EnableNoRestore();
 
         if (applicationArguments is not null)
             settings = settings.SetApplicationArguments(applicationArguments);

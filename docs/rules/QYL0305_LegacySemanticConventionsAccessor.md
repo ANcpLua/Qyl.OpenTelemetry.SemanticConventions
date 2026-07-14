@@ -12,7 +12,7 @@
 
 ## Description
 
-The aggregated SemanticConventions / TraceSemanticConventions / ResourceSemanticConventions static classes are deprecated in favour of per-domain grouped attribute classes (HttpAttributes, ServerAttributes, DbAttributes, etc.). The new grouping mirrors the upstream OpenTelemetry semantic conventions layout and produces smaller, more navigable diffs on convention upgrades.
+The aggregated SemanticConventions / TraceSemanticConventions / ResourceSemanticConventions static classes are deprecated in favour of per-domain grouped attribute classes (HttpAttributes, ServerAttributes, DbAttributes, etc.). Per-domain grouping mirrors the upstream OpenTelemetry semantic conventions layout and produces smaller, more navigable diffs on convention upgrades.
 
 ## See also
 

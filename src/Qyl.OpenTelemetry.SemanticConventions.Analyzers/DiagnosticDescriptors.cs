@@ -27,11 +27,11 @@ internal static class DiagnosticDescriptors
     public static readonly DiagnosticDescriptor RpcServerHasClientAddressAttribute = new(
         id: "QYL0002",
         title: "RPC server span must not include client.address / client.port",
-        messageFormat: "RPC server span sets '{0}'; v1.41.0 removed client.* attributes from RPC server span definitions",
+        messageFormat: "RPC server span sets '{0}'; client.* attributes are invalid on RPC server spans",
         category: Category,
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "From v1.41.0, RPC server spans extend the rpc base group directly and no longer include client.address or client.port. Use server.address / server.port instead.",
+        description: "RPC server spans extend the rpc base group directly and exclude client.address and client.port. Use server.address / server.port instead.",
         helpLinkUri: RuleDocs.HelpLink("QYL0002", "RpcServerClientAttribute"));
 
     public static readonly DiagnosticDescriptor GenAiExecuteToolMissingToolName = new(

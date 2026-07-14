@@ -13,10 +13,6 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator;
 ///   multi-thousand-line aggregate. Examples live in the analyzer test fixtures,
 ///   not here — keeping per-rule pages content-light is intentional so they don't
 ///   silently rot relative to the analyzer.
-///
-///   Extension point: per-rule examples will land alongside this renderer when ready
-///   (sourced from the analyzer fixtures so they can't drift). Add an Examples section
-///   here once a fixture-extraction helper exists.
 /// </summary>
 internal static class RulePageRenderer
 {

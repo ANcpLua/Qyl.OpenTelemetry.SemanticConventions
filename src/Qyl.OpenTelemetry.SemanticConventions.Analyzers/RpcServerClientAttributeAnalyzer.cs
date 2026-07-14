@@ -5,15 +5,15 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
 /// QYL0002: Flags <c>SetTag("client.address", …)</c> / <c>"client.port"</c> calls inside
-/// a method that also contains a <c>SetTag("rpc.system", …)</c>. v1.41.0 removed
-/// <c>client.*</c> from RPC server span definitions.
+/// a method that also contains a <c>SetTag("rpc.system", …)</c>. RPC server span
+/// definitions use <c>server.address</c>/<c>server.port</c> and exclude <c>client.*</c>.
 /// </summary>
 /// <remarks>
 /// Heuristic: scope analysis to the enclosing method. We treat the method as an
 /// "RPC server span context" if any sibling tag-setter call uses the literal key
 /// <c>"rpc.system"</c>, <c>"rpc.service"</c>, or <c>"rpc.method"</c>. False-positive
 /// risk on RPC client spans (which legitimately use <c>server.*</c>, not <c>client.*</c>),
-/// so we focus on the literal client.* keys upstream removed.
+/// so the rule focuses on <c>client.*</c> keys invalid on server spans.
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class RpcServerClientAttributeAnalyzer : DiagnosticAnalyzer

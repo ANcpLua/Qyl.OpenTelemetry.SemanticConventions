@@ -42,8 +42,8 @@ client-visible product requests, responses, stream events, and errors remain own
 
 ## Analyzer documentation
 
-The analyzer project currently defines 48 rules, but Qyl does not yet consume it and
-only one rule has executable behavior tests. It therefore remains preview-only and is
+The analyzer project defines 48 rules. Qyl does not consume it, and only one rule has
+executable behavior tests. It therefore remains preview-only and is
 not included in stable package builds. `PackPreviewAnalyzers=true` enables an explicit
 prerelease pack; the build rejects a stable analyzer version.
 

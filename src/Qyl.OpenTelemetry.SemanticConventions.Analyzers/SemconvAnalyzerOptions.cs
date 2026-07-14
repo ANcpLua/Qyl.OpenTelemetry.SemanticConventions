@@ -5,8 +5,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
 /// Reads MSBuild-property-driven analyzer options out of
-/// <see cref="AnalyzerConfigOptions"/>. Centralises the property names so a
-/// future rename touches one place and tests have a single source of truth.
+/// <see cref="AnalyzerConfigOptions"/>. Centralises the property names as the
+/// single source of truth for implementation and tests.
 /// </summary>
 internal static class SemconvAnalyzerOptions
 {
@@ -15,8 +15,8 @@ internal static class SemconvAnalyzerOptions
     /// extends the deprecation-detecting analyzers beyond the conventional
     /// <c>*Attributes</c> classes to also recognise the four non-Attributes
     /// tiers Weaver SourceGeneration emits (<c>*Metrics</c>, <c>*Meters</c>,
-    /// <c>*Events</c>, <c>*Activities</c>). Default <c>false</c> preserves
-    /// the historic surface: only <c>*Attributes</c> classes are scanned.
+    /// <c>*Events</c>, <c>*Activities</c>). Default <c>false</c> scans only
+    /// <c>*Attributes</c> classes.
     /// </summary>
     public const string NonAttributesTiersBuildProperty = "build_property.OtelSemConvNonAttributesTiers";
 

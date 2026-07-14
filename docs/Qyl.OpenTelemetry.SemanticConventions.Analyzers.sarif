@@ -32,7 +32,7 @@
                 "text": "RPC server span must not include client.address / client.port"
               },
               "fullDescription": {
-                "text": "From v1.41.0, RPC server spans extend the rpc base group directly and no longer include client.address or client.port. Use server.address / server.port instead."
+                "text": "RPC server spans extend the rpc base group directly and exclude client.address and client.port. Use server.address / server.port instead."
               },
               "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0002_RpcServerClientAttribute.md",
               "defaultConfiguration": {
@@ -559,7 +559,7 @@
                 "text": "Replace legacy SemanticConventions accessor"
               },
               "fullDescription": {
-                "text": "The aggregated SemanticConventions / TraceSemanticConventions / ResourceSemanticConventions static classes are deprecated in favour of per-domain grouped attribute classes (HttpAttributes, ServerAttributes, DbAttributes, etc.). The new grouping mirrors the upstream OpenTelemetry semantic conventions layout and produces smaller, more navigable diffs on convention upgrades."
+                "text": "The aggregated SemanticConventions / TraceSemanticConventions / ResourceSemanticConventions static classes are deprecated in favour of per-domain grouped attribute classes (HttpAttributes, ServerAttributes, DbAttributes, etc.). Per-domain grouping mirrors the upstream OpenTelemetry semantic conventions layout and produces smaller, more navigable diffs on convention upgrades."
               },
               "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0305_LegacySemanticConventionsAccessor.md",
               "defaultConfiguration": {

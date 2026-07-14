@@ -54,9 +54,8 @@ public sealed class NamespaceParameterizationTest
     public void Empty_Global_Namespace_Omits_Namespace_Declaration()
     {
         // The MarkerExtractor maps IsGlobalNamespace → empty string, and the
-        // emitter then skips the namespace declaration entirely. Lock this in
-        // so a future refactor doesn't accidentally emit `namespace ;` or
-        // `namespace global::;`.
+        // emitter skips the namespace declaration entirely. Assert explicitly so
+        // `namespace ;` and `namespace global::;` cannot pass.
         const string source = """
             using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration;
             [SemanticConventionAttributes("disk")]

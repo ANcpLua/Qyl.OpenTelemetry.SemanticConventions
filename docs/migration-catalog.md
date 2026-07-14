@@ -21,7 +21,7 @@ This section is generated from the analyzer descriptors and migration catalog. I
 | Keep attribute-value fallback separate from the curated name/key/event/metric count | `22` supplemental attribute-value rows are outside the 156-entry inventory and are used only when live value metadata is absent. |
 | Keep severity context-sensitive | `QYL0009` is production exact replacement error, `QYL0010` is production manual-review warning, and `QYL0011` is compatibility/test/generated info. |
 | Keep code fixes exact-only | `LiveSemconvMetadataCodeFixProvider` registers fixes only when live `[Obsolete]` metadata exposes an exact replacement; `SupplementalSemconvMigrationCodeFixProvider` registers fixes only when diagnostic properties mark `ExactRename` or `ExactValueRename` and provide one replacement literal. |
-| Keep old-schema compatibility non-error | Test, fixture, migration, compatibility, translator, generated, catalog, and explicit older schema URL contexts select `QYL0011`. |
+| Keep schema-translation contexts non-error | Test, fixture, migration, compatibility, translator, generated, catalog, and explicit non-current schema URL contexts select `QYL0011`. |
 
 | Migration kind | Curated count |
 | -- | --: |
@@ -47,7 +47,7 @@ This section is generated from the analyzer descriptors and migration catalog. I
 
 ## Coverage by Version × Domain
 
-Rows whose Version is `unknown` are catalog entries that don't yet carry `ChangelogVersion` or `SinceVersion` fields in `SemconvMigrationCatalog.BuildEntries()`. Backfilling these from upstream `open-telemetry/semantic-conventions` CHANGELOG.md is a separate hardening task; the analyzers still surface the migrations correctly — only the per-version attribution is missing.
+Rows whose Version is `unknown` lack `ChangelogVersion` or `SinceVersion` metadata in `SemconvMigrationCatalog.BuildEntries()`. This affects documentation attribution only; analyzer behavior remains unchanged.
 
 | Version | Domain | Total | Live metadata | Supplemental | Exact supplemental | Manual/context | Removed/no replacement |
 | -- | -- | --: | --: | --: | --: | --: | --: |

@@ -12,7 +12,7 @@
 
 ## Description
 
-From v1.41.0, RPC server spans extend the rpc base group directly and no longer include client.address or client.port. Use server.address / server.port instead.
+RPC server spans extend the rpc base group directly and exclude client.address and client.port. Use server.address / server.port instead.
 
 ## See also
 

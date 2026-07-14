@@ -4,9 +4,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Emitters;
 /// Builds the post-initialization source for a semantic-convention marker attribute.
 /// Every marker attribute has the identical shape — an <c>internal sealed</c>
 /// <c>[Conditional("QYL_SEMCONV_USAGES")]</c> attribute with a single
-/// <c>(string prefix)</c> constructor — so all five surfaces (and their incubating
-/// variants) share this one template instead of ten hand-maintained const strings.
-/// Output is byte-identical to the per-generator strings it replaced.
+/// <c>(string prefix)</c> constructor. All five surfaces and their incubating variants
+/// share this template; snapshot tests enforce the emitted shape.
 /// </summary>
 internal static class MarkerAttributeSource
 {

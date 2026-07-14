@@ -70,7 +70,7 @@ Each ID links to a per-rule page under [`docs/rules/`](rules/) with severity, ca
 | -- | -- | -- |
 | `build_property.OtelSemConvLegacyMode` | `production` (default), `compatibility`, `off` | `production` keeps production errors for exact supplemental migrations. `compatibility` downgrades production supplemental errors to warnings and keeps fixture contexts informational. `off` disables supplemental catalog diagnostics while leaving live `[Obsolete]` metadata rules enabled. |
 | `build_property.IsTestProject` | `true`, `false` | Test projects downgrade supplemental catalog findings to `QYL0011` info. Assembly names ending in `.Tests`, paths under `tests/`, and xUnit/NUnit/MSTest attributes are also treated as test context. |
-| `build_property.OtelSemConvNonAttributesTiers` | `false` (default), `true` | When `true`, extends `QYL0003` beyond `*Attributes` classes to also scan the four other Weaver source-generation tiers (`*Metrics`, `*Meters`, `*Events`, `*Activities`) under the SemConv namespace. Default `false` preserves the historic surface so existing consumers see no behaviour change. |
+| `build_property.OtelSemConvNonAttributesTiers` | `false` (default), `true` | When `true`, extends `QYL0003` beyond `*Attributes` classes to also scan the four other Weaver source-generation tiers (`*Metrics`, `*Meters`, `*Events`, `*Activities`) under the SemConv namespace. Default `false` scans only `*Attributes` classes. |
 
 ## Precedence and Suppression
 

@@ -17,11 +17,6 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator;
 ///   deterministic for <c>--check</c> drift detection.
 ///
 ///   Spec: https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html
-///
-///   Extension point: future machine-readable catalogs (CodeQL pack manifest, OWASP-ASVS
-///   mapping JSON) land as sibling classes next to this one with the same shape — accept
-///   <c>(descriptors, idToClass)</c>, return deterministic text, ship a <c>*Path</c>
-///   helper on <see cref="RepoLayout"/>.
 /// </summary>
 internal static class SarifRenderer
 {

@@ -1,14 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <!--
-    Renders docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md by reflecting on the
-    analyzer assembly's DiagnosticDescriptors + SemconvMigrationCatalog. Every QYL rule's
-    HelpLinkUri deep-links into a "### QYL00XX" sub-section of that file, so the generator
-    output IS the contract the descriptors anchor into.
+    Renders the analyzer index, per-rule pages, migration catalog, SARIF, and editorconfig
+    profiles from DiagnosticDescriptors + SemconvMigrationCatalog. Every QYL rule's
+    HelpLinkUri resolves to its generated per-rule page.
 
     Invoked via Nuke targets in eng/build/Build.cs:
       ./build.sh AuditDocs       — print catalog statistics, no file I/O
-      ./build.sh GenerateDocs    — re-render the markdown
+      ./build.sh GenerateDocs    — regenerate documentation and rule artifacts
       ./build.sh CheckDocs       — fail if the committed markdown is stale (CI guard)
 
     Roslyn-version isolation: this tool runs on the full .NET SDK (net10.0) and is free

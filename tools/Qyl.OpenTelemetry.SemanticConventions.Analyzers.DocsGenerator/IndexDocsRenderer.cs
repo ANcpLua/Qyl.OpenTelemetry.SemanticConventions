@@ -86,7 +86,7 @@ internal static class IndexDocsRenderer
         sb.AppendLine("| -- | -- | -- |");
         sb.AppendLine("| `build_property.OtelSemConvLegacyMode` | `production` (default), `compatibility`, `off` | `production` keeps production errors for exact supplemental migrations. `compatibility` downgrades production supplemental errors to warnings and keeps fixture contexts informational. `off` disables supplemental catalog diagnostics while leaving live `[Obsolete]` metadata rules enabled. |");
         sb.AppendLine("| `build_property.IsTestProject` | `true`, `false` | Test projects downgrade supplemental catalog findings to `QYL0011` info. Assembly names ending in `.Tests`, paths under `tests/`, and xUnit/NUnit/MSTest attributes are also treated as test context. |");
-        sb.AppendLine("| `build_property.OtelSemConvNonAttributesTiers` | `false` (default), `true` | When `true`, extends `QYL0003` beyond `*Attributes` classes to also scan the four other Weaver source-generation tiers (`*Metrics`, `*Meters`, `*Events`, `*Activities`) under the SemConv namespace. Default `false` preserves the historic surface so existing consumers see no behaviour change. |");
+        sb.AppendLine("| `build_property.OtelSemConvNonAttributesTiers` | `false` (default), `true` | When `true`, extends `QYL0003` beyond `*Attributes` classes to also scan the four other Weaver source-generation tiers (`*Metrics`, `*Meters`, `*Events`, `*Activities`) under the SemConv namespace. Default `false` scans only `*Attributes` classes. |");
     }
 
     private static void WritePrecedenceAndSuppression(StringBuilder sb)

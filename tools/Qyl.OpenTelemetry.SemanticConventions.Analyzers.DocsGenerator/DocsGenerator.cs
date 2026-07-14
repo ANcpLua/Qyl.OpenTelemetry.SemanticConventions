@@ -12,11 +12,9 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator;
 ///   the four generated-artifact pipelines (<c>Generate</c> + <c>Check</c>), and the
 ///   two source-side rewriters (<c>EnforceIds</c>, <c>RewriteShipped</c>). Every other
 ///   class in this project is pure logic invoked from here.
-///
-///   Extension point: each generated artifact (index, per-rule pages, migration
-///   catalog, SARIF, editorconfig, Shipped.md Notes) is one numbered step in
-///   <see cref="Generate"/> + <see cref="Check"/>. Adding a new artifact means adding
-///   a focused renderer class and one numbered step in both methods.
+///   Each generated artifact (index, per-rule pages, migration catalog, SARIF,
+///   editorconfig, and Shipped.md notes) has a focused renderer and matching numbered
+///   steps in <see cref="Generate"/> and <see cref="Check"/>.
 /// </summary>
 internal static class DocsGenerator
 {

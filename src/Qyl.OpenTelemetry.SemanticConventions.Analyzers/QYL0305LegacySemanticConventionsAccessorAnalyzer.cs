@@ -7,11 +7,10 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     <c>OpenTelemetry.SemanticConventions.Attributes.*</c>.
 /// </summary>
 /// <remarks>
-///     The aggregated classes were the initial surface shape of the
-///     <c>OpenTelemetry.SemanticConventions</c> package. Newer releases split the catalog
-///     into one static class per convention namespace (HttpAttributes, ServerAttributes,
-///     DbAttributes, …). Keeping code on the aggregator blocks structured refactors on
-///     convention upgrades and produces noisy diffs because every convention change lands
+///     Current semantic-conventions packages expose one static class per convention
+///     namespace (HttpAttributes, ServerAttributes, DbAttributes, …). Aggregated accessors
+///     block structured refactors on convention upgrades and produce noisy diffs because
+///     every convention change lands
 ///     in the same file. No code fix is offered because the legacy-to-grouped field
 ///     mapping is not a simple rename (for example <c>AttributeHttpMethod</c> →
 ///     <c>HttpAttributes.AttributeHttpRequestMethod</c>); operators must choose the right
