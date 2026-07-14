@@ -7,8 +7,6 @@
     <PackageTags>opentelemetry;semantic-conventions;otel;attributes;stable</PackageTags>
 
     <IsPackable>true</IsPackable>
-
-    <NoWarn>$(NoWarn);$(WeaverXmlDocNoWarn)</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

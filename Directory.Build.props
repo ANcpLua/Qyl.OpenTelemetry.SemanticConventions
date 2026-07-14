@@ -29,10 +29,6 @@
     <Deterministic>true</Deterministic>
     <NoWarn>$(NoWarn);NU1604</NoWarn>
     <NoWarn Condition="'$(TargetFramework)' == 'netstandard2.0'">$(NoWarn);NU1701</NoWarn>
-    <!-- Weaver emits attribute-key XML doc references like <c>some.key</c> where the inner
-         text may contain raw URLs or angle brackets; constants packages append this band to
-         NoWarn rather than blocking on a Weaver-template issue we can't fix from .NET. -->
-    <WeaverXmlDocNoWarn>CS1570;CS1571;CS1572;CS1573;CS1574;CS1580;CS1581;CS1584;CS1587;CS1591;CS1592;CS1658;CS1734;CS1735;CS1747</WeaverXmlDocNoWarn>
   </PropertyGroup>
 
   <PropertyGroup Label="Test projects" Condition="$(MSBuildProjectName.EndsWith('.Tests'))">
