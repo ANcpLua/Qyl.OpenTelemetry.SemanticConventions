@@ -69,6 +69,38 @@ public sealed class RegistryShapeGateTests
     }
 
     [Fact]
+    public void Every_metric_entry_has_the_shape_the_loaders_require()
+    {
+        var metrics = LoadRoot().GetProperty("metrics");
+        metrics.ValueKind.Should().Be(JsonValueKind.Array);
+        metrics.GetArrayLength().Should().BeGreaterThan(0);
+        foreach (var metric in metrics.EnumerateArray())
+        {
+            metric.ValueKind.Should().Be(JsonValueKind.Object,
+                "the loaders skip non-object metric entries silently");
+            metric.GetProperty("metric_name").GetString().Should().NotBeNullOrWhiteSpace();
+            metric.GetProperty("instrument").GetString().Should().NotBeNullOrWhiteSpace(
+                $"metric '{metric.GetProperty("metric_name").GetString()}' must declare an instrument");
+            metric.GetProperty("unit").GetString().Should().NotBeNull(
+                $"metric '{metric.GetProperty("metric_name").GetString()}' must declare a unit");
+        }
+    }
+
+    [Fact]
+    public void Every_event_entry_has_the_shape_the_loaders_require()
+    {
+        var events = LoadRoot().GetProperty("events");
+        events.ValueKind.Should().Be(JsonValueKind.Array);
+        events.GetArrayLength().Should().BeGreaterThan(0);
+        foreach (var ev in events.EnumerateArray())
+        {
+            ev.ValueKind.Should().Be(JsonValueKind.Object,
+                "the loaders skip non-object event entries silently");
+            ev.GetProperty("event_name").GetString().Should().NotBeNullOrWhiteSpace();
+        }
+    }
+
+    [Fact]
     public void Every_group_entry_has_the_shape_the_loaders_require()
     {
         foreach (var group in LoadRoot().GetProperty("groups").EnumerateArray())
