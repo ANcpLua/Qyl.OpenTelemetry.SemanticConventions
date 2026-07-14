@@ -3,9 +3,16 @@
 
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
+/// <summary>
+/// Rewrites deprecated attribute-key string literals to their successors for
+/// supplemental-catalog migrations (QYL0009–QYL0011), but only when the
+/// migration kind is an exact rename — manual and compatibility migrations get
+/// no automatic fix.
+/// </summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(SupplementalSemconvMigrationCodeFixProvider))]
 public sealed class SupplementalSemconvMigrationCodeFixProvider : CodeFixProvider
 {
+    /// <inheritdoc/>
     public override ImmutableArray<string> FixableDiagnosticIds { get; } =
     [
         "QYL0009",
@@ -13,9 +20,11 @@ public sealed class SupplementalSemconvMigrationCodeFixProvider : CodeFixProvide
         "QYL0011",
     ];
 
+    /// <inheritdoc/>
     public override FixAllProvider GetFixAllProvider() =>
         WellKnownFixAllProviders.BatchFixer;
 
+    /// <inheritdoc/>
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var document = context.Document;

@@ -59,9 +59,11 @@ public sealed class SemconvLegacyContextSuppressor : DiagnosticSuppressor
     private static readonly ImmutableDictionary<string, SuppressionDescriptor> s_suppressions =
         BuildSuppressions();
 
+    /// <inheritdoc/>
     public override ImmutableArray<SuppressionDescriptor> SupportedSuppressions { get; } =
         s_suppressions.Values.ToImmutableArray();
 
+    /// <inheritdoc/>
     public override void ReportSuppressions(SuppressionAnalysisContext context)
     {
         foreach (var diagnostic in context.ReportedDiagnostics)

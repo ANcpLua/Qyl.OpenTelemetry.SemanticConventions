@@ -22,7 +22,7 @@
     <NeutralLanguage>en</NeutralLanguage>
 
     <!-- NU5017 is spurious for analyzer-only packages; RS2000/RS2008 remain active for release-manifest coverage. -->
-    <NoWarn>$(NoWarn);NU5017;RS1041;RS1025;RS1026;RS0030;RS1038;IDE0055;CA2249;CS1591</NoWarn>
+    <NoWarn>$(NoWarn);NU5017;RS1041;RS1025;RS1026;RS0030;RS1038;IDE0055;CA2249</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

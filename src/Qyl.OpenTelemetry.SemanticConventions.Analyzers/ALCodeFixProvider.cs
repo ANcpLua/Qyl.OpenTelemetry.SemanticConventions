@@ -4,8 +4,10 @@
 ///     Base class for all ANcpLua code fix providers.
 /// </summary>
 public abstract class AlCodeFixProvider<TNode> : CodeFixProvider where TNode : CSharpSyntaxNode {
+    /// <inheritdoc/>
     public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
+    /// <inheritdoc/>
     public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context) {
         var diagnostic = context.Diagnostics.First(d => FixableDiagnosticIds.Contains(d.Id));
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
@@ -20,6 +22,10 @@ public abstract class AlCodeFixProvider<TNode> : CodeFixProvider where TNode : C
         }
     }
 
+    /// <summary>
+    ///     Builds the code action for one diagnostic whose location resolved to
+    ///     <paramref name="syntax"/>. Return <see langword="null"/> to offer no fix.
+    /// </summary>
     protected abstract CodeAction? CreateCodeAction(Document document, TNode syntax, SyntaxNode root,
         Diagnostic diagnostic);
 }

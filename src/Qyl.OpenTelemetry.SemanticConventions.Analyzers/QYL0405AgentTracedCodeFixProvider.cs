@@ -8,11 +8,14 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.CodeFixes;
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(Qyl0405AgentTracedCodeFixProvider))]
 [Shared]
 public sealed class Qyl0405AgentTracedCodeFixProvider : CodeFixProvider {
+    /// <inheritdoc/>
     public override ImmutableArray<string> FixableDiagnosticIds =>
         [Qyl0405NonInterceptableAgentTracedAnalyzer.DiagnosticId];
 
+    /// <inheritdoc/>
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
+    /// <inheritdoc/>
     public override async Task RegisterCodeFixesAsync(CodeFixContext context) {
         if (await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false) is not
             { } root) {

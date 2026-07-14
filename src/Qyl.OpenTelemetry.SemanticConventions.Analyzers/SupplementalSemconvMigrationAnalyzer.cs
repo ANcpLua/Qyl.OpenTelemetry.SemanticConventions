@@ -3,6 +3,13 @@
 
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
+/// <summary>
+/// Reports semantic-convention migrations sourced from the supplemental
+/// (changelog-derived) catalog rather than the live registry: exact renames
+/// (QYL0009), migrations needing manual review (QYL0010), and
+/// compatibility-mode-only migrations (QYL0011). Matches attribute-key string
+/// literals plus baggage and metric-instrument name call sites.
+/// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class SupplementalSemconvMigrationAnalyzer : DiagnosticAnalyzer
 {
@@ -27,6 +34,7 @@ public sealed class SupplementalSemconvMigrationAnalyzer : DiagnosticAnalyzer
         "CreateObservableUpDownCounter",
         "CreateUpDownCounter");
 
+    /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
     [
         DiagnosticDescriptors.SupplementalExactSemconvMigration,
@@ -34,6 +42,7 @@ public sealed class SupplementalSemconvMigrationAnalyzer : DiagnosticAnalyzer
         DiagnosticDescriptors.SupplementalCompatibilitySemconvMigration,
     ];
 
+    /// <inheritdoc/>
     public override void Initialize(AnalysisContext context)
     {
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);

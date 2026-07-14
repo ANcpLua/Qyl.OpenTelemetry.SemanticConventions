@@ -3,9 +3,16 @@
 
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
+/// <summary>
+/// Applies the replacement carried in the diagnostic's properties for the live
+/// registry-metadata rules: swaps a deprecated typed constant for its successor
+/// field (QYL0003) or rewrites a deprecated string literal to the renamed
+/// attribute key (QYL0005, QYL0007).
+/// </summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(LiveSemconvMetadataCodeFixProvider))]
 public sealed class LiveSemconvMetadataCodeFixProvider : CodeFixProvider
 {
+    /// <inheritdoc/>
     public override ImmutableArray<string> FixableDiagnosticIds { get; } =
     [
         "QYL0003",
@@ -13,9 +20,11 @@ public sealed class LiveSemconvMetadataCodeFixProvider : CodeFixProvider
         "QYL0007",
     ];
 
+    /// <inheritdoc/>
     public override FixAllProvider GetFixAllProvider() =>
         WellKnownFixAllProviders.BatchFixer;
 
+    /// <inheritdoc/>
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         foreach (var diagnostic in context.Diagnostics)
