@@ -80,7 +80,7 @@ Tracks two source registries:
 | Source | Ref | Commit | Schema URL |
 |---|---|---|---|
 | Core semantic conventions | `open-telemetry/semantic-conventions@v1.43.0` | `89aae438b3b3b0a8dd33003c9d70592baf7dbd0d` | `https://opentelemetry.io/schemas/1.43.0` |
-| GenAI semantic conventions | `open-telemetry/semantic-conventions-genai@c321d7eb4443ae1d1d88c2e24eda849f62049008` | `c321d7eb4443ae1d1d88c2e24eda849f62049008` | `https://opentelemetry.io/schemas/gen-ai-dev/1.42.0-dev` |
+| GenAI semantic conventions | `open-telemetry/semantic-conventions-genai@33b7f9da9ade6162d4a5c16247d0bc6ad5f8b469` | `33b7f9da9ade6162d4a5c16247d0bc6ad5f8b469` | `https://opentelemetry.io/schemas/gen-ai-dev/1.42.0-dev` |
 
 The GenAI registry is development-stage. It is pinned by commit SHA and must
 not be presented as a stable v1.42.0 release.
