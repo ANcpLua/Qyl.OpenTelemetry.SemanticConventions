@@ -96,33 +96,33 @@
     </data>
     <!-- AL0064: GenAI span missing required attributes -->
     <data name="QYL0401AnalyzerTitle" xml:space="preserve">
-        <value>GenAI span missing required attributes</value>
+        <value>GenAI or MCP span missing required attributes</value>
     </data>
     <data name="QYL0401AnalyzerMessageFormat" xml:space="preserve">
         <value>GenAI Activity '{0}' is missing required attribute '{1}'</value>
     </data>
     <data name="QYL0401AnalyzerDescription" xml:space="preserve">
-        <value>GenAI spans must include the required semantic-convention attributes (gen_ai.provider.name, gen_ai.request.model, gen_ai.operation.name) to enable proper observability and correlation of LLM operations. Note: gen_ai.system was renamed to gen_ai.provider.name.</value>
+        <value>GenAI and MCP spans must include the unconditional required attributes for their exact registry-defined discriminator, span kind, and provider refinement. Conditional and recommended attributes are not treated as universally required.</value>
     </data>
     <!-- AL0065: Incorrect token usage metric -->
     <data name="QYL0402AnalyzerTitle" xml:space="preserve">
-        <value>Use gen_ai.client.token.usage histogram for token metrics</value>
+        <value>Use a registry-defined GenAI token metric</value>
     </data>
     <data name="QYL0402AnalyzerMessageFormat" xml:space="preserve">
-        <value>Token usage should be recorded using 'gen_ai.client.token.usage' histogram instead of '{0}'</value>
+        <value>GenAI token metric '{0}' is not defined by the pinned registry; use '{1}' for token usage</value>
     </data>
     <data name="QYL0402AnalyzerDescription" xml:space="preserve">
-        <value>GenAI token usage metrics should use the gen_ai.client.token.usage histogram instrument as defined by the semantic conventions. This ensures compatibility with standard GenAI observability dashboards.</value>
+        <value>Token-related GenAI histogram names are checked against the complete metric inventory from the pinned registry, including valid client and server token metrics.</value>
     </data>
     <!-- AL0066: Invalid GenAI operation name -->
     <data name="QYL0403AnalyzerTitle" xml:space="preserve">
-        <value>GenAI operation name should follow semantic conventions</value>
+        <value>GenAI operation name uses non-canonical casing</value>
     </data>
     <data name="QYL0403AnalyzerMessageFormat" xml:space="preserve">
-        <value>GenAI operation name '{0}' is not a known semantic-convention value (chat, text_completion, embeddings, generate_content, retrieval, execute_tool, create_agent, invoke_agent, invoke_workflow)</value>
+        <value>GenAI operation name '{0}' must use registry spelling '{1}'</value>
     </data>
     <data name="QYL0403AnalyzerDescription" xml:space="preserve">
-        <value>GenAI operation names should follow the semantic conventions. Known values are chat, text_completion, embeddings, generate_content, retrieval, and the agent/workflow operations execute_tool, create_agent, invoke_agent, and invoke_workflow.</value>
+        <value>Known GenAI operation names must use the exact casing generated from the pinned registry. Unknown documented system-specific operation names remain allowed.</value>
     </data>
     <!-- AL0067: Unregistered Meter -->
     <data name="QYL0200AnalyzerTitle" xml:space="preserve">
@@ -266,13 +266,13 @@
     </data>
     <!-- AL0085: Invalid attribute value -->
     <data name="QYL0012AnalyzerTitle" xml:space="preserve">
-        <value>Invalid attribute value</value>
+        <value>Semantic-convention enum value uses non-canonical casing</value>
     </data>
     <data name="QYL0012AnalyzerMessageFormat" xml:space="preserve">
         <value>Attribute '{0}' has invalid value '{1}'. Expected: {2}</value>
     </data>
     <data name="QYL0012AnalyzerDescription" xml:space="preserve">
-        <value>Attribute values must conform to the expected format defined by OpenTelemetry semantic conventions. For example, http.response.status_code must be an integer, gen_ai.system must be a known provider (openai, anthropic, etc.), and error.type should be an exception type or error code. Invalid values may cause issues with telemetry backends and dashboards.</value>
+        <value>Known enum values must use the exact spelling generated from the complete pinned semantic-convention registry. Unknown extension values remain allowed; primitive value types are handled separately by QYL0013.</value>
     </data>
     <!-- AL0086: Incorrect attribute type -->
     <data name="QYL0013AnalyzerTitle" xml:space="preserve">
@@ -282,7 +282,7 @@
         <value>Attribute '{0}' should be type '{1}' but '{2}' was provided</value>
     </data>
     <data name="QYL0013AnalyzerDescription" xml:space="preserve">
-        <value>OpenTelemetry semantic conventions specify expected types for attributes. For example, gen_ai.usage.input_tokens should be an integer, not a string. Using incorrect types may cause issues with telemetry backends or dashboards that expect specific types for aggregation and visualization.</value>
+        <value>Every exact and template attribute type is generated from the complete pinned semantic-convention registry. Primitive and homogeneous-array mismatches are reported; structured type:any payloads remain governed by their packaged upstream JSON Schemas.</value>
     </data>
     <!-- AL0088: Sensitive data in attribute -->
     <data name="QYL0601AnalyzerTitle" xml:space="preserve">

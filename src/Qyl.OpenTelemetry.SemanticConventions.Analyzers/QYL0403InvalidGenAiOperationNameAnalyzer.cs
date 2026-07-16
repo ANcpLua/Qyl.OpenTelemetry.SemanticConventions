@@ -1,25 +1,12 @@
-
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     QYL0403: Detects GenAI operation names that don't follow semantic conventions.
+/// QYL0403: Detects a known GenAI span discriminator value whose casing differs
+/// from the pinned registry. System-specific operation names remain allowed.
 /// </summary>
-/// <remarks>
-///     <para>
-///         GenAI operation names should be one of the standard values:
-///         <list type="bullet">
-///             <item>chat - for chat completions</item>
-///             <item>generate_content - for content generation APIs</item>
-///             <item>text_completion - for text completions</item>
-///             <item>embeddings - for embedding generation</item>
-///             <item>retrieval - for retrieval operations</item>
-///             <item>create_agent, invoke_agent, execute_tool, invoke_workflow - for agent/workflow operations</item>
-///         </list>
-///     </para>
-/// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Qyl0403InvalidGenAiOperationNameAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for QYL0403.</summary>
+public sealed class Qyl0403InvalidGenAiOperationNameAnalyzer : AlAnalyzer
+{
     private const string DiagnosticId = "QYL0403";
 
     private static readonly DiagnosticDescriptor s_rule = CreateRule(
@@ -27,25 +14,29 @@ public sealed class Qyl0403InvalidGenAiOperationNameAnalyzer : AlAnalyzer {
         DiagnosticCategories.GenAI,
         DiagnosticSeverities.Suggestion);
 
-    /// <summary>Gets the diagnostic descriptors for the supported diagnostics.</summary>
+    /// <inheritdoc />
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
-    /// <summary>Registers operation actions to analyze string literals used as operation names.</summary>
+    /// <inheritdoc />
     protected override void RegisterActions(AnalysisContext context) =>
         context.RegisterOperationAction(AnalyzeInvocation, OperationKind.Invocation);
 
-    private static void AnalyzeInvocation(OperationAnalysisContext context) {
+    private static void AnalyzeInvocation(OperationAnalysisContext context)
+    {
         var invocation = (IInvocationOperation)context.Operation;
-
-        if (invocation.TargetMethod.Name != "SetTag" ||
-            invocation.Arguments.Length < 2 ||
-            invocation.Arguments[0].Value.UnwrapAllConversions().ConstantValue is not { HasValue: true, Value: string tagName } ||
-            !tagName.EqualsIgnoreCase("gen_ai.operation.name") ||
-            invocation.Arguments[1].Value.UnwrapAllConversions().ConstantValue is not { HasValue: true, Value: string operationName } ||
-            OpenTelemetryGenAiSemconvFacts.IsValidOperationName(operationName)) {
+        if (!TagSetterDetection.IsTagSetterInvocation(invocation)
+            || !TagSetterDetection.TryGetTagSetterKeyArgument(invocation, out var keyArgument)
+            || !TagSetterDetection.TryGetTagSetterValueArgument(invocation, out var valueArgument)
+            || !TagSetterDetection.TryGetNonEmptyStringConstant(keyArgument.Value, out var attributeName)
+            || !SemconvRegistryFacts.IsGenAiSpanDiscriminator(attributeName)
+            || !TagSetterDetection.TryGetStringConstant(valueArgument.Value, out var value)
+            || !SemconvRegistryFacts.TryGetCanonicalEnumValue(attributeName, value, out var canonical)
+            || string.Equals(value, canonical, StringComparison.Ordinal))
+        {
             return;
         }
 
-        context.ReportDiagnostic(Diagnostic.Create(s_rule, invocation.Arguments[1].Syntax.GetLocation(), operationName));
+        context.ReportDiagnostic(
+            Diagnostic.Create(s_rule, valueArgument.Syntax.GetLocation(), value, canonical));
     }
 }

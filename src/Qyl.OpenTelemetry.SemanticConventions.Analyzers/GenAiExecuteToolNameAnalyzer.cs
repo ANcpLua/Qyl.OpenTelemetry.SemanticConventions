@@ -4,17 +4,12 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-/// QYL0400: A method that sets <c>gen_ai.operation.name = "execute_tool"</c> must
-/// also set <c>gen_ai.tool.name</c>. v1.41.0 made the tool-name attribute required
-/// because the canonical span name format is <c>execute_tool {gen_ai.tool.name}</c>.
+/// QYL0400: Enforces the additional required attribute on the execute-tool span,
+/// using keys and values generated from the pinned registry.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class GenAiExecuteToolNameAnalyzer : DiagnosticAnalyzer
 {
-    private const string OperationNameKey = "gen_ai.operation.name";
-    private const string ExecuteToolValue = "execute_tool";
-    private const string ToolNameKey = "gen_ai.tool.name";
-
     /// <inheritdoc />
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
         [DiagnosticDescriptors.GenAiExecuteToolMissingToolName];
@@ -46,12 +41,13 @@ public sealed class GenAiExecuteToolNameAnalyzer : DiagnosticAnalyzer
 
         foreach (var call in calls)
         {
-            if (call is { Key: OperationNameKey, Value: ExecuteToolValue })
+            if (call.Key == SemconvRegistryFacts.ExecuteToolOperationKey
+                && call.Value == SemconvRegistryFacts.ExecuteToolOperationValue)
             {
                 executeToolMarker = call;
                 hasMarker = true;
             }
-            else if (call.Key == ToolNameKey)
+            else if (call.Key == SemconvRegistryFacts.ExecuteToolRequiredAttribute)
             {
                 hasToolName = true;
             }
@@ -61,7 +57,10 @@ public sealed class GenAiExecuteToolNameAnalyzer : DiagnosticAnalyzer
         {
             context.ReportDiagnostic(Diagnostic.Create(
                 DiagnosticDescriptors.GenAiExecuteToolMissingToolName,
-                executeToolMarker.KeyLocation));
+                executeToolMarker.KeyLocation,
+                SemconvRegistryFacts.ExecuteToolOperationKey,
+                SemconvRegistryFacts.ExecuteToolOperationValue,
+                SemconvRegistryFacts.ExecuteToolRequiredAttribute));
         }
     }
 }

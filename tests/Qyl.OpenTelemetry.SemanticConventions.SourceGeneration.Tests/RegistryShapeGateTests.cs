@@ -1,4 +1,6 @@
 using System.Text.Json;
+using System.Security.Cryptography;
+using System.Text;
 using AwesomeAssertions;
 using Xunit;
 
@@ -33,6 +35,84 @@ public sealed class RegistryShapeGateTests
         root.GetProperty("groups").ValueKind.Should().Be(JsonValueKind.Array);
         root.GetProperty("catalog").GetArrayLength().Should().BeGreaterThan(500,
             "a drastically shrunken catalog indicates a resolution regression");
+    }
+
+    [Fact]
+    public void Root_records_both_exact_registry_sources_and_manifests()
+    {
+        var root = LoadRoot();
+        var sources = root.GetProperty("sources").EnumerateArray().ToArray();
+        sources.Should().HaveCount(2);
+
+        sources.Single(source => source.GetProperty("source_registry").GetString() == "core")
+            .GetProperty("source_ref").GetString().Should().Be("v1.43.0");
+        sources.Single(source => source.GetProperty("source_registry").GetString() == "genai")
+            .GetProperty("source_commit").GetString().Should()
+            .Be("c321d7eb4443ae1d1d88c2e24eda849f62049008");
+
+        root.GetProperty("manifests").EnumerateArray()
+            .Select(manifest => manifest.GetProperty("source_registry").GetString())
+            .Should().BeEquivalentTo(["core", "genai"]);
+    }
+
+    [Fact]
+    public void Complete_pinned_model_file_inventory_is_fingerprinted()
+    {
+        var files = LoadRoot().GetProperty("model_files").EnumerateArray().ToArray();
+        files.Count(file => file.GetProperty("source_registry").GetString() == "core").Should().Be(236);
+        files.Count(file => file.GetProperty("source_registry").GetString() == "genai").Should().Be(19);
+
+        foreach (var file in files)
+        {
+            file.GetProperty("path").GetString().Should().StartWith("model/");
+            file.GetProperty("kind").GetString().Should().NotBeNullOrWhiteSpace();
+            file.GetProperty("sha256").GetString().Should().MatchRegex("^[0-9a-f]{64}$");
+        }
+    }
+
+    [Fact]
+    public void Every_genai_any_attribute_has_one_authoritative_json_schema()
+    {
+        var root = LoadRoot();
+        var anyAttributes = root.GetProperty("catalog").EnumerateArray()
+            .Where(attribute => attribute.GetProperty("source_registry").GetString() == "genai")
+            .Where(attribute => attribute.GetProperty("type").ValueKind == JsonValueKind.String)
+            .Where(attribute => attribute.GetProperty("type").GetString() == "any")
+            .Select(attribute => attribute.GetProperty("key").GetString())
+            .ToArray();
+
+        var schemas = root.GetProperty("json_schemas").EnumerateArray().ToArray();
+        schemas.Should().HaveCount(8);
+        schemas.SelectMany(schema => schema.GetProperty("attribute_keys").EnumerateArray())
+            .Select(key => key.GetString())
+            .Should().BeEquivalentTo(anyAttributes);
+
+        foreach (var schema in schemas)
+        {
+            schema.GetProperty("source_registry").GetString().Should().Be("genai");
+            var content = schema.GetProperty("content").GetString();
+            content.Should().NotBeNullOrWhiteSpace();
+            using var document = JsonDocument.Parse(content!);
+            document.RootElement.ValueKind.Should().Be(JsonValueKind.Object);
+
+            var actualHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(content!)))
+                .ToLowerInvariant();
+            actualHash.Should().Be(schema.GetProperty("sha256").GetString());
+        }
+    }
+
+    [Fact]
+    public void Moved_genai_protocol_and_provider_namespaces_come_only_from_genai_source()
+    {
+        string[] movedPrefixes = ["gen_ai.", "mcp.", "openai.", "aws.bedrock."];
+        var movedAttributes = LoadRoot().GetProperty("catalog").EnumerateArray()
+            .Where(attribute => movedPrefixes.Any(prefix =>
+                attribute.GetProperty("key").GetString()!.StartsWith(prefix, StringComparison.Ordinal)))
+            .ToArray();
+
+        movedAttributes.Should().NotBeEmpty();
+        movedAttributes.Should().OnlyContain(attribute =>
+            attribute.GetProperty("source_registry").GetString() == "genai");
     }
 
     [Fact]

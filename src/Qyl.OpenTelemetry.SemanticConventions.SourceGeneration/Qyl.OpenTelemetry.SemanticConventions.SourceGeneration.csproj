@@ -70,4 +70,13 @@
     </ItemGroup>
   </Target>
 
+  <Target Name="_VerifyRegistryDerivedArtifacts"
+          BeforeTargets="CoreCompile"
+          Condition="'$(DesignTimeBuild)' != 'true' AND '$(SkipRegistryArtifactCheck)' != 'true'">
+    <Exec Command="python3 &quot;$(MSBuildProjectDirectory)/scripts/emit_analyzer_registry.py&quot; --check"
+          WorkingDirectory="$(MSBuildProjectDirectory)"/>
+    <Exec Command="python3 &quot;$(MSBuildProjectDirectory)/scripts/emit_registry_resources.py&quot; --check"
+          WorkingDirectory="$(MSBuildProjectDirectory)"/>
+  </Target>
+
 </Project>

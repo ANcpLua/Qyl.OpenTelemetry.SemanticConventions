@@ -1,91 +1,124 @@
+using MsOperationExtensions = Microsoft.CodeAnalysis.Operations.OperationExtensions;
 
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     QYL0401: Detects GenAI spans that are missing required semantic convention attributes.
+/// QYL0401: Validates unconditional required attributes against the exact GenAI or
+/// MCP span definition selected by its registry discriminator and <c>ActivityKind</c>.
 /// </summary>
-/// <remarks>
-///     <para>
-///         GenAI spans require these attributes for proper observability:
-///         <list type="bullet">
-///             <item>gen_ai.provider.name - The GenAI provider (e.g., "openai")</item>
-///             <item>gen_ai.request.model - The model name</item>
-///             <item>gen_ai.operation.name - The operation type</item>
-///         </list>
-///     </para>
-/// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Qyl0401GenAiMissingRequiredAttributesAnalyzer : AlAnalyzer {
-    /// <summary>The diagnostic identifier for QYL0401.</summary>
+public sealed class Qyl0401GenAiMissingRequiredAttributesAnalyzer : AlAnalyzer
+{
     private const string DiagnosticId = "QYL0401";
-
-    private static readonly string[] s_requiredGenAiAttributes = OpenTelemetryGenAiSemconvFacts.s_requiredAttributeKeys;
 
     private static readonly DiagnosticDescriptor s_rule = CreateRule(
         DiagnosticId,
         DiagnosticCategories.GenAI,
         DiagnosticSeverities.Suggestion);
 
-    /// <summary>Gets the diagnostic descriptors for the supported diagnostics.</summary>
+    /// <inheritdoc />
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
-    /// <summary>Registers operation actions to analyze Activity.StartActivity calls.</summary>
+    /// <inheritdoc />
     protected override void RegisterActions(AnalysisContext context) =>
-        context.RegisterOperationAction(AnalyzeInvocation, OperationKind.Invocation);
+        context.RegisterOperationBlockAction(AnalyzeBlock);
 
-    private static void AnalyzeInvocation(OperationAnalysisContext context) {
-        var invocation = (IInvocationOperation)context.Operation;
+    private static void AnalyzeBlock(OperationBlockAnalysisContext context)
+    {
+        var tagCalls = new List<TagSetterCall>();
+        foreach (var block in context.OperationBlocks)
+        {
+            TagSetterDetection.CollectTagSetterCalls(block, tagCalls);
+        }
 
-        if (invocation.TargetMethod.Name != "StartActivity" ||
-            GetActivityName(invocation) is not { } activityName ||
-            !IsGenAiActivity(activityName)) {
+        if (tagCalls.Count == 0)
+        {
             return;
         }
 
-        var setTags = CollectSetTagCalls(invocation);
+        var presentAttributes = new HashSet<string>(tagCalls.Select(call => call.Key), StringComparer.Ordinal);
+        var constantAttributes = new Dictionary<string, string>(StringComparer.Ordinal);
+        foreach (var call in tagCalls)
+        {
+            if (call.Value is not null)
+            {
+                constantAttributes[call.Key] = call.Value;
+            }
+        }
 
-        foreach (var requiredAttribute in s_requiredGenAiAttributes) {
-            if (!setTags.Contains(requiredAttribute, StringComparer.OrdinalIgnoreCase)) {
-                context.ReportDiagnostic(Diagnostic.Create(s_rule, invocation.Syntax.GetLocation(), activityName, requiredAttribute));
+        foreach (var block in context.OperationBlocks)
+        {
+            foreach (var operation in MsOperationExtensions.DescendantsAndSelf(block))
+            {
+                if (operation is not IInvocationOperation { TargetMethod.Name: "StartActivity" } invocation
+                    || !SemconvRegistryFacts.TryResolveSpanRule(
+                        constantAttributes,
+                        GetSpanKind(invocation),
+                        out var spanRule)
+                    || spanRule is null)
+                {
+                    continue;
+                }
+
+                var activityName = GetActivityName(invocation) ?? spanRule.Id;
+                foreach (var requiredAttribute in spanRule.RequiredAttributes)
+                {
+                    if (!presentAttributes.Contains(requiredAttribute))
+                    {
+                        context.ReportDiagnostic(
+                            Diagnostic.Create(
+                                s_rule,
+                                invocation.Syntax.GetLocation(),
+                                activityName,
+                                requiredAttribute));
+                    }
+                }
             }
         }
     }
 
-    private static string? GetActivityName(IInvocationOperation invocation) =>
-        invocation.Arguments.Length > 0 &&
-        invocation.Arguments[0].Value.ConstantValue is { HasValue: true, Value: string name }
-            ? name
-            : null;
-
-    private static bool IsGenAiActivity(string activityName) =>
-        activityName.ContainsIgnoreCase("gen_ai") ||
-        activityName.ContainsIgnoreCase("genai") ||
-        activityName.ContainsIgnoreCase("chat") ||
-        activityName.ContainsIgnoreCase("completion") ||
-        activityName.ContainsIgnoreCase("embedding");
-
-    private static HashSet<string> CollectSetTagCalls(IInvocationOperation startActivity) {
-        var tags = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-        for (var current = startActivity.Parent; current is not null; current = current.Parent) {
-            if (current is IBlockOperation block) {
-                CollectSetTagCallsRecursive(block, tags);
-                break;
+    private static string? GetActivityName(IInvocationOperation invocation)
+    {
+        foreach (var argument in invocation.Arguments)
+        {
+            if ((argument.Parameter?.Name == "name" || argument.Parameter?.Ordinal == 0)
+                && TagSetterDetection.TryGetStringConstant(argument.Value, out var name))
+            {
+                return name;
             }
         }
 
-        return tags;
+        return null;
     }
 
-    private static void CollectSetTagCallsRecursive(IOperation operation, HashSet<string> tags) {
-        if (operation is IInvocationOperation { TargetMethod.Name: "SetTag", Arguments.Length: >= 1 } invocation &&
-            invocation.Arguments[0].Value.ConstantValue is { HasValue: true, Value: string tagName }) {
-            tags.Add(tagName);
-            return;
+    private static string GetSpanKind(IInvocationOperation invocation)
+    {
+        foreach (var argument in invocation.Arguments)
+        {
+            if (argument.Parameter is not { Name: "kind", Type.Name: "ActivityKind" })
+            {
+                continue;
+            }
+
+            var value = argument.Value.UnwrapAllConversions();
+            if (value is IFieldReferenceOperation fieldReference)
+            {
+                return fieldReference.Field.Name.ToLowerInvariant();
+            }
+
+            if (value.TryGetConstantValue<object>(out var constant))
+            {
+                return constant switch
+                {
+                    1 or 1u or 1L or 1UL => "server",
+                    2 or 2u or 2L or 2UL => "client",
+                    3 or 3u or 3L or 3UL => "producer",
+                    4 or 4u or 4L or 4UL => "consumer",
+                    _ => "internal",
+                };
+            }
         }
 
-        foreach (var child in operation.ChildOperations) {
-            CollectSetTagCallsRecursive(child, tags);
-        }
+        return "internal";
     }
 }

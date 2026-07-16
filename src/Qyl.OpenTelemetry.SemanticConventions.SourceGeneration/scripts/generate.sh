@@ -173,6 +173,7 @@ merge_projected_registries() {
   local actual_weaver_version="$7"
 
   python3 - "$core_json" "$genai_json" "$core_model_dir" "$genai_model_dir" "$destination" "$schema_version" "$actual_weaver_version" <<'PY'
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -228,13 +229,120 @@ def rehydrate_event_bodies(events, bodies):
             event["body"] = bodies[name]
     return events
 
+def source_metadata(source_registry, source_by_registry):
+    source = source_by_registry[source_registry]
+    return {
+        "source_registry": source["source_registry"],
+        "schema_url": source["schema_url"],
+        "source_ref": source["source_ref"],
+        "source_commit": source["source_commit"],
+        "source_date_epoch": source["source_date_epoch"],
+    }
+
+def sha256(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+def model_path(path, model_dir):
+    return "model/" + path.relative_to(model_dir).as_posix()
+
+def classify_model_file(path):
+    if path.name == "manifest.yaml":
+        return "manifest"
+    if path.suffix == ".json":
+        return "json_schema"
+    if path.suffix in {".yaml", ".yml"}:
+        return "registry_definition"
+    return "supporting"
+
+def collect_model_files(model_dirs, source_by_registry):
+    files = []
+    for source_registry, model_dir_value in sorted(model_dirs.items()):
+        model_dir = Path(model_dir_value)
+        for path in sorted(candidate for candidate in model_dir.rglob("*") if candidate.is_file()):
+            files.append({
+                "path": model_path(path, model_dir),
+                "kind": classify_model_file(path),
+                "sha256": sha256(path),
+                **source_metadata(source_registry, source_by_registry),
+            })
+    return files
+
+def collect_manifests(model_dirs, source_by_registry):
+    manifests = []
+    for source_registry, model_dir_value in sorted(model_dirs.items()):
+        path = Path(model_dir_value) / "manifest.yaml"
+        if not path.is_file():
+            raise SystemExit(f"error: {source_registry} model is missing manifest.yaml: {path}")
+        manifests.append({
+            "path": "model/manifest.yaml",
+            "document": yaml.safe_load(path.read_text()) or {},
+            **source_metadata(source_registry, source_by_registry),
+        })
+    return manifests
+
+def schema_annotation(attribute):
+    annotations = attribute.get("annotations") or {}
+    type_annotation = annotations.get("type") or {}
+    return type_annotation.get("json_schema")
+
+def collect_json_schemas(catalog, model_dirs, source_by_registry):
+    referenced_attributes = {}
+    for attribute in catalog:
+        schema_path = schema_annotation(attribute)
+        if attribute.get("source_registry") == "genai" and attribute.get("type") == "any" and not schema_path:
+            raise SystemExit(
+                f"error: type:any attribute {attribute.get('key', '<unknown>')} has no annotations.type.json_schema")
+        if not schema_path:
+            continue
+        key = (attribute["source_registry"], schema_path)
+        referenced_attributes.setdefault(key, []).append(attribute["key"])
+
+    schemas = []
+    for source_registry, model_dir_value in sorted(model_dirs.items()):
+        model_dir = Path(model_dir_value)
+        discovered = {
+            model_path(path, model_dir): path
+            for path in model_dir.rglob("*.json")
+            if path.is_file()
+        }
+        referenced_paths = {
+            path
+            for registry, path in referenced_attributes
+            if registry == source_registry
+        }
+
+        missing = sorted(referenced_paths - discovered.keys())
+        if missing:
+            raise SystemExit(
+                f"error: {source_registry} registry references missing JSON schemas: {', '.join(missing)}")
+
+        for schema_path, path in sorted(discovered.items()):
+            content = path.read_text()
+            document = json.loads(content)
+            schemas.append({
+                "path": schema_path,
+                "title": document.get("title", ""),
+                "sha256": sha256(path),
+                "attribute_keys": sorted(referenced_attributes.get((source_registry, schema_path), [])),
+                "content": content,
+                "document": document,
+                **source_metadata(source_registry, source_by_registry),
+            })
+    return schemas
+
 sources = unique_by(
     list(core.get("sources", [])) + list(genai.get("sources", [])),
     lambda row: (row.get("source_registry", ""), row.get("source_commit", "")),
 )
+source_by_registry = {source["source_registry"]: source for source in sources}
+model_dirs = {
+    "core": core_model_dir,
+    "genai": genai_model_dir,
+}
 
 events = unique_by(list(core.get("events", [])) + list(genai.get("events", [])), event_key)
 events = rehydrate_event_bodies(events, collect_event_bodies(core_model_dir, genai_model_dir))
+catalog = unique_by(list(core.get("catalog", [])) + list(genai.get("catalog", [])), catalog_key)
 
 merged = {
     "schema_version": schema_version,
@@ -243,8 +351,11 @@ merged = {
     "semconv_commit": core.get("semconv_commit", ""),
     "weaver_version": weaver_version,
     "sources": sources,
+    "manifests": collect_manifests(model_dirs, source_by_registry),
+    "model_files": collect_model_files(model_dirs, source_by_registry),
+    "json_schemas": collect_json_schemas(catalog, model_dirs, source_by_registry),
     "groups": unique_by(list(core.get("groups", [])) + list(genai.get("groups", [])), group_key),
-    "catalog": unique_by(list(core.get("catalog", [])) + list(genai.get("catalog", [])), catalog_key),
+    "catalog": catalog,
     "metrics": unique_by(list(core.get("metrics", [])) + list(genai.get("metrics", [])), metric_key),
     "events": events,
 }
@@ -317,7 +428,11 @@ merge_projected_registries \
   "${SCHEMA_VERSION}" \
   "${actual_weaver_version}"
 
+python3 "${script_dir}/emit_analyzer_registry.py" --registry "${output_file}"
+python3 "${script_dir}/emit_registry_resources.py" --registry "${output_file}"
+
 echo "Regenerated ${output_file}"
+echo "Regenerated registry-derived analyzer facts and public payload-schema resources"
 echo "  core:  ${CORE_REF} (${core_commit})"
 echo "  genai: ${GENAI_REF} (${genai_commit})"
 echo "  weaver: ${actual_weaver_version}"

@@ -92,6 +92,18 @@ projections while preserving per-row source metadata. The
 core run excludes `gen-ai`, `mcp`, `openai`, and `aws-bedrock`, so those rows come
 only from the GenAI source.
 
+The merge also fingerprints every effective model file, preserves both manifests,
+and embeds every referenced GenAI JSON Schema. Two generated consumers share that
+same projection:
+
+- `emit_registry_resources.py` publishes the complete resolved registry and raw
+  structured-payload schemas through the incubating package.
+- `emit_analyzer_registry.py` derives attribute types, enum spellings, GenAI/MCP
+  span requirements, provider refinements, and metric names for the analyzer project.
+
+Both scripts support `--check`; normal repository builds and CI fail when their
+committed outputs drift from `resolved-registry.json`.
+
 The generated member shape is snapshot-tested per stability tier on the repository's
 `net10.0` test host. The release gate also restores the packed source generator into
 a clean `net10.0` consumer, compiles generated members, and executes the result.

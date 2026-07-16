@@ -199,10 +199,10 @@
               "id": "QYL0012",
               "name": "InvalidAttributeValue",
               "shortDescription": {
-                "text": "Invalid attribute value"
+                "text": "Semantic-convention enum value uses non-canonical casing"
               },
               "fullDescription": {
-                "text": "Attribute values must conform to the expected format defined by OpenTelemetry semantic conventions. For example, http.response.status_code must be an integer, gen_ai.system must be a known provider (openai, anthropic, etc.), and error.type should be an exception type or error code. Invalid values may cause issues with telemetry backends and dashboards."
+                "text": "Known enum values must use the exact spelling generated from the complete pinned semantic-convention registry. Unknown extension values remain allowed; primitive value types are handled separately by QYL0013."
               },
               "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0012_InvalidAttributeValue.md",
               "defaultConfiguration": {
@@ -219,7 +219,7 @@
                 "text": "Incorrect attribute type"
               },
               "fullDescription": {
-                "text": "OpenTelemetry semantic conventions specify expected types for attributes. For example, gen_ai.usage.input_tokens should be an integer, not a string. Using incorrect types may cause issues with telemetry backends or dashboards that expect specific types for aggregation and visualization."
+                "text": "Every exact and template attribute type is generated from the complete pinned semantic-convention registry. Primitive and homogeneous-array mismatches are reported; structured type:any payloads remain governed by their packaged upstream JSON Schemas."
               },
               "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0013_IncorrectAttributeType.md",
               "defaultConfiguration": {
@@ -573,10 +573,10 @@
               "id": "QYL0400",
               "name": "GenAiExecuteToolName",
               "shortDescription": {
-                "text": "gen_ai.execute_tool span requires gen_ai.tool.name"
+                "text": "Execute-tool span is missing its registry-required attribute"
               },
               "fullDescription": {
-                "text": "v1.41.0 made gen_ai.tool.name a required attribute on the gen_ai.execute_tool internal span; the canonical span name is \u0027execute_tool {gen_ai.tool.name}\u0027."
+                "text": "The pinned GenAI span definition requires an additional tool attribute when the execute-tool operation discriminator is present."
               },
               "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0400_GenAiExecuteToolName.md",
               "defaultConfiguration": {
@@ -590,10 +590,10 @@
               "id": "QYL0401",
               "name": "GenAiMissingRequiredAttributes",
               "shortDescription": {
-                "text": "GenAI span missing required attributes"
+                "text": "GenAI or MCP span missing required attributes"
               },
               "fullDescription": {
-                "text": "GenAI spans must include the required semantic-convention attributes (gen_ai.provider.name, gen_ai.request.model, gen_ai.operation.name) to enable proper observability and correlation of LLM operations. Note: gen_ai.system was renamed to gen_ai.provider.name."
+                "text": "GenAI and MCP spans must include the unconditional required attributes for their exact registry-defined discriminator, span kind, and provider refinement. Conditional and recommended attributes are not treated as universally required."
               },
               "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0401_GenAiMissingRequiredAttributes.md",
               "defaultConfiguration": {
@@ -607,10 +607,10 @@
               "id": "QYL0402",
               "name": "UseTokenUsageHistogram",
               "shortDescription": {
-                "text": "Use gen_ai.client.token.usage histogram for token metrics"
+                "text": "Use a registry-defined GenAI token metric"
               },
               "fullDescription": {
-                "text": "GenAI token usage metrics should use the gen_ai.client.token.usage histogram instrument as defined by the semantic conventions. This ensures compatibility with standard GenAI observability dashboards."
+                "text": "Token-related GenAI histogram names are checked against the complete metric inventory from the pinned registry, including valid client and server token metrics."
               },
               "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0402_UseTokenUsageHistogram.md",
               "defaultConfiguration": {
@@ -624,10 +624,10 @@
               "id": "QYL0403",
               "name": "InvalidGenAiOperationName",
               "shortDescription": {
-                "text": "GenAI operation name should follow semantic conventions"
+                "text": "GenAI operation name uses non-canonical casing"
               },
               "fullDescription": {
-                "text": "GenAI operation names should follow the semantic conventions. Known values are chat, text_completion, embeddings, generate_content, retrieval, and the agent/workflow operations execute_tool, create_agent, invoke_agent, and invoke_workflow."
+                "text": "Known GenAI operation names must use the exact casing generated from the pinned registry. Unknown documented system-specific operation names remain allowed."
               },
               "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0403_InvalidGenAiOperationName.md",
               "defaultConfiguration": {

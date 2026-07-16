@@ -48,8 +48,8 @@ A source-generation or analyzer API needs an executable consumer and tests for t
 complete contract. Marker-only declarations, unexecuted sample code, or a mock that
 only reproduces the expected string are not acceptance evidence.
 
-The analyzer project is preview-only. Qyl does not consume it, and only one of its 48
-rules has executable behavior tests. Keep it out of stable packs. An explicit preview
+The analyzer project is preview-only. Qyl does not consume it, and only seven of its 48
+rules have executable behavior tests. Keep it out of stable packs. An explicit preview
 pack requires `PackPreviewAnalyzers=true` and a prerelease package version. Stable
 promotion requires Qyl consumption and executable coverage for every rule.
 
@@ -74,6 +74,8 @@ Important generation gates:
 ./build.sh VerifyAttributesHash
 ./build.sh CheckDocs
 python3 src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/scripts/verify_deprecated_catalog.py
+python3 src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/scripts/emit_analyzer_registry.py --check
+python3 src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/scripts/emit_registry_resources.py --check
 ```
 
 After an intentional attribute regeneration, reseed the manifest with

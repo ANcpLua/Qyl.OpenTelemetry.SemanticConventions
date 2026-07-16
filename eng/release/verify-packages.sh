@@ -54,6 +54,18 @@ if [[ -n "${package_directory}" ]]; then
   require_archive_entry "${stable_package}" "lib/netstandard2.0/${stable_id}.dll"
   require_archive_entry "${incubating_package}" "lib/net10.0/${incubating_id}.dll"
   require_archive_entry "${incubating_package}" "lib/netstandard2.0/${incubating_id}.dll"
+  require_archive_entry "${incubating_package}" "registry/resolved-registry.json"
+  for schema in \
+    gen-ai-input-messages.json \
+    gen-ai-memory-records.json \
+    gen-ai-output-messages.json \
+    gen-ai-retrieval-documents.json \
+    gen-ai-system-instructions.json \
+    gen-ai-tool-call-arguments.json \
+    gen-ai-tool-call-result.json \
+    gen-ai-tool-definitions.json; do
+    require_archive_entry "${incubating_package}" "registry/schemas/gen-ai/${schema}"
+  done
   require_archive_entry \
     "${source_generation_package}" \
     "analyzers/dotnet/cs/${source_generation_id}.Generator.dll"
@@ -107,7 +119,9 @@ EOF
 cat > "${consumer_directory}/Program.cs" <<'EOF'
 using Qyl.OpenTelemetry.SemanticConventions.Attributes.Http;
 using Qyl.OpenTelemetry.SemanticConventions.Incubating.Attributes.GenAi;
+using Qyl.OpenTelemetry.SemanticConventions.Incubating.Registry;
 using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration;
+using System.Text.Json;
 
 namespace ReleaseSmoke;
 
@@ -134,6 +148,29 @@ internal static class Program
         if (!actual.SequenceEqual(expected, StringComparer.Ordinal))
         {
             return 1;
+        }
+
+        using var registryStream = SemanticConventionRegistry.OpenResolvedRegistry();
+        using var registry = JsonDocument.Parse(registryStream);
+        if (registry.RootElement.GetProperty("sources").GetArrayLength() != 2
+            || registry.RootElement.GetProperty("json_schemas").GetArrayLength() != 8)
+        {
+            return 2;
+        }
+
+        if (!SemanticConventionRegistry.TryOpenPayloadSchema("gen_ai.input.messages", out var schemaStream)
+            || schemaStream is null)
+        {
+            return 3;
+        }
+
+        using (schemaStream)
+        using (var schema = JsonDocument.Parse(schemaStream))
+        {
+            if (schema.RootElement.ValueKind != JsonValueKind.Object)
+            {
+                return 4;
+            }
         }
 
         Console.WriteLine("semantic-conventions release smoke passed");

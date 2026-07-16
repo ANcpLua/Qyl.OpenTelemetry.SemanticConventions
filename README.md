@@ -9,7 +9,7 @@ separately pinned development GenAI registry.
 | Package | Contents |
 | --- | --- |
 | `Qyl.OpenTelemetry.SemanticConventions` | Stable and deprecated attribute-key constants |
-| `.Incubating` | Development and unstable attribute-key constants |
+| `.Incubating` | Development and unstable constants, the complete resolved registry, and upstream GenAI payload schemas |
 | `.SourceGeneration` | Roslyn generators for typed telemetry declarations |
 | `.Analyzers` | Preview diagnostics and code fixes; built and documented, but excluded from stable releases |
 
@@ -26,6 +26,8 @@ pinned OpenTelemetry registries
 generate.sh -> resolved-registry.json
         |
         +----> emit_attributes.py ----> stable/incubating C# constants
+        +----> emit_registry_resources.py -> public registry + GenAI JSON Schemas
+        +----> emit_analyzer_registry.py --> registry-derived analyzer facts
         +----> Roslyn generators -----> consumer telemetry helpers
         +----> emit_typespec_keys.py -> qyl-api-schema key projection
         +----> DocsGenerator ---------> analyzer documentation
@@ -36,13 +38,19 @@ registry; they are not handwritten and are not emitted directly by Weaver. Gener
 files carry their owning input/generator and are guarded by build hashes or generated
 documentation checks.
 
+The incubating package exposes the complete source-attributed resolved model through
+`SemanticConventionRegistry.OpenResolvedRegistry()`. The eight structured GenAI
+`type: any` attributes expose their exact upstream JSON Schemas through
+`TryOpenPayloadSchema`. These raw schemas are the payload contract; the package does
+not invent parallel DTOs or a partial JSON Schema implementation.
+
 The TypeSpec projection contains semantic-convention key names only. Qyl's
 client-visible product requests, responses, stream events, and errors remain owned by
 [`qyl-api-schema`](https://github.com/ANcpLua/qyl-api-schema).
 
 ## Analyzer documentation
 
-The analyzer project defines 48 rules. Qyl does not consume it, and only one rule has
+The analyzer project defines 48 rules. Qyl does not consume it, and seven rules have
 executable behavior tests. It therefore remains preview-only and is
 not included in stable package builds. `PackPreviewAnalyzers=true` enables an explicit
 prerelease pack; the build rejects a stable analyzer version.
@@ -71,6 +79,8 @@ dotnet run --project tests/Qyl.OpenTelemetry.SemanticConventions.SourceGeneratio
 ./build.sh VerifyAttributesHash
 ./build.sh CheckDocs
 python3 src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/scripts/verify_deprecated_catalog.py
+python3 src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/scripts/emit_analyzer_registry.py --check
+python3 src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/scripts/emit_registry_resources.py --check
 ```
 
 Publishing uses GitHub Actions OIDC trusted publishing. No long-lived NuGet API key

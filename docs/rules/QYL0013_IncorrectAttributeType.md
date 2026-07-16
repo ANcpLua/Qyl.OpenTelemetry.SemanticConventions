@@ -12,7 +12,7 @@
 
 ## Description
 
-OpenTelemetry semantic conventions specify expected types for attributes. For example, gen_ai.usage.input_tokens should be an integer, not a string. Using incorrect types may cause issues with telemetry backends or dashboards that expect specific types for aggregation and visualization.
+Every exact and template attribute type is generated from the complete pinned semantic-convention registry. Primitive and homogeneous-array mismatches are reported; structured type:any payloads remain governed by their packaged upstream JSON Schemas.
 
 ## See also
 

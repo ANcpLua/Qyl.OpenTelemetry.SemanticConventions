@@ -36,12 +36,12 @@ internal static class DiagnosticDescriptors
 
     public static readonly DiagnosticDescriptor GenAiExecuteToolMissingToolName = new(
         id: "QYL0400",
-        title: "gen_ai.execute_tool span requires gen_ai.tool.name",
-        messageFormat: "Method sets gen_ai.operation.name=\"execute_tool\" but does not set gen_ai.tool.name; the tool name is required for span naming as of v1.41.0",
+        title: "Execute-tool span is missing its registry-required attribute",
+        messageFormat: "Method sets {0}=\"{1}\" but does not set registry-required attribute '{2}'",
         category: Category,
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "v1.41.0 made gen_ai.tool.name a required attribute on the gen_ai.execute_tool internal span; the canonical span name is 'execute_tool {gen_ai.tool.name}'.",
+        description: "The pinned GenAI span definition requires an additional tool attribute when the execute-tool operation discriminator is present.",
         helpLinkUri: RuleDocs.HelpLink("QYL0400", "GenAiExecuteToolName"));
 
     public static readonly DiagnosticDescriptor GraphqlDocumentIsOptIn = new(

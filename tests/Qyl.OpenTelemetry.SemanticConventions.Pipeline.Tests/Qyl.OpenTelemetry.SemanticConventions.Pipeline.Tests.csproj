@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../../src/Qyl.OpenTelemetry.SemanticConventions.Analyzers/Qyl.OpenTelemetry.SemanticConventions.Analyzers.csproj"/>
+    <ProjectReference Include="../../src/Qyl.OpenTelemetry.SemanticConventions.Incubating/Qyl.OpenTelemetry.SemanticConventions.Incubating.csproj"/>
   </ItemGroup>
 
 </Project>

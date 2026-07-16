@@ -26,7 +26,7 @@ Each ID links to a per-rule page under [`docs/rules/`](rules/) with severity, ca
 | [QYL0009](rules/QYL0009_SupplementalSemconvMigration.md) | Error | Obsolete semantic convention has an exact replacement | Exact replacements only |
 | [QYL0010](rules/QYL0010_SupplementalSemconvMigration.md) | Warning | Semantic convention migration needs review | Exact replacements only |
 | [QYL0011](rules/QYL0011_SupplementalSemconvMigration.md) | Info | Legacy semantic convention appears in compatibility or test code | Exact replacements only |
-| [QYL0012](rules/QYL0012_InvalidAttributeValue.md) | Error | Invalid attribute value | No |
+| [QYL0012](rules/QYL0012_InvalidAttributeValue.md) | Error | Semantic-convention enum value uses non-canonical casing | No |
 | [QYL0013](rules/QYL0013_IncorrectAttributeType.md) | Warning | Incorrect attribute type | No |
 | [QYL0100](rules/QYL0100_ActivityMissingSemconv.md) | Warning | Activity/Span missing semantic convention attributes | No |
 | [QYL0101](rules/QYL0101_UnregisteredActivitySource.md) | Warning | ActivitySource should be registered with AddSource() | No |
@@ -48,10 +48,10 @@ Each ID links to a per-rule page under [`docs/rules/`](rules/) with severity, ca
 | [QYL0303](rules/QYL0303_MissingResourceAttributes.md) | Warning | Missing resource attributes | No |
 | [QYL0304](rules/QYL0304_EnableEventSourceSupport.md) | Warning | EventSource instrumentation is trimmed under Native AOT without EventSourceSupport | No |
 | [QYL0305](rules/QYL0305_LegacySemanticConventionsAccessor.md) | Warning | Replace legacy SemanticConventions accessor | No |
-| [QYL0400](rules/QYL0400_GenAiExecuteToolName.md) | Warning | gen_ai.execute_tool span requires gen_ai.tool.name | No |
-| [QYL0401](rules/QYL0401_GenAiMissingRequiredAttributes.md) | Warning | GenAI span missing required attributes | No |
-| [QYL0402](rules/QYL0402_UseTokenUsageHistogram.md) | Warning | Use gen_ai.client.token.usage histogram for token metrics | No |
-| [QYL0403](rules/QYL0403_InvalidGenAiOperationName.md) | Warning | GenAI operation name should follow semantic conventions | No |
+| [QYL0400](rules/QYL0400_GenAiExecuteToolName.md) | Warning | Execute-tool span is missing its registry-required attribute | No |
+| [QYL0401](rules/QYL0401_GenAiMissingRequiredAttributes.md) | Warning | GenAI or MCP span missing required attributes | No |
+| [QYL0402](rules/QYL0402_UseTokenUsageHistogram.md) | Warning | Use a registry-defined GenAI token metric | No |
+| [QYL0403](rules/QYL0403_InvalidGenAiOperationName.md) | Warning | GenAI operation name uses non-canonical casing | No |
 | [QYL0404](rules/QYL0404_DeprecatedGenAiAttribute.md) | Warning | Deprecated GenAI semantic convention | Yes |
 | [QYL0405](rules/QYL0405_NonInterceptableAgentTraced.md) | Warning | Non-interceptable [AgentTraced] | Yes |
 | [QYL0406](rules/QYL0406_DirectGenAiSdkUsage.md) | Warning | Direct GenAI SDK call bypasses automatic OTel instrumentation | No |
