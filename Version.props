@@ -3,7 +3,7 @@
     <SemConvSchemaVersion>1.43.0</SemConvSchemaVersion>
     <WeaverVersion>0.24.2</WeaverVersion>
 
-    <ANcpLuaRoslynUtilitiesVersion>2.2.38</ANcpLuaRoslynUtilitiesVersion>
+    <ANcpLuaRoslynUtilitiesVersion>2.2.39</ANcpLuaRoslynUtilitiesVersion>
     <MicrosoftCodeAnalysisVersion>5.6.0</MicrosoftCodeAnalysisVersion>
 
     <NukeVersion>10.1.0</NukeVersion>
