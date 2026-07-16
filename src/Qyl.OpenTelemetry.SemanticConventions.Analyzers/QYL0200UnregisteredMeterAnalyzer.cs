@@ -69,7 +69,7 @@ public sealed class Qyl0200UnregisteredMeterAnalyzer : AlAnalyzer {
     }
 
     private static void CollectStringValues(IOperation op, ConcurrentDictionary<string, byte> collector) {
-        if (op.ConstantValue is { HasValue: true, Value: string s }) {
+        if (op.TryGetConstantValue<string>(out var s)) {
             collector.TryAdd(s, 0);
             return;
         }

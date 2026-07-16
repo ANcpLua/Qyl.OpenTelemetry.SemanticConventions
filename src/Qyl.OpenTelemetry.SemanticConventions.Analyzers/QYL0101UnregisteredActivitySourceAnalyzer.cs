@@ -58,7 +58,7 @@ public sealed class Qyl0101UnregisteredActivitySourceAnalyzer : AlAnalyzer {
 
             var argumentValue = invocation.Arguments[0].Value;
 
-            if (argumentValue.ConstantValue is { HasValue: true, Value: string name }) {
+            if (argumentValue.TryGetConstantValue<string>(out var name)) {
                 registeredSources.Add(name);
             } else {
                 // Defer foreach resolution to CompilationEnd where fieldSourceNames is fully populated
@@ -72,7 +72,7 @@ public sealed class Qyl0101UnregisteredActivitySourceAnalyzer : AlAnalyzer {
                 return;
             }
 
-            if (creation.Arguments[0].Value.ConstantValue is { HasValue: true, Value: string name }) {
+            if (creation.Arguments[0].Value.TryGetConstantValue<string>(out var name)) {
                 activitySourceCreations.Add((creation.Arguments[0].Value.Syntax.GetLocation(), name));
             }
         }, OperationKind.ObjectCreation);

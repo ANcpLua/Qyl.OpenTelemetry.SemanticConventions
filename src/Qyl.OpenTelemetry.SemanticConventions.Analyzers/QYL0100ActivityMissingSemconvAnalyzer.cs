@@ -74,10 +74,7 @@ public sealed class Qyl0100ActivityMissingSemconvAnalyzer : AlAnalyzer {
     }
 
     private static string? GetActivityName(IInvocationOperation invocation) =>
-        invocation.Arguments.Length > 0 &&
-        invocation.Arguments[0].Value.ConstantValue is { HasValue: true, Value: string name }
-            ? name
-            : null;
+        invocation.TryGetConstantArgument<string>(0, out var name) ? name : null;
 
     private static string? InferOperationType(string activityName) {
         foreach (var kvp in s_operationTypePrefixes) {
@@ -125,8 +122,8 @@ public sealed class Qyl0100ActivityMissingSemconvAnalyzer : AlAnalyzer {
     }
 
     private static void CollectSetTagCallsRecursive(IOperation operation, HashSet<string> tags) {
-        if (operation is IInvocationOperation { TargetMethod.Name: "SetTag", Arguments.Length: >= 1 } invocation &&
-            invocation.Arguments[0].Value.ConstantValue is { HasValue: true, Value: string tagName }) {
+        if (operation is IInvocationOperation { TargetMethod.Name: "SetTag" } invocation &&
+            invocation.TryGetConstantArgument<string>(0, out var tagName)) {
             tags.Add(tagName);
             return;
         }

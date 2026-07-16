@@ -196,7 +196,7 @@ public sealed class Qyl0110MissingExceptionRecordingOnActivityAnalyzer : AlAnaly
             nameArg = nameConversion.Operand;
         }
 
-        return nameArg.ConstantValue is { HasValue: true, Value: string eventName } &&
+        return nameArg.TryGetConstantValue<string>(out var eventName) &&
                eventName.EqualsIgnoreCase("exception");
     }
 }

@@ -105,7 +105,7 @@ public sealed class Qyl0600InsecureEndpointAnalyzer : AlAnalyzer {
     private static void CheckForInsecureEndpoint(OperationAnalysisContext context, IOperation operation) {
         var value = operation.UnwrapAllConversions();
 
-        if (value.ConstantValue is { HasValue: true, Value: string endpoint } && IsInsecureEndpoint(endpoint)) {
+        if (value.TryGetConstantValue<string>(out var endpoint) && IsInsecureEndpoint(endpoint)) {
             context.ReportDiagnostic(Diagnostic.Create(s_rule, operation.Syntax.GetLocation(), endpoint));
         }
     }
