@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 # Regenerate Resources/resolved-registry.json from two source registries:
-#   1. core open-telemetry/semantic-conventions at the version in Version.props
-#   2. open-telemetry/semantic-conventions-genai at a pinned commit
+#   1. core open-telemetry/semantic-conventions at SemConvSchemaVersion in Version.props
+#   2. open-telemetry/semantic-conventions-genai at SemConvGenAiRef in Version.props
+#
+# Since the upstream GenAI split, core@1.43.0 carries only deprecated/ under
+# model/gen-ai/ — the living gen_ai.* model exists exclusively in the genai
+# registry. Two guards below keep a pin bump from silently killing gen_ai.*:
+# the genai manifest must depend on core@SemConvSchemaVersion, and the merged
+# output must still contain live gen_ai.* attributes.
 #
 # The generated projection is qyl-owned JSON consumed by the Roslyn source
 # generator. It is not Weaver's resolved-registry-v2 contract.
@@ -32,13 +38,14 @@ PY
 
 default_schema_version="$(read_version_property SemConvSchemaVersion)"
 default_weaver_version="$(read_version_property WeaverVersion)"
+default_genai_ref="$(read_version_property SemConvGenAiRef)"
 
 SCHEMA_VERSION="${SEMCONV_SCHEMA_VERSION:-${default_schema_version}}"
 EXPECTED_WEAVER_VERSION="${SEMCONV_WEAVER_VERSION:-${default_weaver_version}}"
 CORE_REF="${SEMCONV_CORE_REF:-v${SCHEMA_VERSION}}"
 CORE_REPO="${SEMCONV_CORE_REPO:-${repo_root}/.tools/semantic-conventions}"
 CORE_REMOTE="${SEMCONV_CORE_REMOTE:-https://github.com/open-telemetry/semantic-conventions.git}"
-GENAI_REF="${SEMCONV_GENAI_REF:-c321d7eb4443ae1d1d88c2e24eda849f62049008}"
+GENAI_REF="${SEMCONV_GENAI_REF:-${default_genai_ref}}"
 GENAI_REPO="${SEMCONV_GENAI_REPO:-${repo_root}/.tools/semantic-conventions-genai}"
 GENAI_REMOTE="${SEMCONV_GENAI_REMOTE:-https://github.com/open-telemetry/semantic-conventions-genai.git}"
 
@@ -89,6 +96,60 @@ validate_genai_source() {
   require_path "${model_dir}/mcp" "semantic-conventions-genai model is missing mcp/"
   require_path "${model_dir}/openai" "semantic-conventions-genai model is missing openai/"
   require_path "${model_dir}/aws-bedrock" "semantic-conventions-genai model is missing aws-bedrock/"
+}
+
+genai_manifest_schema_version() {
+  local manifest="$1"
+  python3 - "${manifest}" <<'PY'
+import sys
+
+import yaml
+
+manifest = yaml.safe_load(open(sys.argv[1])) or {}
+schema_url = manifest.get("schema_url", "")
+prefix = "https://opentelemetry.io/schemas/"
+if not schema_url.startswith(prefix):
+    raise SystemExit(f"error: genai manifest schema_url has unexpected shape: {schema_url!r}")
+print(schema_url[len(prefix):])
+PY
+}
+
+verify_genai_core_dependency() {
+  local manifest="$1"
+  local expected_core_version="$2"
+  python3 - "${manifest}" "${expected_core_version}" <<'PY'
+import sys
+
+import yaml
+
+manifest_path, expected = sys.argv[1:]
+manifest = yaml.safe_load(open(manifest_path)) or {}
+urls = [dep.get("schema_url", "") for dep in manifest.get("dependencies") or []]
+expected_url = f"https://opentelemetry.io/schemas/{expected}"
+if expected_url not in urls:
+    raise SystemExit(
+        f"error: the pinned semantic-conventions-genai manifest depends on {urls or ['<nothing>']}, "
+        f"but Version.props pins core {expected}.\n"
+        "Bump SemConvGenAiRef and SemConvSchemaVersion together so both registries agree.")
+PY
+}
+
+verify_genai_liveness() {
+  local registry_json="$1"
+  python3 - "${registry_json}" <<'PY'
+import json
+import sys
+
+catalog = json.load(open(sys.argv[1])).get("catalog", [])
+for prefix in ("gen_ai.", "mcp.", "openai.", "aws.bedrock."):
+    live = sum(1 for attribute in catalog
+               if attribute.get("key", "").startswith(prefix) and not attribute.get("deprecated"))
+    if live == 0:
+        raise SystemExit(
+            f"error: merged registry has no live {prefix}* attributes — the genai registry did not "
+            "contribute; refusing to emit a regressed surface")
+    print(f"  live {prefix}* attributes: {live}")
+PY
 }
 
 commit_for_ref() {
@@ -391,6 +452,8 @@ strip_migrated_core_scopes "${work_dir}/core-filtered/model"
 
 archive_ref "${GENAI_REPO}" "${genai_commit}" "${work_dir}/genai-source"
 validate_genai_source "${work_dir}/genai-source/model"
+verify_genai_core_dependency "${work_dir}/genai-source/model/manifest.yaml" "${SCHEMA_VERSION}"
+genai_schema_version="$(genai_manifest_schema_version "${work_dir}/genai-source/model/manifest.yaml")"
 mkdir -p "${work_dir}/genai-source/.build"
 cp -R "${work_dir}/core-filtered/model" "${work_dir}/genai-source/.build/sc-upstream-filtered"
 
@@ -416,7 +479,7 @@ run_weaver_projection \
   "${GENAI_REF}" \
   "${genai_commit}" \
   "${genai_date_epoch}" \
-  "gen-ai-dev/1.42.0-dev" \
+  "${genai_schema_version}" \
   "${actual_weaver_version}"
 
 merge_projected_registries \
@@ -427,6 +490,8 @@ merge_projected_registries \
   "${output_file}" \
   "${SCHEMA_VERSION}" \
   "${actual_weaver_version}"
+
+verify_genai_liveness "${output_file}"
 
 python3 "${script_dir}/emit_analyzer_registry.py" --registry "${output_file}"
 python3 "${script_dir}/emit_registry_resources.py" --registry "${output_file}"
