@@ -17,7 +17,9 @@
                       Link="registry/resolved-registry.json"
                       LogicalName="Qyl.OpenTelemetry.SemanticConventions.Incubating.registry.resolved-registry.json"/>
 
-    <None Update="schemas/gen-ai/*.json" Pack="true" PackagePath="registry/schemas/gen-ai/"/>
+    <!-- None Include, not Update: the default None glob excludes @(EmbeddedResource),
+         so these files never exist as None items to update. -->
+    <None Include="schemas/gen-ai/*.json" Pack="true" PackagePath="registry/schemas/gen-ai/"/>
     <None Include="../Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/Resources/resolved-registry.json"
           Pack="true"
           PackagePath="registry/resolved-registry.json"/>
