@@ -74,29 +74,13 @@ internal static class RegistryLoader
     internal static InstrumentRegistryModel ParseInstruments(JsonObject? root)
     {
         if (root is null)
-            return new InstrumentRegistryModel(default, default);
-
-        var catalog = root.TryGetArray("catalog") is { } catalogArr
-            ? BuildAttributeIndex(catalogArr)
-            : new Dictionary<string, AttributeModel>(StringComparer.Ordinal);
+            return new InstrumentRegistryModel(default);
 
         var metrics = root.TryGetArray("metrics") is { } metricsArr
             ? ParseMetrics(metricsArr)
             : default;
 
-        var events = root.TryGetArray("events") is { } eventsArr
-            ? ParseEvents(eventsArr, catalog)
-            : default;
-
-        return new InstrumentRegistryModel(metrics, events);
-    }
-
-    private static Dictionary<string, AttributeModel> BuildAttributeIndex(JsonArray catalogArr)
-    {
-        var byKey = new Dictionary<string, AttributeModel>(StringComparer.Ordinal);
-        foreach (var attr in ParseCatalog(catalogArr))
-            byKey[attr.Key] = attr;
-        return byKey;
+        return new InstrumentRegistryModel(metrics);
     }
 
     private static EquatableArray<MetricDescriptorModel> ParseMetrics(JsonArray metricsArr)
@@ -123,63 +107,6 @@ internal static class RegistryLoader
                 EntityAssociations: ParseStringArray(metric.TryGetArray("entity_associations"))));
         }
         return metrics.ToEquatableArray();
-    }
-
-    private static EquatableArray<EventGroupModel> ParseEvents(
-        JsonArray eventsArr,
-        Dictionary<string, AttributeModel> attributeIndex)
-    {
-        var events = new List<EventGroupModel>(eventsArr.Items.Count);
-        foreach (var item in eventsArr.Items)
-        {
-            if (item is not JsonObject ev) continue;
-
-            var payload = new List<SignalAttributeModel>();
-            if (ev.TryGetArray("payload") is { } payloadArr)
-            {
-                foreach (var value in payloadArr.Items)
-                {
-                    if (value is not JsonObject p) continue;
-
-                    var key = p.GetString("key");
-                    var type = p.TryGet("type") is { } typeNode
-                        ? ParseType(typeNode, RegistryParsing.ParseStability(p.GetString("stability"), defaultStability: StabilityModel.Development))
-                        : attributeIndex.TryGetValue(key, out var catalogAttr)
-                            ? catalogAttr.Type
-                            : new AttributeTypeModel.Primitive("string");
-                    var brief = p.TryGet("brief") is JsonString briefStr
-                        ? briefStr.Value
-                        : attributeIndex.TryGetValue(key, out var briefAttr)
-                            ? briefAttr.Brief
-                            : string.Empty;
-                    var note = p.TryGet("note") is JsonString noteStr
-                        ? noteStr.Value
-                        : attributeIndex.TryGetValue(key, out var noteAttr)
-                            ? noteAttr.Note
-                            : string.Empty;
-                    payload.Add(new SignalAttributeModel(
-                        Key: key,
-                        Type: type,
-                        RequirementLevel: RegistryParsing.ParseRequirementLevel(p.TryGet("requirement_level")),
-                        Brief: brief,
-                        Note: note,
-                        Deprecated: RegistryParsing.ParseDeprecated(p.TryGet("deprecated") as JsonObject),
-                        Examples: RegistryParsing.ParseExamples(p.TryGetArray("examples"))));
-                }
-            }
-
-            events.Add(new EventGroupModel(
-                EventName: ev.GetString("event_name"),
-                Brief: ev.GetString("brief"),
-                Note: ev.GetString("note"),
-                Stability: RegistryParsing.ParseStability(ev.GetString("stability")),
-                Deprecated: RegistryParsing.ParseDeprecated(ev.TryGet("deprecated") as JsonObject),
-                EmissionTarget: ParseEventEmissionTarget(ev.GetString("emission_target")),
-                BodyJson: ev.TryGet("body") is { } body ? RegistryParsing.ToCompactJson(body) : string.Empty,
-                EntityAssociations: ParseStringArray(ev.TryGetArray("entity_associations")),
-                Payload: payload.ToEquatableArray()));
-        }
-        return events.ToEquatableArray();
     }
 
     private static EquatableArray<SignalAttributeModel> ParseSignalAttributes(
@@ -263,13 +190,6 @@ internal static class RegistryLoader
         }
         return attributes.ToEquatableArray();
     }
-
-    private static EventEmissionTargetModel ParseEventEmissionTarget(string value) => value switch
-    {
-        "log_record" or "logger" or "event" => EventEmissionTargetModel.LogRecord,
-        "activity_event" => EventEmissionTargetModel.ActivityEvent,
-        _ => EventEmissionTargetModel.Unspecified
-    };
 
     private static AttributeTypeModel ParseType(
         JsonValue? value,

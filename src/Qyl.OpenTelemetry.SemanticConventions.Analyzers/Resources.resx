@@ -194,16 +194,6 @@
     <data name="QYL0102AnalyzerDescription" xml:space="preserve">
         <value>The [Traced] attribute requires a non-empty ActivitySourceName to identify the source of spans. This name should match a registered ActivitySource in your application's tracing configuration.</value>
     </data>
-    <!-- AL0074: Deprecated GenAI semantic convention attribute -->
-    <data name="QYL0404AnalyzerTitle" xml:space="preserve">
-        <value>Deprecated GenAI semantic convention</value>
-    </data>
-    <data name="QYL0404AnalyzerMessageFormat" xml:space="preserve">
-        <value>GenAI attribute '{0}' is deprecated. Use '{1}' instead.</value>
-    </data>
-    <data name="QYL0404AnalyzerDescription" xml:space="preserve">
-        <value>Some GenAI semantic convention attributes have been renamed or deprecated. Using the current attribute names ensures compatibility with modern observability tools and dashboards that expect the latest conventions.</value>
-    </data>
     <!-- AL0075: High-cardinality tag on metrics -->
     <data name="QYL0202AnalyzerTitle" xml:space="preserve">
         <value>High-cardinality tag on metric</value>

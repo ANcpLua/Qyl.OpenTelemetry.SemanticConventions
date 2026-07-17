@@ -19,9 +19,6 @@ internal static partial class HttpIncubatingAttributes;
 [SemanticConventionMetrics("http.server")]
 internal static partial class HttpServerMetrics;
 
-[SemanticConventionIncubatingEvents("session")]
-internal static partial class SessionEvents;
-
 [SemanticConventionMeters("http.server")]
 internal static partial class HttpServerMeters;
 
@@ -31,14 +28,13 @@ internal static partial class HttpActivityExtensions;
 // Generated:
 //   public const string AttributeHttpRequestMethod = "http.request.method";
 //   public static partial class HttpServerRequestDurationDescriptor { ... }
-//   public readonly record struct SessionStartPayload { ... }
 //   public static Histogram<double> CreateHttpServerRequestDurationHistogram(this Meter meter)
 //   public static Activity SetHttpRoute(this Activity activity, string value)
 ```
 
 ## Generator surfaces
 
-All five source generators use the same Roslyn shape: publish stable and
+All four source generators use the same Roslyn shape: publish stable and
 incubating marker attributes during post-initialization, discover annotated
 partial classes with `ForAttributeWithMetadataName`, extract the requested
 semantic-convention prefix into a marker model, then emit source from the
@@ -50,13 +46,10 @@ matching registry projection.
 | Activities | `SemanticConventionActivities`, `SemanticConventionIncubatingActivities` | `ActivityRegistryLoader.Registry` | `ActivityExtensionsEmitter` | `Activity` extension methods that set typed semantic tags. |
 | Metrics | `SemanticConventionMetrics`, `SemanticConventionIncubatingMetrics` | `RegistryLoader.Instruments` | `MetricsEmitter` | Metric names, descriptors, units, instrument kinds, and attribute keys. |
 | Meters | `SemanticConventionMeters`, `SemanticConventionIncubatingMeters` | `RegistryLoader.Instruments` | `MetersEmitter` | `Meter` extension methods that create semantic instruments. |
-| Events | `SemanticConventionEvents`, `SemanticConventionIncubatingEvents` | `RegistryLoader.Instruments` | `EventsEmitter` | Event names, descriptors, and payload record structs. |
 
 The marker attributes are themselves generated via
 `RegisterPostInitializationOutput`; no runtime dependency is added by consuming
-this package. The events generator also emits
-`SemanticConventionEvents.IsExternalInit.g.cs` so generated record structs work
-on older target frameworks.
+this package.
 
 Stable markers emit stable rows plus deprecated migration symbols. Incubating
 markers are supersets: stable + development/alpha/beta/release-candidate +
@@ -68,10 +61,6 @@ superset, so declaring both stable and incubating meter/activity helpers for
 the same prefix in the same namespace can make shared extension methods
 ambiguous. If a test fixture intentionally declares both, call the generated
 static helper class explicitly.
-
-Event rows do not carry a stable ActivityEvent-vs-Logger/Event discriminator. The
-generator emits event names and payload structs; the caller chooses the emission API
-at use-site.
 
 ## Versioning
 

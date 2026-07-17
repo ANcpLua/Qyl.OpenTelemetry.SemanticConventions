@@ -84,20 +84,16 @@ internal static class IndexDocsRenderer
         sb.AppendLine();
         sb.AppendLine("| Option | Values | Behavior |");
         sb.AppendLine("| -- | -- | -- |");
-        sb.AppendLine("| `build_property.OtelSemConvLegacyMode` | `production` (default), `compatibility`, `off` | `production` keeps production errors for exact supplemental migrations. `compatibility` downgrades production supplemental errors to warnings and keeps fixture contexts informational. `off` disables supplemental catalog diagnostics while leaving live `[Obsolete]` metadata rules enabled. |");
-        sb.AppendLine("| `build_property.IsTestProject` | `true`, `false` | Test projects downgrade supplemental catalog findings to `QYL0011` info. Assembly names ending in `.Tests`, paths under `tests/`, and xUnit/NUnit/MSTest attributes are also treated as test context. |");
-        sb.AppendLine("| `build_property.OtelSemConvNonAttributesTiers` | `false` (default), `true` | When `true`, extends `QYL0003` beyond `*Attributes` classes to also scan the four other Weaver source-generation tiers (`*Metrics`, `*Meters`, `*Events`, `*Activities`) under the SemConv namespace. Default `false` scans only `*Attributes` classes. |");
+        sb.AppendLine("| `build_property.OtelSemConvNonAttributesTiers` | `false` (default), `true` | When `true`, extends `QYL0003` beyond `*Attributes` classes to also scan the three other Weaver source-generation tiers (`*Metrics`, `*Meters`, `*Activities`) under the SemConv namespace. Default `false` scans only `*Attributes` classes. |");
     }
 
     private static void WritePrecedenceAndSuppression(StringBuilder sb)
     {
         sb.AppendLine("## Precedence and Suppression");
         sb.AppendLine();
-        sb.AppendLine("**Live metadata wins over the supplemental catalog.** When the consumer's referenced `OpenTelemetry.SemanticConventions` package marks a constant or value `[Obsolete]`, the supplemental catalog diagnostics (`QYL0009`/`QYL0010`/`QYL0011`) skip that symbol entirely — only the live-metadata rules (`QYL0003`/`QYL0005`/`QYL0007`) fire. No symbol produces two diagnostics for the same root cause.");
+        sb.AppendLine("**Live metadata wins over the supplemental catalog.** When the consumer's referenced `OpenTelemetry.SemanticConventions` package marks a constant or value `[Obsolete]`, the supplemental catalog diagnostics (`QYL0009`/`QYL0010`) skip that symbol entirely — only the live-metadata rules (`QYL0003`/`QYL0005`/`QYL0007`) fire. When that metadata is absent, the catalog provides the fallback diagnostic. No symbol produces two diagnostics for the same root cause.");
         sb.AppendLine();
         sb.AppendLine("**Multi-hop renames resolve to the terminal symbol.** `SemconvMigrationCatalog.ResolveTerminalReplacement` walks `ExactRename` / `ExactValueRename` chains so a code fix on `http.host → net.host.name → server.address` lands consumers on `server.address`, not on the still-deprecated `net.host.name` mid-state. Cycles and chains over 8 hops bail at the last safe step.");
-        sb.AppendLine();
-        sb.AppendLine("**Per-type suppressor for legacy shapes.** `SemconvLegacyContextSuppressor` recognises class/struct/record/method names matching well-known compatibility shapes (`Legacy*`, `*CompatShim`, `*MigrationFixture`, `*SchemaTranslator`, `*DeprecatedSemconv*`) and reports `Suppression`s for every QYL* diagnostic inside them — no `#pragma` walls required. Pair it with `build_property.OtelSemConvLegacyMode = compatibility` when the *whole project* is a translator, and use the suppressor when only specific types intentionally emit older schemas inside an otherwise production project.");
         sb.AppendLine();
         sb.AppendLine("**Structured provenance per catalog entry.** Each `SemconvMigrationCatalogEntry` carries an optional `SemconvChangelogEvidence` (commit / version / url / quote) pinning the claim to an upstream commit.");
         sb.AppendLine();
@@ -108,11 +104,9 @@ internal static class IndexDocsRenderer
         sb.AppendLine("## Severity Policy");
         sb.AppendLine();
         sb.AppendLine("- `QYL0003`, `QYL0005`, and `QYL0007` read `[Obsolete]` metadata from the referenced semantic-conventions assembly and keep their descriptor severities.");
-        sb.AppendLine("- `QYL0009` is reserved for production telemetry emission where a supplemental catalog item has an exact one-to-one replacement, including exact attribute-value replacements when live metadata is absent.");
-        sb.AppendLine("- `QYL0010` is used for context-sensitive migrations, removed/no-replacement entries, guidance-only cases, ambiguous payload dictionaries, and `compatibility` mode downgrades.");
-        sb.AppendLine("- `QYL0011` is used for tests, fixtures, snapshots, migration maps, schema translators, compatibility shims, generated sources, and catalog-like code.");
-        sb.AppendLine("- Generated semconv constant libraries may intentionally retain deprecated constants. Their existence is not itself a package bug.");
-        sb.AppendLine("- Schema URL translators and code that explicitly emits older schemas are compatibility contexts and should not be escalated to production errors.");
+        sb.AppendLine("- `QYL0009` is reserved for production telemetry emission where the catalog has an exact one-to-one replacement and live metadata is absent.");
+        sb.AppendLine("- `QYL0010` is used for context-sensitive migrations, removed/no-replacement entries, guidance-only cases, and ambiguous payload dictionaries.");
+        sb.AppendLine("- Generated source is excluded by Roslyn's generated-code ownership rather than filename, symbol, or project-name inference.");
     }
 
     private static void WriteRelatedDocs(StringBuilder sb)

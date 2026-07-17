@@ -58,7 +58,7 @@ internal static class MigrationCatalogRenderer
     {
         sb.AppendLine("## Curated Migration Inventory Summary");
         sb.AppendLine();
-        sb.AppendLine($"Curated changelog mentions: {stats.Entries.Length}. Live metadata rows: {stats.Metadata}. Supplemental diagnostic rows: {stats.Supplemental}. Exact supplemental replacements: {stats.Exact}. Manual/context-sensitive supplemental rows: {stats.Manual}. Removed/no-replacement supplemental rows: {stats.Removed}. Guidance-only rows: {stats.Guidance}.");
+        sb.AppendLine($"Curated changelog mentions: {stats.Entries.Length}. Rows expected to have live metadata: {stats.Metadata}. Catalog fallback rows: {stats.Supplemental}. Exact fallback replacements: {stats.Exact}. Manual/context-sensitive fallback rows: {stats.Manual}. Removed/no-replacement fallback rows: {stats.Removed}. Guidance-only rows: {stats.Guidance}.");
         sb.AppendLine($"Supplemental attribute-value fallback rows: {stats.ValueEntries.Length}. Exact value replacements: {stats.ExactValue}. Manual value rows: {stats.ManualValue}. Removed/no-replacement value rows: {stats.RemovedValue}. These rows are used only when the same key/value is not covered by live `[Obsolete]` metadata from the referenced package.");
     }
 
@@ -71,12 +71,11 @@ internal static class MigrationCatalogRenderer
         sb.AppendLine("| Requirement | Current generated evidence |");
         sb.AppendLine("| -- | -- |");
         sb.AppendLine($"| Preserve the curated changelog-entry scope | `SemconvMigrationCatalog.Validate()` requires exactly `{SemconvMigrationCatalog.ExpectedCuratedMentionCount}` curated rows; current generated count is `{stats.Entries.Length}`. |");
-        sb.AppendLine($"| Prefer live `[Obsolete]` metadata where available | `{stats.Metadata}` of `{stats.Entries.Length}` curated rows are classified as `DeprecatedButGenerated`; `QYL0003`, `QYL0005`, and `QYL0007` remain the live-metadata diagnostics. |");
-        sb.AppendLine($"| Use supplemental diagnostics only where metadata is insufficient | `{stats.Supplemental}` curated rows are supplemental diagnostics: `{stats.Exact}` exact replacement, `{stats.Manual}` manual/context-sensitive, `{stats.Removed}` removed/no-replacement, `{stats.Guidance}` guidance-only. |");
+        sb.AppendLine($"| Prefer live `[Obsolete]` metadata where available | `{stats.Metadata}` of `{stats.Entries.Length}` curated rows are classified as `DeprecatedButGenerated`; `QYL0003`, `QYL0005`, and `QYL0007` own those findings when referenced metadata is present. |");
+        sb.AppendLine($"| Fall back to the catalog when metadata is absent | `{stats.Supplemental}` curated rows are eligible catalog diagnostics: `{stats.Exact}` exact replacement, `{stats.Manual}` manual/context-sensitive, `{stats.Removed}` removed/no-replacement, `{stats.Guidance}` guidance-only. |");
         sb.AppendLine($"| Keep attribute-value fallback separate from the curated name/key/event/metric count | `{stats.ValueEntries.Length}` supplemental attribute-value rows are outside the 156-entry inventory and are used only when live value metadata is absent. |");
-        sb.AppendLine("| Keep severity context-sensitive | `QYL0009` is production exact replacement error, `QYL0010` is production manual-review warning, and `QYL0011` is compatibility/test/generated info. |");
-        sb.AppendLine("| Keep code fixes exact-only | `LiveSemconvMetadataCodeFixProvider` registers fixes only when live `[Obsolete]` metadata exposes an exact replacement; `SupplementalSemconvMigrationCodeFixProvider` registers fixes only when diagnostic properties mark `ExactRename` or `ExactValueRename` and provide one replacement literal. |");
-        sb.AppendLine("| Keep schema-translation contexts non-error | Test, fixture, migration, compatibility, translator, generated, catalog, and explicit non-current schema URL contexts select `QYL0011`. |");
+        sb.AppendLine("| Keep severity evidence-based | `QYL0009` is an exact production-emission replacement; `QYL0010` is a manual-review warning. Generated code is excluded by Roslyn. |");
+        sb.AppendLine("| Keep code fixes exact-only | `LiveSemconvMetadataCodeFixProvider` registers fixes only when live `[Obsolete]` metadata exposes an exact replacement; `SupplementalSemconvMigrationCodeFixProvider` registers fixes only when diagnostic properties mark an exact replacement and provide one terminal replacement literal. |");
         sb.AppendLine();
         sb.AppendLine("| Migration kind | Curated count |");
         sb.AppendLine("| -- | --: |");
@@ -112,7 +111,7 @@ internal static class MigrationCatalogRenderer
         sb.AppendLine();
         sb.AppendLine("Rows whose Version is `unknown` lack `ChangelogVersion` or `SinceVersion` metadata in `SemconvMigrationCatalog.BuildEntries()`. This affects documentation attribution only; analyzer behavior remains unchanged.");
         sb.AppendLine();
-        sb.AppendLine("| Version | Domain | Total | Live metadata | Supplemental | Exact supplemental | Manual/context | Removed/no replacement |");
+        sb.AppendLine("| Version | Domain | Total | Expected live metadata | Fallback eligible | Exact fallback | Manual/context | Removed/no replacement |");
         sb.AppendLine("| -- | -- | --: | --: | --: | --: | --: | --: |");
         foreach (var g in stats.Entries
             .GroupBy(e => (Version: e.ChangelogVersion, e.Domain))
@@ -123,7 +122,7 @@ internal static class MigrationCatalogRenderer
             var live = rows.Count(e => e.MigrationKind == SemconvMigrationKind.DeprecatedButGenerated);
             var supp = rows.Count(SemconvMigrationCatalog.IsSupplementalDiagnosticEntry);
             var exact = rows.Count(e => SemconvMigrationCatalog.IsSupplementalDiagnosticEntry(e)
-                && e.MigrationKind is SemconvMigrationKind.ExactRename or SemconvMigrationKind.ExactValueRename);
+                && e.HasExactReplacement);
             var manual = rows.Count(e => SemconvMigrationCatalog.IsSupplementalDiagnosticEntry(e)
                 && e.MigrationKind is SemconvMigrationKind.ContextSensitive or SemconvMigrationKind.ManualReview);
             var removed = rows.Count(e => SemconvMigrationCatalog.IsSupplementalDiagnosticEntry(e)
@@ -214,7 +213,7 @@ internal readonly record struct CatalogStatistics(
             ValueEntries: valueEntries,
             Metadata: entries.Count(e => e.MigrationKind == SemconvMigrationKind.DeprecatedButGenerated),
             Supplemental: supplemental.Length,
-            Exact: supplemental.Count(e => e.MigrationKind is SemconvMigrationKind.ExactRename or SemconvMigrationKind.ExactValueRename),
+            Exact: supplemental.Count(e => e.HasExactReplacement),
             Manual: supplemental.Count(e => e.MigrationKind is SemconvMigrationKind.ContextSensitive or SemconvMigrationKind.ManualReview),
             Removed: supplemental.Count(e => e.MigrationKind == SemconvMigrationKind.RemovedNoReplacement),
             Guidance: entries.Count(e => e.Kind == SemconvMigrationItemKind.GuidanceOnly),

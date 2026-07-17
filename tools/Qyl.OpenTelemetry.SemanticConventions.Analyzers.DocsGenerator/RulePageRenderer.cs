@@ -52,9 +52,10 @@ internal static class RulePageRenderer
     }
 
     /// <summary>
-    ///   QYL0009/QYL0010/QYL0011 share <c>SupplementalSemconvMigrationCodeFixProvider</c>,
+    ///   QYL0009/QYL0010 share <c>SupplementalSemconvMigrationCodeFixProvider</c>,
     ///   which gates registration via <c>IsExactReplacement</c>
-    ///   (<c>MigrationKind == ExactRename / ExactValueRename</c>) per-diagnostic, not by
+    ///   (<c>MigrationKind == ExactRename / ExactValueRename / DeprecatedButGenerated</c>)
+    ///   per-diagnostic, not by
     ///   ID. Reflect that contract in docs.
     /// </summary>
     public static string GetCodeFixLabel(string diagnosticId, HashSet<string> fixableIds)
@@ -62,7 +63,7 @@ internal static class RulePageRenderer
         if (!fixableIds.Contains(diagnosticId))
             return "No";
 
-        return diagnosticId is "QYL0009" or "QYL0010" or "QYL0011"
+        return diagnosticId is "QYL0009" or "QYL0010"
             ? "Exact replacements only"
             : "Yes";
     }

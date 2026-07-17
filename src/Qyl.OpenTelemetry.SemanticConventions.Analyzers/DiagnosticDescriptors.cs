@@ -114,13 +114,4 @@ internal static class DiagnosticDescriptors
         description: "A hard-coded semantic-convention name or value matches the supplemental OpenTelemetry migration catalog, but the migration is context-sensitive or has no safe automatic replacement.",
         helpLinkUri: RuleDocs.HelpLink("QYL0010", "SupplementalSemconvMigration"));
 
-    public static readonly DiagnosticDescriptor SupplementalCompatibilitySemconvMigration = new(
-        id: "QYL0011",
-        title: "Legacy semantic convention appears in compatibility or test code",
-        messageFormat: "Semantic convention '{0}' is legacy compatibility/test/migration data: {1}",
-        category: Category,
-        defaultSeverity: DiagnosticSeverity.Info,
-        isEnabledByDefault: true,
-        description: "A hard-coded semantic-convention name or value appears in test, fixture, compatibility, translator, generated, or catalog code. Keep it only when the old schema is intentionally modeled.",
-        helpLinkUri: RuleDocs.HelpLink("QYL0011", "SupplementalSemconvMigration"));
 }

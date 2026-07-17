@@ -81,40 +81,6 @@ public sealed class ByteIdentityTests
     }
 
     [Fact]
-    public void Events_Exception_Stable_Matches_Snapshot()
-    {
-        const string source = """
-            using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration;
-            namespace OpenTelemetry.SemanticConventions;
-            [SemanticConventionEvents("exception")]
-            public static partial class ExceptionEvents;
-            """;
-
-        var actual = RunAndGetGenerated<SemConvEventsGenerator>(source, "ExceptionEvents.g.cs");
-        var expected = LoadOrRegen(actual,"qyl.events.exception.stable.expected.txt");
-
-        actual.Should().Be(expected,
-            "emitted 'ExceptionEvents.g.cs' must be byte-identical to qyl.events.exception.stable.expected.txt");
-    }
-
-    [Fact]
-    public void Events_Session_Incubating_Matches_Snapshot()
-    {
-        const string source = """
-            using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration;
-            namespace OpenTelemetry.SemanticConventions;
-            [SemanticConventionIncubatingEvents("session")]
-            public static partial class SessionIncubatingEvents;
-            """;
-
-        var actual = RunAndGetGenerated<SemConvEventsGenerator>(source, "SessionIncubatingEvents.g.cs");
-        var expected = LoadOrRegen(actual,"qyl.events.session.incubating.expected.txt");
-
-        actual.Should().Be(expected,
-            "emitted 'SessionIncubatingEvents.g.cs' must be byte-identical to qyl.events.session.incubating.expected.txt");
-    }
-
-    [Fact]
     public void Meters_HttpServer_Stable_Matches_Snapshot()
     {
         const string source = """

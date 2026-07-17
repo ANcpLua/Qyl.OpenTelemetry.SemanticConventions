@@ -99,16 +99,6 @@ public sealed class CachingTests
             """
         },
         {
-            "Events",
-            static () => new SemConvEventsGenerator(),
-            """
-            using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration;
-            namespace MyApp;
-            [SemanticConventionEvents("session")]
-            internal static partial class SessionEvents;
-            """
-        },
-        {
             "Meters",
             static () => new SemConvMetersGenerator(),
             """

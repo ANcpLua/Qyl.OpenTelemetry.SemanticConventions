@@ -15,39 +15,42 @@ internal static class TelemetryAttributePayloadDetection
     {
         if (IsKnownTelemetryKeyValueInvocation(invocation))
         {
-            AnalyzeKeyValueInvocation(invocation, report);
+            AnalyzeKeyValueInvocation(invocation, WithEmissionContext(report, isProductionEmission: true));
         }
 
         if (IsMetricMeasurementInvocation(invocation))
         {
-            AnalyzeArgumentsAfterFirst(invocation.Arguments, invocation.TargetMethod.IsExtensionMethod, report);
+            AnalyzeArgumentsAfterFirst(
+                invocation.Arguments,
+                invocation.TargetMethod.IsExtensionMethod,
+                WithEmissionContext(report, isProductionEmission: true));
         }
 
         if (IsActivitySourceStartActivity(invocation)
             && TryGetArgumentByNameOrOrdinal(invocation.Arguments, "tags", 3, out var startActivityTagsArgument))
         {
-            AnalyzePayload(startActivityTagsArgument.Value, report);
+            AnalyzePayload(startActivityTagsArgument.Value, WithEmissionContext(report, isProductionEmission: true));
             return;
         }
 
         if (IsLoggerBeginScope(invocation)
             && TryGetArgumentByOrdinal(invocation.Arguments, invocation.TargetMethod.IsExtensionMethod, 0, out var scopeStateArgument))
         {
-            AnalyzePayload(scopeStateArgument.Value, report);
+            AnalyzePayload(scopeStateArgument.Value, WithEmissionContext(report, isProductionEmission: true));
             return;
         }
 
         if (IsLoggerLog(invocation)
             && TryGetArgumentByNameOrOrdinal(invocation.Arguments, "state", 2, out var logStateArgument))
         {
-            AnalyzePayload(logStateArgument.Value, report);
+            AnalyzePayload(logStateArgument.Value, WithEmissionContext(report, isProductionEmission: true));
             return;
         }
 
         if (IsResourceBuilderAddAttributes(invocation)
             && TryGetArgumentByOrdinal(invocation.Arguments, invocation.TargetMethod.IsExtensionMethod, 0, out var attributesArgument))
         {
-            AnalyzePayload(attributesArgument.Value, report);
+            AnalyzePayload(attributesArgument.Value, WithEmissionContext(report, isProductionEmission: true));
             return;
         }
 
@@ -55,7 +58,9 @@ internal static class TelemetryAttributePayloadDetection
             && invocation.TargetMethod.Name == "Add"
             && IsStringKeyDictionary(invocation.Instance?.Type ?? invocation.TargetMethod.ContainingType))
         {
-            AnalyzeAddLikeInvocation(invocation, report);
+            AnalyzeAddLikeInvocation(
+                invocation,
+                WithEmissionContext(report, IsDictionaryAddOnLocalFlowingToTelemetry(invocation)));
         }
     }
 
@@ -73,25 +78,30 @@ internal static class TelemetryAttributePayloadDetection
             && IsStringKeyDictionary(objectCreation.Type)
             && IsInsideLocalDeclarationInitializerUsedAsTelemetryPayload(objectCreation))
         {
-            AnalyzeObjectInitializer(objectCreation.Initializer, report);
+            AnalyzeObjectInitializer(
+                objectCreation.Initializer,
+                WithEmissionContext(report, isProductionEmission: true));
             return;
         }
 
         if (IsMetricMeasurementCreation(objectCreation.Type))
         {
-            AnalyzeArgumentsAfterFirst(objectCreation.Arguments, extensionMethod: false, report);
+            AnalyzeArgumentsAfterFirst(
+                objectCreation.Arguments,
+                extensionMethod: false,
+                WithEmissionContext(report, isProductionEmission: true));
         }
 
         if (IsActivityEventCreation(objectCreation.Type)
             && TryGetArgumentByNameOrOrdinal(objectCreation.Arguments, "tags", 2, out var tagsArgument))
         {
-            AnalyzePayload(tagsArgument.Value, report);
+            AnalyzePayload(tagsArgument.Value, WithEmissionContext(report, isProductionEmission: true));
         }
 
         if (IsActivityLinkCreation(objectCreation.Type)
             && TryGetArgumentByNameOrOrdinal(objectCreation.Arguments, "tags", 1, out var linkTagsArgument))
         {
-            AnalyzePayload(linkTagsArgument.Value, report);
+            AnalyzePayload(linkTagsArgument.Value, WithEmissionContext(report, isProductionEmission: true));
         }
     }
 
@@ -101,7 +111,9 @@ internal static class TelemetryAttributePayloadDetection
     {
         if (IsInsideLocalDeclarationInitializerUsedAsTelemetryPayload(collectionExpression))
         {
-            AnalyzeCollectionExpressionElements(collectionExpression, report);
+            AnalyzeCollectionExpressionElements(
+                collectionExpression,
+                WithEmissionContext(report, isProductionEmission: true));
         }
     }
 
@@ -112,7 +124,9 @@ internal static class TelemetryAttributePayloadDetection
         if (IsTelemetryTagCollectionIndexerAssignment(assignment)
             || IsDictionaryIndexerAssignmentOnLocalFlowingToTelemetry(assignment))
         {
-            AnalyzeIndexerAssignment(assignment, report);
+            AnalyzeIndexerAssignment(
+                assignment,
+                WithEmissionContext(report, isProductionEmission: true));
         }
     }
 
@@ -183,12 +197,19 @@ internal static class TelemetryAttributePayloadDetection
 
         string? value = null;
         SyntaxNode? valueSyntax = null;
+        var valueIsBareLiteral = false;
         if (TryGetArgumentByOrdinal(invocation.Arguments, invocation.TargetMethod.IsExtensionMethod, 1, out var valueArgument))
         {
-            TryGetValue(valueArgument.Value, out value, out valueSyntax);
+            TryGetValue(valueArgument.Value, out value, out valueSyntax, out valueIsBareLiteral);
         }
 
-        report(new TelemetryAttributePayloadLiteral(key, keySyntax, keyIsBareLiteral, value, valueSyntax));
+        report(new TelemetryAttributePayloadLiteral(
+            key,
+            keySyntax,
+            keyIsBareLiteral,
+            value,
+            valueSyntax,
+            valueIsBareLiteral));
     }
 
     private static void AnalyzeArrayInitializer(
@@ -238,8 +259,14 @@ internal static class TelemetryAttributePayloadDetection
             return;
         }
 
-        TryGetValue(valueArgument.Value, out var value, out var valueSyntax);
-        report(new TelemetryAttributePayloadLiteral(key, keySyntax, keyIsBareLiteral, value, valueSyntax));
+        TryGetValue(valueArgument.Value, out var value, out var valueSyntax, out var valueIsBareLiteral);
+        report(new TelemetryAttributePayloadLiteral(
+            key,
+            keySyntax,
+            keyIsBareLiteral,
+            value,
+            valueSyntax,
+            valueIsBareLiteral));
     }
 
     private static void AnalyzeAddLikeInvocation(
@@ -254,12 +281,19 @@ internal static class TelemetryAttributePayloadDetection
 
         string? value = null;
         SyntaxNode? valueSyntax = null;
+        var valueIsBareLiteral = false;
         if (TryGetArgumentByOrdinal(invocation.Arguments, invocation.TargetMethod.IsExtensionMethod, 1, out var valueArgument))
         {
-            TryGetValue(valueArgument.Value, out value, out valueSyntax);
+            TryGetValue(valueArgument.Value, out value, out valueSyntax, out valueIsBareLiteral);
         }
 
-        report(new TelemetryAttributePayloadLiteral(key, keySyntax, keyIsBareLiteral, value, valueSyntax));
+        report(new TelemetryAttributePayloadLiteral(
+            key,
+            keySyntax,
+            keyIsBareLiteral,
+            value,
+            valueSyntax,
+            valueIsBareLiteral));
     }
 
     private static void AnalyzeIndexerAssignment(
@@ -271,8 +305,14 @@ internal static class TelemetryAttributePayloadDetection
             return;
         }
 
-        TryGetValue(assignment.Value, out var value, out var valueSyntax);
-        report(new TelemetryAttributePayloadLiteral(key, keySyntax, keyIsBareLiteral, value, valueSyntax));
+        TryGetValue(assignment.Value, out var value, out var valueSyntax, out var valueIsBareLiteral);
+        report(new TelemetryAttributePayloadLiteral(
+            key,
+            keySyntax,
+            keyIsBareLiteral,
+            value,
+            valueSyntax,
+            valueIsBareLiteral));
     }
 
     private static void AnalyzeArgumentsAfterFirst(
@@ -316,9 +356,11 @@ internal static class TelemetryAttributePayloadDetection
     private static bool TryGetValue(
         IOperation operation,
         [NotNullWhen(true)] out string? value,
-        [NotNullWhen(true)] out SyntaxNode? syntax)
+        [NotNullWhen(true)] out SyntaxNode? syntax,
+        out bool isBareLiteral)
     {
         var unwrapped = TagSetterDetection.UnwrapConversion(operation);
+        isBareLiteral = unwrapped.Syntax is LiteralExpressionSyntax;
         if (TagSetterDetection.TryGetStringConstant(unwrapped, out value))
         {
             syntax = unwrapped.Syntax;
@@ -328,6 +370,11 @@ internal static class TelemetryAttributePayloadDetection
         syntax = null;
         return false;
     }
+
+    private static Action<TelemetryAttributePayloadLiteral> WithEmissionContext(
+        Action<TelemetryAttributePayloadLiteral> report,
+        bool isProductionEmission) =>
+        payload => report(payload.WithEmissionContext(isProductionEmission));
 
     private static bool TryGetIndexerKey(
         IOperation operation,
@@ -354,7 +401,7 @@ internal static class TelemetryAttributePayloadDetection
         return false;
     }
 
-    private static bool TryGetArgumentByOrdinal(
+    internal static bool TryGetArgumentByOrdinal(
         ImmutableArray<IArgumentOperation> arguments,
         bool extensionMethod,
         int logicalParameterOrdinal,
@@ -378,6 +425,24 @@ internal static class TelemetryAttributePayloadDetection
         }
 
         argument = null;
+        return false;
+    }
+
+    internal static bool TryGetBareStringLiteral(
+        IOperation operation,
+        [NotNullWhen(true)] out string? value,
+        [NotNullWhen(true)] out LiteralExpressionSyntax? syntax)
+    {
+        var unwrapped = TagSetterDetection.UnwrapConversion(operation);
+        if (unwrapped.Syntax is LiteralExpressionSyntax literal
+            && TagSetterDetection.TryGetNonEmptyStringConstant(unwrapped, out value))
+        {
+            syntax = literal;
+            return true;
+        }
+
+        value = null;
+        syntax = null;
         return false;
     }
 
@@ -588,6 +653,12 @@ internal static class TelemetryAttributePayloadDetection
             && LocalFlowsToKnownTelemetryAttributePayload(local, assignment);
     }
 
+    private static bool IsDictionaryAddOnLocalFlowingToTelemetry(IInvocationOperation invocation) =>
+        invocation.TargetMethod.Name == "Add"
+        && IsStringKeyDictionary(invocation.Instance?.Type ?? invocation.TargetMethod.ContainingType)
+        && TryGetLocalReference(invocation.Instance, out var local)
+        && LocalFlowsToKnownTelemetryAttributePayload(local, invocation);
+
     private static bool IsTelemetryTagCollectionIndexerAssignment(ISimpleAssignmentOperation assignment)
     {
         var target = TagSetterDetection.UnwrapConversion(assignment.Target);
@@ -708,13 +779,17 @@ internal readonly struct TelemetryAttributePayloadLiteral
         SyntaxNode keySyntax,
         bool keyIsBareLiteral,
         string? value,
-        SyntaxNode? valueSyntax)
+        SyntaxNode? valueSyntax,
+        bool valueIsBareLiteral,
+        bool isProductionEmission = false)
     {
         Key = key;
         KeySyntax = keySyntax;
         KeyIsBareLiteral = keyIsBareLiteral;
         Value = value;
         ValueSyntax = valueSyntax;
+        ValueIsBareLiteral = valueIsBareLiteral;
+        IsProductionEmission = isProductionEmission;
     }
 
     public string Key { get; }
@@ -726,4 +801,18 @@ internal readonly struct TelemetryAttributePayloadLiteral
     public string? Value { get; }
 
     public SyntaxNode? ValueSyntax { get; }
+
+    public bool ValueIsBareLiteral { get; }
+
+    public bool IsProductionEmission { get; }
+
+    public TelemetryAttributePayloadLiteral WithEmissionContext(bool isProductionEmission) =>
+        new(
+            Key,
+            KeySyntax,
+            KeyIsBareLiteral,
+            Value,
+            ValueSyntax,
+            ValueIsBareLiteral,
+            isProductionEmission);
 }

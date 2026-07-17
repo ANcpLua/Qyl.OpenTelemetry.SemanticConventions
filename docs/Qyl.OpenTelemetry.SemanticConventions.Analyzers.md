@@ -25,7 +25,6 @@ Each ID links to a per-rule page under [`docs/rules/`](rules/) with severity, ca
 | [QYL0008](rules/QYL0008_IncubatingSemconvInLibrary.md) | Warning | Incubating semantic-convention member used in a library | No |
 | [QYL0009](rules/QYL0009_SupplementalSemconvMigration.md) | Error | Obsolete semantic convention has an exact replacement | Exact replacements only |
 | [QYL0010](rules/QYL0010_SupplementalSemconvMigration.md) | Warning | Semantic convention migration needs review | Exact replacements only |
-| [QYL0011](rules/QYL0011_SupplementalSemconvMigration.md) | Info | Legacy semantic convention appears in compatibility or test code | Exact replacements only |
 | [QYL0012](rules/QYL0012_InvalidAttributeValue.md) | Error | Semantic-convention enum value uses non-canonical casing | No |
 | [QYL0013](rules/QYL0013_IncorrectAttributeType.md) | Warning | Incorrect attribute type | No |
 | [QYL0100](rules/QYL0100_ActivityMissingSemconv.md) | Warning | Activity/Span missing semantic convention attributes | No |
@@ -52,7 +51,6 @@ Each ID links to a per-rule page under [`docs/rules/`](rules/) with severity, ca
 | [QYL0401](rules/QYL0401_GenAiMissingRequiredAttributes.md) | Warning | GenAI or MCP span missing required attributes | No |
 | [QYL0402](rules/QYL0402_UseTokenUsageHistogram.md) | Warning | Use a registry-defined GenAI token metric | No |
 | [QYL0403](rules/QYL0403_InvalidGenAiOperationName.md) | Warning | GenAI operation name uses non-canonical casing | No |
-| [QYL0404](rules/QYL0404_DeprecatedGenAiAttribute.md) | Warning | Deprecated GenAI semantic convention | Yes |
 | [QYL0405](rules/QYL0405_NonInterceptableAgentTraced.md) | Warning | Non-interceptable [AgentTraced] | Yes |
 | [QYL0406](rules/QYL0406_DirectGenAiSdkUsage.md) | Warning | Direct GenAI SDK call bypasses automatic OTel instrumentation | No |
 | [QYL0500](rules/QYL0500_MeterClassMustBePartialStatic.md) | Error | [Meter] class must be partial static | Yes |
@@ -68,17 +66,13 @@ Each ID links to a per-rule page under [`docs/rules/`](rules/) with severity, ca
 
 | Option | Values | Behavior |
 | -- | -- | -- |
-| `build_property.OtelSemConvLegacyMode` | `production` (default), `compatibility`, `off` | `production` keeps production errors for exact supplemental migrations. `compatibility` downgrades production supplemental errors to warnings and keeps fixture contexts informational. `off` disables supplemental catalog diagnostics while leaving live `[Obsolete]` metadata rules enabled. |
-| `build_property.IsTestProject` | `true`, `false` | Test projects downgrade supplemental catalog findings to `QYL0011` info. Assembly names ending in `.Tests`, paths under `tests/`, and xUnit/NUnit/MSTest attributes are also treated as test context. |
-| `build_property.OtelSemConvNonAttributesTiers` | `false` (default), `true` | When `true`, extends `QYL0003` beyond `*Attributes` classes to also scan the four other Weaver source-generation tiers (`*Metrics`, `*Meters`, `*Events`, `*Activities`) under the SemConv namespace. Default `false` scans only `*Attributes` classes. |
+| `build_property.OtelSemConvNonAttributesTiers` | `false` (default), `true` | When `true`, extends `QYL0003` beyond `*Attributes` classes to also scan the three other Weaver source-generation tiers (`*Metrics`, `*Meters`, `*Activities`) under the SemConv namespace. Default `false` scans only `*Attributes` classes. |
 
 ## Precedence and Suppression
 
-**Live metadata wins over the supplemental catalog.** When the consumer's referenced `OpenTelemetry.SemanticConventions` package marks a constant or value `[Obsolete]`, the supplemental catalog diagnostics (`QYL0009`/`QYL0010`/`QYL0011`) skip that symbol entirely — only the live-metadata rules (`QYL0003`/`QYL0005`/`QYL0007`) fire. No symbol produces two diagnostics for the same root cause.
+**Live metadata wins over the supplemental catalog.** When the consumer's referenced `OpenTelemetry.SemanticConventions` package marks a constant or value `[Obsolete]`, the supplemental catalog diagnostics (`QYL0009`/`QYL0010`) skip that symbol entirely — only the live-metadata rules (`QYL0003`/`QYL0005`/`QYL0007`) fire. When that metadata is absent, the catalog provides the fallback diagnostic. No symbol produces two diagnostics for the same root cause.
 
 **Multi-hop renames resolve to the terminal symbol.** `SemconvMigrationCatalog.ResolveTerminalReplacement` walks `ExactRename` / `ExactValueRename` chains so a code fix on `http.host → net.host.name → server.address` lands consumers on `server.address`, not on the still-deprecated `net.host.name` mid-state. Cycles and chains over 8 hops bail at the last safe step.
-
-**Per-type suppressor for legacy shapes.** `SemconvLegacyContextSuppressor` recognises class/struct/record/method names matching well-known compatibility shapes (`Legacy*`, `*CompatShim`, `*MigrationFixture`, `*SchemaTranslator`, `*DeprecatedSemconv*`) and reports `Suppression`s for every QYL* diagnostic inside them — no `#pragma` walls required. Pair it with `build_property.OtelSemConvLegacyMode = compatibility` when the *whole project* is a translator, and use the suppressor when only specific types intentionally emit older schemas inside an otherwise production project.
 
 **Structured provenance per catalog entry.** Each `SemconvMigrationCatalogEntry` carries an optional `SemconvChangelogEvidence` (commit / version / url / quote) pinning the claim to an upstream commit.
 
@@ -86,11 +80,9 @@ Each ID links to a per-rule page under [`docs/rules/`](rules/) with severity, ca
 ## Severity Policy
 
 - `QYL0003`, `QYL0005`, and `QYL0007` read `[Obsolete]` metadata from the referenced semantic-conventions assembly and keep their descriptor severities.
-- `QYL0009` is reserved for production telemetry emission where a supplemental catalog item has an exact one-to-one replacement, including exact attribute-value replacements when live metadata is absent.
-- `QYL0010` is used for context-sensitive migrations, removed/no-replacement entries, guidance-only cases, ambiguous payload dictionaries, and `compatibility` mode downgrades.
-- `QYL0011` is used for tests, fixtures, snapshots, migration maps, schema translators, compatibility shims, generated sources, and catalog-like code.
-- Generated semconv constant libraries may intentionally retain deprecated constants. Their existence is not itself a package bug.
-- Schema URL translators and code that explicitly emits older schemas are compatibility contexts and should not be escalated to production errors.
+- `QYL0009` is reserved for production telemetry emission where the catalog has an exact one-to-one replacement and live metadata is absent.
+- `QYL0010` is used for context-sensitive migrations, removed/no-replacement entries, guidance-only cases, and ambiguous payload dictionaries.
+- Generated source is excluded by Roslyn's generated-code ownership rather than filename, symbol, or project-name inference.
 
 ## Consumer-side severity profile (`OtelSemConvAnalysisMode`)
 

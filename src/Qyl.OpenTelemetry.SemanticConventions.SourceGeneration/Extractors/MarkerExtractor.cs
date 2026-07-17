@@ -4,8 +4,8 @@ using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Models;
 namespace Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Extractors;
 
 /// <summary>
-/// Shared marker extraction for every semantic-convention surface. All five marker
-/// attributes (attributes, metrics, events, meters, activities) take the same
+/// Shared marker extraction for every semantic-convention surface. All four marker
+/// attributes (attributes, metrics, meters, activities) take the same
 /// <c>(string prefix)</c> constructor and project to the same <see cref="SemConvMarkerModel"/>,
 /// so a single extractor serves them all — the owning generator supplies the
 /// <see cref="StabilityFilter"/> that distinguishes the stable from the incubating pipeline.

@@ -1,14 +1,13 @@
 namespace Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Models;
 
 /// <summary>
-/// Metric and event projection of the embedded Weaver-derived registry. Metrics and
+/// Metric projection of the embedded Weaver-derived registry. Metrics and
 /// meter factories intentionally share <see cref="MetricDescriptorModel"/> so both
 /// surfaces preserve the same name, instrument, unit, attributes, examples, and
 /// entity-association facts.
 /// </summary>
 internal readonly record struct InstrumentRegistryModel(
-    EquatableArray<MetricDescriptorModel> Metrics,
-    EquatableArray<EventGroupModel> Events);
+    EquatableArray<MetricDescriptorModel> Metrics);
 
 /// <summary>
 /// A semconv metric group (a registry entry with <c>type == "metric"</c>).
@@ -24,32 +23,6 @@ internal readonly record struct MetricDescriptorModel(
     DeprecatedModel? Deprecated,
     EquatableArray<SignalAttributeModel> Attributes,
     EquatableArray<string> EntityAssociations);
-
-/// <summary>
-/// A semconv event group (a registry entry with <c>type == "event"</c>).
-/// </summary>
-internal readonly record struct EventGroupModel(
-    string EventName,
-    string Brief,
-    string Note,
-    StabilityModel Stability,
-    DeprecatedModel? Deprecated,
-    EventEmissionTargetModel EmissionTarget,
-    string BodyJson,
-    EquatableArray<string> EntityAssociations,
-    EquatableArray<SignalAttributeModel> Payload);
-
-/// <summary>
-/// Event target information when upstream exposes it. The current registry
-/// projection does not carry a discriminator, so generated events
-/// remain target-agnostic instead of pretending every event is an ActivityEvent.
-/// </summary>
-internal enum EventEmissionTargetModel
-{
-    Unspecified,
-    LogRecord,
-    ActivityEvent
-}
 
 /// <summary>
 /// One signal-specific attribute reference, preserving the upstream requirement

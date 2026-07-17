@@ -6,7 +6,7 @@ qyl-specific tables that supplement the [Qyl.OpenTelemetry.SemanticConventions.A
 
 ## Curated Migration Inventory Summary
 
-Curated changelog mentions: 157. Live metadata rows: 106. Supplemental diagnostic rows: 51. Exact supplemental replacements: 1. Manual/context-sensitive supplemental rows: 26. Removed/no-replacement supplemental rows: 24. Guidance-only rows: 0.
+Curated changelog mentions: 157. Rows expected to have live metadata: 106. Catalog fallback rows: 157. Exact fallback replacements: 107. Manual/context-sensitive fallback rows: 26. Removed/no-replacement fallback rows: 24. Guidance-only rows: 0.
 Supplemental attribute-value fallback rows: 22. Exact value replacements: 20. Manual value rows: 0. Removed/no-replacement value rows: 2. These rows are used only when the same key/value is not covered by live `[Obsolete]` metadata from the referenced package.
 
 ## Completion Audit
@@ -16,12 +16,11 @@ This section is generated from the analyzer descriptors and migration catalog. I
 | Requirement | Current generated evidence |
 | -- | -- |
 | Preserve the curated changelog-entry scope | `SemconvMigrationCatalog.Validate()` requires exactly `157` curated rows; current generated count is `157`. |
-| Prefer live `[Obsolete]` metadata where available | `106` of `157` curated rows are classified as `DeprecatedButGenerated`; `QYL0003`, `QYL0005`, and `QYL0007` remain the live-metadata diagnostics. |
-| Use supplemental diagnostics only where metadata is insufficient | `51` curated rows are supplemental diagnostics: `1` exact replacement, `26` manual/context-sensitive, `24` removed/no-replacement, `0` guidance-only. |
+| Prefer live `[Obsolete]` metadata where available | `106` of `157` curated rows are classified as `DeprecatedButGenerated`; `QYL0003`, `QYL0005`, and `QYL0007` own those findings when referenced metadata is present. |
+| Fall back to the catalog when metadata is absent | `157` curated rows are eligible catalog diagnostics: `107` exact replacement, `26` manual/context-sensitive, `24` removed/no-replacement, `0` guidance-only. |
 | Keep attribute-value fallback separate from the curated name/key/event/metric count | `22` supplemental attribute-value rows are outside the 156-entry inventory and are used only when live value metadata is absent. |
-| Keep severity context-sensitive | `QYL0009` is production exact replacement error, `QYL0010` is production manual-review warning, and `QYL0011` is compatibility/test/generated info. |
-| Keep code fixes exact-only | `LiveSemconvMetadataCodeFixProvider` registers fixes only when live `[Obsolete]` metadata exposes an exact replacement; `SupplementalSemconvMigrationCodeFixProvider` registers fixes only when diagnostic properties mark `ExactRename` or `ExactValueRename` and provide one replacement literal. |
-| Keep schema-translation contexts non-error | Test, fixture, migration, compatibility, translator, generated, catalog, and explicit non-current schema URL contexts select `QYL0011`. |
+| Keep severity evidence-based | `QYL0009` is an exact production-emission replacement; `QYL0010` is a manual-review warning. Generated code is excluded by Roslyn. |
+| Keep code fixes exact-only | `LiveSemconvMetadataCodeFixProvider` registers fixes only when live `[Obsolete]` metadata exposes an exact replacement; `SupplementalSemconvMigrationCodeFixProvider` registers fixes only when diagnostic properties mark an exact replacement and provide one terminal replacement literal. |
 
 | Migration kind | Curated count |
 | -- | --: |
@@ -49,47 +48,47 @@ This section is generated from the analyzer descriptors and migration catalog. I
 
 Rows whose Version is `unknown` lack `ChangelogVersion` or `SinceVersion` metadata in `SemconvMigrationCatalog.BuildEntries()`. This affects documentation attribution only; analyzer behavior remains unchanged.
 
-| Version | Domain | Total | Live metadata | Supplemental | Exact supplemental | Manual/context | Removed/no replacement |
+| Version | Domain | Total | Expected live metadata | Fallback eligible | Exact fallback | Manual/context | Removed/no replacement |
 | -- | -- | --: | --: | --: | --: | --: | --: |
 | 1.40.0 | rpc | 5 | 0 | 5 | 0 | 0 | 5 |
 | 1.40.0 | system | 1 | 0 | 1 | 1 | 0 | 0 |
-| 1.39.0 | linux | 1 | 1 | 0 | 0 | 0 | 0 |
-| 1.39.0 | peer | 1 | 1 | 0 | 0 | 0 | 0 |
-| 1.39.0 | rpc | 8 | 8 | 0 | 0 | 0 | 0 |
-| 1.38.0 | process | 2 | 2 | 0 | 0 | 0 | 0 |
-| 1.38.0 | system | 2 | 2 | 0 | 0 | 0 | 0 |
-| 1.37.0 | container | 1 | 1 | 0 | 0 | 0 | 0 |
-| 1.37.0 | gen_ai | 9 | 8 | 1 | 0 | 1 | 0 |
-| 1.37.0 | ios | 1 | 1 | 0 | 0 | 0 | 0 |
-| 1.35.0 | azure | 2 | 2 | 0 | 0 | 0 | 0 |
-| 1.33.0 | feature_flag | 2 | 2 | 0 | 0 | 0 | 0 |
-| 1.32.0 | feature_flag | 2 | 2 | 0 | 0 | 0 | 0 |
-| 1.31.0 | android | 1 | 1 | 0 | 0 | 0 | 0 |
-| 1.31.0 | system | 1 | 1 | 0 | 0 | 0 | 0 |
-| 1.30.0 | code | 3 | 3 | 0 | 0 | 0 | 0 |
-| 1.30.0 | db | 17 | 17 | 0 | 0 | 0 | 0 |
-| 1.30.0 | system | 1 | 1 | 0 | 0 | 0 | 0 |
-| 1.29.0 | process | 1 | 1 | 0 | 0 | 0 | 0 |
-| 1.29.0 | vcs | 5 | 5 | 0 | 0 | 0 | 0 |
-| 1.27.0 | container | 1 | 1 | 0 | 0 | 0 | 0 |
-| 1.27.0 | db | 3 | 3 | 0 | 0 | 0 | 0 |
-| 1.27.0 | deployment | 1 | 1 | 0 | 0 | 0 | 0 |
-| 1.27.0 | messaging | 4 | 4 | 0 | 0 | 0 | 0 |
-| 1.27.0 | process | 1 | 1 | 0 | 0 | 0 | 0 |
-| 1.27.0 | system | 1 | 1 | 0 | 0 | 0 | 0 |
-| 1.27.0 | tls | 1 | 1 | 0 | 0 | 0 | 0 |
-| 1.26.0 | messaging | 1 | 1 | 0 | 0 | 0 | 0 |
-| 1.26.0 | pool | 1 | 1 | 0 | 0 | 0 | 0 |
-| 1.25.0 | container | 1 | 1 | 0 | 0 | 0 | 0 |
-| 1.25.0 | db | 6 | 6 | 0 | 0 | 0 | 0 |
-| 1.25.0 | k8s | 1 | 1 | 0 | 0 | 0 | 0 |
-| 1.25.0 | messaging | 1 | 1 | 0 | 0 | 0 | 0 |
-| 1.25.0 | system | 1 | 1 | 0 | 0 | 0 | 0 |
-| 1.22.0 | otel | 1 | 1 | 0 | 0 | 0 | 0 |
-| 1.21.0 | http | 5 | 5 | 0 | 0 | 0 | 0 |
-| 1.21.0 | net | 9 | 9 | 0 | 0 | 0 | 0 |
-| 1.19.0 | http | 1 | 1 | 0 | 0 | 0 | 0 |
-| 1.13.0 | net | 2 | 2 | 0 | 0 | 0 | 0 |
+| 1.39.0 | linux | 1 | 1 | 1 | 1 | 0 | 0 |
+| 1.39.0 | peer | 1 | 1 | 1 | 1 | 0 | 0 |
+| 1.39.0 | rpc | 8 | 8 | 8 | 8 | 0 | 0 |
+| 1.38.0 | process | 2 | 2 | 2 | 2 | 0 | 0 |
+| 1.38.0 | system | 2 | 2 | 2 | 2 | 0 | 0 |
+| 1.37.0 | container | 1 | 1 | 1 | 1 | 0 | 0 |
+| 1.37.0 | gen_ai | 9 | 8 | 9 | 8 | 1 | 0 |
+| 1.37.0 | ios | 1 | 1 | 1 | 1 | 0 | 0 |
+| 1.35.0 | azure | 2 | 2 | 2 | 2 | 0 | 0 |
+| 1.33.0 | feature_flag | 2 | 2 | 2 | 2 | 0 | 0 |
+| 1.32.0 | feature_flag | 2 | 2 | 2 | 2 | 0 | 0 |
+| 1.31.0 | android | 1 | 1 | 1 | 1 | 0 | 0 |
+| 1.31.0 | system | 1 | 1 | 1 | 1 | 0 | 0 |
+| 1.30.0 | code | 3 | 3 | 3 | 3 | 0 | 0 |
+| 1.30.0 | db | 17 | 17 | 17 | 17 | 0 | 0 |
+| 1.30.0 | system | 1 | 1 | 1 | 1 | 0 | 0 |
+| 1.29.0 | process | 1 | 1 | 1 | 1 | 0 | 0 |
+| 1.29.0 | vcs | 5 | 5 | 5 | 5 | 0 | 0 |
+| 1.27.0 | container | 1 | 1 | 1 | 1 | 0 | 0 |
+| 1.27.0 | db | 3 | 3 | 3 | 3 | 0 | 0 |
+| 1.27.0 | deployment | 1 | 1 | 1 | 1 | 0 | 0 |
+| 1.27.0 | messaging | 4 | 4 | 4 | 4 | 0 | 0 |
+| 1.27.0 | process | 1 | 1 | 1 | 1 | 0 | 0 |
+| 1.27.0 | system | 1 | 1 | 1 | 1 | 0 | 0 |
+| 1.27.0 | tls | 1 | 1 | 1 | 1 | 0 | 0 |
+| 1.26.0 | messaging | 1 | 1 | 1 | 1 | 0 | 0 |
+| 1.26.0 | pool | 1 | 1 | 1 | 1 | 0 | 0 |
+| 1.25.0 | container | 1 | 1 | 1 | 1 | 0 | 0 |
+| 1.25.0 | db | 6 | 6 | 6 | 6 | 0 | 0 |
+| 1.25.0 | k8s | 1 | 1 | 1 | 1 | 0 | 0 |
+| 1.25.0 | messaging | 1 | 1 | 1 | 1 | 0 | 0 |
+| 1.25.0 | system | 1 | 1 | 1 | 1 | 0 | 0 |
+| 1.22.0 | otel | 1 | 1 | 1 | 1 | 0 | 0 |
+| 1.21.0 | http | 5 | 5 | 5 | 5 | 0 | 0 |
+| 1.21.0 | net | 9 | 9 | 9 | 9 | 0 | 0 |
+| 1.19.0 | http | 1 | 1 | 1 | 1 | 0 | 0 |
+| 1.13.0 | net | 2 | 2 | 2 | 2 | 0 | 0 |
 | unknown | code | 2 | 0 | 2 | 0 | 2 | 0 |
 | unknown | db | 9 | 0 | 9 | 0 | 5 | 4 |
 | unknown | enduser | 2 | 0 | 2 | 0 | 1 | 1 |
@@ -97,11 +96,11 @@ Rows whose Version is `unknown` lack `ChangelogVersion` or `SinceVersion` metada
 | unknown | event | 2 | 0 | 2 | 0 | 2 | 0 |
 | unknown | exception | 1 | 0 | 1 | 0 | 1 | 0 |
 | unknown | gen_ai | 2 | 0 | 2 | 0 | 0 | 2 |
-| unknown | http | 8 | 3 | 5 | 0 | 5 | 0 |
+| unknown | http | 8 | 3 | 8 | 3 | 5 | 0 |
 | unknown | message | 4 | 0 | 4 | 0 | 0 | 4 |
 | unknown | messaging | 4 | 0 | 4 | 0 | 1 | 3 |
 | unknown | net | 4 | 0 | 4 | 0 | 3 | 1 |
-| unknown | otel | 2 | 2 | 0 | 0 | 0 | 0 |
+| unknown | otel | 2 | 2 | 2 | 2 | 0 | 0 |
 | unknown | rpc | 8 | 0 | 8 | 0 | 4 | 4 |
 
 ## Curated Migration Inventory

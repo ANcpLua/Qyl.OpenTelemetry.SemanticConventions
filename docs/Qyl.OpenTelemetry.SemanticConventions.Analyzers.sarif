@@ -179,23 +179,6 @@
               }
             },
             {
-              "id": "QYL0011",
-              "name": "SupplementalSemconvMigration",
-              "shortDescription": {
-                "text": "Legacy semantic convention appears in compatibility or test code"
-              },
-              "fullDescription": {
-                "text": "A hard-coded semantic-convention name or value appears in test, fixture, compatibility, translator, generated, or catalog code. Keep it only when the old schema is intentionally modeled."
-              },
-              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0011_SupplementalSemconvMigration.md",
-              "defaultConfiguration": {
-                "level": "note"
-              },
-              "properties": {
-                "category": "OpenTelemetry.SemanticConventions"
-              }
-            },
-            {
               "id": "QYL0012",
               "name": "InvalidAttributeValue",
               "shortDescription": {
@@ -630,23 +613,6 @@
                 "text": "Known GenAI operation names must use the exact casing generated from the pinned registry. Unknown documented system-specific operation names remain allowed."
               },
               "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0403_InvalidGenAiOperationName.md",
-              "defaultConfiguration": {
-                "level": "warning"
-              },
-              "properties": {
-                "category": "GenAI"
-              }
-            },
-            {
-              "id": "QYL0404",
-              "name": "DeprecatedGenAiAttribute",
-              "shortDescription": {
-                "text": "Deprecated GenAI semantic convention"
-              },
-              "fullDescription": {
-                "text": "Some GenAI semantic convention attributes have been renamed or deprecated. Using the current attribute names ensures compatibility with modern observability tools and dashboards that expect the latest conventions."
-              },
-              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0404_DeprecatedGenAiAttribute.md",
               "defaultConfiguration": {
                 "level": "warning"
               },

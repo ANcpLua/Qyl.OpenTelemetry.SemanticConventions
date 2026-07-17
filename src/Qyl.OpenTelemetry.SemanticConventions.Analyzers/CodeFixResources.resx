@@ -77,9 +77,6 @@
     <data name="QYL0102CodeFixTitle" xml:space="preserve">
         <value>Set ActivitySourceName to '{0}'</value>
     </data>
-    <data name="QYL0404CodeFixTitle" xml:space="preserve">
-        <value>Replace with '{0}'</value>
-    </data>
     <!-- AL0107-AL0110 Code Fix Titles -->
     <data name="QYL0106CodeFixTitle" xml:space="preserve">
         <value>Remove [TracedTag] attribute</value>

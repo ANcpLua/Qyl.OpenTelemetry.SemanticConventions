@@ -40,6 +40,7 @@ public sealed class SemanticConventionRegistryTests
             .Count(file => file.GetProperty("source_registry").GetString() == "genai")
             .Should().Be(19);
         document.RootElement.GetProperty("json_schemas").GetArrayLength().Should().Be(8);
+        document.RootElement.GetProperty("events").GetArrayLength().Should().BeGreaterThan(0);
     }
 
     [Fact]

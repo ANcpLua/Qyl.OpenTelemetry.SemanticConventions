@@ -48,9 +48,7 @@ internal static class DescriptorCatalog
             if (type.IsAbstract || !typeof(DiagnosticAnalyzer).IsAssignableFrom(type))
                 continue;
 
-            DiagnosticAnalyzer? analyzer;
-            try { analyzer = (DiagnosticAnalyzer?)Activator.CreateInstance(type); }
-            catch { continue; }
+            var analyzer = (DiagnosticAnalyzer?)Activator.CreateInstance(type);
             if (analyzer is null) continue;
 
             foreach (var d in analyzer.SupportedDiagnostics)
@@ -79,9 +77,7 @@ internal static class DescriptorCatalog
             if (type.IsAbstract || !typeof(CodeFixProvider).IsAssignableFrom(type))
                 continue;
 
-            CodeFixProvider? provider;
-            try { provider = (CodeFixProvider?)Activator.CreateInstance(type); }
-            catch { continue; }
+            var provider = (CodeFixProvider?)Activator.CreateInstance(type);
             if (provider is null) continue;
 
             foreach (var id in provider.FixableDiagnosticIds)
@@ -134,13 +130,9 @@ internal static class DescriptorCatalog
 
             if (typeof(DiagnosticAnalyzer).IsAssignableFrom(type))
             {
-                try
-                {
-                    if (Activator.CreateInstance(type) is DiagnosticAnalyzer a && a.SupportedDiagnostics.Length > 0)
-                        analyzers[type.Name] = a.SupportedDiagnostics
-                            .OrderBy(d => d.Id, StringComparer.Ordinal).First().Id;
-                }
-                catch { /* analyzers with non-default ctors are skipped */ }
+                if (Activator.CreateInstance(type) is DiagnosticAnalyzer a && a.SupportedDiagnostics.Length > 0)
+                    analyzers[type.Name] = a.SupportedDiagnostics
+                        .OrderBy(d => d.Id, StringComparer.Ordinal).First().Id;
             }
             else if (typeof(CodeFixProvider).IsAssignableFrom(type))
             {

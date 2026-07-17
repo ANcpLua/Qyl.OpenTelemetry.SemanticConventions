@@ -5,9 +5,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
 /// Rewrites deprecated attribute-key string literals to their successors for
-/// supplemental-catalog migrations (QYL0009–QYL0011), but only when the
-/// migration kind is an exact rename — manual and compatibility migrations get
-/// no automatic fix.
+/// supplemental-catalog migrations (QYL0009–QYL0010), but only when the
+/// migration has an exact replacement.
 /// </summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(SupplementalSemconvMigrationCodeFixProvider))]
 public sealed class SupplementalSemconvMigrationCodeFixProvider : CodeFixProvider
@@ -17,7 +16,6 @@ public sealed class SupplementalSemconvMigrationCodeFixProvider : CodeFixProvide
     [
         "QYL0009",
         "QYL0010",
-        "QYL0011",
     ];
 
     /// <inheritdoc/>
@@ -71,7 +69,8 @@ public sealed class SupplementalSemconvMigrationCodeFixProvider : CodeFixProvide
         }
 
         return migrationKind == SemconvMigrationKind.ExactRename.ToString()
-            || migrationKind == SemconvMigrationKind.ExactValueRename.ToString();
+            || migrationKind == SemconvMigrationKind.ExactValueRename.ToString()
+            || migrationKind == SemconvMigrationKind.DeprecatedButGenerated.ToString();
     }
 
     private static async Task<Document> ReplaceLiteralAsync(

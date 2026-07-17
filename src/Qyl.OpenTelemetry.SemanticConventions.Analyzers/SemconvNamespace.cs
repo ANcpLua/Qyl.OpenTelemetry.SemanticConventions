@@ -19,9 +19,9 @@ internal static class SemconvNamespace
     /// <summary>
     /// Returns true if the type's suffix matches a recognised SemConv tier AND it lives
     /// in or under the SemConv namespace. When <paramref name="allowNonAttributesTiers"/>
-    /// is <c>true</c>, the suffix check additionally accepts the four non-Attributes
+    /// is <c>true</c>, the suffix check additionally accepts the three non-Attributes
     /// tiers Weaver SourceGeneration emits — <c>*Metrics</c>, <c>*Meters</c>,
-    /// <c>*Events</c>, <c>*Activities</c> — gated behind
+    /// <c>*Activities</c> — gated behind
     /// <c>build_property.OtelSemConvNonAttributesTiers</c> so consumers explicitly
     /// opt into wider coverage.
     /// </summary>
@@ -49,7 +49,6 @@ internal static class SemconvNamespace
 
         return typeName.EndsWith("Metrics", StringComparison.Ordinal)
             || typeName.EndsWith("Meters", StringComparison.Ordinal)
-            || typeName.EndsWith("Events", StringComparison.Ordinal)
             || typeName.EndsWith("Activities", StringComparison.Ordinal);
     }
 

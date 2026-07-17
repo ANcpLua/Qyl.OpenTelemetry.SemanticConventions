@@ -5,8 +5,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Emitters;
 
 /// <summary>
 /// Shared text-emission primitives for every SemConv emitter (attributes, metrics,
-/// events, meters, activities). Byte-identity snapshot tests enforce stable output,
-/// so changes here are observable across all five surfaces at once.
+/// meters, activities). Byte-identity snapshot tests enforce stable output,
+/// so changes here are observable across all four surfaces at once.
 /// </summary>
 /// <remarks>
 /// Two deliberate distinctions are preserved as separate members rather than
@@ -14,7 +14,7 @@ namespace Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Emitters;
 /// <list type="bullet">
 ///   <item><see cref="EscapeAttribute"/> collapses newlines to a space (attribute
 ///   arguments, and the meter emitter's unit/description literals);
-///   <see cref="EscapeLiteral"/> turns them into <c>\n</c> (metric/event const
+///   <see cref="EscapeLiteral"/> turns them into <c>\n</c> (metric const
 ///   literals).</item>
 ///   <item><see cref="WriteObsolete"/> emits <c>[Obsolete]</c> only when a
 ///   deprecation model is present; <see cref="WriteStabilityObsolete"/> also emits

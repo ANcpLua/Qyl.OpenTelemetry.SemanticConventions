@@ -63,8 +63,7 @@ internal static class SemconvMigrationCatalog
     }
 
     public static bool IsSupplementalDiagnosticEntry(SemconvMigrationCatalogEntry entry) =>
-        entry.MigrationKind != SemconvMigrationKind.DeprecatedButGenerated
-        && entry.Kind != SemconvMigrationItemKind.GuidanceOnly;
+        entry.Kind != SemconvMigrationItemKind.GuidanceOnly;
 
     /// <summary>
     /// Follow <see cref="SemconvMigrationKind.ExactRename"/> /

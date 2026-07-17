@@ -167,7 +167,7 @@ public sealed class RegistryShapeGateTests
     }
 
     [Fact]
-    public void Every_event_entry_has_the_shape_the_loaders_require()
+    public void Public_registry_stream_retains_named_event_entries()
     {
         var events = LoadRoot().GetProperty("events");
         events.ValueKind.Should().Be(JsonValueKind.Array);
@@ -175,7 +175,7 @@ public sealed class RegistryShapeGateTests
         foreach (var ev in events.EnumerateArray())
         {
             ev.ValueKind.Should().Be(JsonValueKind.Object,
-                "the loaders skip non-object event entries silently");
+                "the public resolved-registry stream preserves structured event rows");
             ev.GetProperty("event_name").GetString().Should().NotBeNullOrWhiteSpace();
         }
     }
