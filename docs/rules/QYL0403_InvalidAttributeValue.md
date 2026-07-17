@@ -7,7 +7,7 @@
 | Severity | Warning |
 | Category | `GenAI` |
 | Code fix | No |
-| Analyzer | `Qyl0403InvalidGenAiOperationNameAnalyzer` |
+| Analyzer | `Qyl0012InvalidAttributeValueAnalyzer` |
 | Enabled by default | Yes |
 
 ## Description
@@ -18,4 +18,4 @@ Known GenAI operation names must use the exact casing generated from the pinned 
 
 - [Rule index](../Qyl.OpenTelemetry.SemanticConventions.Analyzers.md)
 - [Migration catalog](../migration-catalog.md)
-- [Source: `QYL0403InvalidGenAiOperationNameAnalyzer.cs`](../../src/Qyl.OpenTelemetry.SemanticConventions.Analyzers/QYL0403InvalidGenAiOperationNameAnalyzer.cs)
+- [Source: `QYL0012InvalidAttributeValueAnalyzer.cs`](../../src/Qyl.OpenTelemetry.SemanticConventions.Analyzers/QYL0012InvalidAttributeValueAnalyzer.cs)

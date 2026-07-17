@@ -42,7 +42,7 @@ QYL0305 | OpenTelemetry | Warning | Qyl0305LegacySemanticConventionsAccessorAnal
 QYL0400 | OpenTelemetry.SemanticConventions | Warning | GenAiExecuteToolNameAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0400_GenAiExecuteToolName.md)
 QYL0401 | GenAI | Warning | Qyl0401GenAiMissingRequiredAttributesAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0401_GenAiMissingRequiredAttributes.md)
 QYL0402 | GenAI | Warning | Qyl0402UseTokenUsageHistogramAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0402_UseTokenUsageHistogram.md)
-QYL0403 | GenAI | Warning | Qyl0403InvalidGenAiOperationNameAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0403_InvalidGenAiOperationName.md)
+QYL0403 | GenAI | Warning | Qyl0012InvalidAttributeValueAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0403_InvalidAttributeValue.md)
 QYL0405 | GenAI | Warning | Qyl0405NonInterceptableAgentTracedAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0405_NonInterceptableAgentTraced.md)
 QYL0406 | GenAI | Warning | Qyl0406DirectGenAiSdkUsageAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0406_DirectGenAiSdkUsage.md)
 QYL0500 | Metrics | Error | Qyl0500MeterClassMustBePartialStaticAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0500_MeterClassMustBePartialStatic.md)

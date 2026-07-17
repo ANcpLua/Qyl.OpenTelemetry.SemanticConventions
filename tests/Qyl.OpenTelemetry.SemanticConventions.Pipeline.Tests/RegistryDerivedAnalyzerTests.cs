@@ -63,7 +63,7 @@ public sealed class RegistryDerivedAnalyzerTests
     public async Task Qyl0403_uses_the_complete_generated_operation_enum()
     {
         var diagnostics = await AnalyzerHarness.RunAsync(
-            new Qyl0403InvalidGenAiOperationNameAnalyzer(),
+            new Qyl0012InvalidAttributeValueAnalyzer(),
             SinkSource("SetTag(\"gen_ai.operation.name\", \"Execute_Tool\");"));
 
         diagnostics.Should().ContainSingle();
@@ -74,7 +74,7 @@ public sealed class RegistryDerivedAnalyzerTests
     public async Task Qyl0403_accepts_new_memory_and_custom_operations()
     {
         var diagnostics = await AnalyzerHarness.RunAsync(
-            new Qyl0403InvalidGenAiOperationNameAnalyzer(),
+            new Qyl0012InvalidAttributeValueAnalyzer(),
             SinkSource(
                 """
                 SetTag("gen_ai.operation.name", "create_memory_store");

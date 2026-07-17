@@ -50,7 +50,7 @@ Each ID links to a per-rule page under [`docs/rules/`](rules/) with severity, ca
 | [QYL0400](rules/QYL0400_GenAiExecuteToolName.md) | Warning | Execute-tool span is missing its registry-required attribute | No |
 | [QYL0401](rules/QYL0401_GenAiMissingRequiredAttributes.md) | Warning | GenAI or MCP span missing required attributes | No |
 | [QYL0402](rules/QYL0402_UseTokenUsageHistogram.md) | Warning | Use a registry-defined GenAI token metric | No |
-| [QYL0403](rules/QYL0403_InvalidGenAiOperationName.md) | Warning | GenAI operation name uses non-canonical casing | No |
+| [QYL0403](rules/QYL0403_InvalidAttributeValue.md) | Warning | GenAI operation name uses non-canonical casing | No |
 | [QYL0405](rules/QYL0405_NonInterceptableAgentTraced.md) | Warning | Non-interceptable [AgentTraced] | Yes |
 | [QYL0406](rules/QYL0406_DirectGenAiSdkUsage.md) | Warning | Direct GenAI SDK call bypasses automatic OTel instrumentation | No |
 | [QYL0500](rules/QYL0500_MeterClassMustBePartialStatic.md) | Error | [Meter] class must be partial static | Yes |

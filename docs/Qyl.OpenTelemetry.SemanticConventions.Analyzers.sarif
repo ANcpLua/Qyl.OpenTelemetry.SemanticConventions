@@ -605,14 +605,14 @@
             },
             {
               "id": "QYL0403",
-              "name": "InvalidGenAiOperationName",
+              "name": "InvalidAttributeValue",
               "shortDescription": {
                 "text": "GenAI operation name uses non-canonical casing"
               },
               "fullDescription": {
                 "text": "Known GenAI operation names must use the exact casing generated from the pinned registry. Unknown documented system-specific operation names remain allowed."
               },
-              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0403_InvalidGenAiOperationName.md",
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0403_InvalidAttributeValue.md",
               "defaultConfiguration": {
                 "level": "warning"
               },

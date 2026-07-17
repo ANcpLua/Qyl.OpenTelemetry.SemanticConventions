@@ -12,7 +12,7 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     generator calls it, the <c>--check</c> mode verifies them against
 ///     each other.
 /// </summary>
-public static class RuleDocs
+internal static class RuleDocs
 {
     /// <summary>
     ///     Base URL for diagnostic help links. Resolves to a per-rule page under

@@ -10,7 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="schemas/1.43.0.yaml"/>
     <EmbeddedResource Include="schemas/gen-ai/*.json"
                       LogicalName="Qyl.OpenTelemetry.SemanticConventions.Incubating.schemas.gen-ai.%(Filename)%(Extension)"/>
     <EmbeddedResource Include="../Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/Resources/resolved-registry.json"
