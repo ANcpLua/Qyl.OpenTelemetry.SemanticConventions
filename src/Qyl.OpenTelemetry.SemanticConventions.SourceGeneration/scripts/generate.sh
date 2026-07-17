@@ -54,6 +54,11 @@ GENAI_REMOTE="${SEMCONV_GENAI_REMOTE:-https://github.com/open-telemetry/semantic
 #   WEAVER="cargo run --quiet --manifest-path /Users/.../weaver/Cargo.toml --bin weaver --" ./scripts/generate.sh
 WEAVER="${WEAVER:-weaver}"
 read -r -a WEAVER_CMD <<< "${WEAVER}"
+# run_weaver_projection runs from per-registry work dirs, so a relative
+# weaver path would stop resolving after the first projection.
+if [[ "${WEAVER_CMD[0]}" == */* && "${WEAVER_CMD[0]}" != /* && -e "${WEAVER_CMD[0]}" ]]; then
+  WEAVER_CMD[0]="$(cd "$(dirname "${WEAVER_CMD[0]}")" && pwd)/$(basename "${WEAVER_CMD[0]}")"
+fi
 
 ensure_upstream_repo() {
   local repo="$1"
