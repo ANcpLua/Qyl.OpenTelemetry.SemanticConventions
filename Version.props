@@ -11,7 +11,6 @@
     <NukeVersion>10.1.0</NukeVersion>
 
     <XunitVersion>3.2.2</XunitVersion>
-    <MicrosoftTestingTrxVersion>2.1.0</MicrosoftTestingTrxVersion>
     <AwesomeAssertionsVersion>9.4.0</AwesomeAssertionsVersion>
 
     <NuGetPackagingVersion>7.6.0</NuGetPackagingVersion>

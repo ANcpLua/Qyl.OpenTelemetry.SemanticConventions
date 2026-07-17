@@ -1,6 +1,3 @@
 {
-  "$schema": "./build.schema.json",
-  "Solution": "Qyl.OpenTelemetry.SemanticConventions.slnx",
-  "SemconvVersion": "1.43.0",
-  "LockstepRevision": 1
+  "Solution": "Qyl.OpenTelemetry.SemanticConventions.slnx"
 }

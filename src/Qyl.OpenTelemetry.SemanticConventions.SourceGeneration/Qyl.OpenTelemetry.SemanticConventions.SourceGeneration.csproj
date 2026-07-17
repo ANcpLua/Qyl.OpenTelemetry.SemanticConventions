@@ -12,9 +12,6 @@
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
     <ImplicitUsings>enable</ImplicitUsings>
 
-    <IsAotCompatible>false</IsAotCompatible>
-    <EnableAotAnalyzer>false</EnableAotAnalyzer>
-
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
     <!-- Explicit Roslyn references also work under IDE language-server builds. -->
@@ -72,7 +69,7 @@
 
   <Target Name="_VerifyRegistryDerivedArtifacts"
           BeforeTargets="CoreCompile"
-          Condition="'$(DesignTimeBuild)' != 'true' AND '$(SkipRegistryArtifactCheck)' != 'true'">
+          Condition="'$(DesignTimeBuild)' != 'true'">
     <Exec Command="python3 &quot;$(MSBuildProjectDirectory)/scripts/emit_analyzer_registry.py&quot; --check"
           WorkingDirectory="$(MSBuildProjectDirectory)"/>
     <Exec Command="python3 &quot;$(MSBuildProjectDirectory)/scripts/emit_registry_resources.py&quot; --check"

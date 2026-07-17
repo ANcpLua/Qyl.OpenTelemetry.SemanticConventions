@@ -109,12 +109,12 @@ internal static class MigrationCatalogRenderer
     {
         sb.AppendLine("## Coverage by Version × Domain");
         sb.AppendLine();
-        sb.AppendLine("Rows whose Version is `unknown` lack `ChangelogVersion` or `SinceVersion` metadata in `SemconvMigrationCatalog.BuildEntries()`. This affects documentation attribution only; analyzer behavior remains unchanged.");
+        sb.AppendLine("Rows whose Version is `unknown` lack `Version` metadata in `SemconvMigrationCatalog.BuildEntries()`. This affects documentation attribution only; analyzer behavior remains unchanged.");
         sb.AppendLine();
         sb.AppendLine("| Version | Domain | Total | Expected live metadata | Fallback eligible | Exact fallback | Manual/context | Removed/no replacement |");
         sb.AppendLine("| -- | -- | --: | --: | --: | --: | --: | --: |");
         foreach (var g in stats.Entries
-            .GroupBy(e => (Version: e.ChangelogVersion, e.Domain))
+            .GroupBy(e => (e.Version, e.Domain))
             .OrderByDescending(g => VersionSortKey(g.Key.Version), StringComparer.Ordinal)
             .ThenBy(g => g.Key.Domain, StringComparer.Ordinal))
         {
@@ -141,7 +141,7 @@ internal static class MigrationCatalogRenderer
             .OrderBy(x => x.Domain, StringComparer.Ordinal)
             .ThenBy(x => x.OldName, StringComparer.Ordinal))
         {
-            var since = MarkdownFormatting.Escape(e.SinceVersion);
+            var since = MarkdownFormatting.Escape(e.Version);
             var replacement = MarkdownFormatting.FormatReplacement(e.ReplacementNames);
             sb.AppendLine($"| `{e.OldName}` | {e.Kind} | {e.Signal} | {e.Domain} | {since} | {e.MigrationKind} | {replacement} | {MarkdownFormatting.Escape(e.ChangelogEvidence)} |");
         }
@@ -172,9 +172,10 @@ internal static class MigrationCatalogRenderer
         sb.AppendLine();
         sb.AppendLine("```bash");
         sb.AppendLine("./build.sh GenerateDocs");
-        sb.AppendLine("./build.sh CheckDocs    # fails if the committed markdown is stale");
         sb.AppendLine("./build.sh AuditDocs    # prints catalog statistics, no file I/O");
         sb.AppendLine("```");
+        sb.AppendLine();
+        sb.AppendLine("Staleness is enforced automatically: every analyzer-project build fails if the committed markdown drifts from what the generator would emit.");
     }
 
     private static string VersionSortKey(string version) =>

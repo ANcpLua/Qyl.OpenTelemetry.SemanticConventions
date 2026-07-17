@@ -27,8 +27,6 @@
     <AnalysisLevel>latest-recommended</AnalysisLevel>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Deterministic>true</Deterministic>
-    <NoWarn>$(NoWarn);NU1604</NoWarn>
-    <NoWarn Condition="'$(TargetFramework)' == 'netstandard2.0'">$(NoWarn);NU1701</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Label="Test projects" Condition="$(MSBuildProjectName.EndsWith('.Tests'))">

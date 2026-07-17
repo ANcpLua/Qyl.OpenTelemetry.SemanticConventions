@@ -314,7 +314,7 @@ public sealed class SupplementalSemconvMigrationAnalyzer : DiagnosticAnalyzer
             .Add(ItemKindProperty, entry.Kind.ToString())
             .Add(SignalProperty, entry.Signal)
             .Add(DomainProperty, entry.Domain)
-            .Add(ChangelogVersionProperty, entry.ChangelogVersion);
+            .Add(ChangelogVersionProperty, entry.Version);
 
         var args = descriptor.Id == "QYL0009"
             ? new object[] { entry.OldName, replacement, evidence }

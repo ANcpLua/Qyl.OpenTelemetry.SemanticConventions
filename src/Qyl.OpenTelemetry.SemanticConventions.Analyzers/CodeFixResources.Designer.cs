@@ -46,12 +46,6 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers {
             }
         }
 
-        internal static string AR0001RefactoringTitle {
-            get {
-                return ResourceManager.GetString("AR0001RefactoringTitle", resourceCulture);
-            }
-        }
-
         internal static string QYL0500CodeFixTitle {
             get {
                 return ResourceManager.GetString("QYL0500CodeFixTitle", resourceCulture);
@@ -97,12 +91,6 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers {
         internal static string QYL0405CodeFixTitle {
             get {
                 return ResourceManager.GetString("QYL0405CodeFixTitle", resourceCulture);
-            }
-        }
-
-        internal static string QYL0305CodeFixTitle {
-            get {
-                return ResourceManager.GetString("QYL0305CodeFixTitle", resourceCulture);
             }
         }
     }

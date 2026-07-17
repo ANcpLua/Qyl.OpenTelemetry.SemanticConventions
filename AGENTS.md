@@ -72,11 +72,13 @@ Important generation gates:
 
 ```bash
 ./build.sh VerifyAttributesHash
-./build.sh CheckDocs
 python3 src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/scripts/verify_deprecated_catalog.py
 python3 src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/scripts/emit_analyzer_registry.py --check
 python3 src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/scripts/emit_registry_resources.py --check
 ```
+
+Analyzer docs and diagnostic-id consistency are enforced automatically on every
+analyzer-project build; there is no separate check target.
 
 After an intentional attribute regeneration, reseed the manifest with
 `./build.sh SeedAttributesHash`. Regenerate analyzer documentation with

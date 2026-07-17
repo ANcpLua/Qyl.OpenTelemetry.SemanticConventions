@@ -83,7 +83,7 @@ public sealed class Qyl0703ConsiderSamplingAnalyzer : AlAnalyzer {
             return;
         }
 
-        if (!IsTracerBuilderCall(invocation, context.SemanticModel, tracerBuilderTypes, context.CancellationToken)) {
+        if (!BuilderCallDetection.IsBuilderCall(invocation, context.SemanticModel, tracerBuilderTypes, context.CancellationToken)) {
             return;
         }
 
@@ -96,20 +96,6 @@ public sealed class Qyl0703ConsiderSamplingAnalyzer : AlAnalyzer {
         }
 
         context.ReportDiagnostic(Diagnostic.Create(s_rule, GetMethodLocation(invocation)));
-    }
-
-    private static bool IsTracerBuilderCall(
-        InvocationExpressionSyntax invocation,
-        SemanticModel semanticModel,
-        ImmutableArray<INamedTypeSymbol> tracerBuilderTypes,
-        CancellationToken cancellationToken) {
-        if (invocation.Expression is not MemberAccessExpressionSyntax memberAccess
-            || ModelExtensions.GetTypeInfo(semanticModel, memberAccess.Expression, cancellationToken).Type is not { } receiverType) {
-            return false;
-        }
-
-        return tracerBuilderTypes.Any(builderType =>
-            receiverType.InheritsFrom(builderType) || receiverType.Implements(builderType));
     }
 
     private static bool HasSamplerConfiguration(SyntaxNode invocation, out bool usesAlwaysOnSampler) {

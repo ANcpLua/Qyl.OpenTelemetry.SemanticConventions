@@ -95,8 +95,6 @@ internal static class IndexDocsRenderer
         sb.AppendLine();
         sb.AppendLine("**Multi-hop renames resolve to the terminal symbol.** `SemconvMigrationCatalog.ResolveTerminalReplacement` walks `ExactRename` / `ExactValueRename` chains so a code fix on `http.host → net.host.name → server.address` lands consumers on `server.address`, not on the still-deprecated `net.host.name` mid-state. Cycles and chains over 8 hops bail at the last safe step.");
         sb.AppendLine();
-        sb.AppendLine("**Structured provenance per catalog entry.** Each `SemconvMigrationCatalogEntry` carries an optional `SemconvChangelogEvidence` (commit / version / url / quote) pinning the claim to an upstream commit.");
-        sb.AppendLine();
     }
 
     private static void WriteSeverityPolicy(StringBuilder sb)
@@ -147,8 +145,9 @@ internal static class IndexDocsRenderer
         sb.AppendLine();
         sb.AppendLine("```bash");
         sb.AppendLine("./build.sh GenerateDocs");
-        sb.AppendLine("./build.sh CheckDocs    # fails if the committed markdown is stale");
         sb.AppendLine("./build.sh AuditDocs    # prints catalog statistics, no file I/O");
         sb.AppendLine("```");
+        sb.AppendLine();
+        sb.AppendLine("Staleness is enforced automatically: every analyzer-project build fails if the committed markdown drifts from what the generator would emit.");
     }
 }

@@ -77,7 +77,6 @@ dotnet build Qyl.OpenTelemetry.SemanticConventions.slnx -c Release
 dotnet run --project tests/Qyl.OpenTelemetry.SemanticConventions.Pipeline.Tests -c Release
 dotnet run --project tests/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Tests -c Release
 ./build.sh VerifyAttributesHash
-./build.sh CheckDocs
 python3 src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/scripts/verify_deprecated_catalog.py
 python3 src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/scripts/emit_analyzer_registry.py --check
 python3 src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/scripts/emit_registry_resources.py --check

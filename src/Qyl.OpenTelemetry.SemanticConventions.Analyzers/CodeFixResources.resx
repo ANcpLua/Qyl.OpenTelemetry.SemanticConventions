@@ -64,9 +64,6 @@
             PublicKeyToken=b77a5c561934e089
         </value>
     </resheader>
-    <data name="AR0001RefactoringTitle" xml:space="preserve">
-    <value>Convert to PascalCase</value>
-  </data>
     <!-- AL0071-AL0074 Code Fix Titles -->
     <data name="QYL0500CodeFixTitle" xml:space="preserve">
         <value>Make class 'partial static'</value>
@@ -93,9 +90,5 @@
     <!-- AL0121-AL0124 Code Fix Titles -->
     <data name="QYL0405CodeFixTitle" xml:space="preserve">
         <value>Remove [AgentTraced] attribute</value>
-    </data>
-    <!-- AL0134, AL0135 Code Fix Titles -->
-    <data name="QYL0305CodeFixTitle" xml:space="preserve">
-        <value>Replace with '{0}'</value>
     </data>
 </root>

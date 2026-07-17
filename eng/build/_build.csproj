@@ -20,10 +20,4 @@
     <PackageReference Include="Nuke.Common"/>
   </ItemGroup>
 
-  <!-- Override vulnerable Nuke.Common transitives. -->
-  <ItemGroup>
-    <PackageReference Include="NuGet.Packaging"/>
-    <PackageReference Include="System.Security.Cryptography.Xml"/>
-  </ItemGroup>
-
 </Project>

@@ -9,23 +9,16 @@ internal static class SemconvNamespace
     private const string Root = "OpenTelemetry.SemanticConventions";
 
     /// <summary>
-    /// Returns true if the type is named <c>*Attributes</c> AND lives in or under any
-    /// namespace segment named <c>OpenTelemetry.SemanticConventions</c>. Handles both
-    /// upstream's flat layout and consumer-side nested layouts (e.g. qyl).
-    /// </summary>
-    public static bool IsAttributesType(INamedTypeSymbol type) =>
-        IsAttributesType(type, allowNonAttributesTiers: false);
-
-    /// <summary>
     /// Returns true if the type's suffix matches a recognised SemConv tier AND it lives
-    /// in or under the SemConv namespace. When <paramref name="allowNonAttributesTiers"/>
-    /// is <c>true</c>, the suffix check additionally accepts the three non-Attributes
-    /// tiers Weaver SourceGeneration emits — <c>*Metrics</c>, <c>*Meters</c>,
-    /// <c>*Activities</c> — gated behind
+    /// in or under any namespace segment named <c>OpenTelemetry.SemanticConventions</c>
+    /// (handles both upstream's flat layout and consumer-side nested layouts, e.g. qyl).
+    /// When <paramref name="allowNonAttributesTiers"/> is <c>true</c>, the suffix check
+    /// additionally accepts the three non-Attributes tiers Weaver SourceGeneration
+    /// emits — <c>*Metrics</c>, <c>*Meters</c>, <c>*Activities</c> — gated behind
     /// <c>build_property.OtelSemConvNonAttributesTiers</c> so consumers explicitly
     /// opt into wider coverage.
     /// </summary>
-    public static bool IsAttributesType(INamedTypeSymbol type, bool allowNonAttributesTiers)
+    public static bool IsAttributesType(INamedTypeSymbol type, bool allowNonAttributesTiers = false)
     {
         if (!HasRecognisedTierSuffix(type.Name, allowNonAttributesTiers))
         {

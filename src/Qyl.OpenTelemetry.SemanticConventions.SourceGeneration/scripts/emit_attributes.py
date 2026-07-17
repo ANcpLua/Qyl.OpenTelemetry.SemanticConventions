@@ -214,12 +214,6 @@ def render_inline(text: str) -> str:
     return "".join(out)
 
 
-def split_lines(text: str):
-    if not text:
-        return []
-    return [ln.rstrip("\r") for ln in text.split("\n")]
-
-
 def _segment_blocks(text: str):
     """Split note text into ('text', lines) / ('code', lines) blocks. Fenced code
     blocks are atomic; other blocks are separated by blank lines."""
@@ -290,11 +284,6 @@ def render_markdown(text: str):
         out.extend(block_lines)
         first = False
     return out
-
-
-# Back-compat alias used by the emit body.
-def markdown_block_lines(note: str):
-    return render_markdown(note)
 
 
 def assert_docs_well_formed(text: str, class_name: str):
@@ -542,7 +531,7 @@ def emit_file(root: str, attrs, stable: bool) -> str:
 
         # remarks (note)
         note = attr.get("note") or ""
-        note_lines = markdown_block_lines(note)
+        note_lines = render_markdown(note)
         if note_lines:
             w.remarks(pad, note_lines)
 

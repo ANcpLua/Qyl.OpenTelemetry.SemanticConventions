@@ -219,44 +219,6 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
 
     internal static ImmutableArray<SemconvMigrationCatalogEntry> Entries { get; } = BuildEntries();
 
-    private static readonly ImmutableDictionary<string, SemconvMigrationCatalogEntry> s_entriesByOldName =
-        BuildEntriesByOldName(Entries);
-
-    private static readonly ImmutableDictionary<string, SemconvMigrationCatalogEntry> s_valueEntriesByAttributeAndValue =
-        BuildValueEntriesByAttributeAndValue(Entries);
-
-    internal static bool TryGetMigrationByName(
-        string oldName,
-        out SemconvMigrationCatalogEntry entry) {
-        if (s_entriesByOldName.TryGetValue(oldName, out entry)) {
-            return true;
-        }
-
-        foreach (var prefix in s_deprecatedAttributePrefixes) {
-            if (!oldName.StartsWith(prefix.Key, StringComparison.Ordinal)) {
-                continue;
-            }
-
-            var suffix = oldName[prefix.Key.Length..];
-            entry = CreateAttributeEntry(
-                oldName,
-                $"{prefix.Value.ReplacementPrefix}{suffix}",
-                prefix.Value.Version,
-                "semantic-conventions/model deprecated attribute prefix",
-                SemconvMigrationKind.ExactRename);
-            return true;
-        }
-
-        entry = default;
-        return false;
-    }
-
-    internal static bool TryGetAttributeValueMigration(
-        string attributeName,
-        string attributeValue,
-        out SemconvMigrationCatalogEntry entry) =>
-        s_valueEntriesByAttributeAndValue.TryGetValue(BuildAttributeValueKey(attributeName, attributeValue), out entry);
-
     private static ImmutableArray<SemconvMigrationCatalogEntry> BuildEntries() {
         var count = s_deprecatedAttributes.Count
             + s_deprecatedAttributePrefixes.Count
@@ -313,15 +275,10 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
                     kind: SemconvMigrationItemKind.AttributeValue,
                     signal: "any",
                     domain: InferDomain(attr.Key),
-                    sinceVersion: "",
+                    version: "",
                     replacementNames: replacement,
                     migrationKind: migrationKind,
-                    changelogVersion: "",
-                    changelogEvidence: value.Value,
-                    defaultProductionSeverity: migrationKind == SemconvMigrationKind.ExactValueRename
-                        ? DiagnosticSeverity.Error
-                        : DiagnosticSeverity.Warning,
-                    fixtureSeverity: DiagnosticSeverity.Info));
+                    changelogEvidence: value.Value));
             }
         }
 
@@ -335,48 +292,13 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
                 kind: InferItemKind(item.Key),
                 signal: InferSignal(item.Key),
                 domain: InferDomain(item.Key),
-                sinceVersion: "",
+                version: "",
                 replacementNames: ImmutableArray<string>.Empty,
                 migrationKind: migrationKind,
-                changelogVersion: "",
-                changelogEvidence: item.Value,
-                defaultProductionSeverity: DiagnosticSeverity.Warning,
-                fixtureSeverity: DiagnosticSeverity.Info));
+                changelogEvidence: item.Value));
         }
 
         AddChangelogEntries(builder);
-        return builder.ToImmutable();
-    }
-
-    private static ImmutableDictionary<string, SemconvMigrationCatalogEntry> BuildEntriesByOldName(
-        ImmutableArray<SemconvMigrationCatalogEntry> entries) {
-        var builder = ImmutableDictionary.CreateBuilder<string, SemconvMigrationCatalogEntry>(StringComparer.Ordinal);
-
-        foreach (var entry in entries) {
-            if (entry.Kind == SemconvMigrationItemKind.AttributeValue) {
-                continue;
-            }
-
-            if (!builder.ContainsKey(entry.OldName)) {
-                builder.Add(entry.OldName, entry);
-            }
-        }
-
-        return builder.ToImmutable();
-    }
-
-    private static ImmutableDictionary<string, SemconvMigrationCatalogEntry> BuildValueEntriesByAttributeAndValue(
-        ImmutableArray<SemconvMigrationCatalogEntry> entries) {
-        var builder = ImmutableDictionary.CreateBuilder<string, SemconvMigrationCatalogEntry>(StringComparer.Ordinal);
-
-        foreach (var entry in entries) {
-            if (entry.Kind != SemconvMigrationItemKind.AttributeValue || builder.ContainsKey(entry.OldName)) {
-                continue;
-            }
-
-            builder.Add(entry.OldName, entry);
-        }
-
         return builder.ToImmutable();
     }
 
@@ -389,10 +311,7 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
             "1.41.0",
             ImmutableArray.Create("server.address"),
             SemconvMigrationKind.ContextSensitive,
-            "1.41.0",
-            "RPC server spans no longer include client.address; use server.address/server.port for server endpoint data and keep client.* only when modeling client endpoint data.",
-            DiagnosticSeverity.Warning,
-            DiagnosticSeverity.Info));
+            "RPC server spans no longer include client.address; use server.address/server.port for server endpoint data and keep client.* only when modeling client endpoint data."));
 
         builder.Add(new SemconvMigrationCatalogEntry(
             "client.port",
@@ -402,10 +321,7 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
             "1.41.0",
             ImmutableArray.Create("server.port"),
             SemconvMigrationKind.ContextSensitive,
-            "1.41.0",
-            "RPC server spans no longer include client.port; use server.address/server.port for server endpoint data and keep client.* only when modeling client endpoint data.",
-            DiagnosticSeverity.Warning,
-            DiagnosticSeverity.Info));
+            "RPC server spans no longer include client.port; use server.address/server.port for server endpoint data and keep client.* only when modeling client endpoint data."));
 
         builder.Add(new SemconvMigrationCatalogEntry(
             "system.memory.shared",
@@ -415,10 +331,7 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
             "1.40.0",
             ImmutableArray.Create("system.memory.linux.shared"),
             SemconvMigrationKind.ExactRename,
-            "1.40.0",
-            "The system.memory.shared metric was renamed to system.memory.linux.shared.",
-            DiagnosticSeverity.Error,
-            DiagnosticSeverity.Info));
+            "The system.memory.shared metric was renamed to system.memory.linux.shared."));
 
         AddRemovedMetric(builder, "rpc.server.request.size", "RPC server request size metric was deprecated without a direct replacement.");
         AddRemovedMetric(builder, "rpc.server.response.size", "RPC server response size metric was deprecated without a direct replacement.");
@@ -433,10 +346,7 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
             "1.40.0",
             ImmutableArray<string>.Empty,
             SemconvMigrationKind.RemovedNoReplacement,
-            "1.40.0",
-            "The rpc.message event and its message.* attributes were deprecated without a direct replacement.",
-            DiagnosticSeverity.Warning,
-            DiagnosticSeverity.Info));
+            "The rpc.message event and its message.* attributes were deprecated without a direct replacement."));
     }
 
     private static void AddRemovedMetric(
@@ -451,10 +361,7 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
             "1.40.0",
             ImmutableArray<string>.Empty,
             SemconvMigrationKind.RemovedNoReplacement,
-            "1.40.0",
-            evidence,
-            DiagnosticSeverity.Warning,
-            DiagnosticSeverity.Info));
+            evidence));
     }
 
     private static SemconvMigrationCatalogEntry CreateAttributeEntry(
@@ -470,15 +377,10 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
             kind: SemconvMigrationItemKind.AttributeKey,
             signal: InferSignal(oldName),
             domain: InferDomain(oldName),
-            sinceVersion: version,
+            version: version,
             replacementNames: hasReplacement ? ImmutableArray.Create(replacement) : ImmutableArray<string>.Empty,
             migrationKind: migrationKind,
-            changelogVersion: version,
-            changelogEvidence: evidence,
-            defaultProductionSeverity: hasReplacement && migrationKind == SemconvMigrationKind.ExactRename
-                ? DiagnosticSeverity.Error
-                : DiagnosticSeverity.Warning,
-            fixtureSeverity: DiagnosticSeverity.Info);
+            changelogEvidence: evidence);
     }
 
     private static bool TryExtractExactReplacement(string guidance, [NotNullWhen(true)] out string? replacement) {
@@ -588,20 +490,4 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
 
     internal static bool TryGetDeprecatedGenAiAttribute(string attributeName, [NotNullWhen(true)] out string? replacement) =>
         s_deprecatedGenAiAttributes.TryGetValue(attributeName, out replacement);
-
-    internal static bool TryGetDeprecatedAttributeValue(
-        string attributeName,
-        string attributeValue,
-        [NotNullWhen(true)] out string? guidance) {
-        if (s_deprecatedAttributeValues.TryGetValue(attributeName, out var values)
-            && values.TryGetValue(attributeValue, out guidance)) {
-            return true;
-        }
-
-        guidance = null;
-        return false;
-    }
-
-    internal static bool TryGetContextSensitiveDeprecatedName(string name, [NotNullWhen(true)] out string? guidance) =>
-        s_contextSensitiveDeprecatedNames.TryGetValue(name, out guidance);
 }

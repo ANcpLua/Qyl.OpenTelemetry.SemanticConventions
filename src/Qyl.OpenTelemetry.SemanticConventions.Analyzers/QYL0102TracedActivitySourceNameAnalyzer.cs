@@ -41,15 +41,11 @@ public sealed class Qyl0102TracedActivitySourceNameAnalyzer : AlAnalyzer {
 
     /// <summary>Registers symbol actions to analyze types and methods with [Traced] attribute.</summary>
     protected override void RegisterActions(AnalysisContext context) {
-        context.RegisterSymbolAction(AnalyzeNamedType, SymbolKind.NamedType);
-        context.RegisterSymbolAction(AnalyzeMethod, SymbolKind.Method);
+        context.RegisterSymbolAction(
+            static context => AnalyzeSymbol(context, context.Symbol),
+            SymbolKind.NamedType,
+            SymbolKind.Method);
     }
-
-    private static void AnalyzeNamedType(SymbolAnalysisContext context) =>
-        AnalyzeSymbol(context, (INamedTypeSymbol)context.Symbol);
-
-    private static void AnalyzeMethod(SymbolAnalysisContext context) =>
-        AnalyzeSymbol(context, (IMethodSymbol)context.Symbol);
 
     private static void AnalyzeSymbol(SymbolAnalysisContext context, ISymbol symbol) {
         if (context.Compilation.GetTypeByMetadataName(TracedAttributeFullName) is not { } tracedAttributeType) {

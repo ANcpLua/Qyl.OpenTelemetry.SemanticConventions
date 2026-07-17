@@ -22,7 +22,7 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed partial class Qyl0105ManualSpanRecommendedAnalyzer : AlAnalyzer {
+public sealed class Qyl0105ManualSpanRecommendedAnalyzer : AlAnalyzer {
     /// <summary>The diagnostic identifier for QYL0105.</summary>
     private const string DiagnosticId = "QYL0105";
 

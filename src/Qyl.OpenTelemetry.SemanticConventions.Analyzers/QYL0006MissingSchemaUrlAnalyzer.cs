@@ -83,7 +83,7 @@ public sealed class Qyl0006MissingSchemaUrlAnalyzer : AlAnalyzer {
             return;
         }
 
-        if (!IsOtelBuilderCall(invocation, context.SemanticModel, otelBuilderTypes, context.CancellationToken)) {
+        if (!BuilderCallDetection.IsBuilderCall(invocation, context.SemanticModel, otelBuilderTypes, context.CancellationToken)) {
             return;
         }
 
@@ -93,24 +93,6 @@ public sealed class Qyl0006MissingSchemaUrlAnalyzer : AlAnalyzer {
 
         var location = GetMethodLocation(invocation);
         context.ReportDiagnostic(s_rule, location);
-    }
-
-    private static bool IsOtelBuilderCall(
-        InvocationExpressionSyntax invocation,
-        SemanticModel semanticModel,
-        ImmutableArray<INamedTypeSymbol> otelBuilderTypes,
-        CancellationToken cancellationToken) {
-        if (invocation.Expression is not MemberAccessExpressionSyntax memberAccess) {
-            return false;
-        }
-
-        if (ModelExtensions.GetTypeInfo(semanticModel, memberAccess.Expression, cancellationToken).Type is not { } receiverType) {
-            return false;
-        }
-
-        // Check if receiver type inherits from or implements any OTel builder type
-        return otelBuilderTypes.Any(builderType =>
-            receiverType.InheritsFrom(builderType) || receiverType.Implements(builderType));
     }
 
     private static bool CheckForSchemaUrl(SyntaxNode invocation) {

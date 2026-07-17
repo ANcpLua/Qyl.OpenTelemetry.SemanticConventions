@@ -46,7 +46,7 @@ This section is generated from the analyzer descriptors and migration catalog. I
 
 ## Coverage by Version × Domain
 
-Rows whose Version is `unknown` lack `ChangelogVersion` or `SinceVersion` metadata in `SemconvMigrationCatalog.BuildEntries()`. This affects documentation attribution only; analyzer behavior remains unchanged.
+Rows whose Version is `unknown` lack `Version` metadata in `SemconvMigrationCatalog.BuildEntries()`. This affects documentation attribution only; analyzer behavior remains unchanged.
 
 | Version | Domain | Total | Expected live metadata | Fallback eligible | Exact fallback | Manual/context | Removed/no replacement |
 | -- | -- | --: | --: | --: | --: | --: | --: |
@@ -300,6 +300,7 @@ Regenerate with:
 
 ```bash
 ./build.sh GenerateDocs
-./build.sh CheckDocs    # fails if the committed markdown is stale
 ./build.sh AuditDocs    # prints catalog statistics, no file I/O
 ```
+
+Staleness is enforced automatically: every analyzer-project build fails if the committed markdown drifts from what the generator would emit.

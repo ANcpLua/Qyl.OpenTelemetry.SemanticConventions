@@ -46,7 +46,7 @@ public sealed class Qyl0301NonOtlpCollectorEndpointAnalyzer : AlAnalyzer {
     private static void AnalyzeAssignment(OperationAnalysisContext context) {
         var assignment = (ISimpleAssignmentOperation)context.Operation;
 
-        if (GetPropertyName(assignment.Target) is not { } propertyName ||
+        if (assignment.Target is not IMemberReferenceOperation { Member.Name: var propertyName } ||
             !s_endpointPropertyNames.Contains(propertyName, StringComparer.OrdinalIgnoreCase) ||
             assignment.Value.ConstantValue is not { HasValue: true, Value: string endpoint } ||
             IsOtlpEndpoint(endpoint)) {
@@ -55,13 +55,6 @@ public sealed class Qyl0301NonOtlpCollectorEndpointAnalyzer : AlAnalyzer {
 
         context.ReportDiagnostic(Diagnostic.Create(s_rule, assignment.Syntax.GetLocation(), endpoint));
     }
-
-    private static string? GetPropertyName(IOperation target) =>
-        target switch {
-            IPropertyReferenceOperation propRef => propRef.Property.Name,
-            IMemberReferenceOperation memberRef => memberRef.Member.Name,
-            _ => null
-        };
 
     private static bool IsOtlpEndpoint(string endpoint) =>
         s_otlpPatterns.Any(endpoint.ContainsIgnoreCase);

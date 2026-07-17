@@ -61,7 +61,7 @@ public sealed class Qyl0110MissingExceptionRecordingOnActivityAnalyzer : AlAnaly
 
         var activityInstance = GetReceiverIdentifier(invocation);
 
-        if (HasExceptionRecording(catchClause, activityInstance)) {
+        if (SearchForExceptionRecording(catchClause, activityInstance)) {
             return;
         }
 
@@ -122,9 +122,6 @@ public sealed class Qyl0110MissingExceptionRecordingOnActivityAnalyzer : AlAnaly
             IFieldReferenceOperation field => field.Field.Name,
             _ => null
         };
-
-    private static bool HasExceptionRecording(IOperation catchClause, string? activityIdentifier) =>
-        SearchForExceptionRecording(catchClause, activityIdentifier);
 
     private static bool SearchForExceptionRecording(IOperation operation, string? activityIdentifier) {
         switch (operation) {

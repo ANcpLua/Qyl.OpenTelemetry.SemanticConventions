@@ -49,7 +49,6 @@
     <Using Include="Microsoft.CodeAnalysis.CodeActions"/>
     <Using Include="ANcpLua.Roslyn.Utilities"/>
     <Using Include="ANcpLua.Roslyn.Utilities.Analyzers"/>
-    <Using Include="ANcpLua.Roslyn.Utilities.Contexts"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -104,7 +103,7 @@
   <!-- Keep diagnostic IDs and generated documentation synchronized on every normal build. -->
   <Target Name="_VerifyAnalyzerConsistency"
           AfterTargets="Build"
-          Condition="'$(SkipAnalyzerConsistencyCheck)' != 'true' AND '$(_QylInsideConsistencyCheck)' != 'true'">
+          Condition="'$(_QylInsideConsistencyCheck)' != 'true'">
     <PropertyGroup>
       <_DocsGenProject>$(MSBuildThisFileDirectory)../../tools/Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator/Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator.csproj</_DocsGenProject>
     </PropertyGroup>

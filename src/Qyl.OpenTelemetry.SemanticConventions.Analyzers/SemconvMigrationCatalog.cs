@@ -231,10 +231,7 @@ internal static class SemconvMigrationCatalog
                 "gen_ai.system_instructions",
                 "gen_ai.client.inference.operation.details"),
             SemconvMigrationKind.ContextSensitive,
-            "1.37.0",
-            "GenAI chat history events were replaced by structured span attributes or the gen_ai.client.inference.operation.details event.",
-            DiagnosticSeverity.Warning,
-            DiagnosticSeverity.Info);
+            "GenAI chat history events were replaced by structured span attributes or the gen_ai.client.inference.operation.details event.");
 
     private static SemconvMigrationCatalogEntry Normalize(SemconvMigrationCatalogEntry entry)
     {
@@ -242,8 +239,7 @@ internal static class SemconvMigrationCatalog
         var migrationKind = isGeneratedMetadata
             ? SemconvMigrationKind.DeprecatedButGenerated
             : entry.MigrationKind;
-        var sinceVersion = VersionOrKnownUnknown(entry.SinceVersion, entry.ChangelogVersion);
-        var changelogVersion = VersionOrKnownUnknown(entry.ChangelogVersion, entry.SinceVersion);
+        var version = VersionOrKnownUnknown(entry.Version);
         var evidence = string.IsNullOrWhiteSpace(entry.ChangelogEvidence)
             ? "Curated changelog migration entry."
             : entry.ChangelogEvidence;
@@ -258,15 +254,10 @@ internal static class SemconvMigrationCatalog
             entry.Kind,
             entry.Signal,
             entry.Domain,
-            sinceVersion,
+            version,
             entry.ReplacementNames,
             migrationKind,
-            changelogVersion,
-            evidence,
-            migrationKind == SemconvMigrationKind.DeprecatedButGenerated
-                ? DiagnosticSeverity.Info
-                : entry.DefaultProductionSeverity,
-            entry.FixtureSeverity);
+            evidence);
     }
 
     private static bool IsGeneratedMetadataEntry(SemconvMigrationCatalogEntry entry) =>
@@ -275,20 +266,8 @@ internal static class SemconvMigrationCatalog
         && (entry.ChangelogEvidence.StartsWith("semantic-conventions/model deprecated", StringComparison.Ordinal)
             || entry.ChangelogEvidence.StartsWith("semantic-conventions/model deprecated GenAI", StringComparison.Ordinal));
 
-    private static string VersionOrKnownUnknown(string preferred, string fallback)
-    {
-        if (!string.IsNullOrWhiteSpace(preferred))
-        {
-            return preferred;
-        }
-
-        if (!string.IsNullOrWhiteSpace(fallback))
-        {
-            return fallback;
-        }
-
-        return "unknown";
-    }
+    private static string VersionOrKnownUnknown(string version) =>
+        string.IsNullOrWhiteSpace(version) ? "unknown" : version;
 
     private static ImmutableDictionary<string, SemconvMigrationCatalogEntry> BuildEntriesByOldName(
         ImmutableArray<SemconvMigrationCatalogEntry> entries)
@@ -354,8 +333,7 @@ internal static class SemconvMigrationCatalog
         Require(entry.OldName, nameof(entry.OldName), entry);
         Require(entry.Signal, nameof(entry.Signal), entry);
         Require(entry.Domain, nameof(entry.Domain), entry);
-        Require(entry.SinceVersion, nameof(entry.SinceVersion), entry);
-        Require(entry.ChangelogVersion, nameof(entry.ChangelogVersion), entry);
+        Require(entry.Version, nameof(entry.Version), entry);
         Require(entry.ChangelogEvidence, nameof(entry.ChangelogEvidence), entry);
     }
 }

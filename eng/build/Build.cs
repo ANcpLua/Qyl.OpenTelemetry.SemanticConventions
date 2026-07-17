@@ -102,27 +102,11 @@ internal sealed class Build : NukeBuild
         .Description("Regenerate analyzer documentation and machine-readable rule artifacts.")
         .Executes(() => RunDocsGenerator(applicationArguments: null, buildGenerator: true));
 
-    /// <summary>CI guard: fail when the committed markdown drifts from what the generator would emit now.</summary>
-    Target CheckDocs => _ => _
-        .Description("Fail if docs are stale relative to the analyzer assembly.")
-        .DependsOn(Compile)
-        .Executes(() => RunDocsGenerator("--check"));
-
     /// <summary>Print catalog statistics (curated vs supplemental, fixable counts, ...). No file I/O.</summary>
     Target AuditDocs => _ => _
         .Description("Print analyzer catalog statistics.")
         .DependsOn(Compile)
         .Executes(() => RunDocsGenerator("--audit"));
-
-    /// <summary>
-    ///   Read-only consistency check: every analyzer .cs file's class name, class XML doc summary,
-    ///   and DiagnosticId const must agree with the runtime <c>DiagnosticDescriptor.Id</c> it
-    ///   registers. Fails the build on mismatches without touching files.
-    /// </summary>
-    Target EnforceIds => _ => _
-        .Description("Verify analyzer class/doc/id-const consistency against runtime descriptors.")
-        .DependsOn(Compile)
-        .Executes(() => RunDocsGenerator("--enforce-ids"));
 
     /// <summary>
     ///   Rewrite analyzer source files in-place to make class names, class XML doc summaries, and

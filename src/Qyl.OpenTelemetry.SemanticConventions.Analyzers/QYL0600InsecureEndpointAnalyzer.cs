@@ -68,7 +68,7 @@ public sealed class Qyl0600InsecureEndpointAnalyzer : AlAnalyzer {
     private static void AnalyzeAssignment(OperationAnalysisContext context) {
         var assignment = (ISimpleAssignmentOperation)context.Operation;
 
-        if (GetPropertyName(assignment.Target) is not { } propertyName || !IsEndpointProperty(propertyName)) {
+        if (assignment.Target is not IMemberReferenceOperation { Member.Name: var propertyName } || !IsEndpointProperty(propertyName)) {
             return;
         }
 
@@ -110,12 +110,6 @@ public sealed class Qyl0600InsecureEndpointAnalyzer : AlAnalyzer {
         }
     }
 
-    private static string? GetPropertyName(IOperation target) =>
-        target switch {
-            IPropertyReferenceOperation propRef => propRef.Property.Name,
-            IMemberReferenceOperation memberRef => memberRef.Member.Name,
-            _ => null
-        };
 
     private static bool IsEndpointProperty(string name) {
         foreach (var pattern in s_endpointPropertyNames) {
