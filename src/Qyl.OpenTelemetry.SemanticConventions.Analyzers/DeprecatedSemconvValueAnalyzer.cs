@@ -39,18 +39,9 @@ public sealed class DeprecatedSemconvValueAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        context.RegisterOperationAction(
-            ctx => AnalyzeInvocation(ctx, map),
-            OperationKind.Invocation);
-        context.RegisterOperationAction(
-            ctx => AnalyzeObjectCreation(ctx, map),
-            OperationKind.ObjectCreation);
-        context.RegisterOperationAction(
-            ctx => AnalyzeCollectionExpression(ctx, map),
-            OperationKind.CollectionExpression);
-        context.RegisterOperationAction(
-            ctx => AnalyzeAssignment(ctx, map),
-            OperationKind.SimpleAssignment);
+        TelemetryAttributePayloadDetection.RegisterPayloadAnalysis(
+            context,
+            (ctx, payload) => ReportIfDeprecated(ctx, map, payload));
     }
 
     private static Dictionary<(string AttrName, string Value), string> BuildValueDeprecationMap(Compilation compilation)
@@ -75,46 +66,6 @@ public sealed class DeprecatedSemconvValueAnalyzer : DiagnosticAnalyzer
         }
 
         return map;
-    }
-
-    private static void AnalyzeInvocation(
-        OperationAnalysisContext context,
-        Dictionary<(string AttrName, string Value), string> map)
-    {
-        var invocation = (IInvocationOperation)context.Operation;
-        TelemetryAttributePayloadDetection.AnalyzeInvocation(
-            invocation,
-            payload => ReportIfDeprecated(context, map, payload));
-    }
-
-    private static void AnalyzeObjectCreation(
-        OperationAnalysisContext context,
-        Dictionary<(string AttrName, string Value), string> map)
-    {
-        var objectCreation = (IObjectCreationOperation)context.Operation;
-        TelemetryAttributePayloadDetection.AnalyzeObjectCreation(
-            objectCreation,
-            payload => ReportIfDeprecated(context, map, payload));
-    }
-
-    private static void AnalyzeCollectionExpression(
-        OperationAnalysisContext context,
-        Dictionary<(string AttrName, string Value), string> map)
-    {
-        var collectionExpression = (ICollectionExpressionOperation)context.Operation;
-        TelemetryAttributePayloadDetection.AnalyzeCollectionExpression(
-            collectionExpression,
-            payload => ReportIfDeprecated(context, map, payload));
-    }
-
-    private static void AnalyzeAssignment(
-        OperationAnalysisContext context,
-        Dictionary<(string AttrName, string Value), string> map)
-    {
-        var assignment = (ISimpleAssignmentOperation)context.Operation;
-        TelemetryAttributePayloadDetection.AnalyzeAssignment(
-            assignment,
-            payload => ReportIfDeprecated(context, map, payload));
     }
 
     private static void ReportIfDeprecated(

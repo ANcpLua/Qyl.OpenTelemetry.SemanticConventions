@@ -9,6 +9,29 @@ internal static class TelemetryAttributePayloadDetection
         "SetBaggage",
         "AddBaggage");
 
+    /// <summary>
+    /// Registers the four payload-producing operation actions (invocation, object
+    /// creation, collection expression, indexer assignment) and routes every detected
+    /// literal payload to <paramref name="onPayload"/>.
+    /// </summary>
+    public static void RegisterPayloadAnalysis(
+        CompilationStartAnalysisContext context,
+        Action<OperationAnalysisContext, TelemetryAttributePayloadLiteral> onPayload)
+    {
+        context.RegisterOperationAction(
+            ctx => AnalyzeInvocation((IInvocationOperation)ctx.Operation, payload => onPayload(ctx, payload)),
+            OperationKind.Invocation);
+        context.RegisterOperationAction(
+            ctx => AnalyzeObjectCreation((IObjectCreationOperation)ctx.Operation, payload => onPayload(ctx, payload)),
+            OperationKind.ObjectCreation);
+        context.RegisterOperationAction(
+            ctx => AnalyzeCollectionExpression((ICollectionExpressionOperation)ctx.Operation, payload => onPayload(ctx, payload)),
+            OperationKind.CollectionExpression);
+        context.RegisterOperationAction(
+            ctx => AnalyzeAssignment((ISimpleAssignmentOperation)ctx.Operation, payload => onPayload(ctx, payload)),
+            OperationKind.SimpleAssignment);
+    }
+
     public static void AnalyzeInvocation(
         IInvocationOperation invocation,
         Action<TelemetryAttributePayloadLiteral> report)

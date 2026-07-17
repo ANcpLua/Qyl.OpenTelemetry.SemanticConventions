@@ -89,13 +89,13 @@ public sealed class Qyl0703ConsiderSamplingAnalyzer : AlAnalyzer {
 
         if (HasSamplerConfiguration(invocation, out var usesAlwaysOn)) {
             if (usesAlwaysOn) {
-                context.ReportDiagnostic(Diagnostic.Create(s_rule, GetMethodLocation(invocation)));
+                context.ReportDiagnostic(Diagnostic.Create(s_rule, invocation.GetMethodLocation()));
             }
 
             return;
         }
 
-        context.ReportDiagnostic(Diagnostic.Create(s_rule, GetMethodLocation(invocation)));
+        context.ReportDiagnostic(Diagnostic.Create(s_rule, invocation.GetMethodLocation()));
     }
 
     private static bool HasSamplerConfiguration(SyntaxNode invocation, out bool usesAlwaysOnSampler) {
@@ -141,11 +141,4 @@ public sealed class Qyl0703ConsiderSamplingAnalyzer : AlAnalyzer {
 
         return false;
     }
-
-    private static Location GetMethodLocation(InvocationExpressionSyntax invocation) =>
-        invocation.Expression switch {
-            MemberAccessExpressionSyntax memberAccess => memberAccess.Name.GetLocation(),
-            IdentifierNameSyntax identifier => identifier.GetLocation(),
-            _ => invocation.GetLocation()
-        };
 }

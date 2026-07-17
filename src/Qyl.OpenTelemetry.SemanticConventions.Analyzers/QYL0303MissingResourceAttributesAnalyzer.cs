@@ -70,14 +70,7 @@ public sealed class Qyl0303MissingResourceAttributesAnalyzer : AlAnalyzer {
         }
 
         if (!s_resourceConfigMethods.Any(allInvocations.Contains)) {
-            context.ReportDiagnostic(Diagnostic.Create(s_rule, GetMethodNameLocation(invocation), "service.name/service.version"));
+            context.ReportDiagnostic(Diagnostic.Create(s_rule, invocation.GetMethodLocation(), "service.name/service.version"));
         }
     }
-
-    private static Location GetMethodNameLocation(InvocationExpressionSyntax invocation) =>
-        invocation.Expression switch {
-            MemberAccessExpressionSyntax memberAccess => memberAccess.Name.GetLocation(),
-            IdentifierNameSyntax identifier => identifier.GetLocation(),
-            _ => invocation.GetLocation()
-        };
 }

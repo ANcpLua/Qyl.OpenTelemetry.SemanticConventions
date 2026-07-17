@@ -38,6 +38,7 @@ import sys
 
 from emit_attributes import (
     JSON_PATH,
+    REPO_SLUG,
     _collapse_ws,
     deprecated_message,
     resolve_collisions,

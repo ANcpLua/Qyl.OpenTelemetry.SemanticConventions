@@ -5,8 +5,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from emit_attributes import csharp_string  # noqa: E402
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -16,10 +20,6 @@ DEFAULT_PROJECT = REPO_ROOT / "src" / "Qyl.OpenTelemetry.SemanticConventions.Inc
 GENERATED_SOURCE = Path("Registry") / "SemanticConventionRegistry.g.cs"
 SCHEMA_DIRECTORY = Path("schemas") / "gen-ai"
 RESOURCE_PREFIX = "Qyl.OpenTelemetry.SemanticConventions.Incubating"
-
-
-def csharp_string(value: str) -> str:
-    return '"' + value.replace("\\", "\\\\").replace('"', '\\"').replace("\r", "\\r").replace("\n", "\\n") + '"'
 
 
 def source_for(registry: dict, schemas: list[dict]) -> str:

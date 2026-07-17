@@ -90,7 +90,7 @@ public sealed class Qyl0701UncompressedExportAnalyzer : AlAnalyzer {
         if (lambdaArg is not null) {
             if (!HasCompressionConfiguration(lambdaArg)
                 && HasHttpProtobufConfiguration(lambdaArg, httpProtobufType, context.SemanticModel, context.CancellationToken)) {
-                context.ReportDiagnostic(s_rule, GetMethodLocation(invocation));
+                context.ReportDiagnostic(s_rule, invocation.GetMethodLocation());
             }
 
             return;
@@ -108,7 +108,7 @@ public sealed class Qyl0701UncompressedExportAnalyzer : AlAnalyzer {
 
             if (otlpOptionsTypes.Any(optionsType => argType.InheritsFrom(optionsType) || argType.IsEqualTo(optionsType))
                 && IsHttpProtobufOptionsWithoutCompression(arg.Expression)) {
-                context.ReportDiagnostic(s_rule, GetMethodLocation(invocation));
+                context.ReportDiagnostic(s_rule, invocation.GetMethodLocation());
             }
         }
     }
@@ -183,11 +183,4 @@ public sealed class Qyl0701UncompressedExportAnalyzer : AlAnalyzer {
 
         return hasHttpProtobuf && !hasCompression;
     }
-
-    private static Location GetMethodLocation(InvocationExpressionSyntax invocation) =>
-        invocation.Expression switch {
-            MemberAccessExpressionSyntax memberAccess => memberAccess.Name.GetLocation(),
-            IdentifierNameSyntax identifier => identifier.GetLocation(),
-            _ => invocation.GetLocation()
-        };
 }

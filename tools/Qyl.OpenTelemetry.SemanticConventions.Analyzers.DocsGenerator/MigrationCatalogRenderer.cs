@@ -33,7 +33,7 @@ internal static class MigrationCatalogRenderer
             WriteVersionDomainTable,
             WriteCuratedInventory,
             WriteSupplementalValues,
-            (b, _) => WriteGeneratedFile(b),
+            (b, _) => MarkdownFormatting.WriteGeneratedFile(b),
         };
 
         foreach (var section in sections)
@@ -164,19 +164,6 @@ internal static class MigrationCatalogRenderer
         }
     }
 
-    private static void WriteGeneratedFile(StringBuilder sb)
-    {
-        sb.AppendLine("## Generated File");
-        sb.AppendLine();
-        sb.AppendLine("Regenerate with:");
-        sb.AppendLine();
-        sb.AppendLine("```bash");
-        sb.AppendLine("./build.sh GenerateDocs");
-        sb.AppendLine("./build.sh AuditDocs    # prints catalog statistics, no file I/O");
-        sb.AppendLine("```");
-        sb.AppendLine();
-        sb.AppendLine("Staleness is enforced automatically: every analyzer-project build fails if the committed markdown drifts from what the generator would emit.");
-    }
 
     private static string VersionSortKey(string version) =>
         version is "unknown" ? "0.0.0" : version;

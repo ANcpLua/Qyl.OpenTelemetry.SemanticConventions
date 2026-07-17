@@ -11,17 +11,10 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Pipeline.Tests;
 
 public sealed class RegistryDerivedAnalyzerTests
 {
-    private static readonly MetadataReference[] s_platformReferences =
-        ((string?)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")
-            ?? throw new InvalidOperationException("Trusted platform assemblies are unavailable."))
-        .Split(Path.PathSeparator)
-        .Select(path => MetadataReference.CreateFromFile(path))
-        .ToArray();
-
     [Fact]
     public async Task Qyl0013_uses_attribute_types_outside_the_old_handwritten_subset()
     {
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             new Qyl0013IncorrectAttributeTypeAnalyzer(),
             SinkSource("SetTag(\"gen_ai.memory.record.id\", 42);"));
 
@@ -33,7 +26,7 @@ public sealed class RegistryDerivedAnalyzerTests
     [Fact]
     public async Task Qyl0013_accepts_registry_array_and_schema_governed_any_types()
     {
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             new Qyl0013IncorrectAttributeTypeAnalyzer(),
             SinkSource(
                 """
@@ -47,7 +40,7 @@ public sealed class RegistryDerivedAnalyzerTests
     [Fact]
     public async Task Qyl0012_reports_only_noncanonical_spelling_of_known_enum_values()
     {
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             new Qyl0012InvalidAttributeValueAnalyzer(),
             SinkSource("SetTag(\"http.request.method\", \"get\");"));
 
@@ -59,7 +52,7 @@ public sealed class RegistryDerivedAnalyzerTests
     [Fact]
     public async Task Qyl0012_allows_unknown_extension_enum_values()
     {
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             new Qyl0012InvalidAttributeValueAnalyzer(),
             SinkSource("SetTag(\"http.request.method\", \"CUSTOM\");"));
 
@@ -69,7 +62,7 @@ public sealed class RegistryDerivedAnalyzerTests
     [Fact]
     public async Task Qyl0403_uses_the_complete_generated_operation_enum()
     {
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             new Qyl0403InvalidGenAiOperationNameAnalyzer(),
             SinkSource("SetTag(\"gen_ai.operation.name\", \"Execute_Tool\");"));
 
@@ -80,7 +73,7 @@ public sealed class RegistryDerivedAnalyzerTests
     [Fact]
     public async Task Qyl0403_accepts_new_memory_and_custom_operations()
     {
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             new Qyl0403InvalidGenAiOperationNameAnalyzer(),
             SinkSource(
                 """
@@ -94,7 +87,7 @@ public sealed class RegistryDerivedAnalyzerTests
     [Fact]
     public async Task Qyl0402_accepts_every_registry_defined_token_metric()
     {
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             new Qyl0402UseTokenUsageHistogramAnalyzer(),
             HistogramSource("gen_ai.server.time_per_output_token"));
 
@@ -104,7 +97,7 @@ public sealed class RegistryDerivedAnalyzerTests
     [Fact]
     public async Task Qyl0402_reports_unknown_genai_token_metrics()
     {
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             new Qyl0402UseTokenUsageHistogramAnalyzer(),
             HistogramSource("gen_ai.custom.token.count"));
 
@@ -115,7 +108,7 @@ public sealed class RegistryDerivedAnalyzerTests
     [Fact]
     public async Task Qyl0400_uses_generated_execute_tool_requirements()
     {
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             new GenAiExecuteToolNameAnalyzer(),
             SinkSource("SetTag(\"gen_ai.operation.name\", \"execute_tool\");"));
 
@@ -126,7 +119,7 @@ public sealed class RegistryDerivedAnalyzerTests
     [Fact]
     public async Task Qyl0400_is_silent_when_generated_execute_tool_requirement_is_present()
     {
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             new GenAiExecuteToolNameAnalyzer(),
             SinkSource(
                 """
@@ -140,7 +133,7 @@ public sealed class RegistryDerivedAnalyzerTests
     [Fact]
     public async Task Qyl0401_applies_the_internal_execute_tool_span_requirements()
     {
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             new Qyl0401GenAiMissingRequiredAttributesAnalyzer(),
             ActivitySource(
                 "ActivityKind.Internal",
@@ -153,7 +146,7 @@ public sealed class RegistryDerivedAnalyzerTests
     [Fact]
     public async Task Qyl0401_applies_the_client_inference_requirements()
     {
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             new Qyl0401GenAiMissingRequiredAttributesAnalyzer(),
             ActivitySource(
                 "ActivityKind.Client",
@@ -166,7 +159,7 @@ public sealed class RegistryDerivedAnalyzerTests
     [Fact]
     public async Task Qyl0401_applies_provider_refinement_requirements()
     {
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             new Qyl0401GenAiMissingRequiredAttributesAnalyzer(),
             ActivitySource(
                 "ActivityKind.Client",
@@ -182,7 +175,7 @@ public sealed class RegistryDerivedAnalyzerTests
     [Fact]
     public async Task Qyl0401_does_not_promote_conditional_model_to_universally_required()
     {
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             new Qyl0401GenAiMissingRequiredAttributesAnalyzer(),
             ActivitySource(
                 "ActivityKind.Client",
@@ -197,7 +190,7 @@ public sealed class RegistryDerivedAnalyzerTests
     [Fact]
     public async Task Qyl0401_resolves_mcp_client_spans_separately()
     {
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             new Qyl0401GenAiMissingRequiredAttributesAnalyzer(),
             ActivitySource(
                 "ActivityKind.Client",
@@ -209,33 +202,13 @@ public sealed class RegistryDerivedAnalyzerTests
     [Fact]
     public async Task Qyl0401_accepts_memory_operations_added_by_the_pinned_registry()
     {
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             new Qyl0401GenAiMissingRequiredAttributesAnalyzer(),
             ActivitySource(
                 "ActivityKind.Client",
                 "SetTag(\"gen_ai.operation.name\", \"create_memory_store\");"));
 
         diagnostics.Should().BeEmpty();
-    }
-
-    private static async Task<ImmutableArray<Diagnostic>> RunAsync(
-        DiagnosticAnalyzer analyzer,
-        string source)
-    {
-        var compilation = CSharpCompilation.Create(
-            $"registry-derived-analyzer-{Guid.NewGuid():N}",
-            [CSharpSyntaxTree.ParseText(source, CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Latest))],
-            s_platformReferences,
-            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-
-        var compilationErrors = compilation.GetDiagnostics()
-            .Where(diagnostic => diagnostic.Severity == DiagnosticSeverity.Error)
-            .ToArray();
-        compilationErrors.Should().BeEmpty(
-            "the analyzer test source must compile: {0}",
-            string.Join(Environment.NewLine, compilationErrors.Select(error => error.ToString())));
-
-        return await compilation.WithAnalyzers([analyzer]).GetAnalyzerDiagnosticsAsync();
     }
 
     private static string SinkSource(string statements) =>

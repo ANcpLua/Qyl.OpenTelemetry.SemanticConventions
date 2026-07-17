@@ -91,7 +91,7 @@ public sealed class Qyl0006MissingSchemaUrlAnalyzer : AlAnalyzer {
             return;
         }
 
-        var location = GetMethodLocation(invocation);
+        var location = invocation.GetMethodLocation();
         context.ReportDiagnostic(s_rule, location);
     }
 
@@ -121,11 +121,4 @@ public sealed class Qyl0006MissingSchemaUrlAnalyzer : AlAnalyzer {
 
         return false;
     }
-
-    private static Location GetMethodLocation(InvocationExpressionSyntax invocation) =>
-        invocation.Expression switch {
-            MemberAccessExpressionSyntax memberAccess => memberAccess.Name.GetLocation(),
-            IdentifierNameSyntax identifier => identifier.GetLocation(),
-            _ => invocation.GetLocation()
-        };
 }

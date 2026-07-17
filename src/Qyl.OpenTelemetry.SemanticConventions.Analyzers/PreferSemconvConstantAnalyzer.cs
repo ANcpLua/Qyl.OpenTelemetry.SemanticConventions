@@ -39,18 +39,9 @@ public sealed class PreferSemconvConstantAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        context.RegisterOperationAction(
-            ctx => AnalyzeInvocation(ctx, catalog),
-            OperationKind.Invocation);
-        context.RegisterOperationAction(
-            ctx => AnalyzeObjectCreation(ctx, catalog),
-            OperationKind.ObjectCreation);
-        context.RegisterOperationAction(
-            ctx => AnalyzeCollectionExpression(ctx, catalog),
-            OperationKind.CollectionExpression);
-        context.RegisterOperationAction(
-            ctx => AnalyzeAssignment(ctx, catalog),
-            OperationKind.SimpleAssignment);
+        TelemetryAttributePayloadDetection.RegisterPayloadAnalysis(
+            context,
+            (ctx, payload) => ReportIfKnownConstant(ctx, catalog, payload));
     }
 
     private static Dictionary<string, string> BuildCatalog(Compilation compilation)
@@ -89,48 +80,6 @@ public sealed class PreferSemconvConstantAnalyzer : DiagnosticAnalyzer
         }
 
         return catalog;
-    }
-
-    private static void AnalyzeInvocation(
-        OperationAnalysisContext context,
-        Dictionary<string, string> catalog)
-    {
-        var invocation = (IInvocationOperation)context.Operation;
-
-        TelemetryAttributePayloadDetection.AnalyzeInvocation(
-            invocation,
-            payload => ReportIfKnownConstant(context, catalog, payload));
-    }
-
-    private static void AnalyzeObjectCreation(
-        OperationAnalysisContext context,
-        Dictionary<string, string> catalog)
-    {
-        var objectCreation = (IObjectCreationOperation)context.Operation;
-
-        TelemetryAttributePayloadDetection.AnalyzeObjectCreation(
-            objectCreation,
-            payload => ReportIfKnownConstant(context, catalog, payload));
-    }
-
-    private static void AnalyzeCollectionExpression(
-        OperationAnalysisContext context,
-        Dictionary<string, string> catalog)
-    {
-        var collectionExpression = (ICollectionExpressionOperation)context.Operation;
-        TelemetryAttributePayloadDetection.AnalyzeCollectionExpression(
-            collectionExpression,
-            payload => ReportIfKnownConstant(context, catalog, payload));
-    }
-
-    private static void AnalyzeAssignment(
-        OperationAnalysisContext context,
-        Dictionary<string, string> catalog)
-    {
-        var assignment = (ISimpleAssignmentOperation)context.Operation;
-        TelemetryAttributePayloadDetection.AnalyzeAssignment(
-            assignment,
-            payload => ReportIfKnownConstant(context, catalog, payload));
     }
 
     private static void ReportIfKnownConstant(

@@ -5,9 +5,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 from pathlib import Path
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from emit_attributes import csharp_string  # noqa: E402
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -19,10 +23,6 @@ DEFAULT_OUTPUT = (
     / "Qyl.OpenTelemetry.SemanticConventions.Analyzers"
     / "SemconvRegistryFacts.g.cs"
 )
-
-
-def csharp_string(value: str) -> str:
-    return '"' + value.replace("\\", "\\\\").replace('"', '\\"').replace("\r", "\\r").replace("\n", "\\n") + '"'
 
 
 def value_kind(raw_type: object) -> tuple[str, bool]:

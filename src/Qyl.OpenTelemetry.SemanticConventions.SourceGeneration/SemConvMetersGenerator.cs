@@ -24,42 +24,12 @@ public sealed class SemConvMetersGenerator : IIncrementalGenerator
         "Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.SemanticConventionIncubatingMetersAttribute";
 
     /// <inheritdoc/>
-    public void Initialize(IncrementalGeneratorInitializationContext context)
-    {
-        context.RegisterPostInitializationOutput(static ctx =>
-        {
-            ctx.AddSource("SemanticConventionMetersAttribute.g.cs",
-                MarkerAttributeSource.For("SemanticConventionMetersAttribute"));
-            ctx.AddSource("SemanticConventionIncubatingMetersAttribute.g.cs",
-                MarkerAttributeSource.For("SemanticConventionIncubatingMetersAttribute"));
-        });
-
-        var stableMarkers = context.SyntaxProvider
-            .ForAttributeWithMetadataName(
-                StableAttributeFullName,
-                static (node, _) => node is ClassDeclarationSyntax,
-                static (ctx, ct) => MarkerExtractor.Extract(ctx, StabilityFilter.StableOnly, ct))
-            .WhereNotNull();
-
-        var incubatingMarkers = context.SyntaxProvider
-            .ForAttributeWithMetadataName(
-                IncubatingAttributeFullName,
-                static (node, _) => node is ClassDeclarationSyntax,
-                static (ctx, ct) => MarkerExtractor.Extract(ctx, StabilityFilter.AllStabilities, ct))
-            .WhereNotNull();
-
-        context.RegisterSourceOutput(stableMarkers, static (spc, marker) =>
-        {
-            var file = MetersEmitter.Generate(marker, RegistryLoader.Instruments);
-            if (!file.IsEmpty)
-                spc.AddSource(file.Name, file.Text);
-        });
-
-        context.RegisterSourceOutput(incubatingMarkers, static (spc, marker) =>
-        {
-            var file = MetersEmitter.Generate(marker, RegistryLoader.Instruments);
-            if (!file.IsEmpty)
-                spc.AddSource(file.Name, file.Text);
-        });
-    }
+    public void Initialize(IncrementalGeneratorInitializationContext context) =>
+        GeneratorPipeline.Register(
+            context,
+            "SemanticConventionMetersAttribute",
+            "SemanticConventionIncubatingMetersAttribute",
+            StableAttributeFullName,
+            IncubatingAttributeFullName,
+            static marker => MetersEmitter.Generate(marker, RegistryLoader.Instruments));
 }

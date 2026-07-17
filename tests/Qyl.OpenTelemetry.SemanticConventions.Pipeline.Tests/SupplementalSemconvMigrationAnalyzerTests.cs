@@ -10,13 +10,6 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Pipeline.Tests;
 
 public sealed class SupplementalSemconvMigrationAnalyzerTests
 {
-    private static readonly MetadataReference[] s_platformReferences =
-        ((string?)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")
-            ?? throw new InvalidOperationException("Trusted platform assemblies are unavailable."))
-        .Split(Path.PathSeparator)
-        .Select(path => MetadataReference.CreateFromFile(path))
-        .ToArray();
-
     public static TheoryData<string, string, int> PayloadContexts => new()
     {
         {
@@ -98,7 +91,7 @@ public sealed class SupplementalSemconvMigrationAnalyzerTests
         string expectedId,
         int expectedCount)
     {
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             [new SupplementalSemconvMigrationAnalyzer()],
             Fixture(statement));
 
@@ -112,7 +105,7 @@ public sealed class SupplementalSemconvMigrationAnalyzerTests
     [InlineData("_ = new ActivityEvent(\"rpc.message\", null, null);", "QYL0010")]
     public async Task Metric_and_event_name_paths_remain_owned(string statement, string expectedId)
     {
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             [new SupplementalSemconvMigrationAnalyzer()],
             Fixture(statement));
 
@@ -122,7 +115,7 @@ public sealed class SupplementalSemconvMigrationAnalyzerTests
     [Fact]
     public async Task Constant_key_is_not_reclassified_as_a_hard_coded_literal()
     {
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             [new SupplementalSemconvMigrationAnalyzer()],
             Fixture("SetTag(GenAiSystem, \"openai\");"));
 
@@ -132,10 +125,10 @@ public sealed class SupplementalSemconvMigrationAnalyzerTests
     [Fact]
     public async Task Bare_value_is_reported_but_constant_value_is_not()
     {
-        var bare = await RunAsync(
+        var bare = await AnalyzerHarness.RunAsync(
             [new SupplementalSemconvMigrationAnalyzer()],
             Fixture("SetTag(\"cloud.platform\", \"azure_aks\");"));
-        var constant = await RunAsync(
+        var constant = await AnalyzerHarness.RunAsync(
             [new SupplementalSemconvMigrationAnalyzer()],
             Fixture("SetTag(\"cloud.platform\", AzureAks);"));
 
@@ -146,7 +139,7 @@ public sealed class SupplementalSemconvMigrationAnalyzerTests
     [Fact]
     public async Task Catalog_owner_source_is_not_diagnosed()
     {
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             [new SupplementalSemconvMigrationAnalyzer()],
             Fixture("var values = new Dictionary<string, object?>(); values.Add(\"gen_ai.system\", \"openai\");"),
             "/repo/OpenTelemetryDeprecatedSemconvCatalog.cs");
@@ -157,7 +150,7 @@ public sealed class SupplementalSemconvMigrationAnalyzerTests
     [Fact]
     public async Task Generated_source_is_excluded_by_Roslyn()
     {
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             [new SupplementalSemconvMigrationAnalyzer()],
             Fixture("SetTag(\"gen_ai.system\", \"openai\");"),
             "/repo/Telemetry.g.cs");
@@ -168,7 +161,7 @@ public sealed class SupplementalSemconvMigrationAnalyzerTests
     [Fact]
     public async Task Catalog_fallback_reports_one_terminal_GenAi_replacement_without_live_metadata()
     {
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             [new SupplementalSemconvMigrationAnalyzer(), new LiteralMatchesDeprecatedSemconvAnalyzer()],
             Fixture("SetTag(\"gen_ai.system\", \"openai\");"));
 
@@ -180,7 +173,7 @@ public sealed class SupplementalSemconvMigrationAnalyzerTests
     [Fact]
     public async Task Live_metadata_wins_with_one_terminal_GenAi_replacement()
     {
-        var liveSemconvReference = CreateReference(
+        var liveSemconvReference = AnalyzerHarness.CompileReference(
             """
             namespace OpenTelemetry.SemanticConventions.Attributes.GenAi
             {
@@ -192,7 +185,7 @@ public sealed class SupplementalSemconvMigrationAnalyzerTests
             }
             """);
 
-        var diagnostics = await RunAsync(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             [new SupplementalSemconvMigrationAnalyzer(), new LiteralMatchesDeprecatedSemconvAnalyzer()],
             Fixture("SetTag(\"gen_ai.system\", \"openai\");"),
             additionalReferences: [liveSemconvReference]);
@@ -200,49 +193,6 @@ public sealed class SupplementalSemconvMigrationAnalyzerTests
         diagnostics.Should().ContainSingle();
         diagnostics[0].Id.Should().Be("QYL0005");
         diagnostics[0].Properties["ReplacementValue"].Should().Be("gen_ai.provider.name");
-    }
-
-    private static async Task<ImmutableArray<Diagnostic>> RunAsync(
-        ImmutableArray<DiagnosticAnalyzer> analyzers,
-        string source,
-        string filePath = "/repo/Consumer.cs",
-        ImmutableArray<MetadataReference> additionalReferences = default)
-    {
-        var syntaxTree = CSharpSyntaxTree.ParseText(
-            source,
-            CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Latest),
-            filePath);
-        var compilation = CSharpCompilation.Create(
-            $"supplemental-analyzer-{Guid.NewGuid():N}",
-            [syntaxTree],
-            additionalReferences.IsDefaultOrEmpty
-                ? s_platformReferences
-                : [.. s_platformReferences, .. additionalReferences],
-            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-
-        var errors = compilation.GetDiagnostics()
-            .Where(diagnostic => diagnostic.Severity == DiagnosticSeverity.Error)
-            .ToArray();
-        errors.Should().BeEmpty(
-            "the analyzer test source must compile: {0}",
-            string.Join(Environment.NewLine, errors.Select(error => error.ToString())));
-
-        return await compilation.WithAnalyzers(analyzers).GetAnalyzerDiagnosticsAsync();
-    }
-
-    private static PortableExecutableReference CreateReference(string source)
-    {
-        var compilation = CSharpCompilation.Create(
-            $"live-semconv-{Guid.NewGuid():N}",
-            [CSharpSyntaxTree.ParseText(source, CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Latest))],
-            s_platformReferences,
-            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-        using var stream = new MemoryStream();
-        var emit = compilation.Emit(stream);
-        emit.Success.Should().BeTrue(
-            "the referenced semantic-conventions fixture must compile: {0}",
-            string.Join(Environment.NewLine, emit.Diagnostics));
-        return MetadataReference.CreateFromImage(stream.ToArray());
     }
 
     private static string Fixture(string statement) =>

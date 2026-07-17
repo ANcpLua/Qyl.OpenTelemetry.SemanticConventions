@@ -39,6 +39,10 @@ INCUBATING_ROOT = os.path.join(
     SRC, "Qyl.OpenTelemetry.SemanticConventions.Incubating", "Attributes"
 )
 
+def csharp_string(value: str) -> str:
+    return '"' + value.replace("\\", "\\\\").replace('"', '\\"').replace("\r", "\\r").replace("\n", "\\n") + '"'
+
+
 REPO_SLUG = {
     "core": "open-telemetry/semantic-conventions",
     "genai": "open-telemetry/semantic-conventions-genai",

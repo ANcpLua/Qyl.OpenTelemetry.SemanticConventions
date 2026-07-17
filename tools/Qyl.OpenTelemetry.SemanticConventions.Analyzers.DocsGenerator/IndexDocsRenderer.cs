@@ -33,7 +33,7 @@ internal static class IndexDocsRenderer
             WritePrecedenceAndSuppression,
             WriteSeverityPolicy,
             WriteRelatedDocs,
-            WriteGeneratedFile,
+            MarkdownFormatting.WriteGeneratedFile,
         };
 
         foreach (var section in sections)
@@ -140,17 +140,4 @@ internal static class IndexDocsRenderer
         sb.AppendLine("- [`AnalyzerReleases.Shipped.md`](../src/Qyl.OpenTelemetry.SemanticConventions.Analyzers/AnalyzerReleases.Shipped.md) — release-tracking manifest with `ClassName, [Documentation](url)` attribution per Microsoft NetAnalyzers convention.");
     }
 
-    private static void WriteGeneratedFile(StringBuilder sb)
-    {
-        sb.AppendLine("## Generated File");
-        sb.AppendLine();
-        sb.AppendLine("Regenerate with:");
-        sb.AppendLine();
-        sb.AppendLine("```bash");
-        sb.AppendLine("./build.sh GenerateDocs");
-        sb.AppendLine("./build.sh AuditDocs    # prints catalog statistics, no file I/O");
-        sb.AppendLine("```");
-        sb.AppendLine();
-        sb.AppendLine("Staleness is enforced automatically: every analyzer-project build fails if the committed markdown drifts from what the generator would emit.");
-    }
 }

@@ -39,20 +39,10 @@ public sealed class Qyl0304EnableEventSourceSupportAnalyzerTests
         string source,
         IReadOnlyDictionary<string, string> buildProperties)
     {
-        var compilation = CSharpCompilation.Create(
-            "qyl0304",
-            [CSharpSyntaxTree.ParseText(source)],
-            [
-                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(EventSource).Assembly.Location)
-            ],
-            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-
-        var withAnalyzers = compilation.WithAnalyzers(
+        var diagnostics = await AnalyzerHarness.RunAsync(
             [new Qyl0304EnableEventSourceSupportAnalyzer()],
-            new AnalyzerOptions([], new GlobalOptionsProvider(buildProperties)));
-
-        var diagnostics = await withAnalyzers.GetAnalyzerDiagnosticsAsync();
+            source,
+            options: new AnalyzerOptions([], new GlobalOptionsProvider(buildProperties)));
         return [.. diagnostics.Where(d => d.Id == "QYL0304")];
     }
 

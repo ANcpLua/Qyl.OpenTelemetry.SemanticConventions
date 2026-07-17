@@ -24,42 +24,12 @@ public sealed class SemConvActivitiesGenerator : IIncrementalGenerator
         "Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.SemanticConventionIncubatingActivitiesAttribute";
 
     /// <inheritdoc/>
-    public void Initialize(IncrementalGeneratorInitializationContext context)
-    {
-        context.RegisterPostInitializationOutput(static ctx =>
-        {
-            ctx.AddSource("SemanticConventionActivitiesAttribute.g.cs",
-                MarkerAttributeSource.For("SemanticConventionActivitiesAttribute"));
-            ctx.AddSource("SemanticConventionIncubatingActivitiesAttribute.g.cs",
-                MarkerAttributeSource.For("SemanticConventionIncubatingActivitiesAttribute"));
-        });
-
-        var stableMarkers = context.SyntaxProvider
-            .ForAttributeWithMetadataName(
-                StableAttributeFullName,
-                static (node, _) => node is ClassDeclarationSyntax,
-                static (ctx, ct) => MarkerExtractor.Extract(ctx, StabilityFilter.StableOnly, ct))
-            .WhereNotNull();
-
-        var incubatingMarkers = context.SyntaxProvider
-            .ForAttributeWithMetadataName(
-                IncubatingAttributeFullName,
-                static (node, _) => node is ClassDeclarationSyntax,
-                static (ctx, ct) => MarkerExtractor.Extract(ctx, StabilityFilter.AllStabilities, ct))
-            .WhereNotNull();
-
-        context.RegisterSourceOutput(stableMarkers, static (spc, marker) =>
-        {
-            var file = ActivityExtensionsEmitter.Generate(marker, ActivityRegistryLoader.Registry);
-            if (!file.IsEmpty)
-                spc.AddSource(file.Name, file.Text);
-        });
-
-        context.RegisterSourceOutput(incubatingMarkers, static (spc, marker) =>
-        {
-            var file = ActivityExtensionsEmitter.Generate(marker, ActivityRegistryLoader.Registry);
-            if (!file.IsEmpty)
-                spc.AddSource(file.Name, file.Text);
-        });
-    }
+    public void Initialize(IncrementalGeneratorInitializationContext context) =>
+        GeneratorPipeline.Register(
+            context,
+            "SemanticConventionActivitiesAttribute",
+            "SemanticConventionIncubatingActivitiesAttribute",
+            StableAttributeFullName,
+            IncubatingAttributeFullName,
+            static marker => ActivityExtensionsEmitter.Generate(marker, ActivityRegistryLoader.Registry));
 }

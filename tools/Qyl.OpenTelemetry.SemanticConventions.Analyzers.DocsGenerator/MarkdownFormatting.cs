@@ -3,6 +3,8 @@
 
 using System.Collections.Immutable;
 
+using System.Text;
+
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator;
 
 /// <summary>
@@ -22,4 +24,18 @@ internal static class MarkdownFormatting
         names.Length == 0
             ? "-"
             : Escape(string.Join(", ", names.Select(n => "`" + n + "`")));
+
+    public static void WriteGeneratedFile(StringBuilder sb)
+    {
+        sb.AppendLine("## Generated File");
+        sb.AppendLine();
+        sb.AppendLine("Regenerate with:");
+        sb.AppendLine();
+        sb.AppendLine("```bash");
+        sb.AppendLine("./build.sh GenerateDocs");
+        sb.AppendLine("./build.sh AuditDocs    # prints catalog statistics, no file I/O");
+        sb.AppendLine("```");
+        sb.AppendLine();
+        sb.AppendLine("Staleness is enforced automatically: every analyzer-project build fails if the committed markdown drifts from what the generator would emit.");
+    }
 }

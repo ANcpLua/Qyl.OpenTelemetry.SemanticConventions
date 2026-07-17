@@ -44,30 +44,6 @@ public sealed class Qyl0108NonInterceptableTracedAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers symbol actions to analyze methods with [Traced] for interceptability.</summary>
-    protected override void InitializeCore(AnalysisContext context) {
-        context.RegisterCompilationStartAction(compilationContext => {
-            if (compilationContext.Compilation.GetTypeByMetadataName(TracedAttributeFullName) is not { } tracedType) {
-                return;
-            }
-
-            compilationContext.RegisterSymbolAction(
-                ctx => AnalyzeMethod(ctx, tracedType),
-                SymbolKind.Method);
-        });
-    }
-
-    private static void AnalyzeMethod(SymbolAnalysisContext context, INamedTypeSymbol tracedType) {
-        if (context.Symbol is not IMethodSymbol { IsAbstract: true } and not IMethodSymbol { IsExtern: true } and not IMethodSymbol { IsPartialDefinition: true }) {
-            return;
-        }
-
-        var method = (IMethodSymbol)context.Symbol;
-
-        if (method.HasAttribute(tracedType)) {
-            context.ReportDiagnostic(Diagnostic.Create(
-                s_rule,
-                method.Locations.FirstOrDefault() ?? Location.None,
-                method.Name));
-        }
-    }
+    protected override void InitializeCore(AnalysisContext context) =>
+        NonInterceptableAttributeDetection.Register(context, TracedAttributeFullName, s_rule);
 }

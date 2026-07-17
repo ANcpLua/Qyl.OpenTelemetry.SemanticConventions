@@ -63,7 +63,7 @@ public sealed class Qyl0106OrphanedTracedTagAnalyzer : AlAnalyzer {
         INamedTypeSymbol tracedTagType) {
         var method = (IMethodSymbol)context.Symbol;
 
-        if (method.HasAttribute(tracedType) || HasTracedOnType(method.ContainingType, tracedType)) {
+        if (method.HasAttribute(tracedType) || TracedAttributeFacts.HasTracedOnTypeChain(method.ContainingType, tracedType)) {
             return;
         }
 
@@ -75,15 +75,5 @@ public sealed class Qyl0106OrphanedTracedTagAnalyzer : AlAnalyzer {
                     param.Name));
             }
         }
-    }
-
-    private static bool HasTracedOnType(INamedTypeSymbol? type, INamedTypeSymbol tracedType) {
-        for (var current = type; current is not null; current = current.BaseType) {
-            if (current.HasAttribute(tracedType)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

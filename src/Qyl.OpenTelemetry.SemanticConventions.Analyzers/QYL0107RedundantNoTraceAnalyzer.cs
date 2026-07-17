@@ -64,21 +64,11 @@ public sealed class Qyl0107RedundantNoTraceAnalyzer : AlAnalyzer {
         INamedTypeSymbol noTraceType) {
         var method = (IMethodSymbol)context.Symbol;
 
-        if (method.HasAttribute(noTraceType) && !HasTracedOnType(method.ContainingType, tracedType)) {
+        if (method.HasAttribute(noTraceType) && !TracedAttributeFacts.HasTracedOnTypeChain(method.ContainingType, tracedType)) {
             context.ReportDiagnostic(Diagnostic.Create(
                 s_rule,
                 method.Locations.FirstOrDefault() ?? Location.None,
                 method.Name));
         }
-    }
-
-    private static bool HasTracedOnType(INamedTypeSymbol? type, INamedTypeSymbol tracedType) {
-        for (var current = type; current is not null; current = current.BaseType) {
-            if (current.HasAttribute(tracedType)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }
