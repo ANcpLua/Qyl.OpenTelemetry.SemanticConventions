@@ -27,48 +27,15 @@ public sealed class Qyl0106OrphanedTracedTagCodeFixProvider : CodeFixProvider {
             return;
         }
 
-        if (FindAttributeByName(parameter, "TracedTag") is not { } attributeSyntax) {
+        if (SemconvCodeFixHelpers.FindAttributeByName(parameter, "TracedTag") is not { } attributeSyntax) {
             return;
         }
 
         context.RegisterCodeFix(
             CodeAction.Create(
                 CodeFixResources.QYL0106CodeFixTitle,
-                _ => RemoveAttributeAsync(context.Document, root, attributeSyntax),
+                _ => Task.FromResult(SemconvCodeFixHelpers.RemoveAttribute(context.Document, root, attributeSyntax)),
                 nameof(Qyl0106OrphanedTracedTagCodeFixProvider)),
             diagnostic);
-    }
-
-    private static AttributeSyntax? FindAttributeByName(SyntaxNode node, string attributeShortName) {
-        foreach (var attributeList in node.ChildNodes().OfType<AttributeListSyntax>()) {
-            foreach (var attribute in attributeList.Attributes) {
-                var name = attribute.Name.ToString();
-                if (name == attributeShortName || name.EndsWithOrdinal("." + attributeShortName) ||
-                    name == attributeShortName + "Attribute" ||
-                    name.EndsWithOrdinal("." + attributeShortName + "Attribute")) {
-                    return attribute;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private static Task<Document> RemoveAttributeAsync(Document document, SyntaxNode root, AttributeSyntax attribute) {
-        var newRoot = RemoveAttribute(root, attribute);
-        return Task.FromResult(document.WithSyntaxRoot(newRoot));
-    }
-
-    private static SyntaxNode RemoveAttribute(SyntaxNode root, AttributeSyntax attribute) {
-        if (attribute.Parent is not AttributeListSyntax attributeList) {
-            return root;
-        }
-
-        if (attributeList.Attributes.Count == 1) {
-            return root.RemoveNode(attributeList, SyntaxRemoveOptions.KeepNoTrivia)!;
-        }
-
-        var newList = attributeList.WithAttributes(attributeList.Attributes.Remove(attribute));
-        return root.ReplaceNode(attributeList, newList);
     }
 }

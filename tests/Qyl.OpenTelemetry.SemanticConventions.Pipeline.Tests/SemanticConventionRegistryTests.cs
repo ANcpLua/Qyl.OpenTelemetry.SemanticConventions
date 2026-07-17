@@ -24,9 +24,6 @@ public sealed class SemanticConventionRegistryTests
     {
         SemanticConventionRegistry.CoreSchemaUrl.Should()
             .Be("https://opentelemetry.io/schemas/1.43.0");
-        SemanticConventionRegistry.GenAiSourceCommit.Should()
-            .Be("33b7f9da9ade6162d4a5c16247d0bc6ad5f8b469");
-        SemanticConventionRegistry.WeaverVersion.Should().Be("0.24.2");
     }
 
     [Fact]

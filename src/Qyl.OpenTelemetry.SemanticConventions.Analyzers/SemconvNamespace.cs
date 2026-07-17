@@ -45,6 +45,64 @@ internal static class SemconvNamespace
             || typeName.EndsWith("Activities", StringComparison.Ordinal);
     }
 
+    /// <summary>
+    /// Lazily enumerates every type in the compilation that satisfies
+    /// <see cref="IsAttributesType"/>. Lazy so callers that stop early
+    /// (e.g. a first-match search) do not pay for a full walk.
+    /// </summary>
+    public static IEnumerable<INamedTypeSymbol> EnumerateAttributesTypes(
+        Compilation compilation,
+        bool allowNonAttributesTiers = false) =>
+        compilation.GlobalNamespace.GetAllTypes()
+            .Where(type => IsAttributesType(type, allowNonAttributesTiers));
+
+    /// <summary>
+    /// Pairs every nested <c>*Values</c> type of <paramref name="attributesType"/> with
+    /// the sibling <c>Attribute*</c> const that names its attribute, and yields each
+    /// constant string field of the paired type together with that attribute name.
+    /// </summary>
+    public static IEnumerable<(string AttributeName, IFieldSymbol ValueField)> EnumerateAttributeValueConstants(
+        INamedTypeSymbol attributesType)
+    {
+        Dictionary<string, string>? attrConstNameToValue = null;
+        foreach (var member in attributesType.GetMembers())
+        {
+            if (member is IFieldSymbol { IsConst: true, Type.SpecialType: SpecialType.System_String, ConstantValue: string attrName } field
+                && !string.IsNullOrEmpty(attrName))
+            {
+                attrConstNameToValue ??= new Dictionary<string, string>(StringComparer.Ordinal);
+                attrConstNameToValue[field.Name] = attrName;
+            }
+        }
+
+        if (attrConstNameToValue is null)
+        {
+            yield break;
+        }
+
+        foreach (var nested in attributesType.GetTypeMembers())
+        {
+            if (!nested.Name.EndsWith("Values", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            var prefix = nested.Name.Substring(0, nested.Name.Length - "Values".Length);
+            if (!attrConstNameToValue.TryGetValue("Attribute" + prefix, out var attributeName))
+            {
+                continue;
+            }
+
+            foreach (var nestedMember in nested.GetMembers())
+            {
+                if (nestedMember is IFieldSymbol { IsConst: true, Type.SpecialType: SpecialType.System_String, ConstantValue: string } valueField)
+                {
+                    yield return (attributeName, valueField);
+                }
+            }
+        }
+    }
+
     public static bool IsInSemconvNamespace(INamespaceSymbol? ns)
     {
         var s = ns?.ToDisplayString();

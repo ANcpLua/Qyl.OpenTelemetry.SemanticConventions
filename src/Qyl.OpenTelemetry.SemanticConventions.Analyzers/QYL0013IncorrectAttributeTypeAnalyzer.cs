@@ -18,7 +18,7 @@ public sealed class Qyl0013IncorrectAttributeTypeAnalyzer : AlAnalyzer
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <inheritdoc />
-    protected override void RegisterActions(AnalysisContext context) =>
+    protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterOperationAction(AnalyzeInvocation, OperationKind.Invocation);
 
     private static void AnalyzeInvocation(OperationAnalysisContext context)
@@ -51,22 +51,16 @@ public sealed class Qyl0013IncorrectAttributeTypeAnalyzer : AlAnalyzer
     private static bool IsTypeMatch(ITypeSymbol actualType, SemconvAttributeValueKind expectedKind) =>
         expectedKind switch
         {
-            SemconvAttributeValueKind.String => actualType.SpecialType == SpecialType.System_String,
+            SemconvAttributeValueKind.String => actualType.IsString(),
             SemconvAttributeValueKind.Integer => IsIntegerType(actualType),
             SemconvAttributeValueKind.Double => IsFloatingPointType(actualType),
-            SemconvAttributeValueKind.Boolean => actualType.SpecialType == SpecialType.System_Boolean,
-            SemconvAttributeValueKind.StringArray => HasSequenceElementType(actualType, IsStringType),
+            SemconvAttributeValueKind.Boolean => actualType.IsBoolean(),
+            SemconvAttributeValueKind.StringArray => HasSequenceElementType(actualType, TypeSymbolExtensions.IsString),
             SemconvAttributeValueKind.IntegerArray => HasSequenceElementType(actualType, IsIntegerType),
             SemconvAttributeValueKind.DoubleArray => HasSequenceElementType(actualType, IsFloatingPointType),
-            SemconvAttributeValueKind.BooleanArray => HasSequenceElementType(actualType, IsBooleanType),
+            SemconvAttributeValueKind.BooleanArray => HasSequenceElementType(actualType, TypeSymbolExtensions.IsBoolean),
             _ => true,
         };
-
-    private static bool IsStringType(ITypeSymbol type) =>
-        type.SpecialType == SpecialType.System_String;
-
-    private static bool IsBooleanType(ITypeSymbol type) =>
-        type.SpecialType == SpecialType.System_Boolean;
 
     private static bool IsIntegerType(ITypeSymbol type) =>
         type.SpecialType is

@@ -45,7 +45,7 @@ public sealed class Qyl0700MissingOtlpConfigurationAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers syntax tree actions to analyze OTLP exporter configuration.</summary>
-    protected override void RegisterActions(AnalysisContext context) =>
+    protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterSyntaxNodeAction(AnalyzeInvocation, SyntaxKind.InvocationExpression);
 
     private static void AnalyzeInvocation(SyntaxNodeAnalysisContext context) {
@@ -112,13 +112,6 @@ public sealed class Qyl0700MissingOtlpConfigurationAnalyzer : AlAnalyzer {
         return false;
     }
 
-    private static string? GetMethodName(InvocationExpressionSyntax invocation) =>
-        invocation.Expression switch {
-            MemberAccessExpressionSyntax memberAccess => memberAccess.Name.Identifier.Text,
-            IdentifierNameSyntax identifier => identifier.Identifier.Text,
-            _ => null
-        };
-
     private static bool HasEnvironmentVariableSet(InvocationExpressionSyntax invocation) {
         if (invocation.Ancestors().OfType<MethodDeclarationSyntax>().FirstOrDefault() is not { } containingMethod) {
             return false;
@@ -126,7 +119,7 @@ public sealed class Qyl0700MissingOtlpConfigurationAnalyzer : AlAnalyzer {
 
         // Only check invocations that appear before this one in the method
         foreach (var inv in containingMethod.DescendantNodes().OfType<InvocationExpressionSyntax>().TakeWhile(inv => inv != invocation)) {
-            if (GetMethodName(inv) is "SetEnvironmentVariable" or "Add"
+            if (inv.GetMethodName() is "SetEnvironmentVariable" or "Add"
                 && inv.ArgumentList.Arguments is [{ Expression: LiteralExpressionSyntax literal }, ..]
                 && literal.Token.ValueText.ContainsIgnoreCase("OTEL_EXPORTER_OTLP_ENDPOINT")) {
                 return true;

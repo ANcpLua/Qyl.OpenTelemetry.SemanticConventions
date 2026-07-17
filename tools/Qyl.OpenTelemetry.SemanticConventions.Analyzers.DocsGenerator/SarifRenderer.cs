@@ -1,9 +1,12 @@
 // Copyright (c) Alexander Nachtmann
 // SPDX-License-Identifier: Apache-2.0
 
+extern alias analyzers;
+
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.CodeAnalysis;
+using RuleDocs = analyzers::Qyl.OpenTelemetry.SemanticConventions.Analyzers.RuleDocs;
 
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator;
 
@@ -28,7 +31,7 @@ internal static class SarifRenderer
         foreach (var d in descriptors)
         {
             var ruleName = idToClass.TryGetValue(d.Id, out var className)
-                ? SymbolicNaming.ToSymbolicName(className)
+                ? RuleDocs.SymbolicNameFromFile(className)
                 : d.Id;
 
             var rule = new JsonObject

@@ -46,7 +46,7 @@ public sealed class Qyl0103DuplicateInstrumentationAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers actions to analyze methods with [Traced] attribute.</summary>
-    protected override void RegisterActions(AnalysisContext context) {
+    protected override void InitializeCore(AnalysisContext context) {
         context.RegisterCompilationStartAction(compilationContext => {
             if (compilationContext.Compilation.GetTypeByMetadataName(TracedAttributeFullName) is not { } tracedAttributeType) {
                 return;
@@ -63,8 +63,8 @@ public sealed class Qyl0103DuplicateInstrumentationAnalyzer : AlAnalyzer {
         }
 
         // [Traced] on the method itself, or inherited from the containing type
-        if (!HasTracedAttribute(method, tracedAttributeType)
-            && (method.ContainingType is null || !HasTracedAttribute(method.ContainingType, tracedAttributeType))) {
+        if (!method.HasAttribute(tracedAttributeType)
+            && (method.ContainingType is null || !method.ContainingType.HasAttribute(tracedAttributeType))) {
             return;
         }
 
@@ -77,16 +77,6 @@ public sealed class Qyl0103DuplicateInstrumentationAnalyzer : AlAnalyzer {
                 return;
             }
         }
-    }
-
-    private static bool HasTracedAttribute(ISymbol symbol, INamedTypeSymbol tracedAttributeType) {
-        foreach (var attribute in symbol.GetAttributes()) {
-            if (attribute.AttributeClass.IsEqualTo(tracedAttributeType)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private static bool ContainsStartActivityCall(IOperation operation) {

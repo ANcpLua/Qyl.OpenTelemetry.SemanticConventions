@@ -52,7 +52,7 @@ public sealed class Qyl0302MissingOTelConfigurationAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers syntax tree actions to analyze OpenTelemetry configuration.</summary>
-    protected override void RegisterActions(AnalysisContext context) =>
+    protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterSyntaxNodeAction(AnalyzeInvocation, SyntaxKind.InvocationExpression);
 
     private static void AnalyzeInvocation(SyntaxNodeAnalysisContext context) {
@@ -69,7 +69,7 @@ public sealed class Qyl0302MissingOTelConfigurationAnalyzer : AlAnalyzer {
 
         var allInvocations = new HashSet<string>();
         foreach (var inv in containingMethod.DescendantNodes().OfType<InvocationExpressionSyntax>()) {
-            if (GetMethodName(inv) is { } name) {
+            if (GetMemberAccessMethodName(inv) is { } name) {
                 allInvocations.Add(name);
             }
         }
@@ -80,7 +80,7 @@ public sealed class Qyl0302MissingOTelConfigurationAnalyzer : AlAnalyzer {
     }
 
     // Only match member access to avoid matching local methods with same name
-    private static string? GetMethodName(InvocationExpressionSyntax invocation) =>
+    private static string? GetMemberAccessMethodName(InvocationExpressionSyntax invocation) =>
         invocation.Expression switch {
             MemberAccessExpressionSyntax memberAccess => memberAccess.Name.Identifier.Text,
             _ => null

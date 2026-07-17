@@ -44,7 +44,7 @@ public sealed class Qyl0108NonInterceptableTracedAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers symbol actions to analyze methods with [Traced] for interceptability.</summary>
-    protected override void RegisterActions(AnalysisContext context) {
+    protected override void InitializeCore(AnalysisContext context) {
         context.RegisterCompilationStartAction(compilationContext => {
             if (compilationContext.Compilation.GetTypeByMetadataName(TracedAttributeFullName) is not { } tracedType) {
                 return;

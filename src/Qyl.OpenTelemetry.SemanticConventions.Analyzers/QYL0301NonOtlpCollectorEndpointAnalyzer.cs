@@ -40,7 +40,7 @@ public sealed class Qyl0301NonOtlpCollectorEndpointAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers operation actions to analyze endpoint assignments.</summary>
-    protected override void RegisterActions(AnalysisContext context) =>
+    protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterOperationAction(AnalyzeAssignment, OperationKind.SimpleAssignment);
 
     private static void AnalyzeAssignment(OperationAnalysisContext context) {

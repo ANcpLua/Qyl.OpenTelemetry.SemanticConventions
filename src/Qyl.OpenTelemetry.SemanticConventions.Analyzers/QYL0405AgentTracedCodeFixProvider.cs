@@ -24,55 +24,17 @@ public sealed class Qyl0405AgentTracedCodeFixProvider : CodeFixProvider {
 
         foreach (var diagnostic in context.Diagnostics) {
             var token = root.FindToken(diagnostic.Location.SourceSpan.Start);
-            if (token.Parent?.FirstAncestorOrSelf<MethodDeclarationSyntax>() is not { } methodDeclaration) {
+            if (token.Parent?.FirstAncestorOrSelf<MethodDeclarationSyntax>() is not { } methodDeclaration
+                || SemconvCodeFixHelpers.FindAttributeByName(methodDeclaration, "AgentTraced") is not { } targetAttribute) {
                 continue;
             }
 
             context.RegisterCodeFix(
                 CodeAction.Create(
                     CodeFixResources.QYL0405CodeFixTitle,
-                    ct => RemoveAgentTracedAttributeAsync(context.Document, methodDeclaration, root, ct),
+                    _ => Task.FromResult(SemconvCodeFixHelpers.RemoveAttribute(context.Document, root, targetAttribute)),
                     nameof(CodeFixResources.QYL0405CodeFixTitle)),
                 diagnostic);
         }
-    }
-
-    private static Task<Document> RemoveAgentTracedAttributeAsync(
-        Document document,
-        MethodDeclarationSyntax methodDeclaration,
-        SyntaxNode root,
-        CancellationToken _) {
-        AttributeSyntax? targetAttribute = null;
-        AttributeListSyntax? targetList = null;
-
-        foreach (var attrList in methodDeclaration.AttributeLists) {
-            foreach (var attr in attrList.Attributes) {
-                var name = attr.Name.ToString();
-                if (name is "AgentTraced" or "AgentTracedAttribute"
-                    or "Qyl.Instrumentation.Instrumentation.AgentTraced"
-                    or "Qyl.Instrumentation.Instrumentation.AgentTracedAttribute") {
-                    targetAttribute = attr;
-                    targetList = attrList;
-                    break;
-                }
-            }
-
-            if (targetAttribute is not null) {
-                break;
-            }
-        }
-
-        if (targetAttribute is null || targetList is null) {
-            return Task.FromResult(document);
-        }
-
-        SyntaxNode newRoot;
-        if (targetList.Attributes.Count == 1) {
-            newRoot = root.RemoveNode(targetList, SyntaxRemoveOptions.KeepNoTrivia)!;
-        } else {
-            newRoot = root.RemoveNode(targetAttribute, SyntaxRemoveOptions.KeepNoTrivia)!;
-        }
-
-        return Task.FromResult(document.WithSyntaxRoot(newRoot));
     }
 }

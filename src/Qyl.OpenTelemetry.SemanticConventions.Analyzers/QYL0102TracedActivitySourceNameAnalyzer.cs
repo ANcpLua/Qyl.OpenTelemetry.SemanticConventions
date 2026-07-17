@@ -40,7 +40,7 @@ public sealed class Qyl0102TracedActivitySourceNameAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers symbol actions to analyze types and methods with [Traced] attribute.</summary>
-    protected override void RegisterActions(AnalysisContext context) {
+    protected override void InitializeCore(AnalysisContext context) {
         context.RegisterSymbolAction(
             static context => AnalyzeSymbol(context, context.Symbol),
             SymbolKind.NamedType,

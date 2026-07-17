@@ -32,7 +32,7 @@ public sealed class Qyl0200UnregisteredMeterAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers compilation-wide analysis to correlate Meter creations with AddMeter registrations.</summary>
-    protected override void RegisterActions(AnalysisContext context) =>
+    protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterCompilationStartAction(OnCompilationStart);
 
     private static void OnCompilationStart(CompilationStartAnalysisContext context) {

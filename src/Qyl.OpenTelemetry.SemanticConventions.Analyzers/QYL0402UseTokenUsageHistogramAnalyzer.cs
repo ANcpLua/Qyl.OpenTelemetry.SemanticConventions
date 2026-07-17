@@ -19,7 +19,7 @@ public sealed class Qyl0402UseTokenUsageHistogramAnalyzer : AlAnalyzer
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <inheritdoc />
-    protected override void RegisterActions(AnalysisContext context) =>
+    protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterSymbolAction(AnalyzeMethod, SymbolKind.Method);
 
     private static void AnalyzeMethod(SymbolAnalysisContext context)

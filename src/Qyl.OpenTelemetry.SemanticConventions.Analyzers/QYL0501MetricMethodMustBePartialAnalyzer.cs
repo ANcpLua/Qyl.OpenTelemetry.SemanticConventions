@@ -41,7 +41,7 @@ public sealed class Qyl0501MetricMethodMustBePartialAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers syntax node actions to analyze method declarations with metric attributes.</summary>
-    protected override void RegisterActions(AnalysisContext context) =>
+    protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterSyntaxNodeAction(AnalyzeMethodDeclaration, SyntaxKind.MethodDeclaration);
 
     private static void AnalyzeMethodDeclaration(SyntaxNodeAnalysisContext context) {

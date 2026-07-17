@@ -37,7 +37,7 @@ public sealed class Qyl0105ManualSpanRecommendedAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers syntax node actions to analyze methods with [Traced] attribute.</summary>
-    protected override void RegisterActions(AnalysisContext context) {
+    protected override void InitializeCore(AnalysisContext context) {
         context.RegisterCompilationStartAction(compilationContext => {
             if (compilationContext.Compilation.GetTypeByMetadataName(TracedAttributeFullName) is not { } tracedAttributeType) {
                 return;
@@ -57,8 +57,8 @@ public sealed class Qyl0105ManualSpanRecommendedAnalyzer : AlAnalyzer {
         }
 
         if (ModelExtensions.GetDeclaredSymbol(context.SemanticModel, method, context.CancellationToken) is not { } methodSymbol
-            || (!HasTracedAttribute(methodSymbol, tracedAttributeType)
-                && !HasTracedAttribute(methodSymbol.ContainingType, tracedAttributeType))) {
+            || (!methodSymbol.HasAttribute(tracedAttributeType)
+                && !methodSymbol.ContainingType.HasAttribute(tracedAttributeType))) {
             return;
         }
 
@@ -67,16 +67,6 @@ public sealed class Qyl0105ManualSpanRecommendedAnalyzer : AlAnalyzer {
         if (complexPatterns.Length > 0) {
             context.ReportDiagnostic(s_rule, method.Identifier.GetLocation(), methodSymbol.Name, string.Join(", ", complexPatterns));
         }
-    }
-
-    private static bool HasTracedAttribute(ISymbol symbol, INamedTypeSymbol tracedAttributeType) {
-        foreach (var attribute in symbol.GetAttributes()) {
-            if (attribute.AttributeClass.IsEqualTo(tracedAttributeType)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private static ImmutableArray<string> DetectComplexPatterns(

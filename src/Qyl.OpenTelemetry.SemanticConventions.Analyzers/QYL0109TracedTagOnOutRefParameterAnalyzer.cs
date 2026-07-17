@@ -41,7 +41,7 @@ public sealed class Qyl0109TracedTagOnOutRefParameterAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers symbol actions to analyze method parameters for [TracedTag] on out/ref.</summary>
-    protected override void RegisterActions(AnalysisContext context) {
+    protected override void InitializeCore(AnalysisContext context) {
         context.RegisterCompilationStartAction(compilationContext => {
             if (compilationContext.Compilation.GetTypeByMetadataName(TracedTagAttributeFullName) is not { } tracedTagType) {
                 return;

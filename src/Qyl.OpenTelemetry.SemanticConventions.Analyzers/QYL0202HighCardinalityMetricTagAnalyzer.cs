@@ -66,7 +66,7 @@ public sealed class Qyl0202HighCardinalityMetricTagAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_highCardinalityMetricTagRule];
 
     /// <summary>Registers compilation start action to resolve metric attribute types once.</summary>
-    protected override void RegisterActions(AnalysisContext context) =>
+    protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterCompilationStartAction(OnCompilationStart);
 
     private static void OnCompilationStart(CompilationStartAnalysisContext context) {

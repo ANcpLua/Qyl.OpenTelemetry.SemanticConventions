@@ -13,9 +13,8 @@ namespace Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Emitters;
 /// collapsed:
 /// <list type="bullet">
 ///   <item><see cref="EscapeAttribute"/> collapses newlines to a space (attribute
-///   arguments, and the meter emitter's unit/description literals);
-///   <see cref="EscapeLiteral"/> turns them into <c>\n</c> (metric const
-///   literals).</item>
+///   arguments, and the meter emitter's unit/description literals); metric const
+///   literals keep them, escaped via <c>StringExtensions.EscapeCSharpString</c>.</item>
 ///   <item><see cref="WriteObsolete"/> emits <c>[Obsolete]</c> only when a
 ///   deprecation model is present; <see cref="WriteStabilityObsolete"/> also emits
 ///   when the row's stability tier is itself <see cref="StabilityModel.Deprecated"/>.</item>
@@ -177,8 +176,4 @@ internal static class SourceWriter
     /// <summary>Escapes for a string literal where newlines collapse to a space (attribute args; meter unit/description).</summary>
     public static string EscapeAttribute(string text)
         => text.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", " ").Replace("\r", string.Empty);
-
-    /// <summary>Escapes for a string literal where newlines become <c>\n</c> (metric/event const literals).</summary>
-    public static string EscapeLiteral(string text)
-        => text.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", "\\n").Replace("\r", string.Empty);
 }

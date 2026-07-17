@@ -14,25 +14,6 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator;
 internal static partial class SymbolicNaming
 {
     /// <summary>
-    ///   Mirror of <c>AlAnalyzer.SymbolicNameFromFile</c> for the docs side. Strips the
-    ///   <c>Analyzer</c> suffix and any <c>(QYL|Qyl|AL|Al)NNNN</c> prefix off the class
-    ///   name; the remainder is the symbolic part used in per-rule docs filenames
-    ///   <c>docs/rules/{id}_{symbolic}.md</c> and in the help-link URL. Keeping the
-    ///   transform identical on both sides is what lets <c>--check</c> verify the
-    ///   descriptor's <c>HelpLinkUri</c> against the file the generator would emit.
-    /// </summary>
-    public static string ToSymbolicName(string className)
-    {
-        var name = className;
-        if (name.EndsWith("Analyzer", StringComparison.Ordinal))
-            name = name[..^"Analyzer".Length];
-        var prefix = SymbolicPrefixRegex().Match(name);
-        if (prefix.Success)
-            name = name[prefix.Length..];
-        return name;
-    }
-
-    /// <summary>
     ///   Maps an analyzer class name to its on-disk source filename. Reflected class
     ///   names use Pascal-case <c>Qyl</c> (e.g., <c>Qyl0006MissingSchemaUrlAnalyzer</c>),
     ///   but git tracks the files with uppercase <c>QYL</c> prefix
@@ -48,8 +29,6 @@ internal static partial class SymbolicNaming
         return m.Success ? $"QYL{m.Groups[1].Value}{m.Groups[2].Value}" : className;
     }
 
-    [GeneratedRegex(@"^(?:QYL|Qyl|AL|Al)\d{4}", RegexOptions.Compiled)]
-    private static partial Regex SymbolicPrefixRegex();
     [GeneratedRegex(@"^Qyl(\d{4})(.*)$", RegexOptions.Compiled)]
     private static partial Regex FileBasenamePrefixRegex();
 }

@@ -31,13 +31,13 @@ public sealed class Qyl0300IncompleteServiceDefaultsAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers syntax tree actions to analyze ServiceDefaults configuration.</summary>
-    protected override void RegisterActions(AnalysisContext context) =>
+    protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterSyntaxNodeAction(AnalyzeInvocation, SyntaxKind.InvocationExpression);
 
     private static void AnalyzeInvocation(SyntaxNodeAnalysisContext context) {
         var invocation = (InvocationExpressionSyntax)context.Node;
 
-        var methodName = GetMethodName(invocation);
+        var methodName = invocation.GetMethodName();
         if (methodName is not ("ConfigureOpenTelemetry" or "AddServiceDefaults" or "AddOpenTelemetry")) {
             return;
         }
@@ -48,7 +48,7 @@ public sealed class Qyl0300IncompleteServiceDefaultsAnalyzer : AlAnalyzer {
 
         var allInvocations = new HashSet<string>();
         foreach (var inv in containingMethod.DescendantNodes().OfType<InvocationExpressionSyntax>()) {
-            var name = GetMethodName(inv);
+            var name = inv.GetMethodName();
             if (name is not null) {
                 allInvocations.Add(name);
             }
@@ -75,11 +75,4 @@ public sealed class Qyl0300IncompleteServiceDefaultsAnalyzer : AlAnalyzer {
 
         // Note: Logging is optional, so we don't report it as missing
     }
-
-    private static string? GetMethodName(InvocationExpressionSyntax invocation) =>
-        invocation.Expression switch {
-            MemberAccessExpressionSyntax memberAccess => memberAccess.Name.Identifier.Text,
-            IdentifierNameSyntax identifier => identifier.Identifier.Text,
-            _ => null
-        };
 }

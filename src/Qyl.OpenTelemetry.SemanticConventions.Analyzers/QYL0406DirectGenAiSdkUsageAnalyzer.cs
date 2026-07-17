@@ -52,7 +52,7 @@ public sealed class Qyl0406DirectGenAiSdkUsageAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <inheritdoc />
-    protected override void RegisterActions(AnalysisContext context) {
+    protected override void InitializeCore(AnalysisContext context) {
         context.RegisterCompilationStartAction(compilationContext => {
             var iChatClientType = compilationContext.Compilation.GetTypeByMetadataName(IChatClientMetadataName);
 

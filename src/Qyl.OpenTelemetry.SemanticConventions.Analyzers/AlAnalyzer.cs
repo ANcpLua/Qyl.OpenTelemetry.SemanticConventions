@@ -7,13 +7,6 @@ namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 ///     Extends <see cref="DiagnosticAnalyzerBase"/> with resource-based rule creation.
 /// </summary>
 public abstract class AlAnalyzer : DiagnosticAnalyzerBase {
-    /// <inheritdoc />
-    protected sealed override void InitializeCore(AnalysisContext context) => RegisterActions(context);
-
-    /// <summary>Registers analysis actions to be performed during compilation.</summary>
-    /// <param name="context">The analysis context to register actions with.</param>
-    protected abstract void RegisterActions(AnalysisContext context);
-
     /// <summary>
     ///     Creates a <see cref="DiagnosticDescriptor"/> using resource-based localization.
     ///     The <c>helpLinkUri</c> is derived from <paramref name="callerFile"/>

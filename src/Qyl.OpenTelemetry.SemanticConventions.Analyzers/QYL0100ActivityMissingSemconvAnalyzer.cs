@@ -34,14 +34,14 @@ public sealed class Qyl0100ActivityMissingSemconvAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers operation actions to analyze Activity.StartActivity calls.</summary>
-    protected override void RegisterActions(AnalysisContext context) =>
+    protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterOperationAction(AnalyzeInvocation, OperationKind.Invocation);
 
     private static void AnalyzeInvocation(OperationAnalysisContext context) {
         var invocation = (IInvocationOperation)context.Operation;
 
         if (invocation.TargetMethod.Name != "StartActivity" ||
-            GetActivityName(invocation) is not { } activityName ||
+            !invocation.TryGetConstantArgument<string>(0, out var activityName) ||
             InferOperationType(activityName) is not { } operationType ||
             !s_operationTypePrefixes.TryGetValue(operationType, out var expectedPrefixes)) {
             return;
@@ -72,9 +72,6 @@ public sealed class Qyl0100ActivityMissingSemconvAnalyzer : AlAnalyzer {
 
         return false;
     }
-
-    private static string? GetActivityName(IInvocationOperation invocation) =>
-        invocation.TryGetConstantArgument<string>(0, out var name) ? name : null;
 
     private static string? InferOperationType(string activityName) {
         foreach (var kvp in s_operationTypePrefixes) {
@@ -111,25 +108,14 @@ public sealed class Qyl0100ActivityMissingSemconvAnalyzer : AlAnalyzer {
     private static HashSet<string> CollectSetTagCalls(IInvocationOperation startActivity) {
         var tags = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        for (var current = startActivity.Parent; current is not null; current = current.Parent) {
-            if (current is IBlockOperation block) {
-                CollectSetTagCallsRecursive(block, tags);
-                break;
+        if (startActivity.GetContainingBlock() is { } block) {
+            var calls = new List<TagSetterCall>();
+            TagSetterDetection.CollectTagSetterCalls(block, calls);
+            foreach (var call in calls) {
+                tags.Add(call.Key);
             }
         }
 
         return tags;
-    }
-
-    private static void CollectSetTagCallsRecursive(IOperation operation, HashSet<string> tags) {
-        if (operation is IInvocationOperation { TargetMethod.Name: "SetTag" } invocation &&
-            invocation.TryGetConstantArgument<string>(0, out var tagName)) {
-            tags.Add(tagName);
-            return;
-        }
-
-        foreach (var child in operation.ChildOperations) {
-            CollectSetTagCallsRecursive(child, tags);
-        }
     }
 }

@@ -55,7 +55,7 @@ public sealed class Qyl0703ConsiderSamplingAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers compilation start action to analyze tracing configurations.</summary>
-    protected override void RegisterActions(AnalysisContext context) =>
+    protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterCompilationStartAction(OnCompilationStart);
 
     private static void OnCompilationStart(CompilationStartAnalysisContext context) {
@@ -78,7 +78,7 @@ public sealed class Qyl0703ConsiderSamplingAnalyzer : AlAnalyzer {
         ImmutableArray<INamedTypeSymbol> tracerBuilderTypes) {
         var invocation = (InvocationExpressionSyntax)context.Node;
 
-        var methodName = GetMethodName(invocation);
+        var methodName = invocation.GetMethodName();
         if (methodName is null || !s_tracingConfigMethods.Contains(methodName)) {
             return;
         }
@@ -104,7 +104,7 @@ public sealed class Qyl0703ConsiderSamplingAnalyzer : AlAnalyzer {
         foreach (var node in invocation.DescendantNodes()) {
             switch (node) {
                 case InvocationExpressionSyntax nestedInvocation: {
-                    var nestedMethod = GetMethodName(nestedInvocation);
+                    var nestedMethod = nestedInvocation.GetMethodName();
                     if (nestedMethod?.EqualsOrdinal("SetSampler") == true) {
                         usesAlwaysOnSampler = CheckForAlwaysOnSampler(nestedInvocation);
                         return true;
@@ -147,12 +147,5 @@ public sealed class Qyl0703ConsiderSamplingAnalyzer : AlAnalyzer {
             MemberAccessExpressionSyntax memberAccess => memberAccess.Name.GetLocation(),
             IdentifierNameSyntax identifier => identifier.GetLocation(),
             _ => invocation.GetLocation()
-        };
-
-    private static string? GetMethodName(InvocationExpressionSyntax invocation) =>
-        invocation.Expression switch {
-            MemberAccessExpressionSyntax memberAccess => memberAccess.Name.Identifier.Text,
-            IdentifierNameSyntax identifier => identifier.Identifier.Text,
-            _ => null
         };
 }

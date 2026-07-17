@@ -18,7 +18,7 @@ public sealed class Qyl0403InvalidGenAiOperationNameAnalyzer : AlAnalyzer
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <inheritdoc />
-    protected override void RegisterActions(AnalysisContext context) =>
+    protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterOperationAction(AnalyzeInvocation, OperationKind.Invocation);
 
     private static void AnalyzeInvocation(OperationAnalysisContext context)

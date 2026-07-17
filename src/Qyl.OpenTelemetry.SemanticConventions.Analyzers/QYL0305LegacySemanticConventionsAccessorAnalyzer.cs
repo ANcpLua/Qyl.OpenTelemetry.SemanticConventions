@@ -38,7 +38,7 @@ public sealed class Qyl0305LegacySemanticConventionsAccessorAnalyzer : AlAnalyze
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers a compilation-start action that resolves legacy accessor types.</summary>
-    protected override void RegisterActions(AnalysisContext context) =>
+    protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterCompilationStartAction(OnCompilationStart);
 
     private static void OnCompilationStart(CompilationStartAnalysisContext context) {

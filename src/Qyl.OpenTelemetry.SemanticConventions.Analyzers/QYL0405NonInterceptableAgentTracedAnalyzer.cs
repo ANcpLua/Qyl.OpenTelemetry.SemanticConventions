@@ -31,7 +31,7 @@ public sealed class Qyl0405NonInterceptableAgentTracedAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers symbol actions to analyze methods with [AgentTraced] for interceptability.</summary>
-    protected override void RegisterActions(AnalysisContext context) {
+    protected override void InitializeCore(AnalysisContext context) {
         context.RegisterCompilationStartAction(compilationContext => {
             if (compilationContext.Compilation.GetTypeByMetadataName(AgentTracedAttributeFullName) is not { } agentTracedType) {
                 return;

@@ -1,8 +1,11 @@
 // Copyright (c) Alexander Nachtmann
 // SPDX-License-Identifier: Apache-2.0
 
+extern alias analyzers;
+
 using System.Text;
 using Microsoft.CodeAnalysis;
+using RuleDocs = analyzers::Qyl.OpenTelemetry.SemanticConventions.Analyzers.RuleDocs;
 
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator;
 
@@ -72,7 +75,7 @@ internal static class IndexDocsRenderer
         {
             var codeFix = RulePageRenderer.GetCodeFixLabel(d.Id, fixableIds);
             var link = idToClass.TryGetValue(d.Id, out var className)
-                ? $"[{d.Id}](rules/{d.Id}_{SymbolicNaming.ToSymbolicName(className)}.md)"
+                ? $"[{d.Id}](rules/{d.Id}_{RuleDocs.SymbolicNameFromFile(className)}.md)"
                 : d.Id;
             sb.AppendLine($"| {link} | {d.DefaultSeverity} | {MarkdownFormatting.Escape(d.Title.ToString())} | {codeFix} |");
         }

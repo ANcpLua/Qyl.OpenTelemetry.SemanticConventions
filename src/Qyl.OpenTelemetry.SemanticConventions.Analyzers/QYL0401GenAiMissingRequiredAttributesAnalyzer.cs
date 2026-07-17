@@ -20,7 +20,7 @@ public sealed class Qyl0401GenAiMissingRequiredAttributesAnalyzer : AlAnalyzer
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <inheritdoc />
-    protected override void RegisterActions(AnalysisContext context) =>
+    protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterOperationBlockAction(AnalyzeBlock);
 
     private static void AnalyzeBlock(OperationBlockAnalysisContext context)
@@ -60,7 +60,7 @@ public sealed class Qyl0401GenAiMissingRequiredAttributesAnalyzer : AlAnalyzer
                     continue;
                 }
 
-                var activityName = GetActivityName(invocation) ?? spanRule.Id;
+                var activityName = invocation.TryGetConstantArgument<string>("name", out var name) ? name : spanRule.Id;
                 foreach (var requiredAttribute in spanRule.RequiredAttributes)
                 {
                     if (!presentAttributes.Contains(requiredAttribute))
@@ -75,20 +75,6 @@ public sealed class Qyl0401GenAiMissingRequiredAttributesAnalyzer : AlAnalyzer
                 }
             }
         }
-    }
-
-    private static string? GetActivityName(IInvocationOperation invocation)
-    {
-        foreach (var argument in invocation.Arguments)
-        {
-            if ((argument.Parameter?.Name == "name" || argument.Parameter?.Ordinal == 0)
-                && TagSetterDetection.TryGetStringConstant(argument.Value, out var name))
-            {
-                return name;
-            }
-        }
-
-        return null;
     }
 
     private static string GetSpanKind(IInvocationOperation invocation)

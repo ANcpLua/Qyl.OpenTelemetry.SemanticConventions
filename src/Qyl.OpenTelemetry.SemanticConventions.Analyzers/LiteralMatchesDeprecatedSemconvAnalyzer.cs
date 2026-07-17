@@ -54,19 +54,8 @@ public sealed class LiteralMatchesDeprecatedSemconvAnalyzer : DiagnosticAnalyzer
     private static Dictionary<string, string> BuildDeprecationMap(Compilation compilation)
     {
         var map = new Dictionary<string, string>(StringComparer.Ordinal);
-        Walk(compilation.GlobalNamespace, map);
-        return map;
-    }
-
-    private static void Walk(INamespaceSymbol ns, Dictionary<string, string> map)
-    {
-        foreach (var type in ns.GetTypeMembers())
+        foreach (var type in SemconvNamespace.EnumerateAttributesTypes(compilation))
         {
-            if (!SemconvNamespace.IsAttributesType(type))
-            {
-                continue;
-            }
-
             foreach (var member in type.GetMembers())
             {
                 if (member is not IFieldSymbol { IsConst: true } field
@@ -78,13 +67,13 @@ public sealed class LiteralMatchesDeprecatedSemconvAnalyzer : DiagnosticAnalyzer
                     continue;
                 }
 
-                var obsolete = field.GetAttributes().FirstOrDefault(IsObsoleteAttribute);
+                var obsolete = field.GetAttribute("System.ObsoleteAttribute");
                 if (obsolete is null)
                 {
                     continue;
                 }
 
-                var message = ExtractObsoleteMessage(obsolete);
+                var message = SemconvCodeFixHelpers.GetObsoleteMessage(obsolete);
                 if (!map.ContainsKey(value))
                 {
                     map[value] = message;
@@ -92,27 +81,7 @@ public sealed class LiteralMatchesDeprecatedSemconvAnalyzer : DiagnosticAnalyzer
             }
         }
 
-        foreach (var nested in ns.GetNamespaceMembers())
-        {
-            Walk(nested, map);
-        }
-    }
-
-    private static bool IsObsoleteAttribute(AttributeData attribute)
-    {
-        var attrClass = attribute.AttributeClass;
-        return attrClass is { Name: "ObsoleteAttribute", ContainingNamespace.Name: "System" };
-    }
-
-    private static string ExtractObsoleteMessage(AttributeData obsolete)
-    {
-        if (obsolete.ConstructorArguments.Length > 0
-            && obsolete.ConstructorArguments[0].Value is string message
-            && !string.IsNullOrEmpty(message))
-        {
-            return message;
-        }
-        return "no replacement message provided";
+        return map;
     }
 
     private static void AnalyzeInvocation(

@@ -43,7 +43,7 @@ internal static partial class ShippedNotesRewriter
             if (!idToClass.TryGetValue(id, out var className)) continue;
             var category = m.Groups[2].Value.Trim();
             var severity = m.Groups[3].Value.Trim();
-            var url = RuleDocs.HelpLink(id, SymbolicNaming.ToSymbolicName(className));
+            var url = RuleDocs.HelpLink(id, RuleDocs.SymbolicNameFromFile(className));
             lines[i] = $"{id} | {category} | {severity} | {className}, [Documentation]({url})";
         }
         return string.Join(lineEnding, lines);

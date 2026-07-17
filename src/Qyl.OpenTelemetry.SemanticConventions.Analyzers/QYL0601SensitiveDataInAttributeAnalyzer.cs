@@ -102,7 +102,7 @@ public sealed class Qyl0601SensitiveDataInAttributeAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers syntax node actions to analyze string literals for sensitive attribute names.</summary>
-    protected override void RegisterActions(AnalysisContext context) =>
+    protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterSyntaxNodeAction(AnalyzeStringLiteral, SyntaxKind.StringLiteralExpression);
 
     private static void AnalyzeStringLiteral(SyntaxNodeAnalysisContext context) {
@@ -149,12 +149,12 @@ public sealed class Qyl0601SensitiveDataInAttributeAnalyzer : AlAnalyzer {
 
     private static bool IsTelemetryElementAccess(SyntaxNode node) =>
         node is ElementAccessExpressionSyntax elementAccess &&
-        GetIdentifierName(elementAccess.Expression) is { } identifier &&
+        elementAccess.Expression.GetIdentifierName() is { } identifier &&
         IsLikelyTelemetryContainer(identifier);
 
     private static bool IsTelemetryInvocation(SyntaxNode node) =>
         node is InvocationExpressionSyntax invocation
-        && GetMethodName(invocation) is { } methodName
+        && invocation.GetMethodName() is { } methodName
         && (s_telemetryMethodPatterns.Contains(methodName)
             || methodName.ContainsIgnoreCase("ATTRIBUTE")
             || methodName.ContainsIgnoreCase("TAG"));
@@ -175,20 +175,6 @@ public sealed class Qyl0601SensitiveDataInAttributeAnalyzer : AlAnalyzer {
         identifier.EqualsIgnoreCase("ATTRS") ||
         identifier.ContainsIgnoreCase("SPAN") ||
         identifier.ContainsIgnoreCase("ACTIVITY");
-
-    private static string? GetMethodName(InvocationExpressionSyntax invocation) =>
-        invocation.Expression switch {
-            MemberAccessExpressionSyntax memberAccess => memberAccess.Name.Identifier.Text,
-            IdentifierNameSyntax identifier => identifier.Identifier.Text,
-            _ => null
-        };
-
-    private static string? GetIdentifierName(ExpressionSyntax expression) =>
-        expression switch {
-            IdentifierNameSyntax identifier => identifier.Identifier.Text,
-            MemberAccessExpressionSyntax memberAccess => memberAccess.Name.Identifier.Text,
-            _ => null
-        };
 
     private static bool ContainsSensitivePattern(string attributeName) {
         var normalizedName = attributeName.ToUpperInvariant();

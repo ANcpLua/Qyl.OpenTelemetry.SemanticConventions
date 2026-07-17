@@ -47,13 +47,13 @@ public sealed class Qyl0303MissingResourceAttributesAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers syntax node actions to analyze OpenTelemetry configuration.</summary>
-    protected override void RegisterActions(AnalysisContext context) =>
+    protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterSyntaxNodeAction(AnalyzeInvocation, SyntaxKind.InvocationExpression);
 
     private static void AnalyzeInvocation(SyntaxNodeAnalysisContext context) {
         var invocation = (InvocationExpressionSyntax)context.Node;
 
-        var methodName = GetMethodName(invocation);
+        var methodName = invocation.GetMethodName();
         if (methodName is null || !s_oTelSetupMethods.Contains(methodName)) {
             return;
         }
@@ -64,7 +64,7 @@ public sealed class Qyl0303MissingResourceAttributesAnalyzer : AlAnalyzer {
 
         var allInvocations = new HashSet<string>();
         foreach (var inv in containingMethod.DescendantNodes().OfType<InvocationExpressionSyntax>()) {
-            if (GetMethodName(inv) is { } name) {
+            if (inv.GetMethodName() is { } name) {
                 allInvocations.Add(name);
             }
         }
@@ -73,13 +73,6 @@ public sealed class Qyl0303MissingResourceAttributesAnalyzer : AlAnalyzer {
             context.ReportDiagnostic(Diagnostic.Create(s_rule, GetMethodNameLocation(invocation), "service.name/service.version"));
         }
     }
-
-    private static string? GetMethodName(InvocationExpressionSyntax invocation) =>
-        invocation.Expression switch {
-            MemberAccessExpressionSyntax memberAccess => memberAccess.Name.Identifier.Text,
-            IdentifierNameSyntax identifier => identifier.Identifier.Text,
-            _ => null
-        };
 
     private static Location GetMethodNameLocation(InvocationExpressionSyntax invocation) =>
         invocation.Expression switch {

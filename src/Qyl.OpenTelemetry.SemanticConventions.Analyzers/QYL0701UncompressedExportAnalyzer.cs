@@ -51,7 +51,7 @@ public sealed class Qyl0701UncompressedExportAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers compilation start action to analyze OTLP exporter configurations.</summary>
-    protected override void RegisterActions(AnalysisContext context) =>
+    protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterCompilationStartAction(OnCompilationStart);
 
     private static void OnCompilationStart(CompilationStartAnalysisContext context) {
@@ -78,7 +78,7 @@ public sealed class Qyl0701UncompressedExportAnalyzer : AlAnalyzer {
         INamedTypeSymbol? httpProtobufType) {
         var invocation = (InvocationExpressionSyntax)context.Node;
 
-        if (GetMethodName(invocation) is not { } methodName || !s_otlpExporterMethods.Contains(methodName)) {
+        if (invocation.GetMethodName() is not { } methodName || !s_otlpExporterMethods.Contains(methodName)) {
             return;
         }
 
@@ -116,8 +116,8 @@ public sealed class Qyl0701UncompressedExportAnalyzer : AlAnalyzer {
     private static bool HasCompressionConfiguration(SimpleLambdaExpressionSyntax lambda) {
         foreach (var node in lambda.DescendantNodes()) {
             var name = node switch {
-                AssignmentExpressionSyntax assignment => GetMemberName(assignment.Left),
-                InvocationExpressionSyntax invocation => GetMethodName(invocation),
+                AssignmentExpressionSyntax assignment => assignment.Left.GetIdentifierName(),
+                InvocationExpressionSyntax invocation => invocation.GetMethodName(),
                 _ => null
             };
 
@@ -136,7 +136,7 @@ public sealed class Qyl0701UncompressedExportAnalyzer : AlAnalyzer {
         CancellationToken cancellationToken) {
         foreach (var node in lambda.DescendantNodes()) {
             if (node is not AssignmentExpressionSyntax { Right: MemberAccessExpressionSyntax memberAccess } assignment
-                || GetMemberName(assignment.Left) is not "Protocol") {
+                || assignment.Left.GetIdentifierName() is not "Protocol") {
                 continue;
             }
 
@@ -167,7 +167,7 @@ public sealed class Qyl0701UncompressedExportAnalyzer : AlAnalyzer {
 
         foreach (var expr in initializer.Expressions) {
             if (expr is not AssignmentExpressionSyntax assignment
-                || GetMemberName(assignment.Left) is not { } leftText) {
+                || assignment.Left.GetIdentifierName() is not { } leftText) {
                 continue;
             }
 
@@ -184,24 +184,10 @@ public sealed class Qyl0701UncompressedExportAnalyzer : AlAnalyzer {
         return hasHttpProtobuf && !hasCompression;
     }
 
-    private static string? GetMemberName(ExpressionSyntax expression) =>
-        expression switch {
-            IdentifierNameSyntax identifier => identifier.Identifier.Text,
-            MemberAccessExpressionSyntax memberAccess => memberAccess.Name.Identifier.Text,
-            _ => null
-        };
-
     private static Location GetMethodLocation(InvocationExpressionSyntax invocation) =>
         invocation.Expression switch {
             MemberAccessExpressionSyntax memberAccess => memberAccess.Name.GetLocation(),
             IdentifierNameSyntax identifier => identifier.GetLocation(),
             _ => invocation.GetLocation()
-        };
-
-    private static string? GetMethodName(InvocationExpressionSyntax invocation) =>
-        invocation.Expression switch {
-            MemberAccessExpressionSyntax memberAccess => memberAccess.Name.Identifier.Text,
-            IdentifierNameSyntax identifier => identifier.Identifier.Text,
-            _ => null
         };
 }

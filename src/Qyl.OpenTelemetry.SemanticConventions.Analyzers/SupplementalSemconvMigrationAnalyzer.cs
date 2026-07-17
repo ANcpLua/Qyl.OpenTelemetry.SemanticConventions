@@ -342,7 +342,7 @@ public sealed class SupplementalSemconvMigrationAnalyzer : DiagnosticAnalyzer
     private static ImmutableHashSet<string> BuildLiveObsoleteAttributeNames(Compilation compilation)
     {
         var builder = ImmutableHashSet.CreateBuilder<string>(StringComparer.Ordinal);
-        WalkAttributeTypes(compilation.GlobalNamespace, type =>
+        foreach (var type in SemconvNamespace.EnumerateAttributesTypes(compilation))
         {
             foreach (var member in type.GetMembers())
             {
@@ -353,12 +353,12 @@ public sealed class SupplementalSemconvMigrationAnalyzer : DiagnosticAnalyzer
                         ConstantValue: string value,
                     } field
                     && !string.IsNullOrEmpty(value)
-                    && HasObsoleteAttribute(field))
+                    && field.HasAttribute("System.ObsoleteAttribute"))
                 {
                     builder.Add(value);
                 }
             }
-        });
+        }
 
         return builder.ToImmutable();
     }
@@ -366,80 +366,19 @@ public sealed class SupplementalSemconvMigrationAnalyzer : DiagnosticAnalyzer
     private static ImmutableHashSet<string> BuildLiveObsoleteAttributeValues(Compilation compilation)
     {
         var builder = ImmutableHashSet.CreateBuilder<string>(StringComparer.Ordinal);
-        WalkAttributeTypes(compilation.GlobalNamespace, type =>
+        foreach (var type in SemconvNamespace.EnumerateAttributesTypes(compilation))
         {
-            Dictionary<string, string>? attrConstNameToValue = null;
-            foreach (var member in type.GetMembers())
+            foreach (var (attributeName, valueField) in SemconvNamespace.EnumerateAttributeValueConstants(type))
             {
-                if (member is IFieldSymbol
-                    {
-                        IsConst: true,
-                        Type.SpecialType: SpecialType.System_String,
-                        ConstantValue: string attrName,
-                    } field
-                    && !string.IsNullOrEmpty(attrName))
+                if (valueField.HasAttribute("System.ObsoleteAttribute"))
                 {
-                    attrConstNameToValue ??= new Dictionary<string, string>(StringComparer.Ordinal);
-                    attrConstNameToValue[field.Name] = attrName;
+                    builder.Add(attributeName + "=" + (string)valueField.ConstantValue!);
                 }
             }
-
-            if (attrConstNameToValue is null)
-            {
-                return;
-            }
-
-            foreach (var nested in type.GetTypeMembers())
-            {
-                if (!nested.Name.EndsWith("Values", StringComparison.Ordinal))
-                {
-                    continue;
-                }
-
-                var prefix = nested.Name.Substring(0, nested.Name.Length - "Values".Length);
-                if (!attrConstNameToValue.TryGetValue("Attribute" + prefix, out var attrName))
-                {
-                    continue;
-                }
-
-                foreach (var nestedMember in nested.GetMembers())
-                {
-                    if (nestedMember is IFieldSymbol
-                        {
-                            IsConst: true,
-                            Type.SpecialType: SpecialType.System_String,
-                            ConstantValue: string value,
-                        } valueField
-                        && HasObsoleteAttribute(valueField))
-                    {
-                        builder.Add(attrName + "=" + value);
-                    }
-                }
-            }
-        });
+        }
 
         return builder.ToImmutable();
     }
-
-    private static void WalkAttributeTypes(INamespaceSymbol ns, Action<INamedTypeSymbol> callback)
-    {
-        foreach (var type in ns.GetTypeMembers())
-        {
-            if (SemconvNamespace.IsAttributesType(type))
-            {
-                callback(type);
-            }
-        }
-
-        foreach (var nested in ns.GetNamespaceMembers())
-        {
-            WalkAttributeTypes(nested, callback);
-        }
-    }
-
-    private static bool HasObsoleteAttribute(ISymbol symbol) =>
-        symbol.GetAttributes().Any(static attribute =>
-            attribute.AttributeClass is { Name: "ObsoleteAttribute", ContainingNamespace.Name: "System" });
 
     private static bool IsCatalogSource(IOperation operation)
     {

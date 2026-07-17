@@ -59,7 +59,7 @@ public sealed class Qyl0600InsecureEndpointAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers operation actions to analyze endpoint assignments and constructor arguments.</summary>
-    protected override void RegisterActions(AnalysisContext context) {
+    protected override void InitializeCore(AnalysisContext context) {
         context.RegisterOperationAction(AnalyzeAssignment, OperationKind.SimpleAssignment);
         context.RegisterOperationAction(AnalyzeArgument, OperationKind.Argument);
         context.RegisterOperationAction(AnalyzeObjectCreation, OperationKind.ObjectCreation);

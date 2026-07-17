@@ -39,12 +39,6 @@ public static class SemanticConventionRegistry
     /// <summary>The development GenAI schema label declared by the pinned GenAI manifest.</summary>
     public const string GenAiSchemaUrl = "https://opentelemetry.io/schemas/gen-ai-dev/1.42.0-dev";
 
-    /// <summary>The exact semantic-conventions-genai commit represented by this package.</summary>
-    public const string GenAiSourceCommit = "33b7f9da9ade6162d4a5c16247d0bc6ad5f8b469";
-
-    /// <summary>The exact Weaver version used to resolve the registry.</summary>
-    public const string WeaverVersion = "0.24.2";
-
     /// <summary>Gets the structured GenAI attribute keys that have an upstream JSON Schema.</summary>
     public static IEnumerable<string> PayloadAttributeKeys => PayloadSchemaResources.Keys;
 

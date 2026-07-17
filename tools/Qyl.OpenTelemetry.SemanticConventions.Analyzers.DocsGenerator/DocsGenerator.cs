@@ -81,7 +81,7 @@ internal static class DocsGenerator
                 Console.Error.WriteLine($"Descriptor {d.Id} has no owning DiagnosticAnalyzer class — cannot place per-rule page.");
                 return 1;
             }
-            var symbolic = SymbolicNaming.ToSymbolicName(className);
+            var symbolic = RuleDocs.SymbolicNameFromFile(className);
             var rulePath = RepoLayout.RulePath(repoRoot, d.Id, symbolic);
             expectedRuleFiles.Add(Path.GetFileName(rulePath));
 
@@ -201,7 +201,7 @@ internal static class DocsGenerator
         foreach (var d in descriptors)
         {
             if (!idToClass.TryGetValue(d.Id, out var className)) continue;
-            var symbolic = SymbolicNaming.ToSymbolicName(className);
+            var symbolic = RuleDocs.SymbolicNameFromFile(className);
             var rulePath = RepoLayout.RulePath(repoRoot, d.Id, symbolic);
             expectedRuleFiles.Add(Path.GetFileName(rulePath));
             File.WriteAllText(rulePath, RulePageRenderer.Render(d, className, fixableIds));

@@ -134,7 +134,7 @@ internal static class TelemetryAttributePayloadDetection
         IOperation operation,
         Action<TelemetryAttributePayloadLiteral> report)
     {
-        var unwrapped = TagSetterDetection.UnwrapConversion(operation);
+        var unwrapped = operation.UnwrapImplicitConversions();
 
         if (unwrapped is IArrayCreationOperation arrayCreation)
         {
@@ -341,7 +341,7 @@ internal static class TelemetryAttributePayloadDetection
         [NotNullWhen(true)] out SyntaxNode? syntax,
         out bool isBareLiteral)
     {
-        var unwrapped = TagSetterDetection.UnwrapConversion(operation);
+        var unwrapped = operation.UnwrapImplicitConversions();
         isBareLiteral = unwrapped.Syntax is LiteralExpressionSyntax;
         if (TagSetterDetection.TryGetNonEmptyStringConstant(unwrapped, out key))
         {
@@ -359,7 +359,7 @@ internal static class TelemetryAttributePayloadDetection
         [NotNullWhen(true)] out SyntaxNode? syntax,
         out bool isBareLiteral)
     {
-        var unwrapped = TagSetterDetection.UnwrapConversion(operation);
+        var unwrapped = operation.UnwrapImplicitConversions();
         isBareLiteral = unwrapped.Syntax is LiteralExpressionSyntax;
         if (TagSetterDetection.TryGetStringConstant(unwrapped, out value))
         {
@@ -382,7 +382,7 @@ internal static class TelemetryAttributePayloadDetection
         [NotNullWhen(true)] out SyntaxNode? syntax,
         out bool isBareLiteral)
     {
-        var unwrapped = TagSetterDetection.UnwrapConversion(operation);
+        var unwrapped = operation.UnwrapImplicitConversions();
         if (unwrapped is IPropertyReferenceOperation propertyReference)
         {
             foreach (var argument in propertyReference.Arguments)
@@ -433,7 +433,7 @@ internal static class TelemetryAttributePayloadDetection
         [NotNullWhen(true)] out string? value,
         [NotNullWhen(true)] out LiteralExpressionSyntax? syntax)
     {
-        var unwrapped = TagSetterDetection.UnwrapConversion(operation);
+        var unwrapped = operation.UnwrapImplicitConversions();
         if (unwrapped.Syntax is LiteralExpressionSyntax literal
             && TagSetterDetection.TryGetNonEmptyStringConstant(unwrapped, out value))
         {
@@ -646,7 +646,7 @@ internal static class TelemetryAttributePayloadDetection
 
     private static bool IsDictionaryIndexerAssignmentOnLocalFlowingToTelemetry(ISimpleAssignmentOperation assignment)
     {
-        var target = TagSetterDetection.UnwrapConversion(assignment.Target);
+        var target = assignment.Target.UnwrapImplicitConversions();
         return target is IPropertyReferenceOperation propertyReference
             && IsStringKeyDictionary(propertyReference.Instance?.Type ?? propertyReference.Property.ContainingType)
             && TryGetLocalReference(propertyReference.Instance, out var local)
@@ -661,7 +661,7 @@ internal static class TelemetryAttributePayloadDetection
 
     private static bool IsTelemetryTagCollectionIndexerAssignment(ISimpleAssignmentOperation assignment)
     {
-        var target = TagSetterDetection.UnwrapConversion(assignment.Target);
+        var target = assignment.Target.UnwrapImplicitConversions();
         return target is IPropertyReferenceOperation propertyReference
             && IsTelemetryTagCollection(propertyReference.Instance?.Type ?? propertyReference.Property.ContainingType);
     }
@@ -671,7 +671,7 @@ internal static class TelemetryAttributePayloadDetection
         [NotNullWhen(true)] out ILocalSymbol? local)
     {
         if (operation is not null
-            && TagSetterDetection.UnwrapConversion(operation) is ILocalReferenceOperation localReference)
+            && operation.UnwrapImplicitConversions() is ILocalReferenceOperation localReference)
         {
             local = localReference.Local;
             return true;
@@ -682,7 +682,7 @@ internal static class TelemetryAttributePayloadDetection
     }
 
     private static bool IsLocalReference(IOperation operation, ILocalSymbol local) =>
-        TagSetterDetection.UnwrapConversion(operation) is ILocalReferenceOperation localReference
+        operation.UnwrapImplicitConversions() is ILocalReferenceOperation localReference
         && SymbolEqualityComparer.Default.Equals(localReference.Local, local);
 
     private static bool IsActivityEventTagsArgument(

@@ -51,13 +51,13 @@ public sealed class DeprecatedSemconvAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var obsolete = field.GetAttributes().FirstOrDefault(IsObsoleteAttribute);
+        var obsolete = field.GetAttribute("System.ObsoleteAttribute");
         if (obsolete is null)
         {
             return;
         }
 
-        var message = ExtractObsoleteMessage(obsolete);
+        var message = SemconvCodeFixHelpers.GetObsoleteMessage(obsolete);
         var displayName = $"{containingType.Name}.{field.Name}";
         var properties = ImmutableDictionary<string, string?>.Empty;
         if (SemconvCodeFixHelpers.TryExtractExactReplacement(message, out var replacement))
@@ -78,23 +78,5 @@ public sealed class DeprecatedSemconvAnalyzer : DiagnosticAnalyzer
             properties,
             displayName,
             message));
-    }
-
-    private static bool IsObsoleteAttribute(AttributeData attribute)
-    {
-        var attrClass = attribute.AttributeClass;
-        return attrClass is { Name: "ObsoleteAttribute", ContainingNamespace.Name: "System" };
-    }
-
-    private static string ExtractObsoleteMessage(AttributeData obsolete)
-    {
-        if (obsolete.ConstructorArguments.Length > 0
-            && obsolete.ConstructorArguments[0].Value is string message
-            && !string.IsNullOrEmpty(message))
-        {
-            return message;
-        }
-
-        return "no replacement message provided";
     }
 }

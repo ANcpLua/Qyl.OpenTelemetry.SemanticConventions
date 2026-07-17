@@ -63,25 +63,8 @@ public sealed class PreferSemconvConstantAnalyzer : DiagnosticAnalyzer
         // (OpenTelemetry.SemanticConventions.HttpAttributes), qyl's nested layout
         // (Qyl.OpenTelemetry.SemanticConventions.Attributes.Http.HttpAttributes),
         // and any other consumer that shares the SemanticConventions namespace root.
-        WalkNamespace(compilation.GlobalNamespace, catalog);
-
-        return catalog;
-    }
-
-    private static void WalkNamespace(INamespaceSymbol ns, Dictionary<string, string> catalog)
-    {
-        foreach (var type in ns.GetTypeMembers())
+        foreach (var type in SemconvNamespace.EnumerateAttributesTypes(compilation))
         {
-            if (!type.Name.EndsWith("Attributes", StringComparison.Ordinal))
-            {
-                continue;
-            }
-
-            if (!SemconvNamespace.IsAttributesType(type))
-            {
-                continue;
-            }
-
             foreach (var member in type.GetMembers())
             {
                 if (member is not IFieldSymbol { IsConst: true } field
@@ -105,10 +88,7 @@ public sealed class PreferSemconvConstantAnalyzer : DiagnosticAnalyzer
             }
         }
 
-        foreach (var nested in ns.GetNamespaceMembers())
-        {
-            WalkNamespace(nested, catalog);
-        }
+        return catalog;
     }
 
     private static void AnalyzeInvocation(

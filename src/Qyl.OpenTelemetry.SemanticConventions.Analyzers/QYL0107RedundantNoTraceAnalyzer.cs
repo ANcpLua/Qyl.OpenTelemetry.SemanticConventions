@@ -43,7 +43,7 @@ public sealed class Qyl0107RedundantNoTraceAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers symbol actions to analyze methods for redundant [NoTrace].</summary>
-    protected override void RegisterActions(AnalysisContext context) {
+    protected override void InitializeCore(AnalysisContext context) {
         context.RegisterCompilationStartAction(compilationContext => {
             var tracedType = compilationContext.Compilation.GetTypeByMetadataName(TracedAttributeFullName);
             var noTraceType = compilationContext.Compilation.GetTypeByMetadataName(NoTraceAttributeFullName);

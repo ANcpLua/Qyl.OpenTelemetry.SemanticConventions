@@ -41,7 +41,7 @@ public sealed class Qyl0500MeterClassMustBePartialStaticAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers syntax node actions to analyze class declarations with [Meter] attribute.</summary>
-    protected override void RegisterActions(AnalysisContext context) =>
+    protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterSyntaxNodeAction(AnalyzeClassDeclaration, SyntaxKind.ClassDeclaration);
 
     private static void AnalyzeClassDeclaration(SyntaxNodeAnalysisContext context) {
@@ -52,7 +52,7 @@ public sealed class Qyl0500MeterClassMustBePartialStaticAnalyzer : AlAnalyzer {
         }
 
         if (context.SemanticModel.GetDeclaredSymbol(classDeclaration, context.CancellationToken) is not { } classSymbol
-            || !HasMeterAttribute(classSymbol, context.SemanticModel.Compilation)) {
+            || !classSymbol.HasAttribute(MeterAttributeFullName)) {
             return;
         }
 
@@ -64,8 +64,4 @@ public sealed class Qyl0500MeterClassMustBePartialStaticAnalyzer : AlAnalyzer {
                 classSymbol.Name));
         }
     }
-
-    private static bool HasMeterAttribute(INamedTypeSymbol classSymbol, Compilation compilation) =>
-        compilation.GetTypeByMetadataName(MeterAttributeFullName) is { } meterAttributeType
-        && classSymbol.GetAttributes().Any(a => a.AttributeClass.IsEqualTo(meterAttributeType));
 }

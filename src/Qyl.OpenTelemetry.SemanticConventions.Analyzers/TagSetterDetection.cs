@@ -19,16 +19,6 @@ internal static class TagSetterDetection
     public static readonly ImmutableHashSet<string> TagSetterMethodNames = ImmutableHashSet.Create(
         "SetTag", "AddTag", "SetAttribute", "AddAttribute");
 
-    /// <summary>
-    /// Unwraps surrounding implicit conversions (e.g. <c>string</c> → <c>object?</c>
-    /// when calling <c>SetTag(string, object?)</c>) to expose the underlying operand
-    /// whose <c>ConstantValue</c> we want to inspect.
-    /// </summary>
-    public static IOperation UnwrapConversion(IOperation operation)
-    {
-        return operation.UnwrapImplicitConversions();
-    }
-
     public static bool IsTagSetterInvocation(IInvocationOperation invocation)
     {
         return TagSetterMethodNames.Contains(invocation.TargetMethod.Name);

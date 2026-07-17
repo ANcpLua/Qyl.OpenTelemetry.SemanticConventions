@@ -260,7 +260,7 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
 
         foreach (var attr in s_deprecatedAttributeValues) {
             foreach (var value in attr.Value) {
-                var replacement = TryExtractExactReplacement(value.Value, out var extractedReplacement)
+                var replacement = SemconvCodeFixHelpers.TryExtractExactReplacement(value.Value, out var extractedReplacement)
                     ? ImmutableArray.Create(extractedReplacement)
                     : ImmutableArray<string>.Empty;
 
@@ -381,31 +381,6 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
             replacementNames: hasReplacement ? ImmutableArray.Create(replacement) : ImmutableArray<string>.Empty,
             migrationKind: migrationKind,
             changelogEvidence: evidence);
-    }
-
-    private static bool TryExtractExactReplacement(string guidance, [NotNullWhen(true)] out string? replacement) {
-        const string quotedPrefix = "Use '";
-        if (guidance.StartsWith(quotedPrefix, StringComparison.Ordinal)) {
-            var start = quotedPrefix.Length;
-            var end = guidance.IndexOf('\'', start);
-            if (end > start) {
-                replacement = guidance[start..end];
-                return true;
-            }
-        }
-
-        const string backtickPrefix = "Use `";
-        if (guidance.StartsWith(backtickPrefix, StringComparison.Ordinal)) {
-            var start = backtickPrefix.Length;
-            var end = guidance.IndexOf('`', start);
-            if (end > start) {
-                replacement = guidance[start..end];
-                return true;
-            }
-        }
-
-        replacement = null;
-        return false;
     }
 
     private static bool IsNoReplacement(string guidance) =>

@@ -108,17 +108,17 @@ internal static class MetricsEmitter
         builder.Append("    public static partial class ").AppendLine(descriptorName);
         builder.AppendLine("    {");
         builder.Append("        public const string Name = \"").Append(metric.MetricName).AppendLine("\";");
-        builder.Append("        public const string Unit = \"").Append(SourceWriter.EscapeLiteral(metric.Unit)).AppendLine("\";");
-        builder.Append("        public const string Instrument = \"").Append(SourceWriter.EscapeLiteral(metric.Instrument)).AppendLine("\";");
+        builder.Append("        public const string Unit = \"").Append(metric.Unit.EscapeCSharpString()).AppendLine("\";");
+        builder.Append("        public const string Instrument = \"").Append(metric.Instrument.EscapeCSharpString()).AppendLine("\";");
         builder.Append("        public const string RequirementLevel = \"")
                .Append(SourceWriter.RequirementLevelName(metric.MetricRequirementLevel.Kind)).AppendLine("\";");
         if (!string.IsNullOrEmpty(metric.MetricRequirementLevel.Condition))
         {
             builder.Append("        public const string RequirementCondition = \"")
-                   .Append(SourceWriter.EscapeLiteral(metric.MetricRequirementLevel.Condition)).AppendLine("\";");
+                   .Append(metric.MetricRequirementLevel.Condition.EscapeCSharpString()).AppendLine("\";");
         }
-        builder.Append("        public const string Brief = \"").Append(SourceWriter.EscapeLiteral(metric.Brief)).AppendLine("\";");
-        builder.Append("        public const string Note = \"").Append(SourceWriter.EscapeLiteral(metric.Note)).AppendLine("\";");
+        builder.Append("        public const string Brief = \"").Append(metric.Brief.EscapeCSharpString()).AppendLine("\";");
+        builder.Append("        public const string Note = \"").Append(metric.Note.EscapeCSharpString()).AppendLine("\";");
         builder.AppendLine();
         WriteDescriptorAttributes(builder, metric);
         WriteEntityAssociations(builder, metric);
@@ -133,20 +133,20 @@ internal static class MetricsEmitter
         {
             var name = "Attribute" + SourceWriter.ToPascalCase(attr.Key);
             builder.Append("        public const string ").Append(name)
-                   .Append(" = \"").Append(SourceWriter.EscapeLiteral(attr.Key)).AppendLine("\";");
+                   .Append(" = \"").Append(attr.Key.EscapeCSharpString()).AppendLine("\";");
             builder.Append("        public const string ").Append(name).Append("RequirementLevel")
                    .Append(" = \"").Append(SourceWriter.RequirementLevelName(attr.RequirementLevel.Kind)).AppendLine("\";");
 
             if (!string.IsNullOrEmpty(attr.RequirementLevel.Condition))
             {
                 builder.Append("        public const string ").Append(name).Append("RequirementCondition")
-                       .Append(" = \"").Append(SourceWriter.EscapeLiteral(attr.RequirementLevel.Condition)).AppendLine("\";");
+                       .Append(" = \"").Append(attr.RequirementLevel.Condition.EscapeCSharpString()).AppendLine("\";");
             }
 
             if (!string.IsNullOrEmpty(attr.Note))
             {
                 builder.Append("        public const string ").Append(name).Append("Note")
-                       .Append(" = \"").Append(SourceWriter.EscapeLiteral(attr.Note)).AppendLine("\";");
+                       .Append(" = \"").Append(attr.Note.EscapeCSharpString()).AppendLine("\";");
             }
 
             WriteExampleConstants(builder, name, attr.Examples);
@@ -166,7 +166,7 @@ internal static class MetricsEmitter
         for (var i = 0; i < examples.Length; i++)
         {
             builder.Append("        public const string ").Append(memberPrefix).Append("Example")
-                   .Append(i + 1).Append(" = \"").Append(SourceWriter.EscapeLiteral(examples[i])).AppendLine("\";");
+                   .Append(i + 1).Append(" = \"").Append(examples[i].EscapeCSharpString()).AppendLine("\";");
         }
     }
 
@@ -178,7 +178,7 @@ internal static class MetricsEmitter
         foreach (var entity in metric.EntityAssociations)
         {
             builder.Append("        public const string EntityAssociation").Append(SourceWriter.ToPascalCase(entity))
-                   .Append(" = \"").Append(SourceWriter.EscapeLiteral(entity)).AppendLine("\";");
+                   .Append(" = \"").Append(entity.EscapeCSharpString()).AppendLine("\";");
         }
     }
 

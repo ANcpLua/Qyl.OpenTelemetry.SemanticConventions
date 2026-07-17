@@ -38,7 +38,7 @@ public sealed class Qyl0201InvalidMetricNameAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers symbol actions to analyze methods with metric attributes.</summary>
-    protected override void RegisterActions(AnalysisContext context) =>
+    protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterSymbolAction(AnalyzeMethod, SymbolKind.Method);
 
     private static void AnalyzeMethod(SymbolAnalysisContext context) {

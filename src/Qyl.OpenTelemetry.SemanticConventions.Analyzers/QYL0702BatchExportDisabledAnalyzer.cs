@@ -40,7 +40,7 @@ public sealed class Qyl0702BatchExportDisabledAnalyzer : AlAnalyzer {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers operation actions to analyze object creation.</summary>
-    protected override void RegisterActions(AnalysisContext context) =>
+    protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterOperationAction(AnalyzeObjectCreation, OperationKind.ObjectCreation);
 
     private static void AnalyzeObjectCreation(OperationAnalysisContext context) {

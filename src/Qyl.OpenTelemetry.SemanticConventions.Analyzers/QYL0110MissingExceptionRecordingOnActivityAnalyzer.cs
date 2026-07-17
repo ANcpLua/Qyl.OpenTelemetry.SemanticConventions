@@ -1,3 +1,4 @@
+using MsOperationExtensions = Microsoft.CodeAnalysis.Operations.OperationExtensions;
 
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
@@ -29,7 +30,7 @@ public sealed class Qyl0110MissingExceptionRecordingOnActivityAnalyzer : AlAnaly
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
     /// <summary>Registers a compilation-start action to resolve Activity and ActivityStatusCode types.</summary>
-    protected override void RegisterActions(AnalysisContext context) =>
+    protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterCompilationStartAction(OnCompilationStart);
 
     private static void OnCompilationStart(CompilationStartAnalysisContext context) {
@@ -84,12 +85,7 @@ public sealed class Qyl0110MissingExceptionRecordingOnActivityAnalyzer : AlAnaly
             return false;
         }
 
-        var firstArg = invocation.Arguments[0].Value;
-        while (firstArg is IConversionOperation conversion) {
-            firstArg = conversion.Operand;
-        }
-
-        if (firstArg is not IFieldReferenceOperation fieldRef) {
+        if (invocation.Arguments[0].Value.UnwrapAllConversions() is not IFieldReferenceOperation fieldRef) {
             return false;
         }
 
@@ -123,24 +119,10 @@ public sealed class Qyl0110MissingExceptionRecordingOnActivityAnalyzer : AlAnaly
             _ => null
         };
 
-    private static bool SearchForExceptionRecording(IOperation operation, string? activityIdentifier) {
-        switch (operation) {
-            case IInvocationOperation invocation:
-                if (IsExceptionRecordingCall(invocation, activityIdentifier)) {
-                    return true;
-                }
-
-                break;
-        }
-
-        foreach (var child in operation.ChildOperations) {
-            if (SearchForExceptionRecording(child, activityIdentifier)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
+    private static bool SearchForExceptionRecording(IOperation operation, string? activityIdentifier) =>
+        MsOperationExtensions.DescendantsAndSelf(operation)
+            .OfType<IInvocationOperation>()
+            .Any(invocation => IsExceptionRecordingCall(invocation, activityIdentifier));
 
     private static bool IsExceptionRecordingCall(IInvocationOperation invocation, string? activityIdentifier) {
         var methodName = invocation.TargetMethod.Name;
@@ -175,12 +157,7 @@ public sealed class Qyl0110MissingExceptionRecordingOnActivityAnalyzer : AlAnaly
             return false;
         }
 
-        var arg = invocation.Arguments[0].Value;
-        while (arg is IConversionOperation conversion) {
-            arg = conversion.Operand;
-        }
-
-        if (arg is not IObjectCreationOperation creation) {
+        if (invocation.Arguments[0].Value.UnwrapAllConversions() is not IObjectCreationOperation creation) {
             return true;
         }
 
@@ -188,12 +165,7 @@ public sealed class Qyl0110MissingExceptionRecordingOnActivityAnalyzer : AlAnaly
             return false;
         }
 
-        var nameArg = creation.Arguments[0].Value;
-        while (nameArg is IConversionOperation nameConversion) {
-            nameArg = nameConversion.Operand;
-        }
-
-        return nameArg.TryGetConstantValue<string>(out var eventName) &&
+        return creation.Arguments[0].Value.UnwrapAllConversions().TryGetConstantValue<string>(out var eventName) &&
                eventName.EqualsIgnoreCase("exception");
     }
 }

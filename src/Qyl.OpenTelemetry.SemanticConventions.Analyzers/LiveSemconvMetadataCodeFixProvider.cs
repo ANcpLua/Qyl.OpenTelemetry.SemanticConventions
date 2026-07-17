@@ -174,20 +174,8 @@ public sealed class LiveSemconvMetadataCodeFixProvider : CodeFixProvider
         Compilation compilation,
         string replacement)
     {
-        return FindReplacementField(compilation.GlobalNamespace, replacement);
-    }
-
-    private static IFieldSymbol? FindReplacementField(
-        INamespaceSymbol ns,
-        string replacement)
-    {
-        foreach (var type in ns.GetTypeMembers())
+        foreach (var type in SemconvNamespace.EnumerateAttributesTypes(compilation))
         {
-            if (!SemconvNamespace.IsAttributesType(type))
-            {
-                continue;
-            }
-
             foreach (var member in type.GetMembers())
             {
                 if (member is IFieldSymbol
@@ -200,15 +188,6 @@ public sealed class LiveSemconvMetadataCodeFixProvider : CodeFixProvider
                 {
                     return field;
                 }
-            }
-        }
-
-        foreach (var nested in ns.GetNamespaceMembers())
-        {
-            var result = FindReplacementField(nested, replacement);
-            if (result is not null)
-            {
-                return result;
             }
         }
 
