@@ -5,6 +5,17 @@ descriptors, and thin helper APIs. It does not collect telemetry. Consumers own
 their `Meter`, `ActivitySource`, `Logger`, instrumentation scope, versioning,
 and enablement.
 
+## When to use this package
+
+This is the **application-side** consumption mode: the generator emits only the
+declared groups into your own assembly — internal visibility, no runtime package
+dependency, tree-shaken by construction. Libraries that need one pinned registry
+version across a package family (for example
+`Qyl.OpenTelemetry.AutoInstrumentation`) reference the compiled
+`Qyl.OpenTelemetry.SemanticConventions` packages instead and alias their
+constants; see the repository README's "Choosing between the compiled packages
+and the source generator" section.
+
 ## Use
 
 ```csharp

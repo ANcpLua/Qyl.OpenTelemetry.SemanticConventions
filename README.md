@@ -17,6 +17,28 @@ The supported package set is published on
 [nuget.org](https://www.nuget.org/profiles/ANcpLua). Incubating APIs intentionally
 track unstable upstream conventions and may change between minor releases.
 
+## Choosing between the compiled packages and the source generator
+
+The registry ships in two consumption modes; pick by what you are building.
+
+**Libraries reference the compiled packages** (`Qyl.OpenTelemetry.SemanticConventions`,
+`.Incubating`). A library needs one pinned registry version across its whole package
+family and a stable public constant surface to alias against
+(`Qyl.OpenTelemetry.AutoInstrumentation` does this through its internal
+`QylSemanticAttributes` facade). Because the constants are `const string`, the
+compiler inlines them at every use site — the reference costs effectively nothing
+at runtime.
+
+**Applications use `.SourceGeneration`.** Declaring
+`[SemanticConventionAttributes("http")] internal static partial class HttpAttributes;`
+emits only the requested groups directly into the consuming assembly — internal
+visibility, no package in the dependency chain, tree-shaken by construction
+(`qyl`'s `Qyl.Run.Workload` consumes it this way).
+
+Do not switch a library from the compiled packages to the generator: that moves the
+registry pin from per-package-release to per-consumer-compilation and floods the
+library's own generator snapshots with foreign generated files.
+
 ## Generation pipeline
 
 ```text
