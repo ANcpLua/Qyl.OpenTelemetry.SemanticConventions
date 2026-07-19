@@ -5,7 +5,7 @@
     <SemConvGenAiRef>33b7f9da9ade6162d4a5c16247d0bc6ad5f8b469</SemConvGenAiRef>
     <WeaverVersion>0.24.2</WeaverVersion>
 
-    <ANcpLuaRoslynUtilitiesVersion>2.2.39</ANcpLuaRoslynUtilitiesVersion>
+    <ANcpLuaRoslynUtilitiesVersion>2.2.41</ANcpLuaRoslynUtilitiesVersion>
     <MicrosoftCodeAnalysisVersion>5.6.0</MicrosoftCodeAnalysisVersion>
 
     <NukeVersion>10.1.0</NukeVersion>
