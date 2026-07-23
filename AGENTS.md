@@ -53,6 +53,23 @@ rules have executable behavior tests. Keep it out of stable packs. An explicit p
 pack requires `PackPreviewAnalyzers=true` and a prerelease package version. Stable
 promotion requires Qyl consumption and executable coverage for every rule.
 
+## MCP wire concepts and the qyl.mcp.* staging namespace
+
+This repository owns the telemetry vocabulary, so undefined MCP wire concepts are
+governed here. The MCP 2026-07-28 revision adds concepts OpenTelemetry semconv has
+not defined.
+
+- Wire concepts absent from the pinned upstream registry — `requestState`, round
+  index, `resultType`, `subscriptions/listen` lifetime, cache hints (`ttlMs` /
+  `cacheScope`) — are emitted as constants under an experimental `qyl.mcp.*` staging
+  namespace, kept out of the stable tree, and deletion-targeted on every registry pin
+  bump that lands an upstream equivalent. Never mint an `mcp.*` constant for an
+  unratified concept.
+- Constants for era, identity, and status carry the 2026-07-28 semantics the emitters
+  must record: era is the negotiated protocol version, not envelope presence;
+  `clientInfo` / `serverInfo` are display and logging values, not behavior or security
+  inputs; status derives from the JSON-RPC and tool outcome, not HTTP status.
+
 ## Build and regeneration
 
 Build all projects with warnings treated as errors:
