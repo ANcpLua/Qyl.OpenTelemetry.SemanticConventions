@@ -8,9 +8,10 @@ qyl-api-schema (`generated/otel-keys.gen.tsp`).
 This is the successor to the frozen `@ancplua/typespec-otel-semconv@1.41.0-2`
 npm package, whose source repo (and Weaver pipeline) was archived and deleted;
 the projection is regenerated from THIS repo's pipeline instead. Output shape
-is faithful to that package's `lib/otel-keys.gen.tsp`:
+is faithful to that package's `lib/otel-keys.gen.tsp`, with the namespace root
+rebranded `ANcpLua` -> `Qyl` to match this repo (and the C# surface):
 
-    namespace ANcpLua.OpenTelemetry.SemanticConventions.Keys.<PascalRoot> {
+    namespace Qyl.OpenTelemetry.SemanticConventions.Keys.<PascalRoot> {
       /** <one-line brief> */
       #deprecated "<message>"          // only when the attribute is deprecated
       const <PascalRest>: string = "<dotted.key>";
@@ -45,7 +46,7 @@ from emit_attributes import (
     to_pascal,
 )
 
-KEYS_NAMESPACE = "ANcpLua.OpenTelemetry.SemanticConventions.Keys"
+KEYS_NAMESPACE = "Qyl.OpenTelemetry.SemanticConventions.Keys"
 
 
 def tsp_string(value: str) -> str:
