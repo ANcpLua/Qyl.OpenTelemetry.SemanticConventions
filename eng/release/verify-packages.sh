@@ -75,7 +75,7 @@ if [[ -n "${package_directory}" ]]; then
 fi
 
 work_directory="$(mktemp -d)"
-trap 'rm -rf "${work_directory}"' EXIT
+trap 'rm -rf "${work_directory}"' EXIT INT TERM HUP
 consumer_directory="${work_directory}/consumer"
 mkdir -p "${consumer_directory}"
 
