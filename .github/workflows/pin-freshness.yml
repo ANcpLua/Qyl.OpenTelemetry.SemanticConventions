@@ -1,0 +1,94 @@
+name: pin-freshness
+
+# Reports when an upstream ref pinned in Version.props has fallen behind upstream.
+#
+# Deliberately not a step in ci.yml. A pin falling behind is news about upstream, not
+# a defect in this commit, so gating pull requests on it would redden unrelated work
+# the moment upstream commits and train everyone to ignore the signal. It runs weekly
+# and keeps one tracking issue in step with reality: opened when a pin is behind,
+# edited on later runs rather than duplicated, and closed once the pins match again.
+#
+# The job itself only fails when freshness could not be determined — a lookup that
+# cannot complete must not read as "current".
+
+on:
+  schedule:
+    - cron: "0 7 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: pin-freshness
+  cancel-in-progress: false
+
+env:
+  ISSUE_TITLE: upstream pin freshness
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Check pin freshness
+        id: check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -uo pipefail
+          script=src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/scripts/check_pin_freshness.py
+          # A non-zero exit is the signal here, not a step failure; the runner's
+          # default `set -e` would abandon the report before it is published.
+          status=0
+          python3 "${script}" >"${RUNNER_TEMP}/report.md" 2>"${RUNNER_TEMP}/error.txt" || status=$?
+          echo "status=${status}" >>"${GITHUB_OUTPUT}"
+
+          cat "${RUNNER_TEMP}/report.md" >>"${GITHUB_STEP_SUMMARY}"
+          if [[ -s "${RUNNER_TEMP}/error.txt" ]]; then
+            {
+              echo
+              echo '```'
+              cat "${RUNNER_TEMP}/error.txt"
+              echo '```'
+            } >>"${GITHUB_STEP_SUMMARY}"
+          fi
+          cat "${RUNNER_TEMP}/report.md"
+
+      - name: Open or update the tracking issue
+        if: steps.check.outputs.status == '1'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          number="$(gh issue list --state open --search "${ISSUE_TITLE} in:title" \
+            --json number,title \
+            --jq "[.[] | select(.title == \"${ISSUE_TITLE}\") | .number] | first // empty")"
+          if [[ -n "${number}" ]]; then
+            gh issue edit "${number}" --body-file "${RUNNER_TEMP}/report.md"
+            echo "updated issue #${number}"
+          else
+            gh issue create --title "${ISSUE_TITLE}" --body-file "${RUNNER_TEMP}/report.md"
+          fi
+
+      - name: Close the tracking issue once every pin is current
+        if: steps.check.outputs.status == '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          number="$(gh issue list --state open --search "${ISSUE_TITLE} in:title" \
+            --json number,title \
+            --jq "[.[] | select(.title == \"${ISSUE_TITLE}\") | .number] | first // empty")"
+          if [[ -n "${number}" ]]; then
+            gh issue close "${number}" --comment "Every pinned upstream ref matches upstream again."
+          fi
+
+      - name: Fail when freshness could not be determined
+        if: steps.check.outputs.status == '2'
+        run: |
+          echo "::error::upstream pin freshness could not be determined; the pins are unverified"
+          cat "${RUNNER_TEMP}/error.txt" >&2
+          exit 1
