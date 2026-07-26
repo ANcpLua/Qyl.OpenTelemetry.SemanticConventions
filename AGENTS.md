@@ -5,6 +5,29 @@ This is the repository's only editable agent/contributor instruction file.
 README, released history in releases, and generated analyzer documentation under
 `docs/`. Do not add mission prompts, progress diaries, or a second rules file.
 
+## 1.0.0 target name
+
+This repository ships **`Qyl.Telemetry.SemanticConventions`** and
+**`Qyl.Telemetry.Incubating`** at 1.0.0. Today's
+`Qyl.OpenTelemetry.SemanticConventions(.Incubating)` is the pre-rename name;
+the generated content does not change, only the family prefix. The full ledger
+and the boundary law live in `qyl-workspace/AGENTS.md` — that file is binding
+and this one does not restate it.
+
+Why this package matters more than the rename suggests: it is the **only
+artifact both planes share**. The producer-side constants and the collector's
+`CollectorSemanticAttributeCatalog.g.cs` are generated from the *same
+registry*, which is what makes it structurally impossible for qyl to emit a
+name its own collector does not know.
+
+That guarantee holds **only at identical registry versions**. It is not a
+property of the design; it is a property of building both sides together. Once
+a consumer pins an SDK version and the deployed collector moves on, the
+guarantee becomes a skew question — so the accepted version span and the
+behaviour on unknown attributes must be decided before 1.0.0, not after.
+
+This package knows nothing about `Activity`, DI, or OTLP, and must not learn.
+
 ## Purpose and compatibility
 
 This repository turns pinned OpenTelemetry semantic-convention registries into
