@@ -2,8 +2,8 @@
   <PropertyGroup Label="Central Versions">
     <SemConvSchemaVersion>1.43.0</SemConvSchemaVersion>
     <!-- open-telemetry/semantic-conventions-genai commit; its manifest must depend on core@SemConvSchemaVersion (generate.sh enforces this) -->
-    <SemConvGenAiRef>74fd2e0f77267ce26d55cf8991200df5a265ef74</SemConvGenAiRef>
-    <WeaverVersion>0.24.2</WeaverVersion>
+    <SemConvGenAiRef>64cfaa612a1af8472b2f063374fbe3c9e6cea2ab</SemConvGenAiRef>
+    <WeaverVersion>0.25.0</WeaverVersion>
 
     <ANcpLuaRoslynUtilitiesVersion>2.2.41</ANcpLuaRoslynUtilitiesVersion>
     <MicrosoftCodeAnalysisVersion>5.6.0</MicrosoftCodeAnalysisVersion>
