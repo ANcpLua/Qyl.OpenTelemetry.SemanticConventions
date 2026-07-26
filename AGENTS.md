@@ -11,8 +11,8 @@ This repository ships **`Qyl.Telemetry.SemanticConventions`** and
 **`Qyl.Telemetry.Incubating`** at 1.0.0. Today's
 `Qyl.OpenTelemetry.SemanticConventions(.Incubating)` is the pre-rename name;
 the generated content does not change, only the family prefix. The full ledger
-and the boundary law live in `qyl-workspace/AGENTS.md` — that file is binding
-and this one does not restate it.
+and the boundary law live in `qyl/ARCHITECTURE-1.0.0.md` — that document is
+normative and this one does not restate it.
 
 Why this package matters more than the rename suggests: it is the **only
 artifact both planes share**. The producer-side constants and the collector's
