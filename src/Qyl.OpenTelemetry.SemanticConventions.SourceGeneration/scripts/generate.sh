@@ -49,9 +49,18 @@ GENAI_REF="${SEMCONV_GENAI_REF:-${default_genai_ref}}"
 GENAI_REPO="${SEMCONV_GENAI_REPO:-${repo_root}/.tools/semantic-conventions-genai}"
 GENAI_REMOTE="${SEMCONV_GENAI_REMOTE:-https://github.com/open-telemetry/semantic-conventions-genai.git}"
 
-# Set WEAVER to a command if the published container is unavailable, for example:
-#   WEAVER="/Users/.../weaver/target/release/weaver" ./scripts/generate.sh
-#   WEAVER="cargo run --quiet --manifest-path /Users/.../weaver/Cargo.toml --bin weaver --" ./scripts/generate.sh
+# Set WEAVER to a command if the published container is unavailable. Take the binary
+# from the upstream release matching WeaverVersion — a locally built checkout is a
+# stale-generator hazard, since a working tree can sit at any revision while still
+# reporting a version this script accepts. The version guard below compares
+# `weaver --version`, which cannot tell a release binary from a build of an
+# arbitrary commit that happens to carry the same version string.
+#
+#   gh release download "v${EXPECTED_WEAVER_VERSION}" --repo open-telemetry/weaver \
+#     --pattern 'weaver-aarch64-apple-darwin.tar.xz*'
+#   shasum -a 256 -c weaver-aarch64-apple-darwin.tar.xz.sha256
+#   tar -xJf weaver-aarch64-apple-darwin.tar.xz
+#   WEAVER="$PWD/weaver-aarch64-apple-darwin/weaver" ./scripts/generate.sh
 WEAVER="${WEAVER:-weaver}"
 read -r -a WEAVER_CMD <<< "${WEAVER}"
 # run_weaver_projection runs from per-registry work dirs, so a relative
