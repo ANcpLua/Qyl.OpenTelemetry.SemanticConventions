@@ -30,7 +30,7 @@ QYL0107 | OpenTelemetry | Info | Qyl0107RedundantNoTraceAnalyzer, [Documentation
 QYL0108 | OpenTelemetry | Warning | Qyl0108NonInterceptableTracedAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0108_NonInterceptableTraced.md)
 QYL0109 | OpenTelemetry | Error | Qyl0109TracedTagOnOutRefParameterAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0109_TracedTagOnOutRefParameter.md)
 QYL0110 | OpenTelemetry | Warning | Qyl0110MissingExceptionRecordingOnActivityAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0110_MissingExceptionRecordingOnActivity.md)
-QYL0200 | Metrics | Warning | Qyl0200UnregisteredMeterAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0200_UnregisteredMeter.md)
+QYL0200 | Metrics | Warning | Qyl0200TelemetryNameAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0200_TelemetryName.md)
 QYL0201 | Metrics | Warning | Qyl0201InvalidMetricNameAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0201_InvalidMetricName.md)
 QYL0202 | Metrics | Warning | Qyl0202HighCardinalityMetricTagAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0202_HighCardinalityMetricTag.md)
 QYL0300 | Configuration | Warning | Qyl0300IncompleteServiceDefaultsAnalyzer, [Documentation](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0300_IncompleteServiceDefaults.md)

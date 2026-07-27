@@ -1,0 +1,102 @@
+{
+  "description": "qyl-owned vocabulary, first-class next to the pinned upstream registries (qyl architecture, loop 1). Attributes here are qyl.* names the platform emits and the collector must recognize; scope_names are the ActivitySource/Meter names qyl constructs; event_names are qyl-owned DiagnosticSource bridge event names. Consumed by emit_analyzer_registry.py (QYL0200/QYL0201 allowlists). Entries under qyl.mcp.* are the experimental staging namespace: deletion-targeted on every upstream registry bump that lands an equivalent.",
+  "attributes": [
+    {
+      "key": "qyl.capability.id",
+      "type": "string",
+      "stability": "development",
+      "brief": "Stable identifier of the qyl capability that produced the telemetry."
+    },
+    {
+      "key": "qyl.capability.kind",
+      "type": "string",
+      "stability": "development",
+      "brief": "Kind of the qyl capability that produced the telemetry."
+    },
+    {
+      "key": "qyl.exception.source",
+      "type": "string",
+      "stability": "development",
+      "brief": "Origin of a captured exception inside a qyl process (which capture layer recorded it)."
+    },
+    {
+      "key": "qyl.instrumentation.domain",
+      "type": "string",
+      "stability": "development",
+      "brief": "qyl auto-instrumentation domain that emitted the span or metric."
+    },
+    {
+      "key": "qyl.project.id",
+      "type": "string",
+      "stability": "development",
+      "brief": "qyl project identifier the telemetry belongs to."
+    },
+    {
+      "key": "qyl.workspace.id",
+      "type": "string",
+      "stability": "development",
+      "brief": "qyl workspace identifier the telemetry belongs to."
+    },
+    {
+      "key": "qyl.mcp.evaluation_run.id",
+      "type": "string",
+      "stability": "development",
+      "brief": "Identifier of the MCP evaluation run. Staging: upstream semconv has no equivalent yet."
+    },
+    {
+      "key": "qyl.mcp.execution.id",
+      "type": "string",
+      "stability": "development",
+      "brief": "Identifier of the MCP workbench execution. Staging: upstream semconv has no equivalent yet."
+    },
+    {
+      "key": "qyl.mcp.flow.id",
+      "type": "string",
+      "stability": "development",
+      "brief": "Identifier of the MCP flow. Staging: upstream semconv has no equivalent yet."
+    },
+    {
+      "key": "qyl.mcp.protocol.era",
+      "type": "string",
+      "stability": "development",
+      "brief": "Negotiated MCP protocol era. Derived from the negotiated protocol version, never from envelope presence."
+    },
+    {
+      "key": "qyl.mcp.sdk.tier",
+      "type": "string",
+      "stability": "development",
+      "brief": "MCP SDK tier observed on the connection. Staging: upstream semconv has no equivalent yet."
+    },
+    {
+      "key": "qyl.mcp.server.id",
+      "type": "string",
+      "stability": "development",
+      "brief": "Identifier of the MCP server as registered in the qyl workbench. Staging: upstream semconv has no equivalent yet."
+    },
+    {
+      "key": "qyl.mcp.test_case.id",
+      "type": "string",
+      "stability": "development",
+      "brief": "Identifier of the MCP test case. Staging: upstream semconv has no equivalent yet."
+    },
+    {
+      "key": "qyl.mcp.tool.name",
+      "type": "string",
+      "stability": "development",
+      "brief": "Name of the MCP tool the telemetry concerns. Staging: upstream semconv has no equivalent yet."
+    }
+  ],
+  "metrics": [],
+  "scope_names": [
+    "Qyl.Collector",
+    "Qyl.Instrumentation.ErrorCapture",
+    "Qyl.OpenTelemetry.AutoInstrumentation",
+    "Qyl.OpenTelemetry.AutoInstrumentation.Database",
+    "Qyl.OpenTelemetry.AutoInstrumentation.NServiceBus",
+    "System.Runtime"
+  ],
+  "event_names": [
+    "qyl.http.client",
+    "qyl.rpc.grpc"
+  ]
+}

@@ -3,16 +3,15 @@ using System.Text.RegularExpressions;
 namespace Qyl.OpenTelemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     QYL0201: Detects metric instrument names that don't follow naming conventions.
+///     QYL0201: Detects metric descriptor names that are malformed or unknown to the generated catalog.
 /// </summary>
 /// <remarks>
 ///     <para>
-///         Metric names should follow OpenTelemetry naming conventions:
-///         <list type="bullet">
-///             <item>Use dot-separated namespaces (e.g., myapp.orders.count)</item>
-///             <item>Use snake_case for individual words</item>
-///             <item>Include unit as suffix when applicable</item>
-///         </list>
+///         Metric names declared on Counter/Histogram descriptor attributes must follow OpenTelemetry
+///         naming conventions (dot-separated namespaces, snake_case words) and be members of the
+///         generated registry catalog (<see cref="SemconvRegistryFacts"/>), so the collector recognizes
+///         every metric qyl emits (qyl architecture, loop 1). qyl-owned metrics enter the catalog through
+///         qyl-registry.json, never through a hardcoded list here.
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
@@ -32,7 +31,7 @@ public sealed class Qyl0201InvalidMetricNameAnalyzer : AlAnalyzer {
     private static readonly DiagnosticDescriptor s_rule = CreateRule(
         DiagnosticId,
         DiagnosticCategories.Metrics,
-        DiagnosticSeverities.Suggestion);
+        DiagnosticSeverities.RequiredFix);
 
     /// <summary>Gets the diagnostic descriptors for the supported diagnostics.</summary>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
@@ -56,7 +55,8 @@ public sealed class Qyl0201InvalidMetricNameAnalyzer : AlAnalyzer {
             if (attribute.ConstructorArguments.Length is 0 ||
                 attribute.ConstructorArguments[0].Value is not string metricName ||
                 string.IsNullOrWhiteSpace(metricName) ||
-                s_validNamePattern.IsMatch(metricName)) {
+                (s_validNamePattern.IsMatch(metricName) &&
+                 SemconvRegistryFacts.IsKnownMetricName(metricName))) {
                 continue;
             }
 

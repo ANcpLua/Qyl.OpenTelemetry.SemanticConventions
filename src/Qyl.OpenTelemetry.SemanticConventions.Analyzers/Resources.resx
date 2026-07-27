@@ -124,25 +124,25 @@
     <data name="QYL0403AnalyzerDescription" xml:space="preserve">
         <value>Known GenAI operation names must use the exact casing generated from the pinned registry. Unknown documented system-specific operation names remain allowed.</value>
     </data>
-    <!-- AL0067: Unregistered Meter -->
+    <!-- QYL0200: Telemetry name not in the generated catalog -->
     <data name="QYL0200AnalyzerTitle" xml:space="preserve">
-        <value>Meter should be registered with AddMeter()</value>
+        <value>Telemetry name must come from the generated registry catalog</value>
     </data>
     <data name="QYL0200AnalyzerMessageFormat" xml:space="preserve">
-        <value>Meter '{0}' is not registered with AddMeter() in the metrics configuration</value>
+        <value>Telemetry name '{0}' in a {1} position is not in the generated registry catalog</value>
     </data>
     <data name="QYL0200AnalyzerDescription" xml:space="preserve">
-        <value>Meters must be registered with AddMeter() in the OpenTelemetry metrics configuration to be included in the metrics pipeline. Unregistered meters will not export metrics.</value>
+        <value>The producer constants and the collector ingest catalog are generated from one registry, so a name the catalog does not know is a name the platform cannot recognize on the wire. Add the name to the registry (qyl-owned names go in qyl-registry.json) and regenerate, or use the generated constant for an existing name.</value>
     </data>
-    <!-- AL0068: Invalid metric name -->
+    <!-- QYL0201: Invalid or uncataloged metric descriptor name -->
     <data name="QYL0201AnalyzerTitle" xml:space="preserve">
-        <value>Metric instrument name should follow naming conventions</value>
+        <value>Metric descriptor name must be a well-formed catalog member</value>
     </data>
     <data name="QYL0201AnalyzerMessageFormat" xml:space="preserve">
-        <value>Metric name '{0}' should follow the pattern: namespace.component.metric_name.unit</value>
+        <value>Metric descriptor name '{0}' is not a well-formed name from the generated registry catalog</value>
     </data>
     <data name="QYL0201AnalyzerDescription" xml:space="preserve">
-        <value>Metric instrument names should follow OpenTelemetry naming conventions using dot-separated namespaces and snake_case for individual words. Include the unit as a suffix when applicable.</value>
+        <value>Metric names declared on Counter/Histogram descriptor attributes must follow OpenTelemetry naming conventions and be members of the generated registry catalog, so the collector recognizes every metric qyl emits. Add qyl-owned metrics to qyl-registry.json and regenerate.</value>
     </data>
     <!-- AL0069: Incomplete ServiceDefaults -->
     <data name="QYL0300AnalyzerTitle" xml:space="preserve">

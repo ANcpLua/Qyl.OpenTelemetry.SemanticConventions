@@ -401,33 +401,33 @@
             },
             {
               "id": "QYL0200",
-              "name": "UnregisteredMeter",
+              "name": "TelemetryName",
               "shortDescription": {
-                "text": "Meter should be registered with AddMeter()"
+                "text": "Telemetry name must come from the generated registry catalog"
               },
               "fullDescription": {
-                "text": "Meters must be registered with AddMeter() in the OpenTelemetry metrics configuration to be included in the metrics pipeline. Unregistered meters will not export metrics."
+                "text": "The producer constants and the collector ingest catalog are generated from one registry, so a name the catalog does not know is a name the platform cannot recognize on the wire. Add the name to the registry (qyl-owned names go in qyl-registry.json) and regenerate, or use the generated constant for an existing name."
               },
-              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0200_UnregisteredMeter.md",
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0200_TelemetryName.md",
               "defaultConfiguration": {
-                "level": "warning"
+                "level": "error"
               },
               "properties": {
-                "category": "Metrics"
+                "category": "OpenTelemetry"
               }
             },
             {
               "id": "QYL0201",
               "name": "InvalidMetricName",
               "shortDescription": {
-                "text": "Metric instrument name should follow naming conventions"
+                "text": "Metric descriptor name must be a well-formed catalog member"
               },
               "fullDescription": {
-                "text": "Metric instrument names should follow OpenTelemetry naming conventions using dot-separated namespaces and snake_case for individual words. Include the unit as a suffix when applicable."
+                "text": "Metric names declared on Counter/Histogram descriptor attributes must follow OpenTelemetry naming conventions and be members of the generated registry catalog, so the collector recognizes every metric qyl emits. Add qyl-owned metrics to qyl-registry.json and regenerate."
               },
               "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0201_InvalidMetricName.md",
               "defaultConfiguration": {
-                "level": "warning"
+                "level": "error"
               },
               "properties": {
                 "category": "Metrics"

@@ -38,8 +38,8 @@ Each ID links to a per-rule page under [`docs/rules/`](rules/) with severity, ca
 | [QYL0108](rules/QYL0108_NonInterceptableTraced.md) | Warning | Non-interceptable [Traced] | Yes |
 | [QYL0109](rules/QYL0109_TracedTagOnOutRefParameter.md) | Error | [TracedTag] on out/ref parameter | Yes |
 | [QYL0110](rules/QYL0110_MissingExceptionRecordingOnActivity.md) | Warning | Missing exception recording on Activity error status | No |
-| [QYL0200](rules/QYL0200_UnregisteredMeter.md) | Warning | Meter should be registered with AddMeter() | No |
-| [QYL0201](rules/QYL0201_InvalidMetricName.md) | Warning | Metric instrument name should follow naming conventions | No |
+| [QYL0200](rules/QYL0200_TelemetryName.md) | Error | Telemetry name must come from the generated registry catalog | No |
+| [QYL0201](rules/QYL0201_InvalidMetricName.md) | Error | Metric descriptor name must be a well-formed catalog member | No |
 | [QYL0202](rules/QYL0202_HighCardinalityMetricTag.md) | Warning | High-cardinality tag on metric | No |
 | [QYL0300](rules/QYL0300_IncompleteServiceDefaults.md) | Warning | ServiceDefaults configuration incomplete | No |
 | [QYL0301](rules/QYL0301_NonOtlpCollectorEndpoint.md) | Warning | Collector endpoint should use OTLP protocol | No |
