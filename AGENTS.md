@@ -15,12 +15,22 @@ This repository ships **`Qyl.Telemetry.SemanticConventions`** and
 included — that namespace is consumer-compiled ABI, so it ships as the **birth
 ABI of the new package IDs** (architecture §6.2) rather than as a break to a
 published one. The old IDs stay frozen on nuget.org at 4.0.0 until they are
-unlisted at launch; nothing here shims them. The new family is versioned
-`1.0.0-beta.N` until launch (§6.1). The full ledger and the boundary law live in
-`qyl/ARCHITECTURE-1.0.0.md` — that document is normative and this one does not
-restate it. The GitHub repository keeps its `Qyl.OpenTelemetry.SemanticConventions`
-name, so `RepositoryUrl` and every analyzer `HelpLinkUri` still carry it; those
-are addresses, not package identity.
+unlisted at launch; nothing here shims them.
+
+The new family is born at **`1.0.0` stable**. Architecture §6.1 staged it through
+`1.0.0-beta.N` "until launch"; Alex decided in chat on 2026-07-27 that this *is*
+the launch refactor, so the beta band is skipped and §6.1's staging clause is
+superseded for this family. What §6.1 was protecting still holds and still binds:
+1.0.0 means every item in the architecture document is frozen, and a change from
+here needs backwards compatibility, a shim, or a PR. Publishing stays
+tag-triggered — the committed version is a development fallback and the `v1.0.0`
+tag is Alex's act, not an agent's.
+
+The full ledger and the boundary law live in `qyl/ARCHITECTURE-1.0.0.md` — that
+document is normative and this one does not restate it. The GitHub repository
+keeps its `Qyl.OpenTelemetry.SemanticConventions` name, so `RepositoryUrl` and
+every analyzer `HelpLinkUri` still carry it; those are addresses, not package
+identity, and they must stay truthful to the repo that actually exists.
 
 Why this package matters more than the rename suggests: it is the **only
 artifact both planes share**. The producer-side constants and the collector's
@@ -99,8 +109,12 @@ only reproduces the expected string are not acceptance evidence.
 
 The analyzer project is preview-only. Qyl does not consume it yet, and only nine of its
 48 rules have executable behavior tests. Keep it out of stable packs. An explicit preview
-pack requires `PackPreviewAnalyzers=true` and a prerelease package version. Stable
-promotion requires Qyl consumption and executable coverage for every rule.
+pack requires `PackPreviewAnalyzers=true` and a prerelease package version, and since the
+repo version went stable that prerelease part must now be passed explicitly:
+`dotnet pack … -p:PackPreviewAnalyzers=true -p:VersionSuffix=preview.N`. Without it
+`_RequirePreviewAnalyzerVersion` fails the pack, which is the guard working — a stable
+analyzer package is exactly what it exists to prevent. Stable promotion requires Qyl
+consumption and executable coverage for every rule.
 
 Two rules are the qyl architecture's G1/G4 enforcers and are held to production
 standard now: `QYL0200` (telemetry names in name positions must be members of the

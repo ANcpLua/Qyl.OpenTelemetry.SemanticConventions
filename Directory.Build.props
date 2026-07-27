@@ -7,13 +7,14 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Versioning">
-    <!-- Development fallback for the Qyl.Telemetry.* family (architecture §6.1): the new
-         package IDs are born at 1.0.0-beta.N and stay prerelease until launch. The release
-         workflow stamps the published version from the tag; this value is what a local or
-         CI build produces. The frozen Qyl.OpenTelemetry.* IDs keep their own 4.0.0 on
-         nuget.org until they are unlisted. -->
+    <!-- Development fallback for the Qyl.Telemetry.* family: the new package IDs are born
+         at 1.0.0 stable — this is the launch refactor, so they do not stage through a
+         prerelease band. The release workflow stamps the published version from the tag;
+         this value is what a local or CI build produces, and the v1.0.0 tag is the human
+         act that publishes it. No VersionSuffix default, so a build is stable unless one
+         is passed explicitly (-p:VersionSuffix=rc.1). The frozen Qyl.OpenTelemetry.* IDs
+         keep their own 4.0.0 on nuget.org until they are unlisted. -->
     <VersionPrefix Condition="'$(VersionPrefix)' == ''">1.0.0</VersionPrefix>
-    <VersionSuffix Condition="'$(VersionSuffix)' == ''">beta.1</VersionSuffix>
     <Version Condition="'$(VersionSuffix)' != ''">$(VersionPrefix)-$(VersionSuffix)</Version>
     <Version Condition="'$(VersionSuffix)' == ''">$(VersionPrefix)</Version>
   </PropertyGroup>
