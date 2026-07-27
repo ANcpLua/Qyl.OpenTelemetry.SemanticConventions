@@ -173,7 +173,16 @@ Important generation gates:
 python3 src/Qyl.Telemetry.SemanticConventions.SourceGeneration/scripts/verify_deprecated_catalog.py
 python3 src/Qyl.Telemetry.SemanticConventions.SourceGeneration/scripts/emit_analyzer_registry.py --check
 python3 src/Qyl.Telemetry.SemanticConventions.SourceGeneration/scripts/emit_registry_resources.py --check
+python3 src/Qyl.Telemetry.SemanticConventions.SourceGeneration/scripts/emit_attributes.py --check
 ```
+
+The last one is the architecture's G9 snapshot gate for the constant trees, the
+`qyl.*` projection included. It overlaps `VerifyAttributesHash` deliberately and
+they are not redundant: the hash is one aggregate SHA that proves *something*
+changed, `--check` prints *which file and which lines*. It also catches an
+orphan — a `.g.cs` no registry root produces any more — which a hash of the
+files that exist cannot. It runs on every SourceGeneration build, so a stale
+tree fails locally, not only in CI.
 
 Analyzer docs and diagnostic-id consistency are enforced automatically on every
 analyzer-project build; there is no separate check target.

@@ -74,6 +74,10 @@
           WorkingDirectory="$(MSBuildProjectDirectory)"/>
     <Exec Command="python3 &quot;$(MSBuildProjectDirectory)/scripts/emit_registry_resources.py&quot; --check"
           WorkingDirectory="$(MSBuildProjectDirectory)"/>
+    <!-- Snapshot gate for the constant trees, qyl.* projection included (architecture G9).
+         VerifyAttributesHash guards the same files; this one reports which file drifted. -->
+    <Exec Command="python3 &quot;$(MSBuildProjectDirectory)/scripts/emit_attributes.py&quot; --check"
+          WorkingDirectory="$(MSBuildProjectDirectory)"/>
   </Target>
 
 </Project>

@@ -26,6 +26,7 @@ ByteIdentity snapshot tests, not by this reference.
 CLI:
     emit_attributes.py --stdout {root} {stable|incubating}
     emit_attributes.py --write
+    emit_attributes.py --check    (snapshot gate: committed tree == emitter output)
 """
 from __future__ import annotations
 
@@ -768,39 +769,60 @@ def cmd_stdout(root, tier):
     sys.stdout.write(text)
 
 
-def cmd_write():
+def owned_files():
+    """Every file this emitter owns, as {absolute path: expected text}.
+
+    `--write` and `--check` both go through here, so the writer and the verifier
+    can never disagree about what the committed tree is supposed to contain —
+    a second opinion about that would be the duplicate-owner failure the
+    architecture forbids.
+    """
     by_root = load_groups()
-    summary = {}
-    skipped_stable = []
-    all_drops = []
+    expected = {}
+    drops = []
+    counts = {}
     for stable, base in ((True, STABLE_ROOT), (False, INCUBATING_ROOT)):
         tier_label = "stable" if stable else "incubating"
         tier_roots = roots_for_tier(by_root, stable)
-        # delete existing generated files
-        if os.path.isdir(base):
-            for dirpath, _dirs, files in os.walk(base):
-                for fn in files:
-                    if fn.endswith("Attributes.g.cs"):
-                        os.remove(os.path.join(dirpath, fn))
-        count = 0
         for root in sorted(tier_roots):
             pas_root = to_pascal(root)
-            out_dir = os.path.join(base, pas_root)
-            os.makedirs(out_dir, exist_ok=True)
-            path = os.path.join(out_dir, f"{pas_root}Attributes.g.cs")
-            text, drops = emit_file(root, tier_roots[root], stable)
-            with open(path, "w", encoding="utf-8", newline="\n") as f:
-                f.write(text)
-            for d in drops:
+            path = os.path.join(base, pas_root, f"{pas_root}Attributes.g.cs")
+            text, file_drops = emit_file(root, tier_roots[root], stable)
+            expected[path] = text
+            for d in file_drops:
                 d["tier"] = tier_label
-                all_drops.append(d)
-            count += 1
-        summary["stable" if stable else "incubating"] = count
+                drops.append(d)
+        counts[tier_label] = len(tier_roots)
 
-    os.makedirs(INCUBATING_NAMES_ROOT, exist_ok=True)
-    names_path = os.path.join(INCUBATING_NAMES_ROOT, f"{NAMES_CLASS}.g.cs")
-    with open(names_path, "w", encoding="utf-8", newline="\n") as f:
-        f.write(emit_names_file(load_qyl_registry()))
+    expected[os.path.join(INCUBATING_NAMES_ROOT, f"{NAMES_CLASS}.g.cs")] = emit_names_file(
+        load_qyl_registry()
+    )
+    return expected, drops, counts, by_root
+
+
+def committed_files():
+    """Every generated file currently on disk under the roots this emitter owns."""
+    found = set()
+    for base in (STABLE_ROOT, INCUBATING_ROOT, INCUBATING_NAMES_ROOT):
+        if not os.path.isdir(base):
+            continue
+        for dirpath, _dirs, files in os.walk(base):
+            for fn in files:
+                if fn.endswith(".g.cs"):
+                    found.add(os.path.join(dirpath, fn))
+    return found
+
+
+def cmd_write():
+    expected, all_drops, counts, by_root = owned_files()
+
+    # Delete first, so a root that leaves the registry cannot linger as an orphan.
+    for path in committed_files() - set(expected):
+        os.remove(path)
+    for path, text in expected.items():
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", encoding="utf-8", newline="\n") as f:
+            f.write(text)
 
     # roots present in incubating but skipped in stable
     inc = roots_for_tier(by_root, False)
@@ -810,9 +832,9 @@ def cmd_write():
         r for r, a in by_root.items()
         if len({x.get("source_registry") for x in a}) > 1
     ]
-    print(f"stable files:      {summary['stable']}")
-    print(f"incubating files:  {summary['incubating']}")
-    print(f"names file:        {names_path}")
+    print(f"stable files:      {counts['stable']}")
+    print(f"incubating files:  {counts['incubating']}")
+    print(f"names file:        {os.path.join(INCUBATING_NAMES_ROOT, NAMES_CLASS + '.g.cs')}")
     print(f"roots with NO stable file ({len(skipped_stable)}): {', '.join(skipped_stable)}")
     print(f"mixed-source roots: {', '.join(sorted(mixed)) or '(none)'}")
     print(f"dropped duplicate identifiers ({len(all_drops)}):")
@@ -823,6 +845,57 @@ def cmd_write():
         )
 
 
+DIFF_LINE_BUDGET = 40
+
+
+def cmd_check():
+    """Snapshot gate: the committed tree must equal what the emitter produces now.
+
+    Reports a readable per-file diff rather than a single aggregate mismatch —
+    the point of a snapshot is to show *what* drifted. VerifyAttributesHash
+    still guards the same files against hand-edits; this says why.
+    """
+    expected, _drops, _counts, _by_root = owned_files()
+    failures = []
+
+    for path in sorted(set(expected) | committed_files()):
+        want = expected.get(path)
+        if want is None:
+            failures.append(f"stale generated file (no registry root produces it): {path}")
+            continue
+        if not os.path.isfile(path):
+            failures.append(f"missing generated file: {path}")
+            continue
+        with open(path, encoding="utf-8", newline="") as f:
+            got = f.read()
+        if got == want:
+            continue
+        import difflib
+
+        diff = list(
+            difflib.unified_diff(
+                got.splitlines(keepends=True),
+                want.splitlines(keepends=True),
+                fromfile=f"{path} (committed)",
+                tofile=f"{path} (emitter)",
+                n=1,
+            )
+        )
+        body = "".join(diff[:DIFF_LINE_BUDGET]).rstrip("\n")
+        if len(diff) > DIFF_LINE_BUDGET:
+            body += f"\n  … {len(diff) - DIFF_LINE_BUDGET} more diff lines"
+        failures.append(f"stale generated file: {path}\n{body}")
+
+    if failures:
+        sys.stderr.write("\n".join(failures) + "\n")
+        sys.stderr.write(
+            f"\n{len(failures)} file(s) differ. Regenerate with: "
+            "emit_attributes.py --write   (then ./build.sh SeedAttributesHash)\n"
+        )
+        return 1
+    return 0
+
+
 def main(argv):
     if len(argv) >= 2 and argv[1] == "--stdout":
         if len(argv) != 4:
@@ -831,6 +904,8 @@ def main(argv):
         cmd_stdout(argv[2], argv[3])
     elif len(argv) == 2 and argv[1] == "--write":
         cmd_write()
+    elif len(argv) == 2 and argv[1] == "--check":
+        sys.exit(cmd_check())
     else:
         sys.stderr.write(__doc__)
         sys.exit(2)
