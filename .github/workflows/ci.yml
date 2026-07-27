@@ -18,10 +18,10 @@ jobs:
           global-json-file: global.json
 
       - name: Restore
-        run: dotnet restore Qyl.OpenTelemetry.SemanticConventions.slnx
+        run: dotnet restore Qyl.Telemetry.SemanticConventions.slnx
 
       - name: Build
-        run: dotnet build Qyl.OpenTelemetry.SemanticConventions.slnx --no-restore --configuration Release
+        run: dotnet build Qyl.Telemetry.SemanticConventions.slnx --no-restore --configuration Release
 
       - name: Verify attribute manifest
         run: ./build.sh VerifyAttributesHash
@@ -30,20 +30,20 @@ jobs:
       # prose, deleted-upstream keys) but must never contradict the registry on
       # what the registry DOES know — renames, deprecations, enum-member removals.
       - name: Verify deprecated-semconv catalog against resolved registry
-        run: python3 src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/scripts/verify_deprecated_catalog.py
+        run: python3 src/Qyl.Telemetry.SemanticConventions.SourceGeneration/scripts/verify_deprecated_catalog.py
 
       - name: Test analyzer pipeline
-        run: dotnet run --project tests/Qyl.OpenTelemetry.SemanticConventions.Pipeline.Tests/ --configuration Release --no-build
+        run: dotnet run --project tests/Qyl.Telemetry.SemanticConventions.Pipeline.Tests/ --configuration Release --no-build
 
       - name: Test source generation
-        run: dotnet run --project tests/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Tests/ --configuration Release --no-build
+        run: dotnet run --project tests/Qyl.Telemetry.SemanticConventions.SourceGeneration.Tests/ --configuration Release --no-build
 
       - name: Pack
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: dotnet pack Qyl.OpenTelemetry.SemanticConventions.slnx --no-build --configuration Release --output artifacts/packages
+        run: dotnet pack Qyl.Telemetry.SemanticConventions.slnx --no-build --configuration Release --output artifacts/packages
 
       - name: Inspect and smoke packed artifacts
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          version="$(dotnet msbuild src/Qyl.OpenTelemetry.SemanticConventions/Qyl.OpenTelemetry.SemanticConventions.csproj -getProperty:PackageVersion -nologo)"
+          version="$(dotnet msbuild src/Qyl.Telemetry.SemanticConventions/Qyl.Telemetry.SemanticConventions.csproj -getProperty:PackageVersion -nologo)"
           ./eng/release/verify-packages.sh "${version}" "${GITHUB_WORKSPACE}/artifacts/packages" "${GITHUB_WORKSPACE}/artifacts/packages"

@@ -14,7 +14,7 @@ using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Serilog;
 
-namespace Qyl.OpenTelemetry.SemanticConventions.Build;
+namespace Qyl.Telemetry.SemanticConventions.Build;
 
 /// <summary>
 ///   Repository-local build host. VerifyAttributesHash guards the committed
@@ -30,15 +30,18 @@ internal sealed class Build : NukeBuild
     AbsolutePath AttributesHashFile => RootDirectory / "eng" / "semconv" / "attributes.lock.sha256";
 
     AbsolutePath StableAttributesDir =>
-        RootDirectory / "src" / "Qyl.OpenTelemetry.SemanticConventions" / "Attributes";
+        RootDirectory / "src" / "Qyl.Telemetry.SemanticConventions" / "Attributes";
 
     AbsolutePath IncubatingAttributesDir =>
-        RootDirectory / "src" / "Qyl.OpenTelemetry.SemanticConventions.Incubating" / "Attributes";
+        RootDirectory / "src" / "Qyl.Telemetry.SemanticConventions.Incubating" / "Attributes";
+
+    AbsolutePath IncubatingNamesDir =>
+        RootDirectory / "src" / "Qyl.Telemetry.SemanticConventions.Incubating" / "Names";
 
     AbsolutePath DocsGeneratorProject =>
         RootDirectory / "tools"
-        / "Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator"
-        / "Qyl.OpenTelemetry.SemanticConventions.Analyzers.DocsGenerator.csproj";
+        / "Qyl.Telemetry.SemanticConventions.Analyzers.DocsGenerator"
+        / "Qyl.Telemetry.SemanticConventions.Analyzers.DocsGenerator.csproj";
 
     /// <summary>Restore + compile every project in the solution.</summary>
     Target Compile => _ => _
@@ -51,9 +54,10 @@ internal sealed class Build : NukeBuild
         });
 
     /// <summary>
-    ///   Hash the committed Weaver-emitted attribute files and compare against the
-    ///   manifest at <c>eng/semconv/attributes.lock.sha256</c>. Fails the build if
-    ///   anyone hand-edited a generated file or forgot to re-seed the lock after a
+    ///   Hash every file <c>emit_attributes.py</c> owns — the Weaver-emitted attribute
+    ///   trees and the qyl-owned names file — and compare against the manifest at
+    ///   <c>eng/semconv/attributes.lock.sha256</c>. Fails the build if anyone
+    ///   hand-edited a generated file or forgot to re-seed the lock after a
     ///   legitimate regeneration.
     /// </summary>
     Target VerifyAttributesHash => _ => _
@@ -138,7 +142,7 @@ internal sealed class Build : NukeBuild
     string ComputeAttributesManifestHash()
     {
         var entries = new List<(string RelPath, string Sha)>();
-        foreach (AbsolutePath root in new[] { StableAttributesDir, IncubatingAttributesDir })
+        foreach (AbsolutePath root in new[] { StableAttributesDir, IncubatingAttributesDir, IncubatingNamesDir })
         {
             if (!Directory.Exists(root))
                 continue;

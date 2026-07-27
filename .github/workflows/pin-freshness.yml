@@ -39,7 +39,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -uo pipefail
-          script=src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/scripts/check_pin_freshness.py
+          script=src/Qyl.Telemetry.SemanticConventions.SourceGeneration/scripts/check_pin_freshness.py
           # A non-zero exit is the signal here, not a step failure; the runner's
           # default `set -e` would abandon the report before it is published.
           status=0

@@ -1,0 +1,29 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Qyl.Telemetry.SemanticConventions/Qyl.Telemetry.SemanticConventions.csproj" />
+    <Project Path="src/Qyl.Telemetry.SemanticConventions.Incubating/Qyl.Telemetry.SemanticConventions.Incubating.csproj" />
+    <Project Path="src/Qyl.Telemetry.SemanticConventions.SourceGeneration/Qyl.Telemetry.SemanticConventions.SourceGeneration.csproj" />
+    <Project Path="src/Qyl.Telemetry.SemanticConventions.Analyzers/Qyl.Telemetry.SemanticConventions.Analyzers.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Qyl.Telemetry.SemanticConventions.Pipeline.Tests/Qyl.Telemetry.SemanticConventions.Pipeline.Tests.csproj" />
+    <Project Path="tests/Qyl.Telemetry.SemanticConventions.SourceGeneration.Tests/Qyl.Telemetry.SemanticConventions.SourceGeneration.Tests.csproj" />
+  </Folder>
+
+  <Folder Name="/eng/">
+    <Project Path="eng/build/_build.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/Qyl.Telemetry.SemanticConventions.Analyzers.DocsGenerator/Qyl.Telemetry.SemanticConventions.Analyzers.DocsGenerator.csproj" />
+  </Folder>
+  <Folder Name="/solution-items/">
+    <File Path="README.md" />
+    <File Path="LICENSE" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="Version.props" />
+    <File Path="global.json" />
+    <File Path="nuget.config" />
+    <File Path=".editorconfig" />
+  </Folder>
+</Solution>

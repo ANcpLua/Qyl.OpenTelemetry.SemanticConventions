@@ -9,7 +9,7 @@ fi
 version="$1"
 package_source="$2"
 package_directory="${3:-}"
-stable_id="Qyl.OpenTelemetry.SemanticConventions"
+stable_id="Qyl.Telemetry.SemanticConventions"
 incubating_id="${stable_id}.Incubating"
 source_generation_id="${stable_id}.SourceGeneration"
 package_ids=("${stable_id}" "${incubating_id}" "${source_generation_id}")
@@ -117,10 +117,10 @@ cat > "${consumer_directory}/ReleaseSmoke.csproj" <<EOF
 EOF
 
 cat > "${consumer_directory}/Program.cs" <<'EOF'
-using Qyl.OpenTelemetry.SemanticConventions.Attributes.Http;
-using Qyl.OpenTelemetry.SemanticConventions.Incubating.Attributes.GenAi;
-using Qyl.OpenTelemetry.SemanticConventions.Incubating.Registry;
-using Qyl.OpenTelemetry.SemanticConventions.SourceGeneration;
+using Qyl.Telemetry.SemanticConventions.Attributes.Http;
+using Qyl.Telemetry.SemanticConventions.Incubating.Attributes.GenAi;
+using Qyl.Telemetry.SemanticConventions.Incubating.Registry;
+using Qyl.Telemetry.SemanticConventions.SourceGeneration;
 using System.Text.Json;
 
 namespace ReleaseSmoke;

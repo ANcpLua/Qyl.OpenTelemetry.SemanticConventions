@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="xunit.v3.mtp-v2"/>
+    <PackageReference Include="AwesomeAssertions"/>
+    <PackageReference Include="ANcpLua.Roslyn.Utilities.Testing"/>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/Qyl.Telemetry.SemanticConventions.SourceGeneration/Qyl.Telemetry.SemanticConventions.SourceGeneration.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Snapshots\qyl.attributes.http.stable.expected.txt"
+                      LogicalName="qyl.attributes.http.stable.expected.txt"/>
+    <EmbeddedResource Include="Snapshots\qyl.attributes.http.incubating.expected.txt"
+                      LogicalName="qyl.attributes.http.incubating.expected.txt"/>
+    <EmbeddedResource Include="Snapshots\qyl.metrics.http-server.stable.expected.txt"
+                      LogicalName="qyl.metrics.http-server.stable.expected.txt"/>
+    <EmbeddedResource Include="Snapshots\qyl.metrics.http-server.incubating.expected.txt"
+                      LogicalName="qyl.metrics.http-server.incubating.expected.txt"/>
+    <EmbeddedResource Include="Snapshots\qyl.meters.http-server.stable.expected.txt"
+                      LogicalName="qyl.meters.http-server.stable.expected.txt"/>
+    <EmbeddedResource Include="Snapshots\qyl.meters.http-server.incubating.expected.txt"
+                      LogicalName="qyl.meters.http-server.incubating.expected.txt"/>
+    <EmbeddedResource Include="Snapshots\qyl.activities.http.stable.expected.txt"
+                      LogicalName="qyl.activities.http.stable.expected.txt"/>
+    <EmbeddedResource Include="Snapshots\qyl.activities.http.incubating.expected.txt"
+                      LogicalName="qyl.activities.http.incubating.expected.txt"/>
+  </ItemGroup>
+
+</Project>

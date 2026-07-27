@@ -1,0 +1,799 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Qyl.Telemetry.SemanticConventions.Analyzers",
+          "informationUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions",
+          "rules": [
+            {
+              "id": "QYL0001",
+              "name": "GraphqlDocumentOptIn",
+              "shortDescription": {
+                "text": "graphql.document is opt-in"
+              },
+              "fullDescription": {
+                "text": "graphql.document carries user-inputted, potentially sensitive, high-cardinality content. v1.41.0 moved its requirement level from recommended to opt_in. Capture only behind an explicit opt-in flag with sanitization."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0001_GraphqlDocumentOptIn.md",
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "category": "OpenTelemetry.SemanticConventions"
+              }
+            },
+            {
+              "id": "QYL0002",
+              "name": "RpcServerClientAttribute",
+              "shortDescription": {
+                "text": "RPC server span must not include client.address / client.port"
+              },
+              "fullDescription": {
+                "text": "RPC server spans extend the rpc base group directly and exclude client.address and client.port. Use server.address / server.port instead."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0002_RpcServerClientAttribute.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "OpenTelemetry.SemanticConventions"
+              }
+            },
+            {
+              "id": "QYL0003",
+              "name": "DeprecatedSemconv",
+              "shortDescription": {
+                "text": "Deprecated semantic-convention constant"
+              },
+              "fullDescription": {
+                "text": "References to constants in OpenTelemetry.SemanticConventions.Attributes.* that carry [Obsolete]. Migrate to the replacement attribute named in the deprecation message."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0003_DeprecatedSemconv.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "OpenTelemetry.SemanticConventions"
+              }
+            },
+            {
+              "id": "QYL0004",
+              "name": "PreferSemconvConstant",
+              "shortDescription": {
+                "text": "Prefer typed semantic-convention constant over string literal"
+              },
+              "fullDescription": {
+                "text": "When a telemetry attribute key literal matches a known semantic-convention attribute name from OpenTelemetry.SemanticConventions.Attributes.*, prefer the typed constant for refactor-safety and discoverability."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0004_PreferSemconvConstant.md",
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "category": "OpenTelemetry.SemanticConventions"
+              }
+            },
+            {
+              "id": "QYL0005",
+              "name": "LiteralMatchesDeprecatedSemconv",
+              "shortDescription": {
+                "text": "String literal matches a deprecated semantic-convention name"
+              },
+              "fullDescription": {
+                "text": "When a telemetry attribute key literal matches a semantic-convention attribute that is marked [Obsolete] in the consumer\u0027s referenced OpenTelemetry.SemanticConventions package, the call site needs migration regardless of whether a typed constant is being used."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0005_LiteralMatchesDeprecatedSemconv.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "OpenTelemetry.SemanticConventions"
+              }
+            },
+            {
+              "id": "QYL0006",
+              "name": "MissingSchemaUrl",
+              "shortDescription": {
+                "text": "Missing telemetry schema URL"
+              },
+              "fullDescription": {
+                "text": "Setting the schema URL allows collectors and backends to understand which version of semantic conventions your telemetry uses."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0006_MissingSchemaUrl.md",
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0007",
+              "name": "DeprecatedSemconvValue",
+              "shortDescription": {
+                "text": "Deprecated semantic-convention value"
+              },
+              "fullDescription": {
+                "text": "A constant string used as the value of a known semantic-convention telemetry attribute matches a value member that is marked [Obsolete] in the consumer\u0027s referenced *Values enum class."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0007_DeprecatedSemconvValue.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "OpenTelemetry.SemanticConventions"
+              }
+            },
+            {
+              "id": "QYL0008",
+              "name": "IncubatingSemconvInLibrary",
+              "shortDescription": {
+                "text": "Incubating semantic-convention member used in a library"
+              },
+              "fullDescription": {
+                "text": "Members under any *.SemanticConventions.Incubating namespace may rename or change values across minor package releases. Library projects (non-exe, non-test) baking direct references push that volatility onto every downstream consumer."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0008_IncubatingSemconvInLibrary.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "OpenTelemetry.SemanticConventions"
+              }
+            },
+            {
+              "id": "QYL0009",
+              "name": "SupplementalSemconvMigration",
+              "shortDescription": {
+                "text": "Obsolete semantic convention has an exact replacement"
+              },
+              "fullDescription": {
+                "text": "A hard-coded semantic-convention name or value matches the supplemental OpenTelemetry migration catalog and has a one-to-one replacement. This supplements, but does not replace, [Obsolete] metadata from OpenTelemetry.SemanticConventions."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0009_SupplementalSemconvMigration.md",
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "category": "OpenTelemetry.SemanticConventions"
+              }
+            },
+            {
+              "id": "QYL0010",
+              "name": "SupplementalSemconvMigration",
+              "shortDescription": {
+                "text": "Semantic convention migration needs review"
+              },
+              "fullDescription": {
+                "text": "A hard-coded semantic-convention name or value matches the supplemental OpenTelemetry migration catalog, but the migration is context-sensitive or has no safe automatic replacement."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0010_SupplementalSemconvMigration.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "OpenTelemetry.SemanticConventions"
+              }
+            },
+            {
+              "id": "QYL0012",
+              "name": "InvalidAttributeValue",
+              "shortDescription": {
+                "text": "Semantic-convention enum value uses non-canonical casing"
+              },
+              "fullDescription": {
+                "text": "Known enum values must use the exact spelling generated from the complete pinned semantic-convention registry. Unknown extension values remain allowed; primitive value types are handled separately by QYL0013."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0012_InvalidAttributeValue.md",
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0013",
+              "name": "IncorrectAttributeType",
+              "shortDescription": {
+                "text": "Incorrect attribute type"
+              },
+              "fullDescription": {
+                "text": "Every exact and template attribute type is generated from the complete pinned semantic-convention registry. Primitive and homogeneous-array mismatches are reported; structured type:any payloads remain governed by their packaged upstream JSON Schemas."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0013_IncorrectAttributeType.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0100",
+              "name": "ActivityMissingSemconv",
+              "shortDescription": {
+                "text": "Activity/Span missing semantic convention attributes"
+              },
+              "fullDescription": {
+                "text": "OpenTelemetry Activities (Spans) should include semantic convention attributes appropriate for their operation type. This enables correlation, filtering, and analysis in observability backends."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0100_ActivityMissingSemconv.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0101",
+              "name": "UnregisteredActivitySource",
+              "shortDescription": {
+                "text": "ActivitySource should be registered with AddSource()"
+              },
+              "fullDescription": {
+                "text": "ActivitySources must be registered with AddSource() in the OpenTelemetry tracing configuration to be included in the trace pipeline. Unregistered sources will not emit spans."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0101_UnregisteredActivitySource.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0102",
+              "name": "TracedActivitySourceName",
+              "shortDescription": {
+                "text": "[Traced] attribute requires non-empty ActivitySourceName"
+              },
+              "fullDescription": {
+                "text": "The [Traced] attribute requires a non-empty ActivitySourceName to identify the source of spans. This name should match a registered ActivitySource in your application\u0027s tracing configuration."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0102_TracedActivitySourceName.md",
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0103",
+              "name": "DuplicateInstrumentation",
+              "shortDescription": {
+                "text": "Duplicate instrumentation detected"
+              },
+              "fullDescription": {
+                "text": "When a method is instrumented by both auto-instrumentation (e.g., [Traced] attribute or interceptor) AND manual Activity.StartActivity spans, it creates duplicate nested spans that increase telemetry volume and can cause confusion in trace visualization. Choose one instrumentation approach per method."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0103_DuplicateInstrumentation.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0104",
+              "name": "InvalidActivitySourceName",
+              "shortDescription": {
+                "text": "Invalid ActivitySource name"
+              },
+              "fullDescription": {
+                "text": "ActivitySource names should follow the reverse-DNS naming convention (e.g., \u0027company.product.component\u0027). Names must contain at least one dot, use only lowercase letters, digits, dots, and hyphens, and should not contain spaces. This ensures consistent identification across telemetry backends."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0104_InvalidActivitySourceName.md",
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0105",
+              "name": "ManualSpanRecommended",
+              "shortDescription": {
+                "text": "Manual span recommended"
+              },
+              "fullDescription": {
+                "text": "Complex async patterns like Task.WhenAll, Parallel.ForEach, multiple awaits, or ConfigureAwait(false) may not be fully captured by auto-instrumentation. Consider using manual Activity.StartActivity() to create explicit child spans for parallel operations, ensuring each branch of execution is properly traced."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0105_ManualSpanRecommended.md",
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0106",
+              "name": "OrphanedTracedTag",
+              "shortDescription": {
+                "text": "Orphaned [TracedTag]"
+              },
+              "fullDescription": {
+                "text": "The [TracedTag] attribute is only meaningful when used on parameters of methods that participate in tracing via [Traced]. When neither the method nor its declaring type has [Traced], the tag will be silently ignored and becomes dead metadata."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0106_OrphanedTracedTag.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0107",
+              "name": "RedundantNoTrace",
+              "shortDescription": {
+                "text": "Redundant [NoTrace]"
+              },
+              "fullDescription": {
+                "text": "The [NoTrace] attribute is used to opt a method out of class-level [Traced] auto-instrumentation. When the declaring type does not have [Traced], the [NoTrace] attribute has no effect and should be removed to avoid confusion."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0107_RedundantNoTrace.md",
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0108",
+              "name": "NonInterceptableTraced",
+              "shortDescription": {
+                "text": "Non-interceptable [Traced]"
+              },
+              "fullDescription": {
+                "text": "The [Traced] attribute triggers compile-time interception to create spans. Abstract, extern, and partial definition methods cannot be intercepted by the source generator, so [Traced] will be silently ignored."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0108_NonInterceptableTraced.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0109",
+              "name": "TracedTagOnOutRefParameter",
+              "shortDescription": {
+                "text": "[TracedTag] on out/ref parameter"
+              },
+              "fullDescription": {
+                "text": "The [TracedTag] attribute records parameter values as span attributes at the start of method execution. Parameters with out or ref modifiers are not supported because out parameters have no value at method entry and ref parameters may be mutated during execution."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0109_TracedTagOnOutRefParameter.md",
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0110",
+              "name": "MissingExceptionRecordingOnActivity",
+              "shortDescription": {
+                "text": "Missing exception recording on Activity error status"
+              },
+              "fullDescription": {
+                "text": "When setting an Activity status to Error in a catch block, the exception should be recorded as an event on the span for proper observability. Use activity.AddEvent with exception details or a RecordException helper."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0110_MissingExceptionRecordingOnActivity.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0200",
+              "name": "TelemetryName",
+              "shortDescription": {
+                "text": "Telemetry name must come from the generated registry catalog"
+              },
+              "fullDescription": {
+                "text": "The producer constants and the collector ingest catalog are generated from one registry, so a name the catalog does not know is a name the platform cannot recognize on the wire. Add the name to the registry (qyl-owned names go in qyl-registry.json) and regenerate, or use the generated constant for an existing name."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0200_TelemetryName.md",
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0201",
+              "name": "InvalidMetricName",
+              "shortDescription": {
+                "text": "Metric descriptor name must be a well-formed catalog member"
+              },
+              "fullDescription": {
+                "text": "Metric names declared on Counter/Histogram descriptor attributes must follow OpenTelemetry naming conventions and be members of the generated registry catalog, so the collector recognizes every metric qyl emits. Add qyl-owned metrics to qyl-registry.json and regenerate."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0201_InvalidMetricName.md",
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "category": "Metrics"
+              }
+            },
+            {
+              "id": "QYL0202",
+              "name": "HighCardinalityMetricTag",
+              "shortDescription": {
+                "text": "High-cardinality tag on metric"
+              },
+              "fullDescription": {
+                "text": "High-cardinality tags like user.id, request.id, or session.id create a unique time series for each distinct value. This can overwhelm metrics backends with memory and storage costs. Consider using these values as span attributes instead, or aggregate them into buckets."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0202_HighCardinalityMetricTag.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "Metrics"
+              }
+            },
+            {
+              "id": "QYL0300",
+              "name": "IncompleteServiceDefaults",
+              "shortDescription": {
+                "text": "ServiceDefaults configuration incomplete"
+              },
+              "fullDescription": {
+                "text": "Complete ServiceDefaults configuration should include tracing, metrics, and logging setup. Missing components may result in incomplete observability data."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0300_IncompleteServiceDefaults.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "Configuration"
+              }
+            },
+            {
+              "id": "QYL0301",
+              "name": "NonOtlpCollectorEndpoint",
+              "shortDescription": {
+                "text": "Collector endpoint should use OTLP protocol"
+              },
+              "fullDescription": {
+                "text": "Collector endpoints should use the OTLP protocol for standardized telemetry export. OTLP provides better performance and broader compatibility than proprietary protocols."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0301_NonOtlpCollectorEndpoint.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "Configuration"
+              }
+            },
+            {
+              "id": "QYL0302",
+              "name": "MissingOTelConfiguration",
+              "shortDescription": {
+                "text": "Missing OpenTelemetry configuration"
+              },
+              "fullDescription": {
+                "text": "When using AddServiceDefaults() or similar setup methods, ensure AddOpenTelemetry() is also called to configure telemetry export. Without OpenTelemetry configuration, traces, metrics, and logs will not be exported to observability backends."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0302_MissingOTelConfiguration.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0303",
+              "name": "MissingResourceAttributes",
+              "shortDescription": {
+                "text": "Missing resource attributes"
+              },
+              "fullDescription": {
+                "text": "Resource attributes \u0027service.name\u0027 and \u0027service.version\u0027 are required for proper service identification in observability backends. These attributes enable grouping traces by service and tracking version-specific behavior. Use ResourceBuilder.CreateDefault().AddService(serviceName, serviceVersion) to set them."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0303_MissingResourceAttributes.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0304",
+              "name": "EnableEventSourceSupport",
+              "shortDescription": {
+                "text": "EventSource instrumentation is trimmed under Native AOT without EventSourceSupport"
+              },
+              "fullDescription": {
+                "text": "Under Native AOT with EventSourceSupport unset, the runtime trims EventSource/EventPipe to a no-op: any in-process EventSource, EventListener, or EventCounter \u2014 including OpenTelemetry.Instrumentation.EventCounters \u2014 silently stops emitting at runtime, with no build error. This rule fires only when such instrumentation is present in the compilation together with PublishAot=true and EventSourceSupport unset, so it does not flag the common OTLP-push app. OpenTelemetry\u0027s OTLP export (ActivitySource plus Meter/MeterListener) does not use EventSource and is unaffected; enabling EventSourceSupport increases Native AOT output size, so enable it only when you rely on EventPipe-based instrumentation. The out-of-process case (dotnet-trace/dotnet-counters) is not detectable at compile time and is out of scope."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0304_EnableEventSourceSupport.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "Configuration"
+              }
+            },
+            {
+              "id": "QYL0305",
+              "name": "LegacySemanticConventionsAccessor",
+              "shortDescription": {
+                "text": "Replace legacy SemanticConventions accessor"
+              },
+              "fullDescription": {
+                "text": "The aggregated SemanticConventions / TraceSemanticConventions / ResourceSemanticConventions static classes are deprecated in favour of per-domain grouped attribute classes (HttpAttributes, ServerAttributes, DbAttributes, etc.). Per-domain grouping mirrors the upstream OpenTelemetry semantic conventions layout and produces smaller, more navigable diffs on convention upgrades."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0305_LegacySemanticConventionsAccessor.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0400",
+              "name": "GenAiExecuteToolName",
+              "shortDescription": {
+                "text": "Execute-tool span is missing its registry-required attribute"
+              },
+              "fullDescription": {
+                "text": "The pinned GenAI span definition requires an additional tool attribute when the execute-tool operation discriminator is present."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0400_GenAiExecuteToolName.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "OpenTelemetry.SemanticConventions"
+              }
+            },
+            {
+              "id": "QYL0401",
+              "name": "GenAiMissingRequiredAttributes",
+              "shortDescription": {
+                "text": "GenAI or MCP span missing required attributes"
+              },
+              "fullDescription": {
+                "text": "GenAI and MCP spans must include the unconditional required attributes for their exact registry-defined discriminator, span kind, and provider refinement. Conditional and recommended attributes are not treated as universally required."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0401_GenAiMissingRequiredAttributes.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "GenAI"
+              }
+            },
+            {
+              "id": "QYL0402",
+              "name": "UseTokenUsageHistogram",
+              "shortDescription": {
+                "text": "Use a registry-defined GenAI token metric"
+              },
+              "fullDescription": {
+                "text": "Token-related GenAI histogram names are checked against the complete metric inventory from the pinned registry, including valid client and server token metrics."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0402_UseTokenUsageHistogram.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "GenAI"
+              }
+            },
+            {
+              "id": "QYL0403",
+              "name": "InvalidAttributeValue",
+              "shortDescription": {
+                "text": "GenAI operation name uses non-canonical casing"
+              },
+              "fullDescription": {
+                "text": "Known GenAI operation names must use the exact casing generated from the pinned registry. Unknown documented system-specific operation names remain allowed."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0403_InvalidAttributeValue.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "GenAI"
+              }
+            },
+            {
+              "id": "QYL0405",
+              "name": "NonInterceptableAgentTraced",
+              "shortDescription": {
+                "text": "Non-interceptable [AgentTraced]"
+              },
+              "fullDescription": {
+                "text": "The [AgentTraced] attribute triggers compile-time interception to create agent spans. Abstract, extern, and partial definition methods cannot be intercepted by the source generator, so [AgentTraced] will be silently ignored."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0405_NonInterceptableAgentTraced.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "GenAI"
+              }
+            },
+            {
+              "id": "QYL0406",
+              "name": "DirectGenAiSdkUsage",
+              "shortDescription": {
+                "text": "Direct GenAI SDK call bypasses automatic OTel instrumentation"
+              },
+              "fullDescription": {
+                "text": "Calling a GenAI SDK type directly prevents automatic OpenTelemetry span emission. Wrap the provider client through Microsoft.Extensions.AI.IChatClient so all LLM calls are traced without changes to call sites."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0406_DirectGenAiSdkUsage.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "GenAI"
+              }
+            },
+            {
+              "id": "QYL0500",
+              "name": "MeterClassMustBePartialStatic",
+              "shortDescription": {
+                "text": "[Meter] class must be partial static"
+              },
+              "fullDescription": {
+                "text": "Classes decorated with [Meter] attribute must be declared as \u0027partial static\u0027 to allow the source generator to implement the metric recording methods. The generator creates static fields for Meter and instrument instances."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0500_MeterClassMustBePartialStatic.md",
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "category": "Metrics"
+              }
+            },
+            {
+              "id": "QYL0501",
+              "name": "MetricMethodMustBePartial",
+              "shortDescription": {
+                "text": "Metric method must be partial"
+              },
+              "fullDescription": {
+                "text": "Methods decorated with [Counter] or [Histogram] attributes must be declared as \u0027partial\u0027 to allow the source generator to implement the metric recording logic. The generator creates the method body that records values to the corresponding instrument."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0501_MetricMethodMustBePartial.md",
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "category": "Metrics"
+              }
+            },
+            {
+              "id": "QYL0600",
+              "name": "InsecureEndpoint",
+              "shortDescription": {
+                "text": "Insecure endpoint"
+              },
+              "fullDescription": {
+                "text": "HTTP endpoints expose data in transit to interception and man-in-the-middle attacks. Use HTTPS (TLS) for all production endpoints to ensure data confidentiality and integrity. Localhost and 127.0.0.1 are excluded as they are typically used for local development only."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0600_InsecureEndpoint.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "Configuration"
+              }
+            },
+            {
+              "id": "QYL0601",
+              "name": "SensitiveDataInAttribute",
+              "shortDescription": {
+                "text": "Sensitive data in span attribute"
+              },
+              "fullDescription": {
+                "text": "Span attributes containing passwords, secrets, tokens, API keys, or PII (SSN, credit card numbers) can leak sensitive information to telemetry backends. Consider redacting sensitive values or excluding these attributes from telemetry. If the data is intentionally included, suppress this warning with a justification comment."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0601_SensitiveDataInAttribute.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0700",
+              "name": "MissingOtlpConfiguration",
+              "shortDescription": {
+                "text": "Missing OTLP configuration"
+              },
+              "fullDescription": {
+                "text": "When using UseOtlpExporter() or AddOtlpExporter() without an explicit endpoint configuration, telemetry will be sent to the default localhost endpoint (localhost:4317 for gRPC, localhost:4318 for HTTP) or fail to export if no collector is running. Configure OTEL_EXPORTER_OTLP_ENDPOINT environment variable or pass the endpoint explicitly in options to ensure reliable telemetry export."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0700_MissingOtlpConfiguration.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0701",
+              "name": "UncompressedExport",
+              "shortDescription": {
+                "text": "Uncompressed OTLP export"
+              },
+              "fullDescription": {
+                "text": "OTLP does not enable compression by default on either transport: the specification mandates no default, and gRPC is not compressed automatically \u2014 both gRPC and HTTP/protobuf send uncompressed payloads unless configured. For exports with large payloads (especially gen_ai.content request and response text), gzip compression significantly reduces bandwidth usage and export latency. Enable it via the OTEL_EXPORTER_OTLP_COMPRESSION=gzip environment variable, or the exporter\u0027s compression option. This rule inspects the HTTP/protobuf configuration path."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0701_UncompressedExport.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0702",
+              "name": "BatchExportDisabled",
+              "shortDescription": {
+                "text": "Batch export disabled"
+              },
+              "fullDescription": {
+                "text": "SimpleSpanProcessor and SimpleActivityExportProcessor export each span immediately as it completes, which incurs significant overhead. BatchSpanProcessor and BatchActivityExportProcessor collect spans and export them in batches, reducing network overhead and improving application performance. Use batch processors in production environments."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0702_BatchExportDisabled.md",
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0703",
+              "name": "ConsiderSampling",
+              "shortDescription": {
+                "text": "Consider configuring sampling"
+              },
+              "fullDescription": {
+                "text": "High-volume services can generate excessive telemetry data without sampling configuration. AlwaysOnSampler captures every span, which may overwhelm backends and increase costs. Consider using ParentBasedSampler (respects parent decisions) or TraceIdRatioBasedSampler (probabilistic) for production environments. Tail-based sampling at the collector level is also recommended for capturing important traces like errors."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0703_ConsiderSampling.md",
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            }
+          ]
+        }
+      },
+      "results": []
+    }
+  ]
+}

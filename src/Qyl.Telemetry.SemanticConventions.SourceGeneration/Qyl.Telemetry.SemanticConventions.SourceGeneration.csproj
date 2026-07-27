@@ -1,0 +1,79 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Qyl.Telemetry.SemanticConventions.SourceGeneration</RootNamespace>
+    <!-- This released assembly identity differs intentionally from the package ID. -->
+    <AssemblyName>Qyl.Telemetry.SemanticConventions.SourceGeneration.Generator</AssemblyName>
+
+    <IsRoslynComponent>true</IsRoslynComponent>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+    <!-- Explicit Roslyn references also work under IDE language-server builds. -->
+    <DisableImplicitRoslynPackageReference>true</DisableImplicitRoslynPackageReference>
+
+    <!-- RS0030 originates in compiled-in polyfills; NU5017 is spurious for an analyzer-only package. -->
+    <NoWarn>$(NoWarn);RS0030;CS1591;NU5017</NoWarn>
+
+    <IsPackable>true</IsPackable>
+    <PackageId>Qyl.Telemetry.SemanticConventions.SourceGeneration</PackageId>
+    <Description>Roslyn source generator that materialises OpenTelemetry semantic-conventions constants, descriptors, and thin helpers for user-declared partial classes. Emits stable/incubating projections for attributes, metrics, Meter factories, and Activity setters from the pinned OpenTelemetry semantic-conventions v$(SemConvSchemaVersion) core registry plus the pinned development GenAI registry.</Description>
+    <PackageTags>opentelemetry;semantic-conventions;roslyn;source-generator;otel;weaver</PackageTags>
+    <IncludeSymbols>false</IncludeSymbols>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddGeneratorToAnalyzersPackage</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The Sources package already includes its polyfills; adding Polyfills separately duplicates types. -->
+    <PackageReference Include="ANcpLua.Roslyn.Utilities.Sources" PrivateAssets="all"/>
+    <!-- Consumers need a Roslyn host at least as new as the generator's compile dependency. -->
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp"
+                      PrivateAssets="contentfiles;analyzers"
+                      IncludeAssets="compile"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="ANcpLua.Roslyn.Utilities"/>
+    <Using Include="ANcpLua.Roslyn.Utilities.Models"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- RegistryLoader depends on this manifest name. -->
+    <EmbeddedResource Include="Resources/resolved-registry.json"
+                      LogicalName="Qyl.Telemetry.SemanticConventions.SourceGeneration.resolved-registry.json"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" Condition="Exists('README.md')"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The no-op build payload satisfies NuGet's analyzer-package content check. -->
+    <None Include="build/Qyl.Telemetry.SemanticConventions.SourceGeneration.props"
+          Pack="true"
+          PackagePath="build/Qyl.Telemetry.SemanticConventions.SourceGeneration.props"/>
+  </ItemGroup>
+
+  <Target Name="_AddGeneratorToAnalyzersPackage" DependsOnTargets="GetTargetPath">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(TargetPath)" PackagePath="analyzers/dotnet/cs"/>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_VerifyRegistryDerivedArtifacts"
+          BeforeTargets="CoreCompile"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+    <Exec Command="python3 &quot;$(MSBuildProjectDirectory)/scripts/emit_analyzer_registry.py&quot; --check"
+          WorkingDirectory="$(MSBuildProjectDirectory)"/>
+    <Exec Command="python3 &quot;$(MSBuildProjectDirectory)/scripts/emit_registry_resources.py&quot; --check"
+          WorkingDirectory="$(MSBuildProjectDirectory)"/>
+  </Target>
+
+</Project>

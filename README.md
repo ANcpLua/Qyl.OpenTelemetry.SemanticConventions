@@ -1,4 +1,4 @@
-# Qyl.OpenTelemetry.SemanticConventions
+# Qyl.Telemetry.SemanticConventions
 
 .NET packages generated from pinned OpenTelemetry semantic-convention registries.
 The current registry projection targets core semantic conventions 1.43.0 plus the
@@ -8,7 +8,7 @@ separately pinned development GenAI registry.
 
 | Package | Contents |
 | --- | --- |
-| `Qyl.OpenTelemetry.SemanticConventions` | Stable and deprecated attribute-key constants |
+| `Qyl.Telemetry.SemanticConventions` | Stable and deprecated attribute-key constants |
 | `.Incubating` | Development and unstable constants, the complete resolved registry, and upstream GenAI payload schemas |
 | `.SourceGeneration` | Roslyn generators for typed telemetry declarations |
 | `.Analyzers` | Preview diagnostics and code fixes; built and documented, but excluded from stable releases |
@@ -21,7 +21,7 @@ track unstable upstream conventions and may change between minor releases.
 
 The registry ships in two consumption modes; pick by what you are building.
 
-**Libraries reference the compiled packages** (`Qyl.OpenTelemetry.SemanticConventions`,
+**Libraries reference the compiled packages** (`Qyl.Telemetry.SemanticConventions`,
 `.Incubating`). A library needs one pinned registry version across its whole package
 family and a stable public constant surface to alias against
 (`Qyl.OpenTelemetry.AutoInstrumentation` does this through its internal
@@ -78,7 +78,7 @@ not included in stable package builds. `PackPreviewAnalyzers=true` enables an ex
 prerelease pack; the build rejects a stable analyzer version.
 
 The generated analyzer reference includes the
-[`index`](docs/Qyl.OpenTelemetry.SemanticConventions.Analyzers.md),
+[`index`](docs/Qyl.Telemetry.SemanticConventions.Analyzers.md),
 [`migration catalog`](docs/migration-catalog.md), and
 [`per-rule pages`](docs/rules/). Consumer severity can be configured through
 `OtelSemConvAnalysisMode`:
@@ -95,13 +95,13 @@ unset, the consumer's editorconfig remains authoritative.
 ## Build and test
 
 ```bash
-dotnet build Qyl.OpenTelemetry.SemanticConventions.slnx -c Release
-dotnet run --project tests/Qyl.OpenTelemetry.SemanticConventions.Pipeline.Tests -c Release
-dotnet run --project tests/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration.Tests -c Release
+dotnet build Qyl.Telemetry.SemanticConventions.slnx -c Release
+dotnet run --project tests/Qyl.Telemetry.SemanticConventions.Pipeline.Tests -c Release
+dotnet run --project tests/Qyl.Telemetry.SemanticConventions.SourceGeneration.Tests -c Release
 ./build.sh VerifyAttributesHash
-python3 src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/scripts/verify_deprecated_catalog.py
-python3 src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/scripts/emit_analyzer_registry.py --check
-python3 src/Qyl.OpenTelemetry.SemanticConventions.SourceGeneration/scripts/emit_registry_resources.py --check
+python3 src/Qyl.Telemetry.SemanticConventions.SourceGeneration/scripts/verify_deprecated_catalog.py
+python3 src/Qyl.Telemetry.SemanticConventions.SourceGeneration/scripts/emit_analyzer_registry.py --check
+python3 src/Qyl.Telemetry.SemanticConventions.SourceGeneration/scripts/emit_registry_resources.py --check
 ```
 
 Publishing uses GitHub Actions OIDC trusted publishing. No long-lived NuGet API key
