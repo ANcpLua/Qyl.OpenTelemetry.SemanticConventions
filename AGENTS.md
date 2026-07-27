@@ -130,9 +130,21 @@ That same input also generates the consumer-facing side of the loop:
 what the analyzer accepts and what a consumer can reference — come from one file,
 so a `qyl.*` name cannot exist as a literal that the catalog does not know.
 Producers referencing these constants instead of literals is what makes the loop
-closed rather than merely checked. The scope names are values this repository
-records, not names it owns: they belong to the emitting assemblies, so renaming a
-producer assembly is a `qyl-registry.json` edit plus a regeneration here.
+closed rather than merely checked.
+
+`scope_names` and `event_names` mirror **what the producing code actually emits**,
+and nothing else. Renaming a producer package, assembly, or C# namespace is *not*
+a reason to touch them — a package rename does not rename what the package emits,
+and the two moved independently at 1.0.0 on purpose: the AutoInstrumentation
+family became `Qyl.Telemetry.AutoInstrumentation` while its `ActivitySource` names
+stay `Qyl.OpenTelemetry.AutoInstrumentation*` (confirmed by that repo, 2026-07-27).
+Changing an emitted *value* is the only trigger, and it is never a one-repo edit:
+the collector's conformance app asserts the inbound `Source.Name` literally, and
+recorded OTLP evidence has to be re-recorded by real execution rather than
+hand-edited. So a value change is one coordinated wave — the producer stops
+emitting the old string, this file is updated, `emit_attributes.py --write` and
+`./build.sh SeedAttributesHash` run here, and the out-of-repo assertions move with
+it. Guessing ahead of the producer breaks QYL0200 in the gap.
 
 ## MCP wire concepts and the qyl.mcp.* staging namespace
 
