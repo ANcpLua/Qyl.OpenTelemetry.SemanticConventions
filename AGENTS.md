@@ -135,16 +135,26 @@ closed rather than merely checked.
 `scope_names` and `event_names` mirror **what the producing code actually emits**,
 and nothing else. Renaming a producer package, assembly, or C# namespace is *not*
 a reason to touch them — a package rename does not rename what the package emits,
-and the two moved independently at 1.0.0 on purpose: the AutoInstrumentation
-family became `Qyl.Telemetry.AutoInstrumentation` while its `ActivitySource` names
-stay `Qyl.OpenTelemetry.AutoInstrumentation*` (confirmed by that repo, 2026-07-27).
-Changing an emitted *value* is the only trigger, and it is never a one-repo edit:
-the collector's conformance app asserts the inbound `Source.Name` literally, and
-recorded OTLP evidence has to be re-recorded by real execution rather than
-hand-edited. So a value change is one coordinated wave — the producer stops
-emitting the old string, this file is updated, `emit_attributes.py --write` and
-`./build.sh SeedAttributesHash` run here, and the out-of-repo assertions move with
-it. Guessing ahead of the producer breaks QYL0200 in the gap.
+and at 1.0.0 those two axes moved on different schedules.
+
+So these entries are a *lagging* mirror, and they are expected to sit behind the
+architecture's target while a migration is in flight. That is correct, not drift:
+G5 pins the conformance assertion to the `Qyl.Telemetry.AutoInstrumentation`
+source, so the AutoInstrumentation scope names are on their way to that string,
+and this file must not move until the producer actually emits it.
+
+Changing an emitted value is never a one-repo edit: the collector's conformance
+app asserts the inbound `Source.Name` literally, and recorded OTLP evidence has to
+be re-recorded by real execution rather than hand-edited. One ordered wave — the
+producer stops emitting the old string, then this file is updated, then
+`emit_attributes.py --write` and `./build.sh SeedAttributesHash` run here, then
+this package publishes and consumers repin. Moving this file first breaks QYL0200
+against what is actually on the wire; never moving it leaves G5 unmet.
+
+Do not restate another repo's current emitted strings in this document. That claim
+has been written here twice and been wrong twice, because it is a snapshot of a
+tree this repo does not control. The two durable sources are `qyl-registry.json`
+for what is emitted **today** and architecture G5 for where it is **going**.
 
 ## MCP wire concepts and the qyl.mcp.* staging namespace
 
