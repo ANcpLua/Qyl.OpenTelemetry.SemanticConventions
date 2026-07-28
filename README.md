@@ -4,6 +4,10 @@
 The current registry projection targets core semantic conventions 1.43.0 plus the
 separately pinned development GenAI registry.
 
+This is the one artifact both halves of qyl share: what an application emits and what
+the collector recognizes are generated from the same resolved registry, so qyl cannot
+emit an attribute name its own collector does not know.
+
 ## Packages
 
 | Package | Contents |
@@ -13,9 +17,20 @@ separately pinned development GenAI registry.
 | `.SourceGeneration` | Roslyn generators for typed telemetry declarations |
 | `.Analyzers` | Preview diagnostics and code fixes; built and documented, but excluded from stable releases |
 
-The supported package set is published on
-[nuget.org](https://www.nuget.org/profiles/ANcpLua). Incubating APIs intentionally
-track unstable upstream conventions and may change between minor releases.
+```bash
+dotnet add package Qyl.Telemetry.SemanticConventions
+```
+
+The three supported packages are published on
+[nuget.org](https://www.nuget.org/profiles/ANcpLua) at `1.0.0`. `.Analyzers` is
+preview-only and is not among them. Incubating APIs intentionally track unstable
+upstream conventions and may change between minor releases.
+
+**Coming from `Qyl.OpenTelemetry.SemanticConventions`?** These are new package IDs, not
+new versions of the old ones. The `Qyl.OpenTelemetry.SemanticConventions*` IDs stop at
+`4.0.0` and receive no further releases; change the ID and take `1.0.0`. The lower number
+is not a downgrade — the new family starts its own version line, and the generated
+namespace ships as its birth ABI rather than as a break to anything already published.
 
 ## Choosing between the compiled packages and the source generator
 
@@ -24,7 +39,7 @@ The registry ships in two consumption modes; pick by what you are building.
 **Libraries reference the compiled packages** (`Qyl.Telemetry.SemanticConventions`,
 `.Incubating`). A library needs one pinned registry version across its whole package
 family and a stable public constant surface to alias against
-(`Qyl.OpenTelemetry.AutoInstrumentation` does this through its internal
+(`Qyl.Telemetry.AutoInstrumentation` does this through its internal
 `QylSemanticAttributes` facade). Because the constants are `const string`, the
 compiler inlines them at every use site — the reference costs effectively nothing
 at runtime.
