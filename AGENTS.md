@@ -5,6 +5,12 @@ This is the repository's only editable agent/contributor instruction file.
 README, released history in releases, and generated analyzer documentation under
 `docs/`. Do not add mission prompts, progress diaries, or a second rules file.
 
+## Verified concern status
+
+| Concern | Status | Evidence / concrete remainder |
+| --- | --- | --- |
+| [`QYL-TELEMETRY-RUNTIME`](https://github.com/ANcpLua/dedupe-28th-july/blob/main/concerns/06-telemetry-vocabulary-and-aot.md) | `IN_PROGRESS` | Package/namespace generation, culture-invariant wire semantics, localized analyzer diagnostics, and generated/AOT gates are tracked. The coordinated G5 producer scope/meter rename, registry regeneration/publication, qyl repin, and consumer/conformance evidence remain; old `scope_names` are current. |
+
 ## 1.0.0 target name
 
 This repository ships **`Qyl.Telemetry.SemanticConventions`** and
@@ -15,16 +21,11 @@ This repository ships **`Qyl.Telemetry.SemanticConventions`** and
 included — that namespace is consumer-compiled ABI, so it ships as the **birth
 ABI of the new package IDs** (architecture §6.2) rather than as a break to a
 published one. The old IDs stay frozen on nuget.org at 4.0.0 until they are
-unlisted at launch; nothing here shims them.
+unlisted; this repository does not build them.
 
-The new family is born at **`1.0.0` stable**. Architecture §6.1 staged it through
-`1.0.0-beta.N` "until launch"; Alex decided in chat on 2026-07-27 that this *is*
-the launch refactor, so the beta band is skipped and §6.1's staging clause is
-superseded for this family. What §6.1 was protecting still holds and still binds:
-1.0.0 means every item in the architecture document is frozen, and a change from
-here needs backwards compatibility, a shim, or a PR. Publishing stays
-tag-triggered — the committed version is a development fallback and the `v1.0.0`
-tag is Alex's act, not an agent's.
+The new family is **`1.0.0` stable**. Publishing stays tag-triggered — the
+committed version is a development fallback and the version tag is the human
+act that publishes. Published artifacts are immutable.
 
 The full ledger and the boundary law live in `qyl/ARCHITECTURE-1.0.0.md` — that
 document is normative and this one does not restate it. The GitHub repository
@@ -41,20 +42,21 @@ name its own collector does not know.
 That guarantee holds **only at identical registry versions**. It is not a
 property of the design; it is a property of building both sides together. Once
 a consumer pins an SDK version and the deployed collector moves on, the
-guarantee becomes a skew question — so the accepted version span and the
-behaviour on unknown attributes must be decided before 1.0.0, not after.
+guarantee becomes a skew question. Every changed publication explicitly defines
+and tests its supported producer/registry/collector version span and behavior
+for unknown attributes.
 
 This package knows nothing about `Activity`, DI, or OTLP, and must not learn.
 
-## Purpose and compatibility
+## Purpose and boundaries
 
 This repository turns pinned OpenTelemetry semantic-convention registries into
 stable/incubating .NET constants, Roslyn source-generation APIs, analyzer rules, and
 the TypeSpec key projection consumed by `qyl-api-schema`.
 
-The packages are public. Published NuGet artifacts are immutable. Breaking
-surface cleanup uses a new major version and migrates known consumers; do not add
-shims without a proven external requirement.
+Obsolete surfaces converge directly, and current callers update in the same
+change. A changed artifact publishes as a new version; do not add compatibility
+shims.
 
 ## One owner for every generated surface
 
@@ -132,29 +134,11 @@ so a `qyl.*` name cannot exist as a literal that the catalog does not know.
 Producers referencing these constants instead of literals is what makes the loop
 closed rather than merely checked.
 
-`scope_names` and `event_names` mirror **what the producing code actually emits**,
-and nothing else. Renaming a producer package, assembly, or C# namespace is *not*
-a reason to touch them — a package rename does not rename what the package emits,
-and at 1.0.0 those two axes moved on different schedules.
-
-So these entries are a *lagging* mirror, and they are expected to sit behind the
-architecture's target while a migration is in flight. That is correct, not drift:
-G5 pins the conformance assertion to the `Qyl.Telemetry.AutoInstrumentation`
-source, so the AutoInstrumentation scope names are on their way to that string,
-and this file must not move until the producer actually emits it.
-
-Changing an emitted value is never a one-repo edit: the collector's conformance
-app asserts the inbound `Source.Name` literally, and recorded OTLP evidence has to
-be re-recorded by real execution rather than hand-edited. One ordered wave — the
-producer stops emitting the old string, then this file is updated, then
-`emit_attributes.py --write` and `./build.sh SeedAttributesHash` run here, then
-this package publishes and consumers repin. Moving this file first breaks QYL0200
-against what is actually on the wire; never moving it leaves G5 unmet.
-
-Do not restate another repo's current emitted strings in this document. That claim
-has been written here twice and been wrong twice, because it is a snapshot of a
-tree this repo does not control. The two durable sources are `qyl-registry.json`
-for what is emitted **today** and architecture G5 for where it is **going**.
+`scope_names` and `event_names` mirror producer emissions, not package,
+assembly, or namespace identity. An emitted-name change is one coordinated G5
+slice: update the producer and real evidence first, then the registry and all
+generated artifacts, publish/index this package, repin qyl, and prove consumer
+conformance. Never move the registry ahead of the wire or hand-edit its outputs.
 
 ## MCP wire concepts and the qyl.mcp.* staging namespace
 
