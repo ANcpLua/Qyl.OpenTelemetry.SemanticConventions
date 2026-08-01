@@ -48,7 +48,7 @@ public sealed class RegistryShapeGateTests
             .GetProperty("source_ref").GetString().Should().Be("v1.43.0");
         sources.Single(source => source.GetProperty("source_registry").GetString() == "genai")
             .GetProperty("source_commit").GetString().Should()
-            .Be("64cfaa612a1af8472b2f063374fbe3c9e6cea2ab");
+            .Be("f77b9235f2ad49fe95b61e9809ca82bb08ef9d47");
 
         root.GetProperty("manifests").EnumerateArray()
             .Select(manifest => manifest.GetProperty("source_registry").GetString())
