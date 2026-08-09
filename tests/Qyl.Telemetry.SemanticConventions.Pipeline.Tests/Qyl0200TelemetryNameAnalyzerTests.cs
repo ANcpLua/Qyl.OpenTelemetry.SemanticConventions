@@ -36,6 +36,15 @@ public sealed class Qyl0200TelemetryNameAnalyzerTests
                 """
                 activity?.SetTag("http.request.method", "GET");
                 activity?.SetTag("qyl.instrumentation.domain", "http");
+                activity?.SetTag("qyl.agent.diagnostic.extension.id", "qyl.agent.diagnostic.snapshot");
+                activity?.SetTag("qyl.agent.diagnostic.format.version", 1);
+                activity?.SetTag("qyl.agent.diagnostic.snapshot.id", "snapshot-1");
+                activity?.SetTag("qyl.agent.diagnostic.probe.id", "vcs.root.resolve");
+                activity?.SetTag("qyl.agent.diagnostic.phase", "checkpoint");
+                activity?.SetTag("qyl.agent.diagnostic.outcome", "pass");
+                activity?.SetTag("qyl.agent.diagnostic.variable.count", 3);
+                activity?.SetTag("qyl.agent.diagnostic.check.count", 2);
+                activity?.SetTag("qyl.agent.diagnostic.check.failed_count", 0);
                 """));
 
         diagnostics.Should().BeEmpty();
@@ -119,7 +128,11 @@ public sealed class Qyl0200TelemetryNameAnalyzerTests
     {
         var clean = await AnalyzerHarness.RunAsync(
             new Qyl0200TelemetryNameAnalyzer(),
-            ActivitySink("activity?.AddEvent(new ActivityEvent(\"exception\"));"));
+            ActivitySink(
+                """
+                activity?.AddEvent(new ActivityEvent("exception"));
+                activity?.AddEvent(new ActivityEvent("qyl.agent.diagnostic.snapshot"));
+                """));
         clean.Should().BeEmpty();
 
         var flagged = await AnalyzerHarness.RunAsync(

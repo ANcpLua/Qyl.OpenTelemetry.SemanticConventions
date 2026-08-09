@@ -793,6 +793,15 @@ internal static class SemconvRegistryFacts
             ["process.vpid"] = SemconvAttributeValueKind.Integer,
             ["process.working_directory"] = SemconvAttributeValueKind.String,
             ["profile.frame.type"] = SemconvAttributeValueKind.String,
+            ["qyl.agent.diagnostic.check.count"] = SemconvAttributeValueKind.Integer,
+            ["qyl.agent.diagnostic.check.failed_count"] = SemconvAttributeValueKind.Integer,
+            ["qyl.agent.diagnostic.extension.id"] = SemconvAttributeValueKind.String,
+            ["qyl.agent.diagnostic.format.version"] = SemconvAttributeValueKind.Integer,
+            ["qyl.agent.diagnostic.outcome"] = SemconvAttributeValueKind.String,
+            ["qyl.agent.diagnostic.phase"] = SemconvAttributeValueKind.String,
+            ["qyl.agent.diagnostic.probe.id"] = SemconvAttributeValueKind.String,
+            ["qyl.agent.diagnostic.snapshot.id"] = SemconvAttributeValueKind.String,
+            ["qyl.agent.diagnostic.variable.count"] = SemconvAttributeValueKind.Integer,
             ["qyl.capability.id"] = SemconvAttributeValueKind.String,
             ["qyl.capability.kind"] = SemconvAttributeValueKind.String,
             ["qyl.exception.source"] = SemconvAttributeValueKind.String,
@@ -806,6 +815,11 @@ internal static class SemconvRegistryFacts
             ["qyl.mcp.test_case.id"] = SemconvAttributeValueKind.String,
             ["qyl.mcp.tool.name"] = SemconvAttributeValueKind.String,
             ["qyl.project.id"] = SemconvAttributeValueKind.String,
+            ["qyl.workflow.agent.id"] = SemconvAttributeValueKind.String,
+            ["qyl.workflow.attempt.id"] = SemconvAttributeValueKind.String,
+            ["qyl.workflow.event.id"] = SemconvAttributeValueKind.String,
+            ["qyl.workflow.run.id"] = SemconvAttributeValueKind.String,
+            ["qyl.workflow.tool_call.id"] = SemconvAttributeValueKind.String,
             ["qyl.workspace.id"] = SemconvAttributeValueKind.String,
             ["rpc.connect_rpc.error_code"] = SemconvAttributeValueKind.String,
             ["rpc.grpc.status_code"] = SemconvAttributeValueKind.String,
@@ -1137,6 +1151,8 @@ internal static class SemconvRegistryFacts
             ["process.paging.fault_type"] = new[] { "major", "minor" },
             ["process.state"] = new[] { "defunct", "running", "sleeping", "stopped" },
             ["profile.frame.type"] = new[] { "beam", "cpython", "dotnet", "go", "jvm", "kernel", "luajit", "native", "perl", "php", "ruby", "rust", "v8js" },
+            ["qyl.agent.diagnostic.outcome"] = new[] { "fail", "not_evaluated", "pass", "unknown" },
+            ["qyl.agent.diagnostic.phase"] = new[] { "checkpoint", "error", "input", "output" },
             ["rpc.connect_rpc.error_code"] = new[] { "aborted", "already_exists", "cancelled", "data_loss", "deadline_exceeded", "failed_precondition", "internal", "invalid_argument", "not_found", "out_of_range", "permission_denied", "resource_exhausted", "unauthenticated", "unavailable", "unimplemented", "unknown" },
             ["rpc.grpc.status_code"] = new[] { "0", "1", "10", "11", "12", "13", "14", "15", "16", "2", "3", "4", "5", "6", "7", "8", "9" },
             ["rpc.message.type"] = new[] { "RECEIVED", "SENT" },
@@ -1190,7 +1206,7 @@ internal static class SemconvRegistryFacts
         new(new[] { "Qyl.Collector", "Qyl.Instrumentation.ErrorCapture", "Qyl.OpenTelemetry.AutoInstrumentation", "Qyl.OpenTelemetry.AutoInstrumentation.Database", "Qyl.OpenTelemetry.AutoInstrumentation.NServiceBus", "System.Runtime" }, StringComparer.Ordinal);
 
     private static readonly HashSet<string> KnownEventNames =
-        new(new[] { "app.crash", "app.jank", "app.screen.click", "app.widget.click", "az.resource.log", "azure.resource.log", "browser.web_vital", "db.client.operation.exception", "device.app.lifecycle", "exception", "faas.invocation.exception", "feature_flag.evaluation", "gen_ai.client.inference.operation.details", "gen_ai.client.operation.exception", "gen_ai.evaluation.result", "http.client.request.exception", "http.server.request.exception", "messaging.create.exception", "messaging.process.exception", "messaging.receive.exception", "messaging.send.exception", "messaging.settle.exception", "qyl.http.client", "qyl.rpc.grpc", "rpc.client.call.exception", "rpc.message", "rpc.server.call.exception", "session.end", "session.start" }, StringComparer.Ordinal);
+        new(new[] { "app.crash", "app.jank", "app.screen.click", "app.widget.click", "az.resource.log", "azure.resource.log", "browser.web_vital", "db.client.operation.exception", "device.app.lifecycle", "exception", "faas.invocation.exception", "feature_flag.evaluation", "gen_ai.client.inference.operation.details", "gen_ai.client.operation.exception", "gen_ai.evaluation.result", "http.client.request.exception", "http.server.request.exception", "messaging.create.exception", "messaging.process.exception", "messaging.receive.exception", "messaging.send.exception", "messaging.settle.exception", "qyl.agent.diagnostic.snapshot", "qyl.http.client", "qyl.rpc.grpc", "rpc.client.call.exception", "rpc.message", "rpc.server.call.exception", "session.end", "session.start" }, StringComparer.Ordinal);
 
     internal static readonly SemconvSpanRule[] SpanRules =
     {
