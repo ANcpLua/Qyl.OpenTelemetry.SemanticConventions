@@ -1,17 +1,9 @@
 #!/usr/bin/env python3
-"""Report when an upstream ref pinned in Version.props has fallen behind upstream.
+"""Report when an upstream ref pinned in Version.props differs from upstream.
 
-The registry pins are exact by design — a moving registry would change generated
-constants without a commit here. The cost is that nothing about a stale pin is
-self-announcing, and one kind is entirely silent: SemConvGenAiRef is a bare commit
-SHA on a branch-tracked upstream, so there is no "a newer version exists" signal to
-notice. That is how the pin sat 9 commits behind and reached
-gen_ai.request.previous_response.id (upstream #372) late.
-
-This does not gate anything. A pin falling behind is news about upstream, not a
-defect in this repository, so wiring it into ci.yml would redden unrelated pull
-requests the moment upstream commits and teach everyone to ignore it. It runs on a
-schedule and reports.
+The registry pins are exact by design: moving inputs must not change generated
+constants without a commit here. This scheduled check reports upstream movement;
+it does not decide whether or when to regenerate.
 
 Three pins, two shapes:
 
@@ -19,15 +11,14 @@ Three pins, two shapes:
   WeaverVersion         release tag   v{version} vs the latest release
   SemConvGenAiRef       branch SHA    commit distance from the tracked branch head
 
-A lookup that cannot complete exits 2 rather than reporting "current". A check
-unable to distinguish a fresh pin from an unreachable upstream is worse than no
-check, because it reports green while blind.
+A lookup that cannot prove freshness exits 2 rather than reporting "current".
 
-CLI: check_pin_freshness.py   (exit 0 = every pin current; exit 1 = a pin is behind,
-     reported on stdout; exit 2 = a lookup failed)
+CLI: check_pin_freshness.py   (exit 0 = every pin current; exit 10 = a pin differs,
+     reported on stdout; exit 2 = freshness could not be determined)
 """
 from __future__ import annotations
 
+import http.client
 import json
 import os
 import sys
@@ -46,10 +37,13 @@ GENAI_BRANCH = os.environ.get("SEMCONV_GENAI_BRANCH", "main")
 WEAVER_REPO = os.environ.get("SEMCONV_WEAVER_UPSTREAM", "open-telemetry/weaver")
 
 COMPARE_COMMIT_LIMIT = 10
+EXIT_CURRENT = 0
+EXIT_UNKNOWN = 2
+EXIT_STALE = 10
 
 
-class LookupFailed(Exception):
-    """An upstream lookup could not be completed, so freshness is unknown."""
+class FreshnessUnknown(Exception):
+    """The checker could not prove whether every pin matches upstream."""
 
 
 def read_version_property(name: str) -> str:
@@ -62,9 +56,12 @@ def read_version_property(name: str) -> str:
     if override and os.environ.get(override):
         return os.environ[override].strip()
 
-    value = ET.parse(VERSION_PROPS).getroot().findtext(f".//{name}")
+    try:
+        value = ET.parse(VERSION_PROPS).getroot().findtext(f".//{name}")
+    except (OSError, ET.ParseError) as error:
+        raise FreshnessUnknown(f"could not read {VERSION_PROPS}: {error}") from error
     if value is None or not value.strip():
-        raise SystemExit(f"error: Version.props does not define {name}")
+        raise FreshnessUnknown(f"{VERSION_PROPS} does not define {name}")
     return value.strip()
 
 
@@ -78,34 +75,54 @@ def github_json(path: str) -> dict:
 
     try:
         with urllib.request.urlopen(request, timeout=30) as response:
-            return json.load(response)
+            payload = json.load(response)
     except urllib.error.HTTPError as error:
         detail = f"HTTP {error.code}"
         if error.code in (403, 429):
             detail += " (rate limited; set GITHUB_TOKEN)"
         elif error.code == 404:
             detail += " (renamed, deleted, or unknown ref)"
-        raise LookupFailed(f"{path}: {detail}") from error
-    except (urllib.error.URLError, TimeoutError) as error:
-        raise LookupFailed(f"{path}: {error}") from error
+        raise FreshnessUnknown(f"{path}: {detail}") from error
+    except (
+        urllib.error.URLError,
+        OSError,
+        http.client.HTTPException,
+        UnicodeDecodeError,
+    ) as error:
+        raise FreshnessUnknown(f"{path}: {error}") from error
     except json.JSONDecodeError as error:
-        raise LookupFailed(f"{path}: upstream returned malformed JSON: {error}") from error
+        raise FreshnessUnknown(f"{path}: upstream returned malformed JSON: {error}") from error
+
+    if not isinstance(payload, dict):
+        raise FreshnessUnknown(f"{path}: upstream response was not a JSON object")
+    return payload
+
+
+def required_nonnegative_int(payload: dict, key: str, context: str) -> int:
+    """Read a required GitHub count without turning a malformed response into zero."""
+    value = payload.get(key)
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise FreshnessUnknown(f"{context}: response carried no valid {key}")
+    return value
 
 
 def check_release_pin(label: str, repo: str, pinned_version: str) -> tuple[bool, list[str]]:
     """Compare a pinned release version against the repository's latest release."""
     release = github_json(f"repos/{repo}/releases/latest")
     latest_tag = release.get("tag_name")
-    if not latest_tag:
-        raise LookupFailed(f"repos/{repo}/releases/latest: response carried no tag_name")
+    if not isinstance(latest_tag, str) or not latest_tag:
+        raise FreshnessUnknown(f"repos/{repo}/releases/latest: response carried no tag_name")
 
     pinned_tag = f"v{pinned_version}"
     if latest_tag == pinned_tag:
         return True, [f"- **{label}** current at `{pinned_tag}` ({repo})"]
 
+    release_url = release.get("html_url")
+    if not isinstance(release_url, str) or not release_url:
+        release_url = f"https://github.com/{repo}/releases"
     return False, [
         f"- **{label}** pinned at `{pinned_tag}`, latest release is `{latest_tag}`",
-        f"  - {release.get('html_url', f'https://github.com/{repo}/releases')}",
+        f"  - {release_url}",
     ]
 
 
@@ -113,60 +130,93 @@ def check_branch_pin(label: str, repo: str, pinned_sha: str, branch: str) -> tup
     """Measure how far a pinned commit sits behind the head of a tracked branch."""
     comparison = github_json(f"repos/{repo}/compare/{pinned_sha}...{branch}")
     status = comparison.get("status")
-    if status is None:
-        raise LookupFailed(f"repos/{repo}/compare: response carried no status")
+    if status not in {"identical", "ahead", "behind", "diverged"}:
+        raise FreshnessUnknown(f"repos/{repo}/compare: response carried unknown status {status!r}")
 
-    # Compare is expressed from the base's perspective: base...head reports how far
-    # head runs ahead of the pin, which is how far the pin trails the branch.
-    behind_by = comparison.get("ahead_by", 0)
-    if status == "identical" or behind_by == 0:
+    context = f"repos/{repo}/compare"
+    branch_ahead_by = required_nonnegative_int(comparison, "ahead_by", context)
+    branch_behind_by = required_nonnegative_int(comparison, "behind_by", context)
+    compare_url = comparison.get("html_url")
+    if not isinstance(compare_url, str) or not compare_url:
+        compare_url = f"https://github.com/{repo}/compare/{pinned_sha}...{branch}"
+
+    if status == "identical":
+        if branch_ahead_by != 0 or branch_behind_by != 0:
+            raise FreshnessUnknown(f"{context}: identical comparison carried non-zero distances")
         return True, [f"- **{label}** current at `{pinned_sha[:7]}`, the head of `{branch}` ({repo})"]
 
     if status == "diverged":
+        if branch_ahead_by == 0 or branch_behind_by == 0:
+            raise FreshnessUnknown(f"{context}: diverged comparison carried a zero distance")
         return False, [
             f"- **{label}** pinned at `{pinned_sha[:7]}`, which has **diverged** from `{branch}` "
-            f"({behind_by} ahead on the branch, {comparison.get('behind_by', 0)} only on the pin)",
-            f"  - {comparison.get('html_url', '')}",
+            f"({branch_ahead_by} ahead on the branch, {branch_behind_by} only on the pin)",
+            f"  - {compare_url}",
         ]
 
-    total = comparison.get("total_commits", behind_by)
+    if status == "behind":
+        if branch_ahead_by != 0 or branch_behind_by == 0:
+            raise FreshnessUnknown(f"{context}: behind comparison carried inconsistent distances")
+        return False, [
+            f"- **{label}** pinned at `{pinned_sha[:7]}`, but `{branch}` is "
+            f"**{branch_behind_by} commit(s) behind the pin** ({repo})",
+            f"  - {compare_url}",
+            "  - The pin is not the tracked branch head; check for a force-push or an incorrect pin.",
+        ]
+
+    if branch_ahead_by == 0 or branch_behind_by != 0:
+        raise FreshnessUnknown(f"{context}: ahead comparison carried inconsistent distances")
+
     lines = [
-        f"- **{label}** pinned at `{pinned_sha[:7]}`, **{behind_by} commit(s) behind** `{branch}` ({repo})",
-        f"  - {comparison.get('html_url', '')}",
+        f"- **{label}** pinned at `{pinned_sha[:7]}`, **{branch_ahead_by} commit(s) behind** `{branch}` ({repo})",
+        f"  - {compare_url}",
     ]
 
     commits = comparison.get("commits", [])
+    if not isinstance(commits, list):
+        raise FreshnessUnknown(f"{context}: response carried no valid commits list")
     for commit in commits[-COMPARE_COMMIT_LIMIT:]:
-        subject = (commit.get("commit", {}).get("message") or "").splitlines()[0]
-        lines.append(f"  - `{commit.get('sha', '')[:7]}` {subject}")
-    if total > len(commits):
-        lines.append(f"  - …{total - len(commits)} further commit(s) not listed by the compare API")
+        if not isinstance(commit, dict):
+            raise FreshnessUnknown(f"{context}: response carried a malformed commit")
+        sha = commit.get("sha")
+        metadata = commit.get("commit")
+        if not isinstance(sha, str) or not isinstance(metadata, dict):
+            raise FreshnessUnknown(f"{context}: response carried a malformed commit")
+        message = metadata.get("message")
+        if not isinstance(message, str):
+            raise FreshnessUnknown(f"{context}: response carried a commit without a message")
+        message_lines = message.splitlines()
+        summary = message_lines[0] if message_lines and message_lines[0].strip() else "(empty commit message)"
+        lines.append(f"  - `{sha[:7]}` {summary}")
+    if branch_ahead_by > len(commits):
+        lines.append(f"  - …{branch_ahead_by - len(commits)} further commit(s) not listed by the compare API")
 
     return False, lines
 
 
 def main() -> int:
-    pins = {
-        "SemConvSchemaVersion": read_version_property("SemConvSchemaVersion"),
-        "SemConvGenAiRef": read_version_property("SemConvGenAiRef"),
-        "WeaverVersion": read_version_property("WeaverVersion"),
-    }
-
     report: list[str] = ["## Upstream pin freshness", ""]
     stale = False
 
     try:
-        for current, lines in (
-            check_release_pin("SemConvSchemaVersion", CORE_REPO, pins["SemConvSchemaVersion"]),
-            check_branch_pin("SemConvGenAiRef", GENAI_REPO, pins["SemConvGenAiRef"], GENAI_BRANCH),
-            check_release_pin("WeaverVersion", WEAVER_REPO, pins["WeaverVersion"]),
-        ):
+        pins = {
+            "SemConvSchemaVersion": read_version_property("SemConvSchemaVersion"),
+            "SemConvGenAiRef": read_version_property("SemConvGenAiRef"),
+            "WeaverVersion": read_version_property("WeaverVersion"),
+        }
+        checks = (
+            (check_release_pin, ("SemConvSchemaVersion", CORE_REPO, pins["SemConvSchemaVersion"])),
+            (check_branch_pin, ("SemConvGenAiRef", GENAI_REPO, pins["SemConvGenAiRef"], GENAI_BRANCH)),
+            (check_release_pin, ("WeaverVersion", WEAVER_REPO, pins["WeaverVersion"])),
+        )
+        for check, arguments in checks:
+            current, lines = check(*arguments)
             stale = stale or not current
             report.extend(lines)
-    except LookupFailed as error:
+    except FreshnessUnknown as error:
         print("\n".join(report), flush=True)
         print(f"\nfreshness unknown: {error}", file=sys.stderr)
-        return 2
+        return EXIT_UNKNOWN
 
     report.append("")
     report.append(
@@ -177,7 +227,7 @@ def main() -> int:
         else "Every pin matches upstream."
     )
     print("\n".join(report))
-    return 1 if stale else 0
+    return EXIT_STALE if stale else EXIT_CURRENT
 
 
 if __name__ == "__main__":
