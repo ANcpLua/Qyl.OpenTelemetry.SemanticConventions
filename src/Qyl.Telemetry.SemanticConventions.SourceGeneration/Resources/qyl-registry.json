@@ -1,6 +1,12 @@
 {
-  "description": "qyl-owned vocabulary, first-class next to the pinned upstream registries (qyl architecture, loop 1). Attributes here are qyl.* names the platform emits and the collector must recognize; scope_names are the ActivitySource/Meter names qyl constructs; event_names are qyl-owned DiagnosticSource bridge event names. Consumed by emit_analyzer_registry.py (QYL0200/QYL0201 allowlists). Entries under qyl.mcp.* are the experimental staging namespace: deletion-targeted on every upstream registry bump that lands an equivalent.",
+  "description": "qyl-owned vocabulary, first-class next to the pinned upstream registries (qyl architecture, loop 1). Attributes here are qyl.* names the platform emits and the collector must recognize; scope_names are the ActivitySource/Meter names qyl constructs; event_names are qyl-owned Activity or DiagnosticSource event names. Consumed by emit_analyzer_registry.py (QYL0200/QYL0201 allowlists). Entries under qyl.mcp.* are the experimental staging namespace: deletion-targeted on every upstream registry bump that lands an equivalent.",
   "attributes": [
+    {
+      "key": "qyl.agent.diagnostic.extension.id",
+      "type": "string",
+      "stability": "development",
+      "brief": "Stable discriminator of the machine-readable agent diagnostic extension."
+    },
     {
       "key": "qyl.capability.id",
       "type": "string",
@@ -24,6 +30,138 @@
       "type": "string",
       "stability": "development",
       "brief": "qyl auto-instrumentation domain that emitted the span or metric."
+    },
+    {
+      "key": "qyl.agent.diagnostic.snapshot.id",
+      "type": "string",
+      "stability": "development",
+      "brief": "Stable identifier of one immutable agent diagnostic state frame."
+    },
+    {
+      "key": "qyl.agent.diagnostic.format.version",
+      "type": "int",
+      "stability": "development",
+      "brief": "Version of the machine-readable agent diagnostic state-frame format."
+    },
+    {
+      "key": "qyl.agent.diagnostic.probe.id",
+      "type": "string",
+      "stability": "development",
+      "brief": "Bounded machine identifier of the diagnostic probe that captured the state frame."
+    },
+    {
+      "key": "qyl.agent.diagnostic.phase",
+      "type": {
+        "members": [
+          {
+            "id": "input",
+            "value": "input",
+            "stability": "development",
+            "brief": "State captured before the probed operation."
+          },
+          {
+            "id": "output",
+            "value": "output",
+            "stability": "development",
+            "brief": "State captured after the probed operation."
+          },
+          {
+            "id": "error",
+            "value": "error",
+            "stability": "development",
+            "brief": "State captured on an error path."
+          },
+          {
+            "id": "checkpoint",
+            "value": "checkpoint",
+            "stability": "development",
+            "brief": "State captured at an explicit verification checkpoint."
+          }
+        ]
+      },
+      "stability": "development",
+      "brief": "Program boundary at which an agent diagnostic state frame was captured."
+    },
+    {
+      "key": "qyl.agent.diagnostic.outcome",
+      "type": {
+        "members": [
+          {
+            "id": "pass",
+            "value": "pass",
+            "stability": "development",
+            "brief": "Every evaluated diagnostic check passed."
+          },
+          {
+            "id": "fail",
+            "value": "fail",
+            "stability": "development",
+            "brief": "At least one evaluated diagnostic check failed."
+          },
+          {
+            "id": "unknown",
+            "value": "unknown",
+            "stability": "development",
+            "brief": "No failed check was observed, but at least one check could not be evaluated."
+          },
+          {
+            "id": "not_evaluated",
+            "value": "not_evaluated",
+            "stability": "development",
+            "brief": "The state frame contained no diagnostic checks."
+          }
+        ]
+      },
+      "stability": "development",
+      "brief": "Deterministically computed aggregate outcome of an agent diagnostic state frame."
+    },
+    {
+      "key": "qyl.agent.diagnostic.variable.count",
+      "type": "int",
+      "stability": "development",
+      "brief": "Number of dynamic variables described by an agent diagnostic state frame."
+    },
+    {
+      "key": "qyl.agent.diagnostic.check.count",
+      "type": "int",
+      "stability": "development",
+      "brief": "Number of machine-readable checks in an agent diagnostic state frame."
+    },
+    {
+      "key": "qyl.agent.diagnostic.check.failed_count",
+      "type": "int",
+      "stability": "development",
+      "brief": "Number of failed checks in an agent diagnostic state frame."
+    },
+    {
+      "key": "qyl.workflow.run.id",
+      "type": "string",
+      "stability": "development",
+      "brief": "Stable workflow run identifier mirrored into telemetry for journal correlation."
+    },
+    {
+      "key": "qyl.workflow.event.id",
+      "type": "string",
+      "stability": "development",
+      "brief": "Stable immutable workflow journal event identifier mirrored into telemetry for correlation."
+    },
+    {
+      "key": "qyl.workflow.attempt.id",
+      "type": "string",
+      "stability": "development",
+      "brief": "Stable workflow attempt identifier mirrored into telemetry for journal correlation."
+    },
+    {
+      "key": "qyl.workflow.agent.id",
+      "type": "string",
+      "stability": "development",
+      "brief": "Stable workflow agent identifier mirrored into telemetry for journal correlation."
+    },
+    {
+      "key": "qyl.workflow.tool_call.id",
+      "type": "string",
+      "stability": "development",
+      "brief": "Stable workflow tool-call identifier mirrored into telemetry for journal correlation."
     },
     {
       "key": "qyl.project.id",
@@ -96,6 +234,7 @@
     "System.Runtime"
   ],
   "event_names": [
+    "qyl.agent.diagnostic.snapshot",
     "qyl.http.client",
     "qyl.rpc.grpc"
   ]

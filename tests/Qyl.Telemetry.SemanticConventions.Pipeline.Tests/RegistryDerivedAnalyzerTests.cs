@@ -38,6 +38,48 @@ public sealed class RegistryDerivedAnalyzerTests
     }
 
     [Fact]
+    public async Task Qyl0013_enforces_agent_diagnostic_summary_types()
+    {
+        var diagnostics = await AnalyzerHarness.RunAsync(
+            new Qyl0013IncorrectAttributeTypeAnalyzer(),
+            SinkSource(
+                """
+                SetTag("qyl.agent.diagnostic.extension.id", "qyl.agent.diagnostic.snapshot");
+                SetTag("qyl.agent.diagnostic.format.version", "1");
+                SetTag("qyl.agent.diagnostic.snapshot.id", "snapshot-1");
+                SetTag("qyl.agent.diagnostic.probe.id", "probe-1");
+                SetTag("qyl.agent.diagnostic.phase", "checkpoint");
+                SetTag("qyl.agent.diagnostic.outcome", "pass");
+                SetTag("qyl.agent.diagnostic.variable.count", 3);
+                SetTag("qyl.agent.diagnostic.check.count", 2);
+                SetTag("qyl.agent.diagnostic.check.failed_count", 0);
+                """));
+
+        diagnostics.Should().ContainSingle();
+        diagnostics[0].Id.Should().Be("QYL0013");
+        diagnostics[0].GetMessage(CultureInfo.InvariantCulture).Should().Contain("integer");
+    }
+
+    [Fact]
+    public async Task Qyl0012_enforces_agent_diagnostic_phase_and_outcome_tokens()
+    {
+        var diagnostics = await AnalyzerHarness.RunAsync(
+            new Qyl0012InvalidAttributeValueAnalyzer(),
+            SinkSource(
+                """
+                SetTag("qyl.agent.diagnostic.phase", "CHECKPOINT");
+                SetTag("qyl.agent.diagnostic.outcome", "PASS");
+                """));
+
+        diagnostics.Should().HaveCount(2);
+        diagnostics.Select(static diagnostic => diagnostic.Id).Should().OnlyContain(static id => id == "QYL0012");
+        diagnostics.Select(static diagnostic => diagnostic.GetMessage(CultureInfo.InvariantCulture))
+            .Should().Contain(static message => message.Contains("checkpoint", StringComparison.Ordinal));
+        diagnostics.Select(static diagnostic => diagnostic.GetMessage(CultureInfo.InvariantCulture))
+            .Should().Contain(static message => message.Contains("pass", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public async Task Qyl0012_reports_only_noncanonical_spelling_of_known_enum_values()
     {
         var diagnostics = await AnalyzerHarness.RunAsync(

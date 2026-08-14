@@ -55,17 +55,22 @@ public static class QylTelemetryNames
     }
 
     /// <summary>
-    /// Names of the qyl-owned <c>DiagnosticSource</c> bridge events.
+    /// Names of qyl-owned <c>Activity</c> and <c>DiagnosticSource</c> events.
     /// </summary>
     public static class Events
     {
         /// <summary>
-        /// The <c>qyl.http.client</c> bridge event.
+        /// The <c>qyl.agent.diagnostic.snapshot</c> telemetry event.
+        /// </summary>
+        public const string QylAgentDiagnosticSnapshot = "qyl.agent.diagnostic.snapshot";
+
+        /// <summary>
+        /// The <c>qyl.http.client</c> telemetry event.
         /// </summary>
         public const string QylHttpClient = "qyl.http.client";
 
         /// <summary>
-        /// The <c>qyl.rpc.grpc</c> bridge event.
+        /// The <c>qyl.rpc.grpc</c> telemetry event.
         /// </summary>
         public const string QylRpcGrpc = "qyl.rpc.grpc";
     }

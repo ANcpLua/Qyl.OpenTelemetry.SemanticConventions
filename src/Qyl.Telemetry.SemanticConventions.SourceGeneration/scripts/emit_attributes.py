@@ -637,7 +637,7 @@ def emit_file(root: str, attrs, stable: bool) -> str:
 
 
 # --------------------------------------------------------------------------- #
-# qyl-owned scope + bridge event names                                        #
+# qyl-owned scope + telemetry event names                                     #
 # --------------------------------------------------------------------------- #
 NAMES_NAMESPACE = "Qyl.Telemetry.SemanticConventions.Incubating.Names"
 NAMES_CLASS = "QylTelemetryNames"
@@ -700,7 +700,7 @@ def emit_names_file(qyl_registry) -> str:
     w.line(f"{pad}}}")
     w.line()
 
-    w.summary(pad, ["Names of the qyl-owned <c>DiagnosticSource</c> bridge events."])
+    w.summary(pad, ["Names of qyl-owned <c>Activity</c> and <c>DiagnosticSource</c> events."])
     w.line(f"{pad}public static class Events")
     w.line(f"{pad}{{")
     first = True
@@ -708,7 +708,7 @@ def emit_names_file(qyl_registry) -> str:
         if not first:
             w.line()
         first = False
-        w.summary(ipad, [f"The <c>{escape_attribute(value)}</c> bridge event."])
+        w.summary(ipad, [f"The <c>{escape_attribute(value)}</c> telemetry event."])
         w.line(f"{ipad}public const string {ident} = {csharp_string(value)};")
     w.line(f"{pad}}}")
 
