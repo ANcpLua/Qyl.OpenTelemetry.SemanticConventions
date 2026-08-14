@@ -22,15 +22,14 @@ dotnet add package Qyl.Telemetry.SemanticConventions
 ```
 
 The three supported packages are published on
-[nuget.org](https://www.nuget.org/profiles/ANcpLua) at `1.0.0`. `.Analyzers` is
+[nuget.org](https://www.nuget.org/profiles/ANcpLua); this change targets `4.2.0`. `.Analyzers` is
 preview-only and is not among them. Incubating APIs intentionally track unstable
 upstream conventions and may change between minor releases.
 
 **Coming from `Qyl.OpenTelemetry.SemanticConventions`?** These are new package IDs, not
 new versions of the old ones. The `Qyl.OpenTelemetry.SemanticConventions*` IDs stop at
-`4.0.0` and receive no further releases; change the ID and take `1.0.0`. The lower number
-is not a downgrade — the new family starts its own version line, and the generated
-namespace ships as its birth ABI rather than as a break to anything already published.
+`4.0.0` and receive no further releases; change to the `Qyl.Telemetry.*` family. The new
+family began at `1.0.0` and now follows its own monotonic release line.
 
 ## Choosing between the compiled packages and the source generator
 
