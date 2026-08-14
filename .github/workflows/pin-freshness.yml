@@ -2,11 +2,9 @@ name: pin-freshness
 
 # Reports when an upstream ref pinned in Version.props has fallen behind upstream.
 #
-# Deliberately not a step in ci.yml. A pin falling behind is news about upstream, not
-# a defect in this commit, so gating pull requests on it would redden unrelated work
-# the moment upstream commits and train everyone to ignore the signal. It runs weekly
-# and keeps one tracking issue in step with reality: opened when a pin is behind,
-# edited on later runs rather than duplicated, and closed once the pins match again.
+# Deliberately not a step in ci.yml: upstream movement is news, not a defect in the
+# current commit. It runs weekly and keeps one issue in step with reality: opened
+# when a pin differs, updated while it differs, and closed once the pins match again.
 #
 # The job itself only fails when freshness could not be determined — a lookup that
 # cannot complete must not read as "current".
@@ -44,8 +42,6 @@ jobs:
           # default `set -e` would abandon the report before it is published.
           status=0
           python3 "${script}" >"${RUNNER_TEMP}/report.md" 2>"${RUNNER_TEMP}/error.txt" || status=$?
-          echo "status=${status}" >>"${GITHUB_OUTPUT}"
-
           cat "${RUNNER_TEMP}/report.md" >>"${GITHUB_STEP_SUMMARY}"
           if [[ -s "${RUNNER_TEMP}/error.txt" ]]; then
             {
@@ -57,38 +53,50 @@ jobs:
           fi
           cat "${RUNNER_TEMP}/report.md"
 
-      - name: Open or update the tracking issue
-        if: steps.check.outputs.status == '1'
+          case "${status}" in
+            0|2|10) ;;
+            *)
+              echo "::error::pin freshness checker exited unexpectedly with status ${status}"
+              exit 1
+              ;;
+          esac
+          echo "status=${status}" >>"${GITHUB_OUTPUT}"
+
+      - name: Reconcile the tracking issue
         env:
+          CHECK_STATUS: ${{ steps.check.outputs.status }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          number="$(gh issue list --state open --search "${ISSUE_TITLE} in:title" \
-            --json number,title \
-            --jq "[.[] | select(.title == \"${ISSUE_TITLE}\") | .number] | first // empty")"
-          if [[ -n "${number}" ]]; then
-            gh issue edit "${number}" --body-file "${RUNNER_TEMP}/report.md"
-            echo "updated issue #${number}"
-          else
-            gh issue create --title "${ISSUE_TITLE}" --body-file "${RUNNER_TEMP}/report.md"
-          fi
+          find_open_issue() {
+            gh issue list --state open --search "${ISSUE_TITLE} in:title" --limit 100 \
+              --json number,title \
+              --jq "[.[] | select(.title == \"${ISSUE_TITLE}\") | .number] | first // empty"
+          }
 
-      - name: Close the tracking issue once every pin is current
-        if: steps.check.outputs.status == '0'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          number="$(gh issue list --state open --search "${ISSUE_TITLE} in:title" \
-            --json number,title \
-            --jq "[.[] | select(.title == \"${ISSUE_TITLE}\") | .number] | first // empty")"
-          if [[ -n "${number}" ]]; then
-            gh issue close "${number}" --comment "Every pinned upstream ref matches upstream again."
-          fi
-
-      - name: Fail when freshness could not be determined
-        if: steps.check.outputs.status == '2'
-        run: |
-          echo "::error::upstream pin freshness could not be determined; the pins are unverified"
-          cat "${RUNNER_TEMP}/error.txt" >&2
-          exit 1
+          case "${CHECK_STATUS}" in
+            10)
+              number="$(find_open_issue)"
+              if [[ -n "${number}" ]]; then
+                gh issue edit "${number}" --body-file "${RUNNER_TEMP}/report.md"
+                echo "updated issue #${number}"
+              else
+                gh issue create --title "${ISSUE_TITLE}" --body-file "${RUNNER_TEMP}/report.md"
+              fi
+              ;;
+            0)
+              number="$(find_open_issue)"
+              if [[ -n "${number}" ]]; then
+                gh issue close "${number}" --comment "Every pinned upstream ref matches upstream again."
+              fi
+              ;;
+            2)
+              echo "::error::upstream pin freshness could not be determined; the pins are unverified"
+              cat "${RUNNER_TEMP}/error.txt" >&2
+              exit 1
+              ;;
+            *)
+              echo "::error::unexpected checker status ${CHECK_STATUS}"
+              exit 1
+              ;;
+          esac
