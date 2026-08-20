@@ -14,6 +14,6 @@
     <AwesomeAssertionsVersion>9.4.0</AwesomeAssertionsVersion>
 
     <NuGetPackagingVersion>7.9.0</NuGetPackagingVersion>
-    <SystemSecurityCryptographyXmlVersion>10.0.10</SystemSecurityCryptographyXmlVersion>
+    <SystemSecurityCryptographyXmlVersion>10.0.11</SystemSecurityCryptographyXmlVersion>
   </PropertyGroup>
 </Project>
