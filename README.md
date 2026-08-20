@@ -1,8 +1,9 @@
 # Qyl.Telemetry.SemanticConventions
 
 .NET packages generated from pinned OpenTelemetry semantic-convention registries.
-The current registry projection targets core semantic conventions 1.43.0 plus the
-separately pinned development GenAI registry.
+The current registry projection combines the pinned core registry with the separately
+pinned development GenAI registry. [`Version.props`](Version.props) is the single
+source of truth for those upstream pins.
 
 This is the one artifact both halves of qyl share: what an application emits and what
 the collector recognizes are generated from the same resolved registry, so qyl cannot
@@ -22,9 +23,10 @@ dotnet add package Qyl.Telemetry.SemanticConventions
 ```
 
 The three supported packages are published on
-[nuget.org](https://www.nuget.org/profiles/ANcpLua); this change targets `4.2.0`. `.Analyzers` is
-preview-only and is not among them. Incubating APIs intentionally track unstable
-upstream conventions and may change between minor releases.
+[nuget.org](https://www.nuget.org/profiles/ANcpLua); the package version is defined in
+[`Directory.Build.props`](Directory.Build.props). `.Analyzers` is preview-only and is
+not among them. Incubating APIs intentionally track unstable upstream conventions and
+may change between minor releases.
 
 **Coming from `Qyl.OpenTelemetry.SemanticConventions`?** These are new package IDs, not
 new versions of the old ones. The `Qyl.OpenTelemetry.SemanticConventions*` IDs stop at
@@ -86,10 +88,10 @@ client-visible product requests, responses, stream events, and errors remain own
 
 ## Analyzer documentation
 
-The analyzer project defines 48 rules. Qyl does not consume it, and seven rules have
-executable behavior tests. It therefore remains preview-only and is
-not included in stable package builds. `PackPreviewAnalyzers=true` enables an explicit
-prerelease pack; the build rejects a stable analyzer version.
+The analyzer project exposes a generated rule catalog. Qyl does not consume it, so it
+remains preview-only and is not included in stable package builds.
+`PackPreviewAnalyzers=true` enables an explicit prerelease pack; the build rejects a
+stable analyzer version.
 
 The generated analyzer reference includes the
 [`index`](docs/Qyl.Telemetry.SemanticConventions.Analyzers.md),

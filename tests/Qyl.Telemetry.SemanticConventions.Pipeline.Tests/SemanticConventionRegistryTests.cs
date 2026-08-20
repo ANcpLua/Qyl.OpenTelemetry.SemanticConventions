@@ -23,7 +23,7 @@ public sealed class SemanticConventionRegistryTests
     public void Public_registry_reports_exact_source_identity()
     {
         SemanticConventionRegistry.CoreSchemaUrl.Should()
-            .Be("https://opentelemetry.io/schemas/1.43.0");
+            .Be("https://opentelemetry.io/schemas/1.44.0");
     }
 
     [Fact]

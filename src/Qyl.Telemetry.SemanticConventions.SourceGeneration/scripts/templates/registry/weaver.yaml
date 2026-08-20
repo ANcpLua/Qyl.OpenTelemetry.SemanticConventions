@@ -18,7 +18,7 @@ params:
   source_ref: ""
   source_commit: ""
   source_date_epoch: "0"
-  weaver_version: "0.24.2"
+  weaver_version: "0.25.1"
 
 templates:
   - template: resolved-registry.json.j2

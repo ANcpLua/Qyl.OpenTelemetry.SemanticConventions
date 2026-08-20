@@ -3,7 +3,7 @@
 #   1. core open-telemetry/semantic-conventions at SemConvSchemaVersion in Version.props
 #   2. open-telemetry/semantic-conventions-genai at SemConvGenAiRef in Version.props
 #
-# Since the upstream GenAI split, core@1.43.0 carries only deprecated/ under
+# Since the upstream GenAI split, core@1.44.0 carries only deprecated/ under
 # model/gen-ai/ — the living gen_ai.* model exists exclusively in the genai
 # registry. Two guards below keep a pin bump from silently killing gen_ai.*:
 # the genai manifest must depend on core@SemConvSchemaVersion, and the merged

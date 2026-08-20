@@ -10,7 +10,7 @@
     <Description>Roslyn diagnostic analyzers + code fixes for OpenTelemetry semantic-conventions consumers. Flags deprecated attributes, schema-url omission, missing required attributes (GenAI, HTTP), and a wider band of OTel observability/instrumentation patterns at compile time.</Description>
     <PackageTags>opentelemetry;semantic-conventions;roslyn;analyzer;codefix;otel</PackageTags>
 
-    <!-- Stable packaging is blocked until the 48-rule surface has consumer evidence and behavior coverage. -->
+    <!-- Stable packaging is blocked until the analyzer surface has consumer evidence and behavior coverage. -->
     <PackPreviewAnalyzers Condition="'$(PackPreviewAnalyzers)' == ''">false</PackPreviewAnalyzers>
     <IsPackable>$(PackPreviewAnalyzers)</IsPackable>
     <IncludeBuildOutput>false</IncludeBuildOutput>

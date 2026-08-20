@@ -45,10 +45,10 @@ public sealed class RegistryShapeGateTests
         sources.Should().HaveCount(2);
 
         sources.Single(source => source.GetProperty("source_registry").GetString() == "core")
-            .GetProperty("source_ref").GetString().Should().Be("v1.43.0");
+            .GetProperty("source_ref").GetString().Should().Be("v1.44.0");
         sources.Single(source => source.GetProperty("source_registry").GetString() == "genai")
             .GetProperty("source_commit").GetString().Should()
-            .Be("f77b9235f2ad49fe95b61e9809ca82bb08ef9d47");
+            .Be("30182acd5ed78ab5f619041eaec5e95a4eb83a48");
 
         root.GetProperty("manifests").EnumerateArray()
             .Select(manifest => manifest.GetProperty("source_registry").GetString())
@@ -59,7 +59,7 @@ public sealed class RegistryShapeGateTests
     public void Complete_pinned_model_file_inventory_is_fingerprinted()
     {
         var files = LoadRoot().GetProperty("model_files").EnumerateArray().ToArray();
-        files.Count(file => file.GetProperty("source_registry").GetString() == "core").Should().Be(236);
+        files.Count(file => file.GetProperty("source_registry").GetString() == "core").Should().Be(243);
         files.Count(file => file.GetProperty("source_registry").GetString() == "genai").Should().Be(19);
 
         foreach (var file in files)

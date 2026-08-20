@@ -7,7 +7,7 @@ qyl-specific tables that supplement the [Qyl.Telemetry.SemanticConventions.Analy
 ## Curated Migration Inventory Summary
 
 Curated changelog mentions: 157. Rows expected to have live metadata: 106. Catalog fallback rows: 157. Exact fallback replacements: 107. Manual/context-sensitive fallback rows: 26. Removed/no-replacement fallback rows: 24. Guidance-only rows: 0.
-Supplemental attribute-value fallback rows: 22. Exact value replacements: 20. Manual value rows: 0. Removed/no-replacement value rows: 2. These rows are used only when the same key/value is not covered by live `[Obsolete]` metadata from the referenced package.
+Supplemental attribute-value fallback rows: 23. Exact value replacements: 21. Manual value rows: 0. Removed/no-replacement value rows: 2. These rows are used only when the same key/value is not covered by live `[Obsolete]` metadata from the referenced package.
 
 ## Completion Audit
 
@@ -18,7 +18,7 @@ This section is generated from the analyzer descriptors and migration catalog. I
 | Preserve the curated changelog-entry scope | `SemconvMigrationCatalog.Validate()` requires exactly `157` curated rows; current generated count is `157`. |
 | Prefer live `[Obsolete]` metadata where available | `106` of `157` curated rows are classified as `DeprecatedButGenerated`; `QYL0003`, `QYL0005`, and `QYL0007` own those findings when referenced metadata is present. |
 | Fall back to the catalog when metadata is absent | `157` curated rows are eligible catalog diagnostics: `107` exact replacement, `26` manual/context-sensitive, `24` removed/no-replacement, `0` guidance-only. |
-| Keep attribute-value fallback separate from the curated name/key/event/metric count | `22` supplemental attribute-value rows are outside the 156-entry inventory and are used only when live value metadata is absent. |
+| Keep attribute-value fallback separate from the curated name/key/event/metric count | `23` supplemental attribute-value rows are outside the 156-entry inventory and are used only when live value metadata is absent. |
 | Keep severity evidence-based | `QYL0009` is an exact production-emission replacement; `QYL0010` is a manual-review warning. Generated code is excluded by Roslyn. |
 | Keep code fixes exact-only | `LiveSemconvMetadataCodeFixProvider` registers fixes only when live `[Obsolete]` metadata exposes an exact replacement; `SupplementalSemconvMigrationCodeFixProvider` registers fixes only when diagnostic properties mark an exact replacement and provide one terminal replacement literal. |
 
@@ -271,6 +271,7 @@ These value rows are intentionally separate from the 156-entry name/key/event/me
 
 | Old value | Signal | Domain | Migration | Replacement | Evidence |
 | -- | -- | -- | -- | -- | -- |
+| `browser.web_vital.name=fid` | any | browser | ExactValueRename | `inp` | Use 'inp' instead. |
 | `cloud.platform=azure_aks` | any | cloud | ExactValueRename | `azure.aks` | Use 'azure.aks' instead. |
 | `cloud.platform=azure_app_service` | any | cloud | ExactValueRename | `azure.app_service` | Use 'azure.app_service' instead. |
 | `cloud.platform=azure_container_apps` | any | cloud | ExactValueRename | `azure.container_apps` | Use 'azure.container_apps' instead. |

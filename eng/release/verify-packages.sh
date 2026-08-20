@@ -197,7 +197,7 @@ for attempt in $(seq 1 "${restore_attempts}"); do
   fi
 
   if [[ "${attempt}" == "${restore_attempts}" ]] \
-    || ! grep -Eq 'NU110[12].*Qyl\.OpenTelemetry\.SemanticConventions' "${restore_log}"; then
+    || ! grep -Eq 'NU110[12].*Qyl\.Telemetry\.SemanticConventions' "${restore_log}"; then
     cat "${restore_log}" >&2
     exit 1
   fi

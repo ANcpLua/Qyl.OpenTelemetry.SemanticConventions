@@ -77,10 +77,13 @@ static helper class explicitly.
 
 Tracks two source registries:
 
-| Source | Ref | Commit | Schema URL |
-|---|---|---|---|
-| Core semantic conventions | `open-telemetry/semantic-conventions@v1.43.0` | `89aae438b3b3b0a8dd33003c9d70592baf7dbd0d` | `https://opentelemetry.io/schemas/1.43.0` |
-| GenAI semantic conventions | `open-telemetry/semantic-conventions-genai@33b7f9da9ade6162d4a5c16247d0bc6ad5f8b469` | `33b7f9da9ade6162d4a5c16247d0bc6ad5f8b469` | `https://opentelemetry.io/schemas/gen-ai-dev/1.42.0-dev` |
+| Source | Canonical pin | Generated exact provenance |
+|---|---|---|
+| [Core semantic conventions](https://github.com/open-telemetry/semantic-conventions) | [`Version.props`](../../Version.props) | The `core` entry in [`resolved-registry.json`](Resources/resolved-registry.json) |
+| [GenAI semantic conventions](https://github.com/open-telemetry/semantic-conventions-genai) | [`Version.props`](../../Version.props) | The `genai` entry in [`resolved-registry.json`](Resources/resolved-registry.json) |
+
+The generated provenance entries carry the exact resolved ref, commit, and schema URL;
+they are regenerated from the canonical pins instead of copied into this document.
 
 The GenAI registry is development-stage. It is pinned by commit SHA and must
 not be presented as a stable v1.42.0 release.

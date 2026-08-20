@@ -1,4 +1,53 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>ANcpLua/github-settings-automation"]
+  "extends": ["github>ANcpLua/github-settings-automation"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Track the OpenTelemetry semantic-conventions release pinned in Version.props",
+      "managerFilePatterns": ["/(^|/)Version\\.props$/"],
+      "matchStrings": [
+        "<SemConvSchemaVersion>(?<currentValue>[^<]+)</SemConvSchemaVersion>"
+      ],
+      "depNameTemplate": "open-telemetry/semantic-conventions",
+      "packageNameTemplate": "open-telemetry/semantic-conventions",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver",
+      "extractVersionTemplate": "^v(?<version>\\d+\\.\\d+\\.\\d+)$"
+    },
+    {
+      "customType": "regex",
+      "description": "Track the semantic-conventions-genai main-branch commit pinned in Version.props",
+      "managerFilePatterns": ["/(^|/)Version\\.props$/"],
+      "matchStrings": [
+        "<SemConvGenAiRef>(?<currentDigest>[0-9a-f]{40})</SemConvGenAiRef>"
+      ],
+      "currentValueTemplate": "main",
+      "depNameTemplate": "open-telemetry/semantic-conventions-genai",
+      "packageNameTemplate": "https://github.com/open-telemetry/semantic-conventions-genai",
+      "datasourceTemplate": "git-refs"
+    },
+    {
+      "customType": "regex",
+      "description": "Track the OpenTelemetry Weaver release pinned in Version.props",
+      "managerFilePatterns": ["/(^|/)Version\\.props$/"],
+      "matchStrings": [
+        "<WeaverVersion>(?<currentValue>[^<]+)</WeaverVersion>"
+      ],
+      "depNameTemplate": "open-telemetry/weaver",
+      "packageNameTemplate": "open-telemetry/weaver",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver",
+      "extractVersionTemplate": "^v(?<version>\\d+\\.\\d+\\.\\d+)$"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Review and regenerate all semantic-conventions toolchain pin updates together",
+      "matchFileNames": ["Version.props"],
+      "matchManagers": ["custom.regex"],
+      "groupName": "semantic-conventions toolchain",
+      "automerge": false
+    }
+  ]
 }

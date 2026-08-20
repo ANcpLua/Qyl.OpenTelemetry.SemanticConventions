@@ -221,7 +221,7 @@ internal readonly record struct CatalogStatistics(
         sb.AppendLine($"Manual/context-sensitive supplemental rows: {Manual}");
         sb.AppendLine($"Removed/no-replacement supplemental rows: {Removed}");
         sb.AppendLine($"Guidance-only rows: {Guidance}");
-        sb.AppendLine($"Supplemental attribute-value fallback rows outside the 156 count: {ValueEntries.Length}");
+        sb.AppendLine($"Supplemental attribute-value fallback rows outside the curated count: {ValueEntries.Length}");
         return sb.ToString();
     }
 }

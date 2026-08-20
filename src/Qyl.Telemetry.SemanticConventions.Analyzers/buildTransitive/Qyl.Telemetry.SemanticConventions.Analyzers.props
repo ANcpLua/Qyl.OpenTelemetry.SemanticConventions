@@ -2,6 +2,12 @@
 
   <!-- OtelSemConvAnalysisMode selects Default, AllAsErrors, or Disabled; unset leaves consumer editorconfig authoritative. -->
 
+  <!-- QYL0304 reads these consumer MSBuild properties from Roslyn's global analyzer config. -->
+  <ItemGroup>
+    <CompilerVisibleProperty Include="PublishAot" />
+    <CompilerVisibleProperty Include="EventSourceSupport" />
+  </ItemGroup>
+
   <ItemGroup Condition=" '$(OtelSemConvAnalysisMode)' == 'Default' ">
     <EditorConfigFiles Include="$(MSBuildThisFileDirectory)editorconfig/Default.editorconfig" />
   </ItemGroup>

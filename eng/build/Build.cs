@@ -32,6 +32,9 @@ internal sealed class Build : NukeBuild
     AbsolutePath StableAttributesDir =>
         RootDirectory / "src" / "Qyl.Telemetry.SemanticConventions" / "Attributes";
 
+    AbsolutePath StableSchemaUrlFile =>
+        RootDirectory / "src" / "Qyl.Telemetry.SemanticConventions" / "SchemaUrl.g.cs";
+
     AbsolutePath IncubatingAttributesDir =>
         RootDirectory / "src" / "Qyl.Telemetry.SemanticConventions.Incubating" / "Attributes";
 
@@ -142,19 +145,25 @@ internal sealed class Build : NukeBuild
     string ComputeAttributesManifestHash()
     {
         var entries = new List<(string RelPath, string Sha)>();
+        void AddFile(string file)
+        {
+            string relPath = Path.GetRelativePath(RootDirectory, file).Replace('\\', '/');
+            using FileStream stream = File.OpenRead(file);
+            string sha = Convert.ToHexString(SHA256.HashData(stream)).ToLowerInvariant();
+            entries.Add((relPath, sha));
+        }
+
         foreach (AbsolutePath root in new[] { StableAttributesDir, IncubatingAttributesDir, IncubatingNamesDir })
         {
             if (!Directory.Exists(root))
                 continue;
 
             foreach (string file in Directory.EnumerateFiles(root, "*.g.cs", SearchOption.AllDirectories))
-            {
-                string relPath = Path.GetRelativePath(RootDirectory, file).Replace('\\', '/');
-                using FileStream stream = File.OpenRead(file);
-                string sha = Convert.ToHexString(SHA256.HashData(stream)).ToLowerInvariant();
-                entries.Add((relPath, sha));
-            }
+                AddFile(file);
         }
+
+        if (File.Exists(StableSchemaUrlFile))
+            AddFile(StableSchemaUrlFile);
 
         // Sort by path so the manifest is order-independent.
         entries.Sort(static (a, b) => string.CompareOrdinal(a.RelPath, b.RelPath));

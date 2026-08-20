@@ -180,15 +180,6 @@ public sealed class ByteIdentityTests
                 $"member-region constant must match contrib@{ContribSha}");
     }
 
-    [Fact]
-    public void Contrib_Sha_Pin_Is_Constant()
-    {
-        // Single grep target for the next Weaver-regen task. If the contrib
-        // baseline ever shifts, find/replace this SHA across the snapshots
-        // + ByteIdentitySnapshotTests + ByteIdentityTests in one pass.
-        ContribSha.Should().Be("55978aae5ae5641a0b405028db0d94de8d6f2a90");
-    }
-
     private static string AttributeMarkerSource(string prefix, string className, bool incubating)
     {
         var markerName = incubating

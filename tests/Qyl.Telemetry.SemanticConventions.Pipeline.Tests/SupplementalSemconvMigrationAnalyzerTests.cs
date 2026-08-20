@@ -137,6 +137,18 @@ public sealed class SupplementalSemconvMigrationAnalyzerTests
     }
 
     [Fact]
+    public async Task Deprecated_first_input_delay_value_reports_inp_replacement()
+    {
+        var diagnostics = await AnalyzerHarness.RunAsync(
+            [new SupplementalSemconvMigrationAnalyzer()],
+            Fixture("SetTag(\"browser.web_vital.name\", \"fid\");"));
+
+        diagnostics.Should().ContainSingle();
+        diagnostics[0].Id.Should().Be("QYL0009");
+        diagnostics[0].Properties["ReplacementName"].Should().Be("inp");
+    }
+
+    [Fact]
     public async Task Catalog_owner_source_is_not_diagnosed()
     {
         var diagnostics = await AnalyzerHarness.RunAsync(

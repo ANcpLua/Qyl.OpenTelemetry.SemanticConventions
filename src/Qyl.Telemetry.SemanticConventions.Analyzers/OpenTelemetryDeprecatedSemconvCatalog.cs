@@ -124,6 +124,9 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
 
     private static readonly Dictionary<string, Dictionary<string, string>> s_deprecatedAttributeValues =
         new(StringComparer.OrdinalIgnoreCase) {
+            ["browser.web_vital.name"] = new(StringComparer.OrdinalIgnoreCase) {
+                ["fid"] = "Use 'inp' instead.",
+            },
             ["cloud.platform"] = new(StringComparer.OrdinalIgnoreCase) {
                 ["azure_aks"] = "Use 'azure.aks' instead.",
                 ["azure_app_service"] = "Use 'azure.app_service' instead.",
