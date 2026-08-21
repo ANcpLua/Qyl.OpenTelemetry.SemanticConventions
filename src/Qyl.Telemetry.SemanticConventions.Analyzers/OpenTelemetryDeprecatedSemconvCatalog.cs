@@ -111,16 +111,18 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
             ["db.elasticsearch.path_parts."] = ("db.operation.parameter.", "1.30.0"),
         };
 
-    private static readonly Dictionary<string, string> s_deprecatedGenAiAttributes = new(StringComparer.OrdinalIgnoreCase) {
-        ["gen_ai.openai.request.response_format"] = "gen_ai.output.type",
-        ["gen_ai.openai.request.seed"] = "gen_ai.request.seed",
-        ["gen_ai.openai.request.service_tier"] = "openai.request.service_tier",
-        ["gen_ai.openai.response.service_tier"] = "openai.response.service_tier",
-        ["gen_ai.openai.response.system_fingerprint"] = "openai.response.system_fingerprint",
-        ["gen_ai.system"] = "gen_ai.provider.name",
-        ["gen_ai.usage.completion_tokens"] = "gen_ai.usage.output_tokens",
-        ["gen_ai.usage.prompt_tokens"] = "gen_ai.usage.input_tokens",
-    };
+    private static readonly Dictionary<string, (string Replacement, string Version)> s_deprecatedGenAiAttributes =
+        new(StringComparer.OrdinalIgnoreCase) {
+            ["gen_ai.openai.request.response_format"] = ("gen_ai.output.type", "1.37.0"),
+            ["gen_ai.openai.request.seed"] = ("gen_ai.request.seed", "1.37.0"),
+            ["gen_ai.openai.request.service_tier"] = ("openai.request.service_tier", "1.37.0"),
+            ["gen_ai.openai.response.service_tier"] = ("openai.response.service_tier", "1.37.0"),
+            ["gen_ai.openai.response.system_fingerprint"] = ("openai.response.system_fingerprint", "1.37.0"),
+            ["gen_ai.system"] = ("gen_ai.provider.name", "1.37.0"),
+            ["gen_ai.usage.cache_creation.input_tokens"] = ("gen_ai.usage.cache_write.input_tokens", "1.42.0"),
+            ["gen_ai.usage.completion_tokens"] = ("gen_ai.usage.output_tokens", "1.37.0"),
+            ["gen_ai.usage.prompt_tokens"] = ("gen_ai.usage.input_tokens", "1.37.0"),
+        };
 
     private static readonly Dictionary<string, Dictionary<string, string>> s_deprecatedAttributeValues =
         new(StringComparer.OrdinalIgnoreCase) {
@@ -255,8 +257,8 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
         foreach (var item in s_deprecatedGenAiAttributes) {
             builder.Add(CreateAttributeEntry(
                 item.Key,
-                item.Value,
-                "1.37.0",
+                item.Value.Replacement,
+                item.Value.Version,
                 "semantic-conventions/model deprecated GenAI attribute",
                 SemconvMigrationKind.ExactRename));
         }
@@ -466,6 +468,13 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
         return false;
     }
 
-    internal static bool TryGetDeprecatedGenAiAttribute(string attributeName, [NotNullWhen(true)] out string? replacement) =>
-        s_deprecatedGenAiAttributes.TryGetValue(attributeName, out replacement);
+    internal static bool TryGetDeprecatedGenAiAttribute(string attributeName, [NotNullWhen(true)] out string? replacement) {
+        if (s_deprecatedGenAiAttributes.TryGetValue(attributeName, out var info)) {
+            replacement = info.Replacement;
+            return true;
+        }
+
+        replacement = null;
+        return false;
+    }
 }

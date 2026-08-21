@@ -73,7 +73,7 @@ internal static class MigrationCatalogRenderer
         sb.AppendLine($"| Preserve the curated changelog-entry scope | `SemconvMigrationCatalog.Validate()` requires exactly `{SemconvMigrationCatalog.ExpectedCuratedMentionCount}` curated rows; current generated count is `{stats.Entries.Length}`. |");
         sb.AppendLine($"| Prefer live `[Obsolete]` metadata where available | `{stats.Metadata}` of `{stats.Entries.Length}` curated rows are classified as `DeprecatedButGenerated`; `QYL0003`, `QYL0005`, and `QYL0007` own those findings when referenced metadata is present. |");
         sb.AppendLine($"| Fall back to the catalog when metadata is absent | `{stats.Supplemental}` curated rows are eligible catalog diagnostics: `{stats.Exact}` exact replacement, `{stats.Manual}` manual/context-sensitive, `{stats.Removed}` removed/no-replacement, `{stats.Guidance}` guidance-only. |");
-        sb.AppendLine($"| Keep attribute-value fallback separate from the curated name/key/event/metric count | `{stats.ValueEntries.Length}` supplemental attribute-value rows are outside the 156-entry inventory and are used only when live value metadata is absent. |");
+        sb.AppendLine($"| Keep attribute-value fallback separate from the curated name/key/event/metric count | `{stats.ValueEntries.Length}` supplemental attribute-value rows are outside the {stats.Entries.Length}-entry inventory and are used only when live value metadata is absent. |");
         sb.AppendLine("| Keep severity evidence-based | `QYL0009` is an exact production-emission replacement; `QYL0010` is a manual-review warning. Generated code is excluded by Roslyn. |");
         sb.AppendLine("| Keep code fixes exact-only | `LiveSemconvMetadataCodeFixProvider` registers fixes only when live `[Obsolete]` metadata exposes an exact replacement; `SupplementalSemconvMigrationCodeFixProvider` registers fixes only when diagnostic properties mark an exact replacement and provide one terminal replacement literal. |");
         sb.AppendLine();
@@ -151,7 +151,7 @@ internal static class MigrationCatalogRenderer
     {
         sb.AppendLine("## Supplemental Attribute Value Fallback");
         sb.AppendLine();
-        sb.AppendLine("These value rows are intentionally separate from the 156-entry name/key/event/metric inventory. `QYL0007` remains primary when the referenced package exposes `[Obsolete]` value constants; the supplemental analyzer uses this table only when live value metadata is absent.");
+        sb.AppendLine($"These value rows are intentionally separate from the {stats.Entries.Length}-entry name/key/event/metric inventory. `QYL0007` remains primary when the referenced package exposes `[Obsolete]` value constants; the supplemental analyzer uses this table only when live value metadata is absent.");
         sb.AppendLine();
         sb.AppendLine("| Old value | Signal | Domain | Migration | Replacement | Evidence |");
         sb.AppendLine("| -- | -- | -- | -- | -- | -- |");

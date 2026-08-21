@@ -6,7 +6,7 @@ qyl-specific tables that supplement the [Qyl.Telemetry.SemanticConventions.Analy
 
 ## Curated Migration Inventory Summary
 
-Curated changelog mentions: 157. Rows expected to have live metadata: 106. Catalog fallback rows: 157. Exact fallback replacements: 107. Manual/context-sensitive fallback rows: 26. Removed/no-replacement fallback rows: 24. Guidance-only rows: 0.
+Curated changelog mentions: 158. Rows expected to have live metadata: 107. Catalog fallback rows: 158. Exact fallback replacements: 108. Manual/context-sensitive fallback rows: 26. Removed/no-replacement fallback rows: 24. Guidance-only rows: 0.
 Supplemental attribute-value fallback rows: 23. Exact value replacements: 21. Manual value rows: 0. Removed/no-replacement value rows: 2. These rows are used only when the same key/value is not covered by live `[Obsolete]` metadata from the referenced package.
 
 ## Completion Audit
@@ -15,23 +15,23 @@ This section is generated from the analyzer descriptors and migration catalog. I
 
 | Requirement | Current generated evidence |
 | -- | -- |
-| Preserve the curated changelog-entry scope | `SemconvMigrationCatalog.Validate()` requires exactly `157` curated rows; current generated count is `157`. |
-| Prefer live `[Obsolete]` metadata where available | `106` of `157` curated rows are classified as `DeprecatedButGenerated`; `QYL0003`, `QYL0005`, and `QYL0007` own those findings when referenced metadata is present. |
-| Fall back to the catalog when metadata is absent | `157` curated rows are eligible catalog diagnostics: `107` exact replacement, `26` manual/context-sensitive, `24` removed/no-replacement, `0` guidance-only. |
-| Keep attribute-value fallback separate from the curated name/key/event/metric count | `23` supplemental attribute-value rows are outside the 156-entry inventory and are used only when live value metadata is absent. |
+| Preserve the curated changelog-entry scope | `SemconvMigrationCatalog.Validate()` requires exactly `158` curated rows; current generated count is `158`. |
+| Prefer live `[Obsolete]` metadata where available | `107` of `158` curated rows are classified as `DeprecatedButGenerated`; `QYL0003`, `QYL0005`, and `QYL0007` own those findings when referenced metadata is present. |
+| Fall back to the catalog when metadata is absent | `158` curated rows are eligible catalog diagnostics: `108` exact replacement, `26` manual/context-sensitive, `24` removed/no-replacement, `0` guidance-only. |
+| Keep attribute-value fallback separate from the curated name/key/event/metric count | `23` supplemental attribute-value rows are outside the 158-entry inventory and are used only when live value metadata is absent. |
 | Keep severity evidence-based | `QYL0009` is an exact production-emission replacement; `QYL0010` is a manual-review warning. Generated code is excluded by Roslyn. |
 | Keep code fixes exact-only | `LiveSemconvMetadataCodeFixProvider` registers fixes only when live `[Obsolete]` metadata exposes an exact replacement; `SupplementalSemconvMigrationCodeFixProvider` registers fixes only when diagnostic properties mark an exact replacement and provide one terminal replacement literal. |
 
 | Migration kind | Curated count |
 | -- | --: |
 | ContextSensitive | 26 |
-| DeprecatedButGenerated | 106 |
+| DeprecatedButGenerated | 107 |
 | ExactRename | 1 |
 | RemovedNoReplacement | 24 |
 
 | Item kind | Curated count |
 | -- | --: |
-| AttributeKey | 148 |
+| AttributeKey | 149 |
 | EventName | 4 |
 | MetricName | 5 |
 
@@ -50,6 +50,7 @@ Rows whose Version is `unknown` lack `Version` metadata in `SemconvMigrationCata
 
 | Version | Domain | Total | Expected live metadata | Fallback eligible | Exact fallback | Manual/context | Removed/no replacement |
 | -- | -- | --: | --: | --: | --: | --: | --: |
+| 1.42.0 | gen_ai | 1 | 1 | 1 | 1 | 0 | 0 |
 | 1.40.0 | rpc | 5 | 0 | 5 | 0 | 0 | 5 |
 | 1.40.0 | system | 1 | 0 | 1 | 1 | 0 | 0 |
 | 1.39.0 | linux | 1 | 1 | 1 | 1 | 0 | 0 |
@@ -173,6 +174,7 @@ Rows whose Version is `unknown` lack `Version` metadata in `SemconvMigrationCata
 | `gen_ai.openai.response.system_fingerprint` | AttributeKey | any | gen_ai | 1.37.0 | DeprecatedButGenerated | `openai.response.system_fingerprint` | Covered by generated [Obsolete] metadata when the consumer references OpenTelemetry.SemanticConventions. semantic-conventions/model deprecated GenAI attribute |
 | `gen_ai.prompt` | AttributeKey | any | gen_ai | unknown | RemovedNoReplacement | - | Removed, no replacement at this time. |
 | `gen_ai.system` | AttributeKey | any | gen_ai | 1.37.0 | DeprecatedButGenerated | `gen_ai.provider.name` | Covered by generated [Obsolete] metadata when the consumer references OpenTelemetry.SemanticConventions. semantic-conventions/model deprecated GenAI attribute |
+| `gen_ai.usage.cache_creation.input_tokens` | AttributeKey | any | gen_ai | 1.42.0 | DeprecatedButGenerated | `gen_ai.usage.cache_write.input_tokens` | Covered by generated [Obsolete] metadata when the consumer references OpenTelemetry.SemanticConventions. semantic-conventions/model deprecated GenAI attribute |
 | `gen_ai.usage.completion_tokens` | AttributeKey | any | gen_ai | 1.37.0 | DeprecatedButGenerated | `gen_ai.usage.output_tokens` | Covered by generated [Obsolete] metadata when the consumer references OpenTelemetry.SemanticConventions. semantic-conventions/model deprecated GenAI attribute |
 | `gen_ai.usage.prompt_tokens` | AttributeKey | any | gen_ai | 1.37.0 | DeprecatedButGenerated | `gen_ai.usage.input_tokens` | Covered by generated [Obsolete] metadata when the consumer references OpenTelemetry.SemanticConventions. semantic-conventions/model deprecated GenAI attribute |
 | `http.client_ip` | AttributeKey | any | http | 1.21.0 | DeprecatedButGenerated | `client.address` | Covered by generated [Obsolete] metadata when the consumer references OpenTelemetry.SemanticConventions. semantic-conventions/model deprecated attribute |
@@ -267,7 +269,7 @@ Rows whose Version is `unknown` lack `Version` metadata in `SemconvMigrationCata
 
 ## Supplemental Attribute Value Fallback
 
-These value rows are intentionally separate from the 156-entry name/key/event/metric inventory. `QYL0007` remains primary when the referenced package exposes `[Obsolete]` value constants; the supplemental analyzer uses this table only when live value metadata is absent.
+These value rows are intentionally separate from the 158-entry name/key/event/metric inventory. `QYL0007` remains primary when the referenced package exposes `[Obsolete]` value constants; the supplemental analyzer uses this table only when live value metadata is absent.
 
 | Old value | Signal | Domain | Migration | Replacement | Evidence |
 | -- | -- | -- | -- | -- | -- |

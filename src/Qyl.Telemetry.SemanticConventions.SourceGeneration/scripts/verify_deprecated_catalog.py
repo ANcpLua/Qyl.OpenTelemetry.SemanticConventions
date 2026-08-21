@@ -53,7 +53,7 @@ def parse_catalog(text: str):
         prefixes[m.group(1)] = m.group(2)
 
     genai = {}
-    for m in re.finditer(r'\["([^"]+)"\] = "([^"]+)"', section("s_deprecatedGenAiAttributes")):
+    for m in re.finditer(r'\["([^"]+)"\] = \("([^"]+)", "[^"]*"\)', section("s_deprecatedGenAiAttributes")):
         genai[m.group(1)] = m.group(2)
 
     values = {}  # (attr, member-value) -> guidance
