@@ -89,23 +89,13 @@ public sealed class CachingTests
     public static TheoryData<string, Func<IIncrementalGenerator>, string> SignalGenerators => new()
     {
         {
-            "Metrics",
-            static () => new SemConvMetricsGenerator(),
+            "MetricDefinitions",
+            static () => new SemConvMetricDefinitionsGenerator(),
             """
             using Qyl.Telemetry.SemanticConventions.SourceGeneration;
             namespace MyApp;
-            [SemanticConventionMetrics("http.server")]
-            internal static partial class HttpServerMetrics;
-            """
-        },
-        {
-            "Meters",
-            static () => new SemConvMetersGenerator(),
-            """
-            using Qyl.Telemetry.SemanticConventions.SourceGeneration;
-            namespace MyApp;
-            [SemanticConventionMeters("http.server")]
-            internal static partial class HttpServerMeters;
+            [SemanticConventionMetricDefinitions("http.server")]
+            internal static partial class HttpServerMetricDefinitions;
             """
         },
         {

@@ -69,12 +69,18 @@ public sealed class SemConvMetricDefinitionsGeneratorTests
             .Where(static t => t.FilePath.Contains("ProcessMetricDefinitions", StringComparison.Ordinal))
             .Select(static t => t.ToString()));
 
-        // process.disk.operations is a Counter with unit {operation}, entity=process.
+        // process.disk.operations is a Counter with unit {operation}, entity=process,
+        // and a required disk.io.direction attribute — all first-class on the object.
         generated.Should()
             .Contain("MetricDefinition<global::Qyl.Telemetry.SemanticConventions.Counter> ProcessDiskOperations")
             .And.Contain("name: \"process.disk.operations\"")
             .And.Contain("unit: \"{operation}\"")
-            .And.Contain("entityAssociations: new string[] { \"process\" }");
+            .And.Contain("entities: new global::Qyl.Telemetry.SemanticConventions.EntityRef[] { new(\"process\") }")
+            .And.Contain("new(\"disk.io.direction\", \"enum\", global::Qyl.Telemetry.SemanticConventions.RequirementLevel.Required, false)");
+
+        // process.memory.utilization is a Gauge.
+        generated.Should()
+            .Contain("MetricDefinition<global::Qyl.Telemetry.SemanticConventions.Gauge> ProcessMemoryUtilization");
 
         // system.process.limit is NOT under the "process" prefix (it's system.*) — must be absent.
         generated.Should().NotContain("system.process.limit");

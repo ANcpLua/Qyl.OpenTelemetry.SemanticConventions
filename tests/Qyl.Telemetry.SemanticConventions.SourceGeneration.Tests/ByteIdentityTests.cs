@@ -47,71 +47,37 @@ public sealed class ByteIdentityTests
     }
 
     [Fact]
-    public void Metrics_HttpServer_Stable_Matches_Snapshot()
+    public void MetricDefinitions_HttpServer_Stable_Matches_Snapshot()
     {
         const string source = """
             using Qyl.Telemetry.SemanticConventions.SourceGeneration;
             namespace OpenTelemetry.SemanticConventions;
-            [SemanticConventionMetrics("http.server")]
-            public static partial class HttpServerMetrics;
+            [SemanticConventionMetricDefinitions("http.server")]
+            public static partial class HttpServerMetricDefinitions;
             """;
 
-        var actual = RunAndGetGenerated<SemConvMetricsGenerator>(source, "HttpServerMetrics.g.cs");
-        var expected = LoadOrRegen(actual,"qyl.metrics.http-server.stable.expected.txt");
+        var actual = RunAndGetGenerated<SemConvMetricDefinitionsGenerator>(source, "HttpServerMetricDefinitions.g.cs");
+        var expected = LoadOrRegen(actual,"qyl.metricdefinitions.http-server.stable.expected.txt");
 
         actual.Should().Be(expected,
-            "emitted 'HttpServerMetrics.g.cs' must be byte-identical to qyl.metrics.http-server.stable.expected.txt");
+            "emitted 'HttpServerMetricDefinitions.g.cs' must be byte-identical to qyl.metricdefinitions.http-server.stable.expected.txt");
     }
 
     [Fact]
-    public void Metrics_HttpServer_Incubating_Matches_Snapshot()
+    public void MetricDefinitions_HttpServer_Incubating_Matches_Snapshot()
     {
         const string source = """
             using Qyl.Telemetry.SemanticConventions.SourceGeneration;
             namespace OpenTelemetry.SemanticConventions;
-            [SemanticConventionIncubatingMetrics("http.server")]
-            public static partial class HttpServerIncubatingMetrics;
+            [SemanticConventionIncubatingMetricDefinitions("http.server")]
+            public static partial class HttpServerIncubatingMetricDefinitions;
             """;
 
-        var actual = RunAndGetGenerated<SemConvMetricsGenerator>(source, "HttpServerIncubatingMetrics.g.cs");
-        var expected = LoadOrRegen(actual,"qyl.metrics.http-server.incubating.expected.txt");
+        var actual = RunAndGetGenerated<SemConvMetricDefinitionsGenerator>(source, "HttpServerIncubatingMetricDefinitions.g.cs");
+        var expected = LoadOrRegen(actual,"qyl.metricdefinitions.http-server.incubating.expected.txt");
 
         actual.Should().Be(expected,
-            "emitted 'HttpServerIncubatingMetrics.g.cs' must be byte-identical to qyl.metrics.http-server.incubating.expected.txt");
-    }
-
-    [Fact]
-    public void Meters_HttpServer_Stable_Matches_Snapshot()
-    {
-        const string source = """
-            using Qyl.Telemetry.SemanticConventions.SourceGeneration;
-            namespace OpenTelemetry.SemanticConventions;
-            [SemanticConventionMeters("http.server")]
-            public static partial class HttpServerMeters;
-            """;
-
-        var actual = RunAndGetGenerated<SemConvMetersGenerator>(source, "HttpServerMeters.g.cs");
-        var expected = LoadOrRegen(actual,"qyl.meters.http-server.stable.expected.txt");
-
-        actual.Should().Be(expected,
-            "emitted 'HttpServerMeters.g.cs' must be byte-identical to qyl.meters.http-server.stable.expected.txt");
-    }
-
-    [Fact]
-    public void Meters_HttpServer_Incubating_Matches_Snapshot()
-    {
-        const string source = """
-            using Qyl.Telemetry.SemanticConventions.SourceGeneration;
-            namespace OpenTelemetry.SemanticConventions;
-            [SemanticConventionIncubatingMeters("http.server")]
-            public static partial class HttpServerIncubatingMeters;
-            """;
-
-        var actual = RunAndGetGenerated<SemConvMetersGenerator>(source, "HttpServerIncubatingMeters.g.cs");
-        var expected = LoadOrRegen(actual,"qyl.meters.http-server.incubating.expected.txt");
-
-        actual.Should().Be(expected,
-            "emitted 'HttpServerIncubatingMeters.g.cs' must be byte-identical to qyl.meters.http-server.incubating.expected.txt");
+            "emitted 'HttpServerIncubatingMetricDefinitions.g.cs' must be byte-identical to qyl.metricdefinitions.http-server.incubating.expected.txt");
     }
 
     [Fact]

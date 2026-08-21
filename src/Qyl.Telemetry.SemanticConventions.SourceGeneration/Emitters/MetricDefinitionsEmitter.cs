@@ -6,11 +6,10 @@ namespace Qyl.Telemetry.SemanticConventions.SourceGeneration.Emitters;
 
 /// <summary>
 /// Emits first-class <c>MetricDefinition&lt;TInstrument&gt;</c> objects for every metric
-/// in the resolved registry whose name matches the marker prefix. Unlike
-/// <see cref="MetersEmitter"/> — which projects a name+unit factory and flattens
-/// deprecation to <c>[Obsolete]</c> — this surface preserves the whole registry fact:
-/// instrument (as a marker type, for compile-time safety), unit, stability, entity
-/// associations, and structured deprecation (renamed target / obsoleted / uncategorized).
+/// in the resolved registry whose name matches the marker prefix. This is the library's
+/// single metric surface: it preserves the whole registry fact — instrument (as a marker
+/// type, for compile-time safety), unit, stability, entity references, attribute
+/// references, and structured deprecation (renamed target / obsoleted / uncategorized).
 /// The name becomes one property of the object rather than its identity.
 /// </summary>
 internal static class MetricDefinitionsEmitter
@@ -92,7 +91,8 @@ internal static class MetricDefinitionsEmitter
         builder.Append("            brief: \"").Append(SourceWriter.EscapeAttribute(metric.Brief)).AppendLine("\",");
         builder.Append("            stability: ").Append(StabilityExpr(metric.Stability)).AppendLine(",");
         builder.Append("            deprecation: ").Append(DeprecationExpr(metric.Deprecated)).AppendLine(",");
-        builder.Append("            entityAssociations: ").Append(EntityArrayExpr(metric.EntityAssociations)).AppendLine(");");
+        builder.Append("            entities: ").Append(EntityArrayExpr(metric.EntityAssociations)).AppendLine(",");
+        builder.Append("            attributes: ").Append(AttributeArrayExpr(metric.Attributes)).AppendLine(");");
     }
 
     private static string InstrumentMarker(string instrument) => instrument switch
@@ -126,17 +126,54 @@ internal static class MetricDefinitionsEmitter
     private static string EntityArrayExpr(EquatableArray<string> entities)
     {
         if (entities.IsEmpty)
-            return "global::System.Array.Empty<string>()";
+            return "global::System.Array.Empty<" + Ns + ".EntityRef>()";
 
-        var sb = new StringBuilder("new string[] { ");
+        var sb = new StringBuilder("new " + Ns + ".EntityRef[] { ");
         var first = true;
         foreach (var e in entities)
         {
             if (!first) sb.Append(", ");
             first = false;
-            sb.Append('"').Append(SourceWriter.EscapeAttribute(e)).Append('"');
+            sb.Append("new(\"").Append(SourceWriter.EscapeAttribute(e)).Append("\")");
         }
         sb.Append(" }");
         return sb.ToString();
     }
+
+    private static string AttributeArrayExpr(EquatableArray<SignalAttributeModel> attributes)
+    {
+        if (attributes.IsEmpty)
+            return "global::System.Array.Empty<" + Ns + ".AttributeRef>()";
+
+        var sb = new StringBuilder("new " + Ns + ".AttributeRef[] { ");
+        var first = true;
+        foreach (var a in attributes)
+        {
+            if (!first) sb.Append(", ");
+            first = false;
+            sb.Append("new(\"").Append(SourceWriter.EscapeAttribute(a.Key)).Append("\", \"")
+              .Append(AttributeTypeName(a.Type)).Append("\", ")
+              .Append(RequirementLevelExpr(a.RequirementLevel.Kind)).Append(", ")
+              .Append(a.Deprecated is not null ? "true" : "false").Append(')');
+        }
+        sb.Append(" }");
+        return sb.ToString();
+    }
+
+    private static string AttributeTypeName(AttributeTypeModel type) => type switch
+    {
+        AttributeTypeModel.Primitive p => p.Name,
+        AttributeTypeModel.EnumType => "enum",
+        AttributeTypeModel.Template => "template",
+        _ => "string",
+    };
+
+    private static string RequirementLevelExpr(RequirementLevelKind kind) => Ns + ".RequirementLevel." + kind switch
+    {
+        RequirementLevelKind.Required => "Required",
+        RequirementLevelKind.Recommended => "Recommended",
+        RequirementLevelKind.OptIn => "OptIn",
+        RequirementLevelKind.ConditionallyRequired => "ConditionallyRequired",
+        _ => "Unspecified",
+    };
 }
