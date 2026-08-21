@@ -20,12 +20,14 @@ internal static class GeneratorPipeline
         string incubatingMarkerName,
         string stableAttributeFullName,
         string incubatingAttributeFullName,
-        Func<SemConvMarkerModel, FileWithName> emit)
+        Func<SemConvMarkerModel, FileWithName> emit,
+        Action<IncrementalGeneratorPostInitializationContext>? extraPostInit = null)
     {
         context.RegisterPostInitializationOutput(ctx =>
         {
             ctx.AddSource($"{stableMarkerName}.g.cs", MarkerAttributeSource.For(stableMarkerName));
             ctx.AddSource($"{incubatingMarkerName}.g.cs", MarkerAttributeSource.For(incubatingMarkerName));
+            extraPostInit?.Invoke(ctx);
         });
 
         var stableMarkers = context.SyntaxProvider
