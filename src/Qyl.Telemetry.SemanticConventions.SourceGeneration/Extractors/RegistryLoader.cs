@@ -24,10 +24,13 @@ internal static class RegistryLoader
     private static readonly Lazy<JsonObject?> _root = new(LoadRootFromEmbeddedResource);
     private static readonly Lazy<RegistryModel> _registry = new(static () => ParseRegistry(_root.Value));
     private static readonly Lazy<InstrumentRegistryModel> _instruments = new(static () => ParseInstruments(_root.Value));
+    private static readonly Lazy<SignalRegistryModel> _signals = new(static () => ParseSignals(_root.Value));
 
     public static RegistryModel Registry => _registry.Value;
 
     public static InstrumentRegistryModel Instruments => _instruments.Value;
+
+    public static SignalRegistryModel Signals => _signals.Value;
 
     /// <summary>
     /// The embedded registry parsed once into its JSON object root. Shared with
@@ -69,6 +72,62 @@ internal static class RegistryLoader
             : default;
 
         return new RegistryModel(groups, catalog);
+    }
+
+    internal static SignalRegistryModel ParseSignals(JsonObject? root)
+    {
+        if (root is null)
+            return new SignalRegistryModel(default, default);
+
+        var spans = new List<SpanDescriptorModel>();
+        if (root.TryGetArray("groups") is { } groupsArr)
+        {
+            foreach (var item in groupsArr.Items)
+            {
+                if (item is not JsonObject group) continue;
+                if (group.GetString("type") is not "span") continue;
+
+                var stability = RegistryParsing.ParseStability(group.GetString("stability"));
+                var attributes = group.TryGetArray("attributes") is { } spanAttrsArr
+                    ? ParseSignalAttributes(spanAttrsArr, stability)
+                    : default;
+
+                spans.Add(new SpanDescriptorModel(
+                    Id: group.GetString("id"),
+                    SpanKind: group.GetString("span_kind"),
+                    Brief: group.GetString("brief"),
+                    Note: group.GetString("note"),
+                    Stability: stability,
+                    Deprecated: RegistryParsing.ParseDeprecated(group.TryGet("deprecated") as JsonObject),
+                    Attributes: attributes));
+            }
+        }
+        spans.Sort(static (a, b) => StringComparer.Ordinal.Compare(a.Id, b.Id));
+
+        var events = new List<EventDescriptorModel>();
+        if (root.TryGetArray("events") is { } eventsArr)
+        {
+            foreach (var item in eventsArr.Items)
+            {
+                if (item is not JsonObject ev) continue;
+
+                var stability = RegistryParsing.ParseStability(ev.GetString("stability"));
+                var attributes = ev.TryGetArray("attributes") is { } evAttrsArr
+                    ? ParseSignalAttributes(evAttrsArr, stability)
+                    : default;
+
+                events.Add(new EventDescriptorModel(
+                    EventName: ev.GetString("event_name"),
+                    Brief: ev.GetString("brief"),
+                    Note: ev.GetString("note"),
+                    Stability: stability,
+                    Deprecated: RegistryParsing.ParseDeprecated(ev.TryGet("deprecated") as JsonObject),
+                    Attributes: attributes));
+            }
+        }
+        events.Sort(static (a, b) => StringComparer.Ordinal.Compare(a.EventName, b.EventName));
+
+        return new SignalRegistryModel(spans.ToEquatableArray(), events.ToEquatableArray());
     }
 
     internal static InstrumentRegistryModel ParseInstruments(JsonObject? root)

@@ -156,5 +156,76 @@ internal static class MetricDefinitionSupportSource
 
             public override string ToString() => Name;
         }
+
+        /// <summary>
+        /// Marker types for a span's kind. A span definition is generic over one of these,
+        /// so an API that only accepts <c>SpanDefinition&lt;Server&gt;</c> rejects a client
+        /// span at compile time.
+        /// </summary>
+        public interface ISpanKind { static abstract string Kind { get; } }
+        public readonly struct Client : ISpanKind { public static string Kind => "client"; }
+        public readonly struct Server : ISpanKind { public static string Kind => "server"; }
+        public readonly struct Internal : ISpanKind { public static string Kind => "internal"; }
+        public readonly struct Producer : ISpanKind { public static string Kind => "producer"; }
+        public readonly struct Consumer : ISpanKind { public static string Kind => "consumer"; }
+
+        /// <summary>
+        /// A semantic-convention span as a first-class object: its registry id, span kind
+        /// (as a marker type), stability, brief, structured deprecation, and attribute
+        /// references (with requirement levels) all travel with it.
+        /// </summary>
+        public sealed class SpanDefinition<TKind> where TKind : struct, ISpanKind
+        {
+            public SpanDefinition(
+                string id, string brief, Stability stability,
+                Deprecation deprecation, IReadOnlyList<AttributeRef> attributes)
+            {
+                Id = id; Brief = brief; Stability = stability;
+                Deprecation = deprecation; Attributes = attributes;
+            }
+
+            /// <summary>The span group id (e.g. <c>http.client</c>).</summary>
+            public string Id { get; }
+
+            /// <summary>The span kind (e.g. <c>client</c>), from the marker type.</summary>
+            public string SpanKind => TKind.Kind;
+
+            public string Brief { get; }
+            public Stability Stability { get; }
+            public Deprecation Deprecation { get; }
+
+            /// <summary>Attributes this span carries, with requirement levels.</summary>
+            public IReadOnlyList<AttributeRef> Attributes { get; }
+
+            public override string ToString() => Id;
+        }
+
+        /// <summary>
+        /// A semantic-convention event as a first-class object: its event name, stability,
+        /// brief, structured deprecation, and attribute references travel with it. Events
+        /// have no kind, so this type is not generic.
+        /// </summary>
+        public sealed class EventDefinition
+        {
+            public EventDefinition(
+                string name, string brief, Stability stability,
+                Deprecation deprecation, IReadOnlyList<AttributeRef> attributes)
+            {
+                Name = name; Brief = brief; Stability = stability;
+                Deprecation = deprecation; Attributes = attributes;
+            }
+
+            /// <summary>The event name (e.g. <c>app.crash</c>).</summary>
+            public string Name { get; }
+
+            public string Brief { get; }
+            public Stability Stability { get; }
+            public Deprecation Deprecation { get; }
+
+            /// <summary>Attributes this event carries, with requirement levels.</summary>
+            public IReadOnlyList<AttributeRef> Attributes { get; }
+
+            public override string ToString() => Name;
+        }
         """;
 }

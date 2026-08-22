@@ -49,3 +49,30 @@ internal enum RequirementLevelKind
     OptIn,
     ConditionallyRequired
 }
+
+/// <summary>
+/// Span/event projection of the resolved registry, consumed by the first-class
+/// span- and event-definition emitters.
+/// </summary>
+internal readonly record struct SignalRegistryModel(
+    EquatableArray<SpanDescriptorModel> Spans,
+    EquatableArray<EventDescriptorModel> Events);
+
+/// <summary>A semconv span group (a registry group with <c>type == "span"</c>).</summary>
+internal readonly record struct SpanDescriptorModel(
+    string Id,
+    string SpanKind,
+    string Brief,
+    string Note,
+    StabilityModel Stability,
+    DeprecatedModel? Deprecated,
+    EquatableArray<SignalAttributeModel> Attributes);
+
+/// <summary>A semconv event (a registry entry with <c>type == "event"</c>).</summary>
+internal readonly record struct EventDescriptorModel(
+    string EventName,
+    string Brief,
+    string Note,
+    StabilityModel Stability,
+    DeprecatedModel? Deprecated,
+    EquatableArray<SignalAttributeModel> Attributes);
