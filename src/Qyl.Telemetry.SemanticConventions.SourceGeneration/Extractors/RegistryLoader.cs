@@ -77,7 +77,7 @@ internal static class RegistryLoader
     internal static SignalRegistryModel ParseSignals(JsonObject? root)
     {
         if (root is null)
-            return new SignalRegistryModel(default, default);
+            return new SignalRegistryModel(default, default, default);
 
         var spans = new List<SpanDescriptorModel>();
         if (root.TryGetArray("groups") is { } groupsArr)
@@ -127,7 +127,30 @@ internal static class RegistryLoader
         }
         events.Sort(static (a, b) => StringComparer.Ordinal.Compare(a.EventName, b.EventName));
 
-        return new SignalRegistryModel(spans.ToEquatableArray(), events.ToEquatableArray());
+        var entities = new List<EntityDescriptorModel>();
+        if (root.TryGetArray("entities") is { } entitiesArr)
+        {
+            foreach (var item in entitiesArr.Items)
+            {
+                if (item is not JsonObject entity) continue;
+
+                var stability = RegistryParsing.ParseStability(entity.GetString("stability"));
+                var attributes = entity.TryGetArray("attributes") is { } entAttrsArr
+                    ? ParseSignalAttributes(entAttrsArr, stability)
+                    : default;
+
+                entities.Add(new EntityDescriptorModel(
+                    Name: entity.GetString("name"),
+                    Brief: entity.GetString("brief"),
+                    Note: entity.GetString("note"),
+                    Stability: stability,
+                    Deprecated: RegistryParsing.ParseDeprecated(entity.TryGet("deprecated") as JsonObject),
+                    Attributes: attributes));
+            }
+        }
+        entities.Sort(static (a, b) => StringComparer.Ordinal.Compare(a.Name, b.Name));
+
+        return new SignalRegistryModel(spans.ToEquatableArray(), events.ToEquatableArray(), entities.ToEquatableArray());
     }
 
     internal static InstrumentRegistryModel ParseInstruments(JsonObject? root)

@@ -56,7 +56,17 @@ internal enum RequirementLevelKind
 /// </summary>
 internal readonly record struct SignalRegistryModel(
     EquatableArray<SpanDescriptorModel> Spans,
-    EquatableArray<EventDescriptorModel> Events);
+    EquatableArray<EventDescriptorModel> Events,
+    EquatableArray<EntityDescriptorModel> Entities);
+
+/// <summary>A semconv entity (a registry entry with <c>type == "entity"</c>).</summary>
+internal readonly record struct EntityDescriptorModel(
+    string Name,
+    string Brief,
+    string Note,
+    StabilityModel Stability,
+    DeprecatedModel? Deprecated,
+    EquatableArray<SignalAttributeModel> Attributes);
 
 /// <summary>A semconv span group (a registry group with <c>type == "span"</c>).</summary>
 internal readonly record struct SpanDescriptorModel(

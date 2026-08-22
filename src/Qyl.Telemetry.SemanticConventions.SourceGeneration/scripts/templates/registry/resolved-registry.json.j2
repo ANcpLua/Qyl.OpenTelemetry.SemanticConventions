@@ -12,6 +12,7 @@
 {%- set metric_refinements = refinements.metrics | default([], true) -%}
 {%- set event_groups = registry.events | default([], true) -%}
 {%- set event_refinements = refinements.events | default([], true) -%}
+{%- set entity_groups = registry.entities | default([], true) -%}
 {%- macro source_fields(indent) -%}
 {{ " " * indent }}"source_registry": "{{ source_registry }}",
 {{ " " * indent }}"schema_url": "{{ ctx.schema_url }}",
@@ -72,6 +73,9 @@
 {%- endif %}
 {%- if attr.inherited is defined and attr.inherited %},
 {{ " " * (indent + 2) }}"inherited": {{ attr.inherited | tojson }}
+{%- endif %}
+{%- if attr.role %},
+{{ " " * (indent + 2) }}"role": {{ attr.role | tojson }}
 {%- endif %}
 {{ lineage(attr, indent + 2) }}{{ annotations(attr, indent + 2) }}{{ deprecated(attr, indent + 2) }}{{ examples(attr, indent + 2) }}{{ source(attr, indent + 2) }}
 {{ " " * indent }}}
@@ -232,6 +236,23 @@
       "entity_associations": {{ (group.entity_associations | default([], true)) | tojson }},
       "payload": [
 {%- for attr in group.attributes | default([], true) %}
+{{ attribute(attr, 8) }}{% if not loop.last %},{% endif %}
+{%- endfor %}
+      ]{{ source(group, 6) }}
+    }{% if not loop.last %},{% endif %}
+{%- endfor %}
+  ],
+  "entities": [
+{%- for group in entity_groups %}
+    {
+      "id": "{{ group_id(group, "entity") }}",
+      "name": {{ (group.name or group.type or "") | tojson }},
+      "brief": {{ (group.brief or "") | tojson }},
+      "note": {{ (group.note or "") | tojson }},
+      "stability": "{{ group.stability | default("development", true) }}"
+{{ deprecated(group, 6) }},
+      "attributes": [
+{%- for attr in group.description | default([], true) %}
 {{ attribute(attr, 8) }}{% if not loop.last %},{% endif %}
 {%- endfor %}
       ]{{ source(group, 6) }}

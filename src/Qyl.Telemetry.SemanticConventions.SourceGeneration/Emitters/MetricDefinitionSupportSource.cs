@@ -227,5 +227,35 @@ internal static class MetricDefinitionSupportSource
 
             public override string ToString() => Name;
         }
+
+        /// <summary>
+        /// A semantic-convention entity as a first-class object: its type name, stability,
+        /// brief, structured deprecation, and the full attribute references that describe
+        /// and identify it (with requirement levels). This is the resolved entity definition,
+        /// distinct from the name-only <see cref="EntityRef"/> that a metric or span carries
+        /// in its association list.
+        /// </summary>
+        public sealed class EntityDefinition
+        {
+            public EntityDefinition(
+                string name, string brief, Stability stability,
+                Deprecation deprecation, IReadOnlyList<AttributeRef> attributes)
+            {
+                Name = name; Brief = brief; Stability = stability;
+                Deprecation = deprecation; Attributes = attributes;
+            }
+
+            /// <summary>The entity type name (e.g. <c>host</c>, <c>process</c>).</summary>
+            public string Name { get; }
+
+            public string Brief { get; }
+            public Stability Stability { get; }
+            public Deprecation Deprecation { get; }
+
+            /// <summary>The attributes that describe and identify this entity.</summary>
+            public IReadOnlyList<AttributeRef> Attributes { get; }
+
+            public override string ToString() => Name;
+        }
         """;
 }

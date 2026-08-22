@@ -433,6 +433,10 @@ merged = {
     "catalog": catalog,
     "metrics": unique_by(list(core.get("metrics", [])) + list(genai.get("metrics", [])), metric_key),
     "events": events,
+    "entities": unique_by(
+        list(core.get("entities", [])) + list(genai.get("entities", [])),
+        lambda entity: entity.get("id", "") or entity.get("name", ""),
+    ),
 }
 
 Path(destination).parent.mkdir(parents=True, exist_ok=True)
