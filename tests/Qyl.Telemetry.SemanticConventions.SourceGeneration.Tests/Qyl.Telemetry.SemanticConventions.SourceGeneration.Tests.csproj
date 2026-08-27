@@ -37,6 +37,9 @@
                       LogicalName="qyl.package.names.expected.txt"/>
     <EmbeddedResource Include="Snapshots\qyl.package.schemaurl.expected.txt"
                       LogicalName="qyl.package.schemaurl.expected.txt"/>
+    <!-- SHA-256 of every file both package projections emit: the full shipped surface. -->
+    <EmbeddedResource Include="Snapshots\qyl.package.manifest.sha256"
+                      LogicalName="qyl.package.manifest.sha256"/>
   </ItemGroup>
 
 </Project>

@@ -83,9 +83,14 @@ generate.sh -> resolved-registry.json (core + genai + qyl, one vocabulary model)
 There is one vocabulary model (`resolved-registry.json`, the merged core + GenAI + qyl
 projection) and one C# emitter (the Roslyn generators). The compiled packages contain no
 checked-in constants: `Qyl.Telemetry.SemanticConventions` and `.Incubating` reference the
-generator as an analyzer and declare assembly-level package markers, and the generator's
-byte-identity snapshot tests pin the emitted shape. The other generated files carry their
-owning script and are guarded by `--check` commands or generated documentation checks.
+generator as an analyzer and declare assembly-level package markers. The shipped surface is
+pinned by the generator's `PackageProjectionTests`: five full-file byte-identity snapshots
+(`http` stable and incubating, `qyl`, `QylTelemetryNames`, `SchemaUrl`) plus
+`Snapshots/qyl.package.manifest.sha256`, one SHA-256 line for every file both projections
+emit (every `{Root}Attributes` class of both tiers, `SchemaUrl`, `QylTelemetryNames`); a
+mismatch names each differing, missing, or extra file, and only `REGEN_SNAPSHOTS`
+rewrites them. The other generated files carry their owning script and are guarded by
+`--check` commands or generated documentation checks.
 
 The incubating package exposes the complete source-attributed resolved model through
 `SemanticConventionRegistry.OpenResolvedRegistry()`. The eight structured GenAI
