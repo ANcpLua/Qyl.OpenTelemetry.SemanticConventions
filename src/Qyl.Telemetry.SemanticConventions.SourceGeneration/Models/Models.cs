@@ -1,11 +1,32 @@
 namespace Qyl.Telemetry.SemanticConventions.SourceGeneration.Models;
 
 /// <summary>
-/// Resolved registry as embedded into the analyzer assembly. One per shipped semconv version.
+/// Resolved registry as embedded into the analyzer assembly. One per shipped semconv version:
+/// the merged core + GenAI + qyl projection, so <see cref="Catalog"/> rows carry their
+/// <see cref="SourceModel"/> and the qyl-owned scope and event names ride along.
 /// </summary>
 internal readonly record struct RegistryModel(
     EquatableArray<GroupModel> Groups,
-    EquatableArray<AttributeModel> Catalog);
+    EquatableArray<AttributeModel> Catalog,
+    RegistryPinModel Pin,
+    EquatableArray<string> ScopeNames,
+    EquatableArray<string> EventNames);
+
+/// <summary>The pinned schema facts of the projection: version, schema URL, and the core registry commit.</summary>
+internal readonly record struct RegistryPinModel(
+    string SchemaVersion,
+    string SchemaUrl,
+    string CoreCommit);
+
+/// <summary>
+/// Provenance of one registry row: which source registry it came from (<c>core</c>,
+/// <c>genai</c>, or <c>qyl</c>) and, for upstream sources, the schema URL and commit that
+/// pinned it. The package projection cites these in its generated file headers.
+/// </summary>
+internal readonly record struct SourceModel(
+    string Registry,
+    string SchemaUrl,
+    string Commit);
 
 /// <summary>
 /// A semconv group projected for the attributes surface: a set of attributes sharing a
@@ -30,7 +51,8 @@ internal readonly record struct AttributeModel(
     string Note,
     StabilityModel Stability,
     DeprecatedModel? Deprecated,
-    EquatableArray<string> Examples);
+    EquatableArray<string> Examples,
+    SourceModel Source);
 
 /// <summary>
 /// Type of an attribute. Distinguishes primitives, template-typed attributes
@@ -86,3 +108,13 @@ internal readonly record struct SemConvMarkerModel(
     string Prefix,
     Extractors.StabilityFilter Filter,
     LocationInfo? DefinitionTypesMissingAt);
+
+/// <summary>
+/// Extracted state from an assembly-level package-projection marker
+/// (<c>[assembly: SemanticConventionAttributesPackage("&lt;package root namespace&gt;")]</c>
+/// and its incubating and telemetry-names siblings). The projection has no prefix: it emits
+/// the whole registry tier in the compiled-package layout under the given root namespace.
+/// </summary>
+internal readonly record struct SemConvPackageMarkerModel(
+    string RootNamespace,
+    Extractors.StabilityFilter Filter);

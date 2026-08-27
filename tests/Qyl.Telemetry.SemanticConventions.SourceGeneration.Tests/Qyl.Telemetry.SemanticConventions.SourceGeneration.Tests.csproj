@@ -26,6 +26,17 @@
                       LogicalName="qyl.activities.http.stable.expected.txt"/>
     <EmbeddedResource Include="Snapshots\qyl.activities.http.incubating.expected.txt"
                       LogicalName="qyl.activities.http.incubating.expected.txt"/>
+    <!-- Compiled-package projection: seeded from the files the packages ship. -->
+    <EmbeddedResource Include="Snapshots\qyl.package.attributes.http.stable.expected.txt"
+                      LogicalName="qyl.package.attributes.http.stable.expected.txt"/>
+    <EmbeddedResource Include="Snapshots\qyl.package.attributes.http.incubating.expected.txt"
+                      LogicalName="qyl.package.attributes.http.incubating.expected.txt"/>
+    <EmbeddedResource Include="Snapshots\qyl.package.attributes.qyl.incubating.expected.txt"
+                      LogicalName="qyl.package.attributes.qyl.incubating.expected.txt"/>
+    <EmbeddedResource Include="Snapshots\qyl.package.names.expected.txt"
+                      LogicalName="qyl.package.names.expected.txt"/>
+    <EmbeddedResource Include="Snapshots\qyl.package.schemaurl.expected.txt"
+                      LogicalName="qyl.package.schemaurl.expected.txt"/>
   </ItemGroup>
 
 </Project>

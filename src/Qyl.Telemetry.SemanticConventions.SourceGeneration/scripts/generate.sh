@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
-# Regenerate Resources/resolved-registry.json from two source registries:
+# Regenerate Resources/resolved-registry.json from three source registries:
 #   1. core open-telemetry/semantic-conventions at SemConvSchemaVersion in Version.props
 #   2. open-telemetry/semantic-conventions-genai at SemConvGenAiRef in Version.props
+#   3. the qyl-owned Resources/qyl-registry.json (attributes -> catalog, metrics ->
+#      metrics + groups, scope_names / event_names -> root), rows tagged
+#      source_registry "qyl"
 #
 # Since the upstream GenAI split, core@1.44.0 carries only deprecated/ under
 # model/gen-ai/ — the living gen_ai.* model exists exclusively in the genai
@@ -18,6 +21,7 @@ project_dir="$(cd "${script_dir}/.." && pwd)"
 repo_root="$(cd "${project_dir}/../.." && pwd)"
 templates_dir="${script_dir}/templates"
 output_file="${project_dir}/Resources/resolved-registry.json"
+qyl_registry_file="${project_dir}/Resources/qyl-registry.json"
 work_dir="${repo_root}/.build/semconv-source-generation"
 
 version_props="${repo_root}/Version.props"
@@ -241,13 +245,14 @@ run_weaver_projection() {
 merge_projected_registries() {
   local core_json="$1"
   local genai_json="$2"
-  local core_model_dir="$3"
-  local genai_model_dir="$4"
-  local destination="$5"
-  local schema_version="$6"
-  local actual_weaver_version="$7"
+  local qyl_json="$3"
+  local core_model_dir="$4"
+  local genai_model_dir="$5"
+  local destination="$6"
+  local schema_version="$7"
+  local actual_weaver_version="$8"
 
-  python3 - "$core_json" "$genai_json" "$core_model_dir" "$genai_model_dir" "$destination" "$schema_version" "$actual_weaver_version" <<'PY'
+  python3 - "$core_json" "$genai_json" "$qyl_json" "$core_model_dir" "$genai_model_dir" "$destination" "$schema_version" "$actual_weaver_version" <<'PY'
 import hashlib
 import json
 import sys
@@ -258,9 +263,11 @@ try:
 except ImportError as exc:
     raise SystemExit("error: PyYAML is required to rehydrate event body metadata from source YAML") from exc
 
-core_path, genai_path, core_model_dir, genai_model_dir, destination, schema_version, weaver_version = sys.argv[1:]
+core_path, genai_path, qyl_path, core_model_dir, genai_model_dir, destination, schema_version, weaver_version = sys.argv[1:]
 core = json.loads(Path(core_path).read_text())
 genai = json.loads(Path(genai_path).read_text())
+qyl = json.loads(Path(qyl_path).read_text())
+QYL_SOURCE = "qyl"
 
 def unique_by(rows, key):
     result = {}
@@ -405,6 +412,93 @@ def collect_json_schemas(catalog, model_dirs, source_by_registry):
             })
     return schemas
 
+def qyl_catalog_rows(qyl_registry):
+    """qyl-owned attributes in the catalog row shape: the same key/type/brief/note/
+    stability/deprecated/examples facts Weaver projects, tagged with the qyl source."""
+    rows = []
+    for attribute in qyl_registry.get("attributes", []):
+        row = {
+            "key": attribute["key"],
+            "type": attribute.get("type", "string"),
+            "brief": attribute.get("brief", ""),
+            "note": attribute.get("note", ""),
+            "stability": attribute.get("stability", "development"),
+        }
+        for optional in ("deprecated", "examples"):
+            if optional in attribute:
+                row[optional] = attribute[optional]
+        row["source_registry"] = QYL_SOURCE
+        rows.append(row)
+    return rows
+
+def qyl_metric_attribute(reference, catalog_by_key):
+    """Resolve one qyl metric attribute reference against the merged catalog. A plain
+    string is a recommended reference; an object names the key under `ref` and may
+    carry `requirement_level` in Weaver's shape (string or {kind: condition})."""
+    if isinstance(reference, str):
+        key, requirement_level = reference, "recommended"
+    else:
+        key, requirement_level = reference["ref"], reference.get("requirement_level", "recommended")
+    source = catalog_by_key.get(key)
+    if source is None:
+        raise SystemExit(f"error: qyl metric references unknown attribute {key!r}")
+    row = {
+        "key": key,
+        "type": source["type"],
+        "requirement_level": requirement_level,
+        "brief": source.get("brief", ""),
+        "note": source.get("note", ""),
+        "stability": source.get("stability", "development"),
+    }
+    for optional in ("deprecated", "examples"):
+        if optional in source:
+            row[optional] = source[optional]
+    row["source_registry"] = QYL_SOURCE
+    return row
+
+def qyl_metric_rows(qyl_registry, catalog_by_key):
+    """qyl-owned metrics in the metric row shape plus the matching `groups` row, so the
+    Roslyn loaders and the analyzer facts see them exactly like Weaver-projected metrics."""
+    metrics, groups = [], []
+    for metric in qyl_registry.get("metrics", []):
+        attributes = [qyl_metric_attribute(reference, catalog_by_key) for reference in metric.get("attributes", [])]
+        common = {
+            "brief": metric.get("brief", ""),
+            "note": metric.get("note", ""),
+            "stability": metric.get("stability", "development"),
+        }
+        if "deprecated" in metric:
+            common["deprecated"] = metric["deprecated"]
+        signal = {
+            "metric_name": metric["metric_name"],
+            "instrument": metric["instrument"],
+            "unit": metric["unit"],
+            "metric_requirement_level": metric.get("metric_requirement_level", "recommended"),
+            **common,
+            "attribute_refs": [attribute["key"] for attribute in attributes],
+            "entity_associations": list(metric.get("entity_associations", [])),
+            "attributes": attributes,
+            "source_registry": QYL_SOURCE,
+        }
+        metrics.append(signal)
+        groups.append({
+            "id": "metric." + metric["metric_name"],
+            "type": "metric",
+            "brief": common["brief"],
+            "note": common["note"],
+            "prefix": "",
+            "stability": common["stability"],
+            "metric_name": metric["metric_name"],
+            "instrument": metric["instrument"],
+            "unit": metric["unit"],
+            "metric_requirement_level": signal["metric_requirement_level"],
+            **({"deprecated": metric["deprecated"]} if "deprecated" in metric else {}),
+            "attribute_refs": signal["attribute_refs"],
+            "attributes": attributes,
+            "source_registry": QYL_SOURCE,
+        })
+    return metrics, groups
+
 sources = unique_by(
     list(core.get("sources", [])) + list(genai.get("sources", [])),
     lambda row: (row.get("source_registry", ""), row.get("source_commit", "")),
@@ -417,7 +511,12 @@ model_dirs = {
 
 events = unique_by(list(core.get("events", [])) + list(genai.get("events", [])), event_key)
 events = rehydrate_event_bodies(events, collect_event_bodies(core_model_dir, genai_model_dir))
-catalog = unique_by(list(core.get("catalog", [])) + list(genai.get("catalog", [])), catalog_key)
+catalog = unique_by(
+    list(core.get("catalog", [])) + list(genai.get("catalog", [])) + qyl_catalog_rows(qyl),
+    catalog_key,
+)
+catalog_by_key = {attribute["key"]: attribute for attribute in catalog}
+qyl_metrics, qyl_groups = qyl_metric_rows(qyl, catalog_by_key)
 
 merged = {
     "schema_version": schema_version,
@@ -429,14 +528,16 @@ merged = {
     "manifests": collect_manifests(model_dirs, source_by_registry),
     "model_files": collect_model_files(model_dirs, source_by_registry),
     "json_schemas": collect_json_schemas(catalog, model_dirs, source_by_registry),
-    "groups": unique_by(list(core.get("groups", [])) + list(genai.get("groups", [])), group_key),
+    "groups": unique_by(list(core.get("groups", [])) + list(genai.get("groups", [])) + qyl_groups, group_key),
     "catalog": catalog,
-    "metrics": unique_by(list(core.get("metrics", [])) + list(genai.get("metrics", [])), metric_key),
+    "metrics": unique_by(list(core.get("metrics", [])) + list(genai.get("metrics", [])) + qyl_metrics, metric_key),
     "events": events,
     "entities": unique_by(
         list(core.get("entities", [])) + list(genai.get("entities", [])),
         lambda entity: entity.get("id", "") or entity.get("name", ""),
     ),
+    "scope_names": sorted(set(qyl.get("scope_names", []))),
+    "event_names": sorted(set(qyl.get("event_names", []))),
 }
 
 Path(destination).parent.mkdir(parents=True, exist_ok=True)
@@ -503,6 +604,7 @@ run_weaver_projection \
 merge_projected_registries \
   "${core_projection_dir}/Resources/resolved-registry.json" \
   "${genai_projection_dir}/Resources/resolved-registry.json" \
+  "${qyl_registry_file}" \
   "${work_dir}/core-filtered/model" \
   "${work_dir}/genai-source/model" \
   "${output_file}" \
@@ -518,4 +620,5 @@ echo "Regenerated ${output_file}"
 echo "Regenerated registry-derived analyzer facts and public payload-schema resources"
 echo "  core:  ${CORE_REF} (${core_commit})"
 echo "  genai: ${GENAI_REF} (${genai_commit})"
+echo "  qyl:   ${qyl_registry_file}"
 echo "  weaver: ${actual_weaver_version}"

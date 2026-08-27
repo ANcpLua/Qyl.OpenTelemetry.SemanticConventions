@@ -27,10 +27,24 @@ internal static class DefinitionsTestHost
     private static readonly MetadataReference s_vocabularyReference =
         MetadataReference.CreateFromFile(typeof(MetricDefinition<>).Assembly.Location);
 
+    /// <summary>
+    /// XML doc comments are parsed in Diagnose mode so a malformed doc comment in generated
+    /// source surfaces as CS157x instead of being silently dropped.
+    /// </summary>
+    private static readonly CSharpParseOptions s_parseOptions = CSharpParseOptions.Default
+        .WithLanguageVersion(LanguageVersion.Latest)
+        .WithDocumentationMode(DocumentationMode.Diagnose);
+
     public static (GeneratorDriverRunResult RunResult, Compilation OutputCompilation) Run<TGenerator>(
         string source,
         bool referenceVocabulary = true)
         where TGenerator : IIncrementalGenerator, new()
+        => Run(source, referenceVocabulary, new TGenerator());
+
+    public static (GeneratorDriverRunResult RunResult, Compilation OutputCompilation) Run(
+        string source,
+        bool referenceVocabulary,
+        params IIncrementalGenerator[] generators)
     {
         var references = referenceVocabulary
             ? [.. s_platformReferences, s_vocabularyReference]
@@ -38,11 +52,13 @@ internal static class DefinitionsTestHost
 
         var compilation = CSharpCompilation.Create(
             "DefinitionsTestAssembly",
-            [CSharpSyntaxTree.ParseText(source, CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Latest))],
+            [CSharpSyntaxTree.ParseText(source, s_parseOptions)],
             references,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(new TGenerator());
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(
+            generators.Select(static g => g.AsSourceGenerator()),
+            parseOptions: s_parseOptions);
         driver = driver.RunGeneratorsAndUpdateCompilation(
             compilation,
             out var outputCompilation,

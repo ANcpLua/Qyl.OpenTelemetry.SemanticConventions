@@ -61,7 +61,7 @@ internal static class RegistryLoader
     internal static RegistryModel ParseRegistry(JsonObject? root)
     {
         if (root is null)
-            return new RegistryModel(default, default);
+            return new RegistryModel(default, default, default, default, default);
 
         var groups = root.TryGetArray("groups") is { } groupsArr
             ? ParseGroups(groupsArr)
@@ -71,7 +71,30 @@ internal static class RegistryLoader
             ? ParseCatalog(catalogArr)
             : default;
 
-        return new RegistryModel(groups, catalog);
+        return new RegistryModel(
+            groups,
+            catalog,
+            ParsePin(root),
+            ParseStringArray(root.TryGetArray("scope_names")),
+            ParseStringArray(root.TryGetArray("event_names")));
+    }
+
+    private static RegistryPinModel ParsePin(JsonObject root)
+    {
+        var coreCommit = string.Empty;
+        if (root.TryGetArray("sources") is { } sourcesArr)
+        {
+            foreach (var item in sourcesArr.Items)
+            {
+                if (item is JsonObject source && source.GetString("source_registry") == "core")
+                {
+                    coreCommit = source.GetString("source_commit");
+                    break;
+                }
+            }
+        }
+
+        return new RegistryPinModel(root.GetString("schema_version"), root.GetString("schema_url"), coreCommit);
     }
 
     internal static SignalRegistryModel ParseSignals(JsonObject? root)
@@ -268,7 +291,11 @@ internal static class RegistryLoader
                 Note: attr.GetString("note"),
                 Stability: stability,
                 Deprecated: RegistryParsing.ParseDeprecated(attr.TryGet("deprecated") as JsonObject),
-                Examples: RegistryParsing.ParseExamples(attr.TryGetArray("examples"))));
+                Examples: RegistryParsing.ParseExamples(attr.TryGetArray("examples")),
+                Source: new SourceModel(
+                    attr.GetString("source_registry"),
+                    attr.GetString("schema_url"),
+                    attr.GetString("source_commit"))));
         }
         return attributes.ToEquatableArray();
     }
@@ -292,7 +319,7 @@ internal static class RegistryLoader
                 if (item is not JsonObject member) continue;
                 members.Add(new EnumMemberModel(
                     Id: member.GetString("id"),
-                    Value: member.GetString("value"),
+                    Value: RegistryParsing.ScalarToString(member.TryGet("value")),
                     Brief: member.GetString("brief"),
                     Stability: RegistryParsing.ParseStability(member.GetString("stability"), defaultStability),
                     Deprecated: RegistryParsing.ParseDeprecated(member.TryGet("deprecated") as JsonObject)));

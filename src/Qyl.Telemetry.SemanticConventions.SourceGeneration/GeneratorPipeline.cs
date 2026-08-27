@@ -77,6 +77,36 @@ internal static class GeneratorPipeline
             spc.AddSource(file.Name, file.Text);
     }
 
+    /// <summary>
+    ///   Registers an assembly-level package projection: one marker with no prefix that
+    ///   emits the whole registry tier in the compiled-package layout under the root
+    ///   namespace it names. The same shape serves the attribute-constant projections and
+    ///   the qyl telemetry-names projection; only the filter and the emit function differ.
+    /// </summary>
+    public static void RegisterPackageProjection(
+        IncrementalGeneratorInitializationContext context,
+        string markerName,
+        string attributeFullName,
+        StabilityFilter filter,
+        Func<SemConvPackageMarkerModel, EquatableArray<FileWithName>> emit)
+    {
+        context.RegisterPostInitializationOutput(ctx =>
+            ctx.AddSource($"{markerName}.g.cs", MarkerAttributeSource.ForAssembly(markerName)));
+
+        var markers = context.SyntaxProvider
+            .ForAttributeWithMetadataName(
+                attributeFullName,
+                static (node, _) => node is CompilationUnitSyntax,
+                (ctx, ct) => PackageMarkerExtractor.Extract(ctx, filter, ct))
+            .WhereNotNull();
+
+        context.RegisterSourceOutput(markers, (spc, marker) =>
+        {
+            foreach (var file in emit(marker))
+                spc.AddSource(file.Name, file.Text);
+        });
+    }
+
     /// <summary>The marker as written at the use site: <c>SemanticConventionMetricDefinitions</c>, not <c>...Attribute</c>.</summary>
     private static string DisplayName(string markerAttributeName) =>
         markerAttributeName.EndsWithOrdinal("Attribute")

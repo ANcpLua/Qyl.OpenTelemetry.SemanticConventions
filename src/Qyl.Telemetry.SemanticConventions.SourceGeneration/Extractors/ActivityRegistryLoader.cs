@@ -149,7 +149,7 @@ internal static class ActivityRegistryLoader
                 if (item is not JsonObject member) continue;
                 members.Add(new EnumMemberModel(
                     Id: member.GetString("id"),
-                    Value: member.GetString("value"),
+                    Value: RegistryParsing.ScalarToString(member.TryGet("value")),
                     Brief: member.GetString("brief"),
                     Stability: RegistryParsing.ParseStability(member.GetString("stability"), defaultStability),
                     Deprecated: RegistryParsing.ParseDeprecated(member.TryGet("deprecated") as JsonObject)));

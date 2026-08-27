@@ -79,6 +79,19 @@ internal static class RegistryParsing
         _ => defaultStability
     };
 
+    /// <summary>
+    /// Enum member values are strings in most groups but integers in a few
+    /// (<c>rpc.grpc.status_code</c>, <c>cpython.gc.generation</c>); every projection emits
+    /// them as string constants, spelled exactly as the registry's JSON scalar.
+    /// </summary>
+    public static string ScalarToString(JsonValue? value) => value switch
+    {
+        JsonString s => s.Value,
+        JsonNumber n => n.Raw,
+        JsonBool b => b.Value ? "true" : "false",
+        _ => string.Empty
+    };
+
     public static string ToCompactJson(JsonValue value) => value switch
     {
         JsonNull => "null",

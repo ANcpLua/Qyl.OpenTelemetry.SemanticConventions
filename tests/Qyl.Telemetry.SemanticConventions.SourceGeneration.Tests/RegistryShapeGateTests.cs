@@ -116,6 +116,54 @@ public sealed class RegistryShapeGateTests
     }
 
     [Fact]
+    public void Qyl_registry_is_merged_as_the_third_source()
+    {
+        // generate.sh merges Resources/qyl-registry.json into the projection: attributes join
+        // the catalog tagged source_registry "qyl", metrics join metrics and groups with their
+        // attribute references resolved against the merged catalog, and the qyl-owned scope
+        // and event names land at the root. Every downstream projection reads this one file.
+        var root = LoadRoot();
+
+        var qylAttributes = root.GetProperty("catalog").EnumerateArray()
+            .Where(attribute => attribute.GetProperty("key").GetString()!.StartsWith("qyl.", StringComparison.Ordinal))
+            .ToArray();
+        qylAttributes.Should().NotBeEmpty();
+        qylAttributes.Should().OnlyContain(attribute => attribute.GetProperty("source_registry").GetString() == "qyl");
+
+        var domain = qylAttributes.Single(attribute => attribute.GetProperty("key").GetString() == "qyl.instrumentation.domain");
+        var members = domain.GetProperty("type").GetProperty("members").EnumerateArray().ToArray();
+        members.Should().HaveCount(21);
+        members.Should().OnlyContain(member => member.GetProperty("id").GetString() == member.GetProperty("value").GetString());
+        members.Select(member => member.GetProperty("value").GetString()).Should().BeEquivalentTo(
+        [
+            "aspnetcore.server", "azure.sdk", "db.client", "db.efcore", "db.elasticsearch", "db.mongodb", "db.redis",
+            "db.sqlclient", "elastic.transport", "graphql", "http.client", "job.quartz", "log.ilogger", "log.log4net",
+            "log.nlog", "messaging.kafka", "messaging.masstransit", "messaging.nservicebus", "messaging.rabbitmq",
+            "rpc.grpc", "rpc.wcf.client",
+        ]);
+
+        var metric = root.GetProperty("metrics").EnumerateArray()
+            .Single(metric => metric.GetProperty("metric_name").GetString() == "nservicebus.messaging.operation.duration");
+        metric.GetProperty("source_registry").GetString().Should().Be("qyl");
+        metric.GetProperty("instrument").GetString().Should().Be("histogram");
+        metric.GetProperty("unit").GetString().Should().Be("s");
+        metric.GetProperty("stability").GetString().Should().Be("development");
+        metric.GetProperty("attributes").EnumerateArray()
+            .Select(attribute => attribute.GetProperty("key").GetString())
+            .Should().BeEquivalentTo(["messaging.system", "messaging.operation.type", "messaging.operation.name"]);
+        metric.GetProperty("attributes").EnumerateArray()
+            .Should().OnlyContain(attribute => attribute.GetProperty("type").ValueKind != JsonValueKind.Undefined,
+                "metric attribute references are resolved against the merged catalog");
+        root.GetProperty("groups").EnumerateArray()
+            .Should().Contain(group => group.GetProperty("id").GetString() == "metric.nservicebus.messaging.operation.duration");
+
+        root.GetProperty("scope_names").EnumerateArray().Select(name => name.GetString())
+            .Should().Contain("Qyl.OpenTelemetry.AutoInstrumentation").And.BeInAscendingOrder();
+        root.GetProperty("event_names").EnumerateArray().Select(name => name.GetString())
+            .Should().Contain("qyl.agent.diagnostic.snapshot").And.BeInAscendingOrder();
+    }
+
+    [Fact]
     public void Every_catalog_entry_has_the_shape_the_loaders_require()
     {
         foreach (var attr in LoadRoot().GetProperty("catalog").EnumerateArray())

@@ -1,5 +1,5 @@
 {
-  "description": "qyl-owned vocabulary, first-class next to the pinned upstream registries (qyl architecture, loop 1). Attributes here are qyl.* names the platform emits and the collector must recognize; scope_names are the ActivitySource/Meter names qyl constructs; event_names are qyl-owned Activity or DiagnosticSource event names. Consumed by emit_analyzer_registry.py (QYL0200/QYL0201 allowlists). Entries under qyl.mcp.* are the experimental staging namespace: deletion-targeted on every upstream registry bump that lands an equivalent.",
+  "description": "qyl-owned vocabulary, first-class next to the pinned upstream registries (qyl architecture, loop 1). scripts/generate.sh merges this file into resolved-registry.json as the third source (rows carry source_registry \"qyl\"): attributes join the catalog, metrics join the metrics and groups, and scope_names / event_names land at the root. Attributes are qyl.* names the platform emits and the collector must recognize; scope_names are the ActivitySource/Meter names qyl constructs; event_names are qyl-owned Activity or DiagnosticSource event names. Every downstream projection (Roslyn generators, emit_analyzer_registry.py QYL0200/QYL0201 allowlists, the public registry stream) reads the merged file. Entries under qyl.mcp.* are the experimental staging namespace: deletion-targeted on every upstream registry bump that lands an equivalent.",
   "attributes": [
     {
       "key": "qyl.agent.diagnostic.extension.id",
@@ -27,7 +27,136 @@
     },
     {
       "key": "qyl.instrumentation.domain",
-      "type": "string",
+      "type": {
+        "members": [
+          {
+            "id": "aspnetcore.server",
+            "value": "aspnetcore.server",
+            "stability": "development",
+            "brief": "qyl aspnetcore.server instrumentation domain."
+          },
+          {
+            "id": "azure.sdk",
+            "value": "azure.sdk",
+            "stability": "development",
+            "brief": "qyl azure.sdk instrumentation domain."
+          },
+          {
+            "id": "db.client",
+            "value": "db.client",
+            "stability": "development",
+            "brief": "qyl db.client instrumentation domain."
+          },
+          {
+            "id": "db.efcore",
+            "value": "db.efcore",
+            "stability": "development",
+            "brief": "qyl db.efcore instrumentation domain."
+          },
+          {
+            "id": "db.elasticsearch",
+            "value": "db.elasticsearch",
+            "stability": "development",
+            "brief": "qyl db.elasticsearch instrumentation domain."
+          },
+          {
+            "id": "db.mongodb",
+            "value": "db.mongodb",
+            "stability": "development",
+            "brief": "qyl db.mongodb instrumentation domain."
+          },
+          {
+            "id": "db.redis",
+            "value": "db.redis",
+            "stability": "development",
+            "brief": "qyl db.redis instrumentation domain."
+          },
+          {
+            "id": "db.sqlclient",
+            "value": "db.sqlclient",
+            "stability": "development",
+            "brief": "qyl db.sqlclient instrumentation domain."
+          },
+          {
+            "id": "elastic.transport",
+            "value": "elastic.transport",
+            "stability": "development",
+            "brief": "qyl elastic.transport instrumentation domain."
+          },
+          {
+            "id": "graphql",
+            "value": "graphql",
+            "stability": "development",
+            "brief": "qyl graphql instrumentation domain."
+          },
+          {
+            "id": "http.client",
+            "value": "http.client",
+            "stability": "development",
+            "brief": "qyl http.client instrumentation domain."
+          },
+          {
+            "id": "job.quartz",
+            "value": "job.quartz",
+            "stability": "development",
+            "brief": "qyl job.quartz instrumentation domain."
+          },
+          {
+            "id": "log.ilogger",
+            "value": "log.ilogger",
+            "stability": "development",
+            "brief": "qyl log.ilogger instrumentation domain."
+          },
+          {
+            "id": "log.log4net",
+            "value": "log.log4net",
+            "stability": "development",
+            "brief": "qyl log.log4net instrumentation domain."
+          },
+          {
+            "id": "log.nlog",
+            "value": "log.nlog",
+            "stability": "development",
+            "brief": "qyl log.nlog instrumentation domain."
+          },
+          {
+            "id": "messaging.kafka",
+            "value": "messaging.kafka",
+            "stability": "development",
+            "brief": "qyl messaging.kafka instrumentation domain."
+          },
+          {
+            "id": "messaging.masstransit",
+            "value": "messaging.masstransit",
+            "stability": "development",
+            "brief": "qyl messaging.masstransit instrumentation domain."
+          },
+          {
+            "id": "messaging.nservicebus",
+            "value": "messaging.nservicebus",
+            "stability": "development",
+            "brief": "qyl messaging.nservicebus instrumentation domain."
+          },
+          {
+            "id": "messaging.rabbitmq",
+            "value": "messaging.rabbitmq",
+            "stability": "development",
+            "brief": "qyl messaging.rabbitmq instrumentation domain."
+          },
+          {
+            "id": "rpc.grpc",
+            "value": "rpc.grpc",
+            "stability": "development",
+            "brief": "qyl rpc.grpc instrumentation domain."
+          },
+          {
+            "id": "rpc.wcf.client",
+            "value": "rpc.wcf.client",
+            "stability": "development",
+            "brief": "qyl rpc.wcf.client instrumentation domain."
+          }
+        ]
+      },
       "stability": "development",
       "brief": "qyl auto-instrumentation domain that emitted the span or metric."
     },
@@ -224,7 +353,31 @@
       "brief": "Name of the MCP tool the telemetry concerns. Staging: upstream semconv has no equivalent yet."
     }
   ],
-  "metrics": [],
+  "metrics": [
+    {
+      "metric_name": "nservicebus.messaging.operation.duration",
+      "instrument": "histogram",
+      "unit": "s",
+      "stability": "development",
+      "brief": "Duration of an NServiceBus send or publish operation.",
+      "attributes": [
+        {
+          "ref": "messaging.system",
+          "requirement_level": "required"
+        },
+        {
+          "ref": "messaging.operation.type",
+          "requirement_level": {
+            "conditionally_required": "If applicable."
+          }
+        },
+        {
+          "ref": "messaging.operation.name",
+          "requirement_level": "required"
+        }
+      ]
+    }
+  ],
   "scope_names": [
     "Qyl.Collector",
     "Qyl.Instrumentation.ErrorCapture",

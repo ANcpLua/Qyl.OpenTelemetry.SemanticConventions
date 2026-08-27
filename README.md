@@ -62,10 +62,10 @@ or the generator reports `QYLSG001` at the marker.
 ## Generation pipeline
 
 ```text
-pinned OpenTelemetry registries
+pinned OpenTelemetry registries + qyl-registry.json
         |
         v
-generate.sh -> resolved-registry.json
+generate.sh -> resolved-registry.json (core + genai + qyl, one vocabulary model)
         |
         +----> emit_attributes.py ----> stable/incubating C# constants
         +----> emit_registry_resources.py -> public registry + GenAI JSON Schemas

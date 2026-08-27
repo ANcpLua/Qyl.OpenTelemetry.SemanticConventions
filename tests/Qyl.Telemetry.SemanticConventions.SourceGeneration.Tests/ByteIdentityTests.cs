@@ -174,31 +174,6 @@ public sealed class ByteIdentityTests
         return result.GeneratedText(fileSuffix);
     }
 
-    private static string LoadSnapshot(string resourceName)
-    {
-        var assembly = typeof(ByteIdentityTests).Assembly;
-        using var stream = assembly.GetManifestResourceStream(resourceName)
-            ?? throw new InvalidOperationException(
-                $"Snapshot resource '{resourceName}' was not embedded into {assembly.FullName}. " +
-                "Check the EmbeddedResource entry in qyl.opentelemetry.semconv.sourcegen.tests.csproj.");
-        using var reader = new StreamReader(stream);
-        return reader.ReadToEnd();
-    }
-
-    /// <summary>
-    /// When <c>REGEN_SNAPSHOTS</c> env var is set to the absolute Snapshots/ dir,
-    /// writes <paramref name="actual"/> to <c>{REGEN_SNAPSHOTS}/{resourceName}</c>
-    /// and returns it (so the caller's <c>actual.Should().Be(expected)</c> passes
-    /// trivially). When env var is empty, returns the embedded resource as usual.
-    /// </summary>
-    private static string LoadOrRegen(string actual, string resourceName)
-    {
-        var regenRoot = Environment.GetEnvironmentVariable("REGEN_SNAPSHOTS");
-        if (!string.IsNullOrEmpty(regenRoot))
-        {
-            File.WriteAllText(Path.Combine(regenRoot, resourceName), actual);
-            return actual;
-        }
-        return LoadSnapshot(resourceName);
-    }
+    private static string LoadOrRegen(string actual, string resourceName) =>
+        Snapshot.LoadOrRegen(actual, resourceName);
 }
