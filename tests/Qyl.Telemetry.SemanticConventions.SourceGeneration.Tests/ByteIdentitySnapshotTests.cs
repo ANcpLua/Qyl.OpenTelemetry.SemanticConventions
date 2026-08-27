@@ -13,7 +13,9 @@ namespace Qyl.Telemetry.SemanticConventions.SourceGeneration.Tests;
 /// member region (constants + enum-value classes + XML doc comment layout) is
 /// the byte-identity target; outer namespace/class declarations diverge
 /// intentionally (contrib emits its own <c>public static class</c>; the marker
-/// pattern attaches generated members to a user-declared partial class).
+/// pattern attaches generated members to a user-declared partial class). One
+/// deliberate extension over contrib: every enum-value class ends with the
+/// vocabulary-owned value set (<c>AllValues</c> and <c>Contains</c>).
 /// </summary>
 public sealed class ByteIdentitySnapshotTests
 {
@@ -93,6 +95,11 @@ public sealed class ByteIdentitySnapshotTests
             /// write.
             /// </summary>
             public const string Write = "write";
+
+            /// <summary>Every catalogued value, in registry order.</summary>
+            public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "read", "write" };
+            /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
+            public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
             }
             """;
 

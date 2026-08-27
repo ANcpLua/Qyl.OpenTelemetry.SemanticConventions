@@ -77,12 +77,33 @@ the matching registry projection.
 
 | Surface | Marker attributes | Registry projection | Emitter | Generated shape |
 |---|---|---|---|---|
-| Attributes | `SemanticConventionAttributes`, `SemanticConventionIncubatingAttributes` | `RegistryLoader.Registry` | `AttributesEmitter` | Attribute-key constants and enum-value helper classes (contrib member shape). |
-| Activities | `SemanticConventionActivities`, `SemanticConventionIncubatingActivities` | `ActivityRegistryLoader.Registry` | `ActivityExtensionsEmitter` | `Activity` extension methods that set typed semantic tags. |
+| Attributes | `SemanticConventionAttributes`, `SemanticConventionIncubatingAttributes` | `RegistryLoader.Registry` | `AttributesEmitter` | Attribute-key constants and enum-value helper classes (contrib member shape, plus the value set below). |
+| Activities | `SemanticConventionActivities`, `SemanticConventionIncubatingActivities` | `ActivityRegistryLoader.Registry` | `ActivityExtensionsEmitter` | `Activity` extension methods that set typed semantic tags, with the same enum-value classes. |
 | Metric definitions | `SemanticConventionMetricDefinitions`, `SemanticConventionIncubatingMetricDefinitions` | `RegistryLoader.Instruments` | `MetricDefinitionsEmitter` | `MetricDefinition<TInstrument>` fields: name, unit, stability, deprecation, entity and attribute references. |
 | Span definitions | `SemanticConventionSpanDefinitions`, `SemanticConventionIncubatingSpanDefinitions` | `RegistryLoader.Signals` | `SpanDefinitionsEmitter` | `SpanDefinition<TKind>` fields. |
 | Event definitions | `SemanticConventionEventDefinitions`, `SemanticConventionIncubatingEventDefinitions` | `RegistryLoader.Signals` | `EventDefinitionsEmitter` | `EventDefinition` fields. |
 | Entity definitions | `SemanticConventionEntityDefinitions`, `SemanticConventionIncubatingEntityDefinitions` | `RegistryLoader.Signals` | `EntityDefinitionsEmitter` | `EntityDefinition` fields with describing/identifying attribute references. |
+
+### Enum value sets
+
+Every generated `…Values` class, in the package projection and in both consumer
+projections, ends with the vocabulary-owned value set so consumers validate against the
+registry instead of retyping it:
+
+```csharp
+/// <summary>Every catalogued value, in registry order.</summary>
+public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "CONNECT", "DELETE", "GET", /* … */ };
+/// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
+public static bool Contains(string value) { /* ordinal scan of AllValues */ }
+```
+
+`AllValues` follows the constants' order and stability filter of its projection (registry
+order in the consumer projections, identifier order in the package projection; deprecated
+members are included exactly when their constants are). The initializer holds string
+literals, so a deprecated constant never raises CS0618, and it is netstandard2.0-plain
+(no LINQ, no collection expressions). The property is `AllValues` rather than `All` because
+`cassandra.consistency.level` declares a constant `All`; the emitter fails generation if a
+registry member ever collides with `AllValues` or `Contains`.
 
 ### Package projections
 

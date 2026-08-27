@@ -62,6 +62,11 @@ public static class QylAttributes
         /// No failed check was observed, but at least one check could not be evaluated.
         /// </summary>
         public const string Unknown = "unknown";
+
+        /// <summary>Every catalogued value, in the order the constants are declared.</summary>
+        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "fail", "not_evaluated", "pass", "unknown" };
+        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
+        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
     }
 
     /// <summary>
@@ -93,6 +98,11 @@ public static class QylAttributes
         /// State captured after the probed operation.
         /// </summary>
         public const string Output = "output";
+
+        /// <summary>Every catalogued value, in the order the constants are declared.</summary>
+        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "checkpoint", "error", "input", "output" };
+        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
+        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
     }
 
     /// <summary>
@@ -239,6 +249,11 @@ public static class QylAttributes
         /// qyl rpc.wcf.client instrumentation domain.
         /// </summary>
         public const string RpcWcfClient = "rpc.wcf.client";
+
+        /// <summary>Every catalogued value, in the order the constants are declared.</summary>
+        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "aspnetcore.server", "azure.sdk", "db.client", "db.efcore", "db.elasticsearch", "db.mongodb", "db.redis", "db.sqlclient", "elastic.transport", "graphql", "http.client", "job.quartz", "log.ilogger", "log.log4net", "log.nlog", "messaging.kafka", "messaging.masstransit", "messaging.nservicebus", "messaging.rabbitmq", "rpc.grpc", "rpc.wcf.client" };
+        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
+        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
     }
 
     /// <summary>

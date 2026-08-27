@@ -38,6 +38,11 @@ public static class HttpAttributes
         /// idle state.
         /// </summary>
         public const string Idle = "idle";
+
+        /// <summary>Every catalogued value, in the order the constants are declared.</summary>
+        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "active", "idle" };
+        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
+        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
     }
 
     /// <summary>
@@ -80,6 +85,11 @@ public static class HttpAttributes
         /// SPDY protocol.
         /// </summary>
         public const string Spdy = "SPDY";
+
+        /// <summary>Every catalogued value, in the order the constants are declared.</summary>
+        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "1.0", "1.1", "2.0", "3.0", "QUIC", "SPDY" };
+        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
+        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
     }
 
     /// <summary>
@@ -210,6 +220,11 @@ public static class HttpAttributes
         /// TRACE method.
         /// </summary>
         public const string Trace = "TRACE";
+
+        /// <summary>Every catalogued value, in the order the constants are declared.</summary>
+        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "CONNECT", "DELETE", "GET", "HEAD", "OPTIONS", "_OTHER", "PATCH", "POST", "PUT", "QUERY", "TRACE" };
+        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
+        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
     }
 
     /// <summary>

@@ -13,7 +13,7 @@ emit an attribute name its own collector does not know.
 
 | Package | Contents |
 | --- | --- |
-| `Qyl.Telemetry.SemanticConventions` | Stable and deprecated attribute-key constants, plus the semantic-convention definition types (`MetricDefinition<TInstrument>`, `SpanDefinition<TKind>`, `EventDefinition`, `EntityDefinition`, and their `Stability`/`Deprecation`/`RequirementLevel`/`AttributeRef`/`EntityRef` companions) |
+| `Qyl.Telemetry.SemanticConventions` | Stable and deprecated attribute-key constants (every enum-value class carries `AllValues` and `Contains`), plus the semantic-convention definition types (`MetricDefinition<TInstrument>`, `SpanDefinition<TKind>`, `EventDefinition`, `EntityDefinition`, and their `Stability`/`Deprecation`/`RequirementLevel`/`AttributeRef`/`EntityRef` companions) |
 | `.Incubating` | Development and unstable constants, the complete resolved registry, and upstream GenAI payload schemas |
 | `.SourceGeneration` | Roslyn generators for typed telemetry declarations; its definition surfaces are typed against the base package |
 | `.Analyzers` | Preview diagnostics and code fixes; built and documented, but excluded from stable releases |

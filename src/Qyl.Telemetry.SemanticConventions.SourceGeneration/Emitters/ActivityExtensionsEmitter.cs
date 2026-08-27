@@ -143,6 +143,8 @@ internal static class ActivityExtensionsEmitter
         builder.AppendLine("    {");
 
         var first = true;
+        var identifiers = new List<string>();
+        var values = new List<string>();
         foreach (var member in attr.EnumMembers)
         {
             if (!StabilityFiltering.IsIncludedOrDeprecated(member.Stability, member.Deprecated ?? attr.Deprecated, filter))
@@ -151,7 +153,13 @@ internal static class ActivityExtensionsEmitter
             if (!first) builder.AppendLine();
             first = false;
             WriteEnumMember(builder, member);
+            identifiers.Add(SourceWriter.ToPascalCase(member.Id));
+            values.Add(member.Value);
         }
+
+        builder.AppendLine();
+        foreach (var line in EnumValueSet.Lines(identifiers, values, enumClassName, EnumValueSet.RegistryOrderSummary))
+            builder.Append("        ").AppendLine(line);
 
         builder.AppendLine("    }");
     }

@@ -161,6 +161,18 @@ internal static class PackageAttributesEmitter
             WriteObsolete(w, innerPad, member.Deprecated, member.Stability);
             w.Line(innerPad + "public const string " + SourceWriter.ToPascalCase(member.Id) + " = \"" + member.Value + "\";");
         }
+
+        var identifiers = new List<string>(members.Count);
+        var values = new List<string>(members.Count);
+        foreach (var member in members)
+        {
+            identifiers.Add(SourceWriter.ToPascalCase(member.Id));
+            values.Add(member.Value);
+        }
+        w.Line();
+        foreach (var line in EnumValueSet.Lines(identifiers, values, memberName + "Values", EnumValueSet.DeclarationOrderSummary))
+            w.Line(innerPad + line);
+
         w.Line(Pad + "}");
     }
 

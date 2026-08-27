@@ -143,6 +143,11 @@ public static class HttpAttributes
         /// TRACE method.
         /// </summary>
         public const string Trace = "TRACE";
+
+        /// <summary>Every catalogued value, in the order the constants are declared.</summary>
+        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "CONNECT", "DELETE", "GET", "HEAD", "OPTIONS", "_OTHER", "PATCH", "POST", "PUT", "TRACE" };
+        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
+        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
     }
 
     /// <summary>
