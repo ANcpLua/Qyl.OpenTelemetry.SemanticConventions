@@ -18,6 +18,13 @@
       "source_ref": "eaefa142a94cefe5d199d47e4a73727dfbd825df",
       "source_commit": "eaefa142a94cefe5d199d47e4a73727dfbd825df",
       "source_date_epoch": "1787278465"
+    },
+    {
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     }
   ],
   "manifests": [
@@ -178025,7 +178032,11 @@
           "brief": "The messaging system as identified by the client instrumentation.",
           "note": "The actual messaging system may differ from the one known by the client. For example, when using Kafka client libraries to communicate with Azure Event Hubs, the `messaging.system` is set to `kafka` based on the instrumentation's best knowledge.\n",
           "stability": "development",
-          "source_registry": "qyl"
+          "source_registry": "qyl",
+          "schema_url": null,
+          "source_ref": "qyl-registry.json",
+          "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+          "source_date_epoch": null
         },
         {
           "key": "messaging.operation.type",
@@ -178091,7 +178102,11 @@
           "brief": "A string identifying the type of the messaging operation.\n",
           "note": "If a custom value is used, it MUST be of low cardinality.",
           "stability": "development",
-          "source_registry": "qyl"
+          "source_registry": "qyl",
+          "schema_url": null,
+          "source_ref": "qyl-registry.json",
+          "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+          "source_date_epoch": null
         },
         {
           "key": "messaging.operation.name",
@@ -178105,10 +178120,18 @@
             "nack",
             "send"
           ],
-          "source_registry": "qyl"
+          "source_registry": "qyl",
+          "schema_url": null,
+          "source_ref": "qyl-registry.json",
+          "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+          "source_date_epoch": null
         }
       ],
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     }
   ],
   "catalog": [
@@ -199650,7 +199673,11 @@
       "brief": "Stable discriminator of the machine-readable agent diagnostic extension.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.capability.id",
@@ -199658,7 +199685,11 @@
       "brief": "Stable identifier of the qyl capability that produced the telemetry.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.capability.kind",
@@ -199666,7 +199697,11 @@
       "brief": "Kind of the qyl capability that produced the telemetry.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.exception.source",
@@ -199674,7 +199709,11 @@
       "brief": "Origin of a captured exception inside a qyl process (which capture layer recorded it).",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.instrumentation.domain",
@@ -199811,7 +199850,11 @@
       "brief": "qyl auto-instrumentation domain that emitted the span or metric.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.agent.diagnostic.snapshot.id",
@@ -199819,7 +199862,11 @@
       "brief": "Stable identifier of one immutable agent diagnostic state frame.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.agent.diagnostic.format.version",
@@ -199827,7 +199874,11 @@
       "brief": "Version of the machine-readable agent diagnostic state-frame format.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.agent.diagnostic.probe.id",
@@ -199835,7 +199886,11 @@
       "brief": "Bounded machine identifier of the diagnostic probe that captured the state frame.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.agent.diagnostic.phase",
@@ -199870,7 +199925,11 @@
       "brief": "Program boundary at which an agent diagnostic state frame was captured.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.agent.diagnostic.outcome",
@@ -199905,7 +199964,11 @@
       "brief": "Deterministically computed aggregate outcome of an agent diagnostic state frame.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.agent.diagnostic.variable.count",
@@ -199913,7 +199976,11 @@
       "brief": "Number of dynamic variables described by an agent diagnostic state frame.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.agent.diagnostic.check.count",
@@ -199921,7 +199988,11 @@
       "brief": "Number of machine-readable checks in an agent diagnostic state frame.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.agent.diagnostic.check.failed_count",
@@ -199929,7 +200000,11 @@
       "brief": "Number of failed checks in an agent diagnostic state frame.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.workflow.run.id",
@@ -199937,7 +200012,11 @@
       "brief": "Stable workflow run identifier mirrored into telemetry for journal correlation.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.workflow.event.id",
@@ -199945,7 +200024,11 @@
       "brief": "Stable immutable workflow journal event identifier mirrored into telemetry for correlation.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.workflow.attempt.id",
@@ -199953,7 +200036,11 @@
       "brief": "Stable workflow attempt identifier mirrored into telemetry for journal correlation.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.workflow.agent.id",
@@ -199961,7 +200048,11 @@
       "brief": "Stable workflow agent identifier mirrored into telemetry for journal correlation.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.workflow.tool_call.id",
@@ -199969,7 +200060,11 @@
       "brief": "Stable workflow tool-call identifier mirrored into telemetry for journal correlation.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.project.id",
@@ -199977,7 +200072,11 @@
       "brief": "qyl project identifier the telemetry belongs to.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.workspace.id",
@@ -199985,7 +200084,11 @@
       "brief": "qyl workspace identifier the telemetry belongs to.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.mcp.evaluation_run.id",
@@ -199993,7 +200096,11 @@
       "brief": "Identifier of the MCP evaluation run. Staging: upstream semconv has no equivalent yet.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.mcp.execution.id",
@@ -200001,7 +200108,11 @@
       "brief": "Identifier of the MCP workbench execution. Staging: upstream semconv has no equivalent yet.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.mcp.flow.id",
@@ -200009,7 +200120,11 @@
       "brief": "Identifier of the MCP flow. Staging: upstream semconv has no equivalent yet.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.mcp.protocol.era",
@@ -200017,7 +200132,11 @@
       "brief": "Negotiated MCP protocol era. Derived from the negotiated protocol version, never from envelope presence.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.mcp.sdk.tier",
@@ -200025,7 +200144,11 @@
       "brief": "MCP SDK tier observed on the connection. Staging: upstream semconv has no equivalent yet.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.mcp.server.id",
@@ -200033,7 +200156,11 @@
       "brief": "Identifier of the MCP server as registered in the qyl workbench. Staging: upstream semconv has no equivalent yet.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.mcp.test_case.id",
@@ -200041,7 +200168,11 @@
       "brief": "Identifier of the MCP test case. Staging: upstream semconv has no equivalent yet.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     },
     {
       "key": "qyl.mcp.tool.name",
@@ -200049,7 +200180,11 @@
       "brief": "Name of the MCP tool the telemetry concerns. Staging: upstream semconv has no equivalent yet.",
       "note": "",
       "stability": "development",
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     }
   ],
   "metrics": [
@@ -243080,7 +243215,11 @@
           "brief": "The messaging system as identified by the client instrumentation.",
           "note": "The actual messaging system may differ from the one known by the client. For example, when using Kafka client libraries to communicate with Azure Event Hubs, the `messaging.system` is set to `kafka` based on the instrumentation's best knowledge.\n",
           "stability": "development",
-          "source_registry": "qyl"
+          "source_registry": "qyl",
+          "schema_url": null,
+          "source_ref": "qyl-registry.json",
+          "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+          "source_date_epoch": null
         },
         {
           "key": "messaging.operation.type",
@@ -243146,7 +243285,11 @@
           "brief": "A string identifying the type of the messaging operation.\n",
           "note": "If a custom value is used, it MUST be of low cardinality.",
           "stability": "development",
-          "source_registry": "qyl"
+          "source_registry": "qyl",
+          "schema_url": null,
+          "source_ref": "qyl-registry.json",
+          "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+          "source_date_epoch": null
         },
         {
           "key": "messaging.operation.name",
@@ -243160,10 +243303,18 @@
             "nack",
             "send"
           ],
-          "source_registry": "qyl"
+          "source_registry": "qyl",
+          "schema_url": null,
+          "source_ref": "qyl-registry.json",
+          "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+          "source_date_epoch": null
         }
       ],
-      "source_registry": "qyl"
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "353d381ff0aa7645507b1518945a7df07cc9921cb403a9e61c9347b32f3f17f6",
+      "source_date_epoch": null
     }
   ],
   "events": [

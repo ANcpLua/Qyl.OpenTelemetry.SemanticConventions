@@ -152,7 +152,7 @@ internal static class Program
 
         using var registryStream = SemanticConventionRegistry.OpenResolvedRegistry();
         using var registry = JsonDocument.Parse(registryStream);
-        if (registry.RootElement.GetProperty("sources").GetArrayLength() != 2
+        if (registry.RootElement.GetProperty("sources").GetArrayLength() != 3
             || registry.RootElement.GetProperty("json_schemas").GetArrayLength() != 8)
         {
             return 2;

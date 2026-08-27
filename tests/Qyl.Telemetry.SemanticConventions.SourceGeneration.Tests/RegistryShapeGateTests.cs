@@ -38,11 +38,11 @@ public sealed class RegistryShapeGateTests
     }
 
     [Fact]
-    public void Root_records_both_exact_registry_sources_and_manifests()
+    public void Root_records_all_three_registry_sources_and_the_upstream_manifests()
     {
         var root = LoadRoot();
         var sources = root.GetProperty("sources").EnumerateArray().ToArray();
-        sources.Should().HaveCount(2);
+        sources.Should().HaveCount(3, "core, genai, and the qyl-owned registry");
 
         sources.Single(source => source.GetProperty("source_registry").GetString() == "core")
             .GetProperty("source_ref").GetString().Should().Be("v1.44.0");
@@ -50,9 +50,17 @@ public sealed class RegistryShapeGateTests
             .GetProperty("source_commit").GetString().Should()
             .Be("eaefa142a94cefe5d199d47e4a73727dfbd825df");
 
+        // qyl: ref is the file, commit is the SHA-256 of its bytes, and there is no schema
+        // URL or upstream date to cite.
+        var qyl = sources.Single(source => source.GetProperty("source_registry").GetString() == "qyl");
+        qyl.GetProperty("source_ref").GetString().Should().Be("qyl-registry.json");
+        qyl.GetProperty("source_commit").GetString().Should().MatchRegex("^[0-9a-f]{64}$");
+        qyl.GetProperty("schema_url").ValueKind.Should().Be(JsonValueKind.Null);
+        qyl.GetProperty("source_date_epoch").ValueKind.Should().Be(JsonValueKind.Null);
+
         root.GetProperty("manifests").EnumerateArray()
             .Select(manifest => manifest.GetProperty("source_registry").GetString())
-            .Should().BeEquivalentTo(["core", "genai"]);
+            .Should().BeEquivalentTo(["core", "genai"], "only the upstream registries publish a manifest");
     }
 
     [Fact]
@@ -130,6 +138,25 @@ public sealed class RegistryShapeGateTests
         qylAttributes.Should().NotBeEmpty();
         qylAttributes.Should().OnlyContain(attribute => attribute.GetProperty("source_registry").GetString() == "qyl");
 
+        // Every qyl row carries the third source's provenance: the same ref and commit as the
+        // qyl `sources` entry, and null schema_url / source_date_epoch.
+        var qylCommit = root.GetProperty("sources").EnumerateArray()
+            .Single(source => source.GetProperty("source_registry").GetString() == "qyl")
+            .GetProperty("source_commit").GetString();
+        var qylRows = root.GetProperty("catalog").EnumerateArray()
+            .Concat(root.GetProperty("metrics").EnumerateArray())
+            .Concat(root.GetProperty("groups").EnumerateArray())
+            .Where(row => row.GetProperty("source_registry").GetString() == "qyl")
+            .ToArray();
+        qylRows.Should().HaveCount(28 + 1 + 1, "28 attributes, one metric, and its group");
+        foreach (var row in qylRows)
+        {
+            row.GetProperty("source_ref").GetString().Should().Be("qyl-registry.json");
+            row.GetProperty("source_commit").GetString().Should().Be(qylCommit);
+            row.GetProperty("schema_url").ValueKind.Should().Be(JsonValueKind.Null);
+            row.GetProperty("source_date_epoch").ValueKind.Should().Be(JsonValueKind.Null);
+        }
+
         var domain = qylAttributes.Single(attribute => attribute.GetProperty("key").GetString() == "qyl.instrumentation.domain");
         var members = domain.GetProperty("type").GetProperty("members").EnumerateArray().ToArray();
         members.Should().HaveCount(21);
@@ -161,6 +188,37 @@ public sealed class RegistryShapeGateTests
             .Should().Contain("Qyl.OpenTelemetry.AutoInstrumentation").And.BeInAscendingOrder();
         root.GetProperty("event_names").EnumerateArray().Select(name => name.GetString())
             .Should().Contain("qyl.agent.diagnostic.snapshot").And.BeInAscendingOrder();
+    }
+
+    [Fact]
+    public void Qyl_rows_stay_inside_their_namespace_and_shadow_no_upstream_row()
+    {
+        // The inverse of merge_registries.py's guard, asserted on the shipped projection:
+        // the merge is last-wins, so a qyl row keyed like an upstream row would have replaced
+        // it silently. Every qyl-sourced attribute is qyl.*, every qyl.* attribute is
+        // qyl-sourced, and no key, metric name, or group id appears twice.
+        var root = LoadRoot();
+
+        var catalog = root.GetProperty("catalog").EnumerateArray()
+            .Select(attribute => (Key: attribute.GetProperty("key").GetString()!, Source: attribute.GetProperty("source_registry").GetString()))
+            .ToArray();
+        catalog.Select(row => row.Key).Should().OnlyHaveUniqueItems();
+        catalog.Where(row => row.Source == "qyl").Should().OnlyContain(row => row.Key.StartsWith("qyl.", StringComparison.Ordinal));
+        catalog.Where(row => row.Key.StartsWith("qyl.", StringComparison.Ordinal)).Should().OnlyContain(row => row.Source == "qyl");
+
+        var metrics = root.GetProperty("metrics").EnumerateArray()
+            .Select(metric => (Name: metric.GetProperty("metric_name").GetString()!, Source: metric.GetProperty("source_registry").GetString()))
+            .ToArray();
+        metrics.Select(row => row.Name).Should().OnlyHaveUniqueItems();
+        var upstreamMetricNames = metrics.Where(row => row.Source != "qyl").Select(row => row.Name).ToHashSet(StringComparer.Ordinal);
+        metrics.Where(row => row.Source == "qyl").Should().OnlyContain(row => !upstreamMetricNames.Contains(row.Name));
+
+        var groups = root.GetProperty("groups").EnumerateArray()
+            .Select(group => (Id: group.GetProperty("id").GetString()!, Type: group.GetProperty("type").GetString()!, Source: group.GetProperty("source_registry").GetString()))
+            .ToArray();
+        groups.Select(row => (row.Type, row.Id)).Should().OnlyHaveUniqueItems();
+        var upstreamGroupIds = groups.Where(row => row.Source != "qyl").Select(row => row.Id).ToHashSet(StringComparer.Ordinal);
+        groups.Where(row => row.Source == "qyl").Should().OnlyContain(row => !upstreamGroupIds.Contains(row.Id));
     }
 
     [Fact]

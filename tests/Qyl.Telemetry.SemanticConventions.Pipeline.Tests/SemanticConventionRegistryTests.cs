@@ -32,7 +32,7 @@ public sealed class SemanticConventionRegistryTests
         using var stream = SemanticConventionRegistry.OpenResolvedRegistry();
         using var document = JsonDocument.Parse(stream);
 
-        document.RootElement.GetProperty("sources").GetArrayLength().Should().Be(2);
+        document.RootElement.GetProperty("sources").GetArrayLength().Should().Be(3, "core, genai, and the qyl-owned registry");
         document.RootElement.GetProperty("model_files").EnumerateArray()
             .Count(file => file.GetProperty("source_registry").GetString() == "genai")
             .Should().Be(19);
