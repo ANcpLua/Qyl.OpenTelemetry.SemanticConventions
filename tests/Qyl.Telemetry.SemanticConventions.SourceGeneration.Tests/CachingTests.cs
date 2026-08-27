@@ -196,7 +196,9 @@ public sealed class CachingTests
         List<MetadataReference> references =
         [
             MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(Attribute).Assembly.Location)
+            MetadataReference.CreateFromFile(typeof(Attribute).Assembly.Location),
+            // The definition surfaces are typed against the vocabulary package.
+            MetadataReference.CreateFromFile(typeof(MetricDefinition<>).Assembly.Location)
         ];
 
         var netstandard = Assembly.Load("netstandard, Version=2.0.0.0");

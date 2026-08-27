@@ -12,8 +12,9 @@ namespace Qyl.Telemetry.SemanticConventions.SourceGeneration;
 ///   (incubating superset). Emits <c>public static readonly MetricDefinition&lt;TInstrument&gt;</c>
 ///   fields — the name is one property, the instrument is a marker type (compile-time
 ///   safety), and unit, stability, entity associations, and structured deprecation
-///   travel with the object. The runtime support types are emitted once via
-///   post-initialization.
+///   travel with the object. The definition types themselves ship in the
+///   <c>Qyl.Telemetry.SemanticConventions</c> package; a compilation without that
+///   reference gets <c>QYLSG001</c> at the marker.
 /// </summary>
 [Generator(LanguageNames.CSharp)]
 public sealed class SemConvMetricDefinitionsGenerator : IIncrementalGenerator
@@ -33,7 +34,5 @@ public sealed class SemConvMetricDefinitionsGenerator : IIncrementalGenerator
             StableAttributeFullName,
             IncubatingAttributeFullName,
             static marker => MetricDefinitionsEmitter.Generate(marker, RegistryLoader.Instruments),
-            static ctx => ctx.AddSource(
-                MetricDefinitionSupportSource.FileName,
-                MetricDefinitionSupportSource.Source));
+            requiresDefinitionTypes: true);
 }

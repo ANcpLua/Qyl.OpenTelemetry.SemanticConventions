@@ -76,9 +76,13 @@ internal abstract record DeprecatedModel
 /// it requested, and which stability projection the surface emits
 /// (<see cref="Extractors.StabilityFilter"/>). The generator that owns the pipeline picks
 /// the emitter and registry; the marker payload itself is surface-agnostic.
+/// <see cref="DefinitionTypesMissingAt"/> is set only for a definition surface whose
+/// compilation lacks the vocabulary package; the pipeline then reports <c>QYLSG001</c>
+/// there instead of emitting.
 /// </summary>
 internal readonly record struct SemConvMarkerModel(
     string ContainingNamespace,
     string ClassName,
     string Prefix,
-    Extractors.StabilityFilter Filter);
+    Extractors.StabilityFilter Filter,
+    LocationInfo? DefinitionTypesMissingAt);

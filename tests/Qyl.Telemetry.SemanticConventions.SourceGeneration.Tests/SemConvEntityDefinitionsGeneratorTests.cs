@@ -1,4 +1,4 @@
-using ANcpLua.Roslyn.Utilities.Testing.GeneratorHelpers;
+using System.Globalization;
 using AwesomeAssertions;
 using Qyl.Telemetry.SemanticConventions.SourceGeneration;
 using Xunit;
@@ -7,8 +7,9 @@ namespace Qyl.Telemetry.SemanticConventions.SourceGeneration.Tests;
 
 /// <summary>
 /// Tests the first-class entity surface:
-/// <c>[SemanticConventionEntityDefinitions]</c> emits <c>EntityDefinition</c> objects
-/// carrying the entity's describing/identifying attribute references.
+/// <c>[SemanticConventionEntityDefinitions]</c> emits <c>EntityDefinition</c> fields
+/// carrying the entity's describing/identifying attribute references, bound to the
+/// vocabulary package's definition types.
 /// </summary>
 public sealed class SemConvEntityDefinitionsGeneratorTests
 {
@@ -22,10 +23,8 @@ public sealed class SemConvEntityDefinitionsGeneratorTests
             internal static partial class HostEntityDefinitions;
             """;
 
-        var result = GeneratorTestHelper.RunGenerator<SemConvEntityDefinitionsGenerator>(source);
-        var generated = string.Concat(result.RunResult.GeneratedTrees
-            .Where(static t => t.FilePath.Contains("HostEntityDefinitions", StringComparison.Ordinal))
-            .Select(static t => t.ToString()));
+        var (result, output) = DefinitionsTestHost.Run<SemConvEntityDefinitionsGenerator>(source);
+        var generated = result.GeneratedText("HostEntityDefinitions.g.cs");
 
         // The host entity carries its identifying/describing attributes (host.arch, host.id, ...).
         generated.Should()
@@ -33,20 +32,23 @@ public sealed class SemConvEntityDefinitionsGeneratorTests
             .And.Contain("name: \"host\"")
             .And.Contain("new(\"host.arch\"")
             .And.Contain("new(\"host.id\"");
+
+        output.Errors().Should().BeEmpty();
     }
 
     [Fact]
-    public void Support_Types_Include_Entity_Definition()
+    public void Entity_Surface_Reports_QYLSG001_Without_The_Vocabulary_Package()
     {
-        const string source = "namespace Empty;";
+        const string source = """
+            using Qyl.Telemetry.SemanticConventions.SourceGeneration;
+            namespace MyApp;
+            [SemanticConventionEntityDefinitions("host")]
+            internal static partial class HostEntityDefinitions;
+            """;
 
-        var result = GeneratorTestHelper.RunGenerator<SemConvMetricDefinitionsGenerator>(source);
-        var support = result.RunResult.GeneratedTrees
-            .Single(static t => t.FilePath.EndsWith("MetricDefinition.Support.g.cs", StringComparison.Ordinal))
-            .ToString();
+        var (result, _) = DefinitionsTestHost.Run<SemConvEntityDefinitionsGenerator>(source, referenceVocabulary: false);
 
-        support.Should()
-            .Contain("public sealed class EntityDefinition")
-            .And.Contain("The attributes that describe and identify this entity.");
+        result.Diagnostics.Should().ContainSingle().Which.Id.Should().Be("QYLSG001");
+        result.Diagnostics[0].GetMessage(CultureInfo.InvariantCulture).Should().Contain("[SemanticConventionEntityDefinitions]");
     }
 }

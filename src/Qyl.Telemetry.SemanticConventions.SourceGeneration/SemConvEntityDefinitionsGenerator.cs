@@ -10,8 +10,9 @@ namespace Qyl.Telemetry.SemanticConventions.SourceGeneration;
 ///   <c>[SemanticConventionEntityDefinitions("&lt;prefix&gt;")]</c> (stable) or
 ///   <c>[SemanticConventionIncubatingEntityDefinitions("&lt;prefix&gt;")]</c>
 ///   (incubating superset). Emits <c>public static readonly EntityDefinition</c> fields
-///   carrying the entity's describing/identifying attributes. Shared runtime support types
-///   are emitted by <see cref="SemConvMetricDefinitionsGenerator"/>.
+///   carrying the entity's describing/identifying attributes. The definition types ship
+///   in the <c>Qyl.Telemetry.SemanticConventions</c> package; a compilation without that
+///   reference gets <c>QYLSG001</c> at the marker.
 /// </summary>
 [Generator(LanguageNames.CSharp)]
 public sealed class SemConvEntityDefinitionsGenerator : IIncrementalGenerator
@@ -30,5 +31,6 @@ public sealed class SemConvEntityDefinitionsGenerator : IIncrementalGenerator
             "SemanticConventionIncubatingEntityDefinitionsAttribute",
             StableAttributeFullName,
             IncubatingAttributeFullName,
-            static marker => EntityDefinitionsEmitter.Generate(marker, RegistryLoader.Signals));
+            static marker => EntityDefinitionsEmitter.Generate(marker, RegistryLoader.Signals),
+            requiresDefinitionTypes: true);
 }

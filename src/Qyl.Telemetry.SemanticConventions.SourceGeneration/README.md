@@ -1,20 +1,36 @@
 # Qyl.Telemetry.SemanticConventions.SourceGeneration
 
 Roslyn source generator for OpenTelemetry semantic-convention constants,
-descriptors, and thin helper APIs. It does not collect telemetry. Consumers own
-their `Meter`, `ActivitySource`, `Logger`, instrumentation scope, versioning,
-and enablement.
+first-class definitions, and thin helper APIs. It does not collect telemetry.
+Consumers own their `Meter`, `ActivitySource`, `Logger`, instrumentation scope,
+versioning, and enablement.
 
 ## When to use this package
 
 This is the **application-side** consumption mode: the generator emits only the
-declared groups into your own assembly — internal visibility, no runtime package
-dependency, tree-shaken by construction. Libraries that need one pinned registry
-version across a package family (for example
-`Qyl.OpenTelemetry.AutoInstrumentation`) reference the compiled
-`Qyl.Telemetry.SemanticConventions` packages instead and alias their
-constants; see the repository README's "Choosing between the compiled packages
-and the source generator" section.
+declared groups into your own assembly, with internal visibility and nothing
+you did not ask for. Libraries that need one pinned registry version across a
+package family (for example `Qyl.OpenTelemetry.AutoInstrumentation`) reference
+the compiled `Qyl.Telemetry.SemanticConventions` packages instead; see the
+repository README's "Choosing between the compiled packages and the source
+generator" section.
+
+The definition surfaces (metrics, spans, events, entities) are typed against
+`Qyl.Telemetry.SemanticConventions`, the one home of `MetricDefinition<TInstrument>`,
+`SpanDefinition<TKind>`, `EventDefinition`, `EntityDefinition`, `Stability`,
+`Deprecation`, `RequirementLevel`, `AttributeRef`, `EntityRef`, and the
+instrument/span-kind marker structs. Reference that package next to the
+generator; a compilation that declares a definition marker without it gets
+`QYLSG001` at the marker instead of generated source. The attribute-constant
+and `Activity` setter surfaces have no runtime package dependency.
+
+```xml
+<ItemGroup>
+  <PackageReference Include="Qyl.Telemetry.SemanticConventions" Version="..." />
+  <PackageReference Include="Qyl.Telemetry.SemanticConventions.SourceGeneration" Version="..."
+                    OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+</ItemGroup>
+```
 
 ## Use
 
@@ -27,40 +43,52 @@ internal static partial class HttpAttributes;
 [SemanticConventionIncubatingAttributes("http")]
 internal static partial class HttpIncubatingAttributes;
 
-[SemanticConventionMetrics("http.server")]
-internal static partial class HttpServerMetrics;
-
-[SemanticConventionMeters("http.server")]
-internal static partial class HttpServerMeters;
-
 [SemanticConventionActivities("http")]
 internal static partial class HttpActivityExtensions;
 
+[SemanticConventionMetricDefinitions("http.server")]
+internal static partial class HttpServerMetrics;
+
+[SemanticConventionSpanDefinitions("http")]
+internal static partial class HttpSpans;
+
+[SemanticConventionIncubatingEventDefinitions("app")]
+internal static partial class AppEvents;
+
+[SemanticConventionIncubatingEntityDefinitions("host")]
+internal static partial class HostEntities;
+
 // Generated:
 //   public const string AttributeHttpRequestMethod = "http.request.method";
-//   public static partial class HttpServerRequestDurationDescriptor { ... }
-//   public static Histogram<double> CreateHttpServerRequestDurationHistogram(this Meter meter)
 //   public static Activity SetHttpRoute(this Activity activity, string value)
+//   public static readonly MetricDefinition<Histogram> HttpServerRequestDuration = new(name: "http.server.request.duration", ...);
+//   public static readonly SpanDefinition<Server> HttpServer = new(id: "http.server", ...);
+//   public static readonly EventDefinition AppCrash = new(name: "app.crash", ...);
+//   public static readonly EntityDefinition Host = new(name: "host", ...);
 ```
 
 ## Generator surfaces
 
-All four source generators use the same Roslyn shape: publish stable and
-incubating marker attributes during post-initialization, discover annotated
-partial classes with `ForAttributeWithMetadataName`, extract the requested
-semantic-convention prefix into a marker model, then emit source from the
-matching registry projection.
+Every generator uses the same Roslyn shape (`GeneratorPipeline`): publish its
+stable and incubating marker attributes during post-initialization, discover
+annotated partial classes with `ForAttributeWithMetadataName`, extract the
+requested semantic-convention prefix into a marker model, then emit source from
+the matching registry projection.
 
 | Surface | Marker attributes | Registry projection | Emitter | Generated shape |
 |---|---|---|---|---|
-| Attributes | `SemanticConventionAttributes`, `SemanticConventionIncubatingAttributes` | `RegistryLoader.Registry` | `AttributesEmitter` | Attribute-key constants and typed enum-value helpers. |
+| Attributes | `SemanticConventionAttributes`, `SemanticConventionIncubatingAttributes` | `RegistryLoader.Registry` | `AttributesEmitter` | Attribute-key constants and enum-value helper classes (contrib member shape). |
 | Activities | `SemanticConventionActivities`, `SemanticConventionIncubatingActivities` | `ActivityRegistryLoader.Registry` | `ActivityExtensionsEmitter` | `Activity` extension methods that set typed semantic tags. |
-| Metrics | `SemanticConventionMetrics`, `SemanticConventionIncubatingMetrics` | `RegistryLoader.Instruments` | `MetricsEmitter` | Metric names, descriptors, units, instrument kinds, and attribute keys. |
-| Meters | `SemanticConventionMeters`, `SemanticConventionIncubatingMeters` | `RegistryLoader.Instruments` | `MetersEmitter` | `Meter` extension methods that create semantic instruments. |
+| Metric definitions | `SemanticConventionMetricDefinitions`, `SemanticConventionIncubatingMetricDefinitions` | `RegistryLoader.Instruments` | `MetricDefinitionsEmitter` | `MetricDefinition<TInstrument>` fields: name, unit, stability, deprecation, entity and attribute references. |
+| Span definitions | `SemanticConventionSpanDefinitions`, `SemanticConventionIncubatingSpanDefinitions` | `RegistryLoader.Signals` | `SpanDefinitionsEmitter` | `SpanDefinition<TKind>` fields. |
+| Event definitions | `SemanticConventionEventDefinitions`, `SemanticConventionIncubatingEventDefinitions` | `RegistryLoader.Signals` | `EventDefinitionsEmitter` | `EventDefinition` fields. |
+| Entity definitions | `SemanticConventionEntityDefinitions`, `SemanticConventionIncubatingEntityDefinitions` | `RegistryLoader.Signals` | `EntityDefinitionsEmitter` | `EntityDefinition` fields with describing/identifying attribute references. |
 
-The marker attributes are themselves generated via
-`RegisterPostInitializationOutput`; no runtime dependency is added by consuming
-this package.
+The marker attributes are generated into the consuming assembly via
+`RegisterPostInitializationOutput` as `internal`, `[Conditional]` attributes.
+The definition types are not generated: they are public types of
+`Qyl.Telemetry.SemanticConventions`, so definitions produced in different
+assemblies share one type family.
 
 Stable markers emit stable rows plus deprecated migration symbols. Incubating
 markers are supersets: stable + development/alpha/beta/release-candidate +
@@ -68,10 +96,16 @@ deprecated. This mirrors Java/Python's incubating package behavior and avoids
 breaking consumers when conventions are promoted.
 
 Choose one projection per prefix in normal consumer code. Incubating is a
-superset, so declaring both stable and incubating meter/activity helpers for
-the same prefix in the same namespace can make shared extension methods
-ambiguous. If a test fixture intentionally declares both, call the generated
-static helper class explicitly.
+superset, so declaring both stable and incubating activity helpers for the same
+prefix in the same namespace can make shared extension methods ambiguous. If a
+test fixture intentionally declares both, call the generated static helper
+class explicitly.
+
+## Diagnostics
+
+| ID | Severity | When |
+|---|---|---|
+| `QYLSG001` | Error | A definition marker (`*MetricDefinitions`, `*SpanDefinitions`, `*EventDefinitions`, `*EntityDefinitions`) is declared in a compilation that does not reference `Qyl.Telemetry.SemanticConventions`. |
 
 ## Versioning
 

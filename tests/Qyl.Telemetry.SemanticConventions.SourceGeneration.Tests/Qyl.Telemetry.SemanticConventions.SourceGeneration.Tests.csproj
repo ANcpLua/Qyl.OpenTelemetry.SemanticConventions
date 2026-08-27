@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <ProjectReference Include="../../src/Qyl.Telemetry.SemanticConventions.SourceGeneration/Qyl.Telemetry.SemanticConventions.SourceGeneration.csproj"/>
+    <!-- The definition surfaces are compiled against the real vocabulary assembly. -->
+    <ProjectReference Include="../../src/Qyl.Telemetry.SemanticConventions/Qyl.Telemetry.SemanticConventions.csproj"/>
   </ItemGroup>
 
   <ItemGroup>

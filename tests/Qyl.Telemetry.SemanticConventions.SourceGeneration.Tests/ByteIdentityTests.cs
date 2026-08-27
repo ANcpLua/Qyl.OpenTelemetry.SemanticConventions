@@ -1,4 +1,3 @@
-using ANcpLua.Roslyn.Utilities.Testing.GeneratorHelpers;
 using AwesomeAssertions;
 using Microsoft.CodeAnalysis;
 using Qyl.Telemetry.SemanticConventions.SourceGeneration;
@@ -171,10 +170,8 @@ public sealed class ByteIdentityTests
     private static string RunAndGetGenerated<TGenerator>(string source, string fileSuffix)
         where TGenerator : IIncrementalGenerator, new()
     {
-        var result = GeneratorTestHelper.RunGenerator<TGenerator>(source);
-        var tree = result.RunResult.GeneratedTrees
-            .Single(t => t.FilePath.EndsWith(fileSuffix, StringComparison.Ordinal));
-        return tree.ToString();
+        var (result, _) = DefinitionsTestHost.Run<TGenerator>(source);
+        return result.GeneratedText(fileSuffix);
     }
 
     private static string LoadSnapshot(string resourceName)

@@ -22,7 +22,7 @@
 
     <IsPackable>true</IsPackable>
     <PackageId>Qyl.Telemetry.SemanticConventions.SourceGeneration</PackageId>
-    <Description>Roslyn source generator that materialises OpenTelemetry semantic-conventions constants, descriptors, and thin helpers for user-declared partial classes. Emits stable/incubating projections for attributes, metrics, Meter factories, and Activity setters from the pinned OpenTelemetry semantic-conventions v$(SemConvSchemaVersion) core registry plus the pinned development GenAI registry.</Description>
+    <Description>Roslyn source generator that materialises OpenTelemetry semantic-conventions constants, first-class definitions, and thin helpers for user-declared partial classes. Emits stable/incubating projections for attribute constants, Activity setters, and metric/span/event/entity definitions (typed against the Qyl.Telemetry.SemanticConventions package) from the pinned OpenTelemetry semantic-conventions v$(SemConvSchemaVersion) core registry plus the pinned development GenAI registry.</Description>
     <PackageTags>opentelemetry;semantic-conventions;roslyn;source-generator;otel;weaver</PackageTags>
     <IncludeSymbols>false</IncludeSymbols>
     <NoPackageAnalysis>true</NoPackageAnalysis>
@@ -52,6 +52,11 @@
 
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" Condition="Exists('README.md')"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="AnalyzerReleases.Shipped.md"/>
+    <AdditionalFiles Include="AnalyzerReleases.Unshipped.md"/>
   </ItemGroup>
 
   <ItemGroup>

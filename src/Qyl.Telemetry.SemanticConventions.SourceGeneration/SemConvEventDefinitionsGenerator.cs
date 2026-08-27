@@ -11,8 +11,8 @@ namespace Qyl.Telemetry.SemanticConventions.SourceGeneration;
 ///   <c>[SemanticConventionIncubatingEventDefinitions("&lt;prefix&gt;")]</c>
 ///   (incubating superset). Emits <c>public static readonly EventDefinition</c> fields;
 ///   stability, structured deprecation, and attribute references travel with the object.
-///   Shared runtime support types are emitted by
-///   <see cref="SemConvMetricDefinitionsGenerator"/>.
+///   The definition types ship in the <c>Qyl.Telemetry.SemanticConventions</c> package;
+///   a compilation without that reference gets <c>QYLSG001</c> at the marker.
 /// </summary>
 [Generator(LanguageNames.CSharp)]
 public sealed class SemConvEventDefinitionsGenerator : IIncrementalGenerator
@@ -31,5 +31,6 @@ public sealed class SemConvEventDefinitionsGenerator : IIncrementalGenerator
             "SemanticConventionIncubatingEventDefinitionsAttribute",
             StableAttributeFullName,
             IncubatingAttributeFullName,
-            static marker => EventDefinitionsEmitter.Generate(marker, RegistryLoader.Signals));
+            static marker => EventDefinitionsEmitter.Generate(marker, RegistryLoader.Signals),
+            requiresDefinitionTypes: true);
 }

@@ -13,9 +13,9 @@ emit an attribute name its own collector does not know.
 
 | Package | Contents |
 | --- | --- |
-| `Qyl.Telemetry.SemanticConventions` | Stable and deprecated attribute-key constants |
+| `Qyl.Telemetry.SemanticConventions` | Stable and deprecated attribute-key constants, plus the semantic-convention definition types (`MetricDefinition<TInstrument>`, `SpanDefinition<TKind>`, `EventDefinition`, `EntityDefinition`, and their `Stability`/`Deprecation`/`RequirementLevel`/`AttributeRef`/`EntityRef` companions) |
 | `.Incubating` | Development and unstable constants, the complete resolved registry, and upstream GenAI payload schemas |
-| `.SourceGeneration` | Roslyn generators for typed telemetry declarations |
+| `.SourceGeneration` | Roslyn generators for typed telemetry declarations; its definition surfaces are typed against the base package |
 | `.Analyzers` | Preview diagnostics and code fixes; built and documented, but excluded from stable releases |
 
 ```bash
@@ -35,25 +35,29 @@ family began at `1.0.0` and now follows its own monotonic release line.
 
 ## Choosing between the compiled packages and the source generator
 
-The registry ships in two consumption modes; pick by what you are building.
+Both modes share one vocabulary. `Qyl.Telemetry.SemanticConventions` is the home of the
+object-first definition types — `MetricDefinition<TInstrument>`, `SpanDefinition<TKind>`,
+`EventDefinition`, `EntityDefinition`, `Stability`, `Deprecation`, `RequirementLevel`,
+`AttributeRef`, `EntityRef`, and the instrument/span-kind marker structs — so a definition
+generated in any assembly is an instance of the same public type and can be handed
+between libraries and applications.
 
 **Libraries reference the compiled packages** (`Qyl.Telemetry.SemanticConventions`,
 `.Incubating`). A library needs one pinned registry version across its whole package
-family and a stable public constant surface to alias against
+family and a public constant surface to alias against
 (`Qyl.Telemetry.AutoInstrumentation` does this through its internal
 `QylSemanticAttributes` facade). Because the constants are `const string`, the
 compiler inlines them at every use site — the reference costs effectively nothing
 at runtime.
 
-**Applications use `.SourceGeneration`.** Declaring
+**Applications may use either.** Declaring
 `[SemanticConventionAttributes("http")] internal static partial class HttpAttributes;`
-emits only the requested groups directly into the consuming assembly — internal
-visibility, no package in the dependency chain, tree-shaken by construction
-(`qyl`'s `Qyl.Run.Workload` consumes it this way).
-
-Do not switch a library from the compiled packages to the generator: that moves the
-registry pin from per-package-release to per-consumer-compilation and floods the
-library's own generator snapshots with foreign generated files.
+emits only the requested groups directly into the consuming assembly with internal
+visibility (`qyl`'s `Qyl.Run.Workload` consumes it this way). The definition surfaces
+(`[SemanticConventionMetricDefinitions]`, `[SemanticConventionSpanDefinitions]`,
+`[SemanticConventionEventDefinitions]`, `[SemanticConventionEntityDefinitions]`) are
+typed against `Qyl.Telemetry.SemanticConventions`: reference it next to the generator,
+or the generator reports `QYLSG001` at the marker.
 
 ## Generation pipeline
 
