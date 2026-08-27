@@ -81,7 +81,7 @@ internal static class MetricDefinitionsEmitter
         SourceWriter.WriteStabilityObsolete(builder, metric.Stability, metric.Deprecated, indent: 4);
 
         var fieldName = SourceWriter.ToPascalCase(metric.MetricName);
-        var instrument = InstrumentMarker(metric.Instrument);
+        var instrument = InstrumentMarker(metric);
 
         builder.Append("    public static readonly ").Append(Ns).Append(".MetricDefinition<").Append(Ns).Append('.')
                .Append(instrument).Append("> ").Append(fieldName).AppendLine(" =");
@@ -95,13 +95,19 @@ internal static class MetricDefinitionsEmitter
         builder.Append("            attributes: ").Append(AttributeArrayExpr(metric.Attributes)).AppendLine(");");
     }
 
-    private static string InstrumentMarker(string instrument) => instrument switch
+    /// <summary>
+    /// The marker type for the registry's instrument. The registry is pinned, so an
+    /// instrument outside the four Weaver values is a generation-time fault, not something
+    /// to map silently onto a counter.
+    /// </summary>
+    private static string InstrumentMarker(MetricDescriptorModel metric) => metric.Instrument switch
     {
-        "counter" or "observablecounter" => "Counter",
-        "updowncounter" or "observableupdowncounter" => "UpDownCounter",
-        "gauge" or "observablegauge" => "Gauge",
+        "counter" => "Counter",
+        "updowncounter" => "UpDownCounter",
+        "gauge" => "Gauge",
         "histogram" => "Histogram",
-        _ => "Counter",
+        _ => throw new InvalidOperationException(
+            $"Metric '{metric.MetricName}' declares instrument '{metric.Instrument}', which has no MetricDefinition marker type (expected counter, updowncounter, gauge, or histogram)."),
     };
 
     private static string StabilityExpr(StabilityModel stability) => Ns + ".Stability." + stability switch

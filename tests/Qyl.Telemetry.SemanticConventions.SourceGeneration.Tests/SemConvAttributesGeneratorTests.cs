@@ -199,6 +199,41 @@ public sealed class SemConvAttributesGeneratorTests
             .And.Contain("public const string Cassandra = \"cassandra\";");
     }
 
+    [Theory]
+    [InlineData("cpython", "CpythonAttributes", "CpythonGcGenerationValues", "Generation0", "0")]
+    [InlineData("cpython", "CpythonAttributes", "CpythonGcGenerationValues", "Generation2", "2")]
+    [InlineData("rpc", "RpcAttributes", "RpcGrpcStatusCodeValues", "Ok", "0")]
+    [InlineData("rpc", "RpcAttributes", "RpcGrpcStatusCodeValues", "Aborted", "10")]
+    public void Integer_Enum_Member_Values_Are_Emitted_As_String_Constants(
+        string prefix,
+        string className,
+        string valuesClass,
+        string member,
+        string value)
+    {
+        // cpython.gc.generation and rpc.grpc.status_code carry integer member values in the
+        // registry; the constant is the JSON scalar spelled as a string, never "".
+        var source = $$"""
+            using Qyl.Telemetry.SemanticConventions.SourceGeneration;
+
+            namespace MyApp;
+
+            [SemanticConventionIncubatingAttributes("{{prefix}}")]
+            internal static partial class {{className}};
+            """;
+
+        var result = GeneratorTestHelper.RunGenerator<SemConvAttributesGenerator>(source);
+
+        var generated = result.RunResult.GeneratedTrees
+            .Single(t => t.FilePath.EndsWith($"{className}.g.cs", StringComparison.Ordinal))
+            .ToString();
+
+        generated.Should()
+            .Contain($"public static class {valuesClass}")
+            .And.Contain($"public const string {member} = \"{value}\";")
+            .And.NotContain("= \"\";", "no enum member may lose its value");
+    }
+
     [Fact]
     public void Compilation_With_Generator_Has_No_Errors()
     {

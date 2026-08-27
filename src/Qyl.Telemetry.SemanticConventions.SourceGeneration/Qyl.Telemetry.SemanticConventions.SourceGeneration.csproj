@@ -60,6 +60,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- The loaders and parsers are internal; the test project exercises them directly
+         (registry shape at load time, JSON scalar spelling) without a public surface. -->
+    <InternalsVisibleTo Include="Qyl.Telemetry.SemanticConventions.SourceGeneration.Tests"/>
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- The no-op build payload satisfies NuGet's analyzer-package content check. -->
     <None Include="build/Qyl.Telemetry.SemanticConventions.SourceGeneration.props"
           Pack="true"

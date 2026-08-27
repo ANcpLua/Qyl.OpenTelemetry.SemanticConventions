@@ -1,7 +1,6 @@
 // Copyright (c) Alexander Nachtmann
 // SPDX-License-Identifier: Apache-2.0
 
-using System;
 using Nuke.Common;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;

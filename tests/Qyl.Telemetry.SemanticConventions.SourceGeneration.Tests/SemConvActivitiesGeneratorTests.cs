@@ -275,6 +275,38 @@ public sealed class SemConvActivitiesGeneratorTests
             .And.Contain("public const string Query = \"QUERY\";");
     }
 
+    [Theory]
+    [InlineData("cpython", "CpythonActivityExtensions", "CpythonGcGenerationValues", "Generation0", "0")]
+    [InlineData("rpc", "RpcActivityExtensions", "RpcGrpcStatusCodeValues", "Ok", "0")]
+    [InlineData("rpc", "RpcActivityExtensions", "RpcGrpcStatusCodeValues", "Aborted", "10")]
+    public void Integer_Enum_Member_Values_Are_Emitted_As_String_Constants(
+        string prefix,
+        string className,
+        string valuesClass,
+        string member,
+        string value)
+    {
+        var source = $$"""
+            using Qyl.Telemetry.SemanticConventions.SourceGeneration;
+
+            namespace MyApp;
+
+            [SemanticConventionIncubatingActivities("{{prefix}}")]
+            internal static partial class {{className}};
+            """;
+
+        var result = GeneratorTestHelper.RunGenerator<SemConvActivitiesGenerator>(source);
+
+        var generated = result.RunResult.GeneratedTrees
+            .Single(t => t.FilePath.EndsWith($"{className}.g.cs", StringComparison.Ordinal))
+            .ToString();
+
+        generated.Should()
+            .Contain($"public static class {valuesClass}")
+            .And.Contain($"public const string {member} = \"{value}\";")
+            .And.NotContain("= \"\";", "no enum member may lose its value");
+    }
+
     [Fact]
     public void Generated_Output_Is_Syntactically_Valid()
     {
