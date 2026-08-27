@@ -2,11 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using Nuke.Common;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
@@ -17,8 +12,9 @@ using Serilog;
 namespace Qyl.Telemetry.SemanticConventions.Build;
 
 /// <summary>
-///   Repository-local build host. VerifyAttributesHash guards the committed
-///   generated attribute files against untracked edits.
+///   Repository-local build host: compile, and the analyzer documentation targets. The
+///   compiled packages' constant classes are generated at build by the repository's own
+///   source generator, so there is no checked-in constant tree to guard.
 /// </summary>
 internal sealed class Build : NukeBuild
 {
@@ -26,20 +22,6 @@ internal sealed class Build : NukeBuild
 
     [Solution(GenerateProjects = false)]
     readonly Solution Solution = null!;
-
-    AbsolutePath AttributesHashFile => RootDirectory / "eng" / "semconv" / "attributes.lock.sha256";
-
-    AbsolutePath StableAttributesDir =>
-        RootDirectory / "src" / "Qyl.Telemetry.SemanticConventions" / "Attributes";
-
-    AbsolutePath StableSchemaUrlFile =>
-        RootDirectory / "src" / "Qyl.Telemetry.SemanticConventions" / "SchemaUrl.g.cs";
-
-    AbsolutePath IncubatingAttributesDir =>
-        RootDirectory / "src" / "Qyl.Telemetry.SemanticConventions.Incubating" / "Attributes";
-
-    AbsolutePath IncubatingNamesDir =>
-        RootDirectory / "src" / "Qyl.Telemetry.SemanticConventions.Incubating" / "Names";
 
     AbsolutePath DocsGeneratorProject =>
         RootDirectory / "tools"
@@ -54,49 +36,6 @@ internal sealed class Build : NukeBuild
                 .SetProjectFile(Solution)
                 .SetConfiguration("Release")
                 .EnableNoLogo());
-        });
-
-    /// <summary>
-    ///   Hash every file <c>emit_attributes.py</c> owns — the Weaver-emitted attribute
-    ///   trees and the qyl-owned names file — and compare against the manifest at
-    ///   <c>eng/semconv/attributes.lock.sha256</c>. Fails the build if anyone
-    ///   hand-edited a generated file or forgot to re-seed the lock after a
-    ///   legitimate regeneration.
-    /// </summary>
-    Target VerifyAttributesHash => _ => _
-        .Executes(() =>
-        {
-            string actual = ComputeAttributesManifestHash();
-
-            if (!File.Exists(AttributesHashFile))
-            {
-                throw new InvalidOperationException(
-                    $"VerifyAttributesHash: lock file not found at {AttributesHashFile}. " +
-                    "Run `./build.sh SeedAttributesHash` once to create it.");
-            }
-
-            string expected = File.ReadAllText(AttributesHashFile).Trim();
-            if (string.Equals(expected, actual, StringComparison.Ordinal))
-            {
-                Log.Information("VerifyAttributesHash: manifest hash matches ({Hash}).", actual);
-                return;
-            }
-
-            throw new InvalidOperationException(
-                "VerifyAttributesHash: drift detected. " +
-                $"Expected {expected}, got {actual}. " +
-                "Either re-run `./build.sh SeedAttributesHash` after an intentional regen, " +
-                "or revert hand-edits to the generated .g.cs files.");
-        });
-
-    /// <summary>Recompute and persist the attribute-manifest hash. Run after intentional regenerations.</summary>
-    Target SeedAttributesHash => _ => _
-        .Executes(() =>
-        {
-            string hash = ComputeAttributesManifestHash();
-            AttributesHashFile.Parent!.CreateDirectory();
-            File.WriteAllText(AttributesHashFile, hash + Environment.NewLine);
-            Log.Information("SeedAttributesHash: wrote {Hash} to {Path}.", hash, AttributesHashFile);
         });
 
     /// <summary>
@@ -140,39 +79,5 @@ internal sealed class Build : NukeBuild
 
         DotNetTasks.DotNetRun(settings);
         Log.Information("DocsGenerator finished ({Mode}).", applicationArguments ?? "generate");
-    }
-
-    string ComputeAttributesManifestHash()
-    {
-        var entries = new List<(string RelPath, string Sha)>();
-        void AddFile(string file)
-        {
-            string relPath = Path.GetRelativePath(RootDirectory, file).Replace('\\', '/');
-            using FileStream stream = File.OpenRead(file);
-            string sha = Convert.ToHexString(SHA256.HashData(stream)).ToLowerInvariant();
-            entries.Add((relPath, sha));
-        }
-
-        foreach (AbsolutePath root in new[] { StableAttributesDir, IncubatingAttributesDir, IncubatingNamesDir })
-        {
-            if (!Directory.Exists(root))
-                continue;
-
-            foreach (string file in Directory.EnumerateFiles(root, "*.g.cs", SearchOption.AllDirectories))
-                AddFile(file);
-        }
-
-        if (File.Exists(StableSchemaUrlFile))
-            AddFile(StableSchemaUrlFile);
-
-        // Sort by path so the manifest is order-independent.
-        entries.Sort(static (a, b) => string.CompareOrdinal(a.RelPath, b.RelPath));
-
-        var manifest = new StringBuilder();
-        foreach ((string relPath, string sha) in entries)
-            manifest.Append(sha).Append("  ").Append(relPath).Append('\n');
-
-        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(manifest.ToString())))
-            .ToLowerInvariant();
     }
 }

@@ -27,7 +27,7 @@ import os
 import re
 import sys
 
-from emit_attributes import JSON_PATH
+from emit_common import JSON_PATH
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CATALOG = os.path.abspath(os.path.join(

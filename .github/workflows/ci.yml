@@ -32,20 +32,11 @@ jobs:
       - name: Build
         run: dotnet build Qyl.Telemetry.SemanticConventions.slnx --no-restore --configuration Release
 
-      - name: Verify attribute manifest
-        run: ./build.sh VerifyAttributesHash
-
       # The analyzer deprecation catalog is hand-curated (since-versions, guidance
       # prose, deleted-upstream keys) but must never contradict the registry on
       # what the registry DOES know — renames, deprecations, enum-member removals.
       - name: Verify deprecated-semconv catalog against resolved registry
         run: python3 src/Qyl.Telemetry.SemanticConventions.SourceGeneration/scripts/verify_deprecated_catalog.py
-
-      # Snapshot gate for the constant trees including the qyl.* projection
-      # (architecture G9). The manifest hash above proves nothing changed; this
-      # prints which file drifted and how, so a failure is actionable.
-      - name: Verify constant trees match the emitter
-        run: python3 src/Qyl.Telemetry.SemanticConventions.SourceGeneration/scripts/emit_attributes.py --check
 
       - name: Test analyzer pipeline
         run: dotnet run --project tests/Qyl.Telemetry.SemanticConventions.Pipeline.Tests/ --configuration Release --no-build

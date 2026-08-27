@@ -17,12 +17,12 @@ rebranded `ANcpLua` -> `Qyl` to match this repo (and the C# surface):
       const <PascalRest>: string = "<dotted.key>";
     }
 
-Rules (mirroring emit_attributes.py where they overlap):
+Rules (mirroring the Roslyn package projection, PackageAttributesEmitter, where they overlap):
   * full surface — every catalog attribute, all stabilities, deprecated kept
     (a deprecated key is still a valid wire key on old telemetry);
   * namespace = PascalCase of the first dot-segment of the key; const name =
     PascalCase of the remainder; `.`<->`_` PascalCase collisions resolved by
-    preferring the non-deprecated entry (resolve_collisions);
+    preferring the non-deprecated entry (emit_common.resolve_collisions);
   * briefs are collapsed to one line; `*/` cannot appear inside a TypeSpec
     doc comment and is asserted absent;
   * deprecation message wording comes from deprecated_message() so the
@@ -37,10 +37,10 @@ from __future__ import annotations
 import json
 import sys
 
-from emit_attributes import (
+from emit_common import (
     JSON_PATH,
     REPO_SLUG,
-    _collapse_ws,
+    collapse_ws,
     deprecated_message,
     resolve_collisions,
     to_pascal,
@@ -52,11 +52,11 @@ KEYS_NAMESPACE = "Qyl.Telemetry.SemanticConventions.Keys"
 def tsp_string(value: str) -> str:
     # TypeSpec "..." literals are single-line; notes from the registry can be
     # multi-line markdown, so collapse whitespace before escaping.
-    return _collapse_ws(value).replace("\\", "\\\\").replace('"', '\\"')
+    return collapse_ws(value).replace("\\", "\\\\").replace('"', '\\"')
 
 
 def doc_line(brief: str) -> str | None:
-    text = _collapse_ws(brief or "")
+    text = collapse_ws(brief or "")
     if not text:
         return None
     if "*/" in text:

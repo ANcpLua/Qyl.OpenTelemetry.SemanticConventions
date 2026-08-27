@@ -9,7 +9,9 @@ constants, registries, snapshots, or analyzer pages directly. Do not mint
 unratified stable `mcp.*` vocabulary; experimental qyl concepts stay staged and
 are reconsidered at every upstream pin update.
 
-Validate the Release build, both test executables, `./build.sh VerifyAttributesHash`,
+The compiled packages are consumers of the repository's own source generator: their
+constant classes are projected from `resolved-registry.json` at build time, so there
+is no checked-in constant tree. Validate the Release build, both test executables,
 and every generator `--check` command documented by the owning script. Regenerate
 with the corresponding `--write` command and inspect diffs. Publishing is CI
 OIDC only.

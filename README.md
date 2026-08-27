@@ -50,6 +50,11 @@ family and a public constant surface to alias against
 compiler inlines them at every use site — the reference costs effectively nothing
 at runtime.
 
+**The compiled packages are consumers of the generator.** Their constant classes are
+projected from `resolved-registry.json` at build time by the assembly-level package markers
+(`[assembly: SemanticConventionAttributesPackage(...)]` and siblings; see the generator
+README), so both consumption modes are one emitter over one registry.
+
 **Applications may use either.** Declaring
 `[SemanticConventionAttributes("http")] internal static partial class HttpAttributes;`
 emits only the requested groups directly into the consuming assembly with internal
@@ -67,18 +72,20 @@ pinned OpenTelemetry registries + qyl-registry.json
         v
 generate.sh -> resolved-registry.json (core + genai + qyl, one vocabulary model)
         |
-        +----> emit_attributes.py ----> stable/incubating C# constants
+        +----> Roslyn generators -----> compiled packages (package projection, at build)
+        |                        \----> consumer telemetry helpers and definitions
         +----> emit_registry_resources.py -> public registry + GenAI JSON Schemas
         +----> emit_analyzer_registry.py --> registry-derived analyzer facts
-        +----> Roslyn generators -----> consumer telemetry helpers
         +----> emit_typespec_keys.py -> qyl-api-schema key projection
         +----> DocsGenerator ---------> analyzer documentation
 ```
 
-The checked-in C# constants are emitted deterministically from the Weaver-resolved
-registry; they are not handwritten and are not emitted directly by Weaver. Generated
-files carry their owning input/generator and are guarded by build hashes or generated
-documentation checks.
+There is one vocabulary model (`resolved-registry.json`, the merged core + GenAI + qyl
+projection) and one C# emitter (the Roslyn generators). The compiled packages contain no
+checked-in constants: `Qyl.Telemetry.SemanticConventions` and `.Incubating` reference the
+generator as an analyzer and declare assembly-level package markers, and the generator's
+byte-identity snapshot tests pin the emitted shape. The other generated files carry their
+owning script and are guarded by `--check` commands or generated documentation checks.
 
 The incubating package exposes the complete source-attributed resolved model through
 `SemanticConventionRegistry.OpenResolvedRegistry()`. The eight structured GenAI
@@ -118,7 +125,6 @@ unset, the consumer's editorconfig remains authoritative.
 dotnet build Qyl.Telemetry.SemanticConventions.slnx -c Release
 dotnet run --project tests/Qyl.Telemetry.SemanticConventions.Pipeline.Tests -c Release
 dotnet run --project tests/Qyl.Telemetry.SemanticConventions.SourceGeneration.Tests -c Release
-./build.sh VerifyAttributesHash
 python3 src/Qyl.Telemetry.SemanticConventions.SourceGeneration/scripts/verify_deprecated_catalog.py
 python3 src/Qyl.Telemetry.SemanticConventions.SourceGeneration/scripts/emit_analyzer_registry.py --check
 python3 src/Qyl.Telemetry.SemanticConventions.SourceGeneration/scripts/emit_registry_resources.py --check

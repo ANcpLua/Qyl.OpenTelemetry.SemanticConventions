@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from emit_attributes import csharp_string  # noqa: E402
+from emit_common import csharp_string  # noqa: E402
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent

@@ -96,8 +96,10 @@ packages ship, under the package root namespace they name. They take no prefix.
 | `[assembly: SemanticConventionTelemetryNamesPackage("<root>")]` | `<root>.Names.QylTelemetryNames` with the qyl-owned `Scopes` and `Events` constants. |
 
 Member names in the package layout drop the root segment (`http.route` → `HttpAttributes.Route`),
-unlike the contrib-shape class markers (`AttributeHttpRoute`). The projection is exactly the
-`Qyl.Telemetry.SemanticConventions` and `.Incubating` package content:
+unlike the contrib-shape class markers (`AttributeHttpRoute`). The projection is exactly how the
+`Qyl.Telemetry.SemanticConventions` and `.Incubating` packages are built: each package project
+references this generator as an analyzer and declares its markers in `SemanticConventions.cs`;
+the generator never references those packages.
 
 ```csharp
 [assembly: SemanticConventionAttributesPackage("Qyl.Telemetry.SemanticConventions")]

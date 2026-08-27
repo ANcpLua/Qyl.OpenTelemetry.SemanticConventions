@@ -11,6 +11,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- The package is a consumer of the repository's own generator: the constant classes are
+         projected from resolved-registry.json at build time (see SemanticConventions.cs). The
+         generator never references this package; it only emits text. -->
+    <ProjectReference Include="../Qyl.Telemetry.SemanticConventions.SourceGeneration/Qyl.Telemetry.SemanticConventions.SourceGeneration.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false"/>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)../../README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
