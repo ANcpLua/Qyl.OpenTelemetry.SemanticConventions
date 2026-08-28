@@ -6,7 +6,7 @@
     <WeaverVersion>0.25.1</WeaverVersion>
 
     <ANcpLuaRoslynUtilitiesVersion>2.2.41</ANcpLuaRoslynUtilitiesVersion>
-    <MicrosoftCodeAnalysisVersion>5.6.0</MicrosoftCodeAnalysisVersion>
+    <MicrosoftCodeAnalysisVersion>5.9.0</MicrosoftCodeAnalysisVersion>
 
     <NukeVersion>10.1.0</NukeVersion>
 
