@@ -30,127 +30,109 @@
       "type": {
         "members": [
           {
-            "id": "aspnetcore.server",
+            "id": "asp_net_core_server",
             "value": "aspnetcore.server",
             "stability": "development",
             "brief": "qyl aspnetcore.server instrumentation domain."
           },
           {
-            "id": "azure.sdk",
+            "id": "azure_sdk",
             "value": "azure.sdk",
             "stability": "development",
             "brief": "qyl azure.sdk instrumentation domain."
           },
           {
-            "id": "db.client",
+            "id": "db_client",
             "value": "db.client",
             "stability": "development",
             "brief": "qyl db.client instrumentation domain."
           },
           {
-            "id": "db.efcore",
+            "id": "db_ef_core",
             "value": "db.efcore",
             "stability": "development",
             "brief": "qyl db.efcore instrumentation domain."
           },
           {
-            "id": "db.elasticsearch",
+            "id": "db_elasticsearch",
             "value": "db.elasticsearch",
             "stability": "development",
             "brief": "qyl db.elasticsearch instrumentation domain."
           },
           {
-            "id": "db.mongodb",
+            "id": "db_mongo_db",
             "value": "db.mongodb",
             "stability": "development",
             "brief": "qyl db.mongodb instrumentation domain."
           },
           {
-            "id": "db.redis",
+            "id": "db_redis",
             "value": "db.redis",
             "stability": "development",
             "brief": "qyl db.redis instrumentation domain."
           },
           {
-            "id": "db.sqlclient",
+            "id": "db_sql_client",
             "value": "db.sqlclient",
             "stability": "development",
             "brief": "qyl db.sqlclient instrumentation domain."
           },
           {
-            "id": "elastic.transport",
+            "id": "elastic_transport",
             "value": "elastic.transport",
             "stability": "development",
             "brief": "qyl elastic.transport instrumentation domain."
           },
           {
-            "id": "graphql",
+            "id": "graph_ql",
             "value": "graphql",
             "stability": "development",
             "brief": "qyl graphql instrumentation domain."
           },
           {
-            "id": "http.client",
+            "id": "http_client",
             "value": "http.client",
             "stability": "development",
             "brief": "qyl http.client instrumentation domain."
           },
           {
-            "id": "job.quartz",
+            "id": "job_quartz",
             "value": "job.quartz",
             "stability": "development",
             "brief": "qyl job.quartz instrumentation domain."
           },
           {
-            "id": "log.ilogger",
-            "value": "log.ilogger",
-            "stability": "development",
-            "brief": "qyl log.ilogger instrumentation domain."
-          },
-          {
-            "id": "log.log4net",
-            "value": "log.log4net",
-            "stability": "development",
-            "brief": "qyl log.log4net instrumentation domain."
-          },
-          {
-            "id": "log.nlog",
-            "value": "log.nlog",
-            "stability": "development",
-            "brief": "qyl log.nlog instrumentation domain."
-          },
-          {
-            "id": "messaging.kafka",
+            "id": "messaging_kafka",
             "value": "messaging.kafka",
             "stability": "development",
             "brief": "qyl messaging.kafka instrumentation domain."
           },
           {
-            "id": "messaging.masstransit",
+            "id": "messaging_mass_transit",
             "value": "messaging.masstransit",
             "stability": "development",
             "brief": "qyl messaging.masstransit instrumentation domain."
           },
           {
-            "id": "messaging.nservicebus",
+            "id": "messaging_n_service_bus",
             "value": "messaging.nservicebus",
             "stability": "development",
             "brief": "qyl messaging.nservicebus instrumentation domain."
           },
           {
-            "id": "messaging.rabbitmq",
+            "id": "messaging_rabbit_mq",
             "value": "messaging.rabbitmq",
             "stability": "development",
             "brief": "qyl messaging.rabbitmq instrumentation domain."
           },
           {
-            "id": "rpc.grpc",
+            "id": "rpc_grpc",
             "value": "rpc.grpc",
             "stability": "development",
             "brief": "qyl rpc.grpc instrumentation domain."
           },
           {
-            "id": "rpc.wcf.client",
+            "id": "rpc_wcf_client",
             "value": "rpc.wcf.client",
             "stability": "development",
             "brief": "qyl rpc.wcf.client instrumentation domain."

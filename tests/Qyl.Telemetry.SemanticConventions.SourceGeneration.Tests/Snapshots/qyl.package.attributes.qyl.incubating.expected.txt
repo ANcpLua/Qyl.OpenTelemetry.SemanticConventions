@@ -148,7 +148,7 @@ public static class QylAttributes
         /// <summary>
         /// qyl aspnetcore.server instrumentation domain.
         /// </summary>
-        public const string AspnetcoreServer = "aspnetcore.server";
+        public const string AspNetCoreServer = "aspnetcore.server";
 
         /// <summary>
         /// qyl azure.sdk instrumentation domain.
@@ -163,7 +163,7 @@ public static class QylAttributes
         /// <summary>
         /// qyl db.efcore instrumentation domain.
         /// </summary>
-        public const string DbEfcore = "db.efcore";
+        public const string DbEfCore = "db.efcore";
 
         /// <summary>
         /// qyl db.elasticsearch instrumentation domain.
@@ -173,7 +173,7 @@ public static class QylAttributes
         /// <summary>
         /// qyl db.mongodb instrumentation domain.
         /// </summary>
-        public const string DbMongodb = "db.mongodb";
+        public const string DbMongoDb = "db.mongodb";
 
         /// <summary>
         /// qyl db.redis instrumentation domain.
@@ -183,7 +183,7 @@ public static class QylAttributes
         /// <summary>
         /// qyl db.sqlclient instrumentation domain.
         /// </summary>
-        public const string DbSqlclient = "db.sqlclient";
+        public const string DbSqlClient = "db.sqlclient";
 
         /// <summary>
         /// qyl elastic.transport instrumentation domain.
@@ -193,7 +193,7 @@ public static class QylAttributes
         /// <summary>
         /// qyl graphql instrumentation domain.
         /// </summary>
-        public const string Graphql = "graphql";
+        public const string GraphQl = "graphql";
 
         /// <summary>
         /// qyl http.client instrumentation domain.
@@ -206,21 +206,6 @@ public static class QylAttributes
         public const string JobQuartz = "job.quartz";
 
         /// <summary>
-        /// qyl log.ilogger instrumentation domain.
-        /// </summary>
-        public const string LogIlogger = "log.ilogger";
-
-        /// <summary>
-        /// qyl log.log4net instrumentation domain.
-        /// </summary>
-        public const string LogLog4net = "log.log4net";
-
-        /// <summary>
-        /// qyl log.nlog instrumentation domain.
-        /// </summary>
-        public const string LogNlog = "log.nlog";
-
-        /// <summary>
         /// qyl messaging.kafka instrumentation domain.
         /// </summary>
         public const string MessagingKafka = "messaging.kafka";
@@ -228,17 +213,17 @@ public static class QylAttributes
         /// <summary>
         /// qyl messaging.masstransit instrumentation domain.
         /// </summary>
-        public const string MessagingMasstransit = "messaging.masstransit";
+        public const string MessagingMassTransit = "messaging.masstransit";
 
         /// <summary>
         /// qyl messaging.nservicebus instrumentation domain.
         /// </summary>
-        public const string MessagingNservicebus = "messaging.nservicebus";
+        public const string MessagingNServiceBus = "messaging.nservicebus";
 
         /// <summary>
         /// qyl messaging.rabbitmq instrumentation domain.
         /// </summary>
-        public const string MessagingRabbitmq = "messaging.rabbitmq";
+        public const string MessagingRabbitMq = "messaging.rabbitmq";
 
         /// <summary>
         /// qyl rpc.grpc instrumentation domain.
@@ -251,7 +236,7 @@ public static class QylAttributes
         public const string RpcWcfClient = "rpc.wcf.client";
 
         /// <summary>Every catalogued value, in the order the constants are declared.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "aspnetcore.server", "azure.sdk", "db.client", "db.efcore", "db.elasticsearch", "db.mongodb", "db.redis", "db.sqlclient", "elastic.transport", "graphql", "http.client", "job.quartz", "log.ilogger", "log.log4net", "log.nlog", "messaging.kafka", "messaging.masstransit", "messaging.nservicebus", "messaging.rabbitmq", "rpc.grpc", "rpc.wcf.client" };
+        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "aspnetcore.server", "azure.sdk", "db.client", "db.efcore", "db.elasticsearch", "db.mongodb", "db.redis", "db.sqlclient", "elastic.transport", "graphql", "http.client", "job.quartz", "messaging.kafka", "messaging.masstransit", "messaging.nservicebus", "messaging.rabbitmq", "rpc.grpc", "rpc.wcf.client" };
         /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
         public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
     }

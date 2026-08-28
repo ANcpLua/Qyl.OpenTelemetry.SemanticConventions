@@ -1172,7 +1172,7 @@ internal static class SemconvRegistryFacts
             ["profile.frame.type"] = new[] { "beam", "cpython", "dotnet", "go", "jvm", "kernel", "luajit", "native", "perl", "php", "ruby", "rust", "v8js" },
             ["qyl.agent.diagnostic.outcome"] = new[] { "fail", "not_evaluated", "pass", "unknown" },
             ["qyl.agent.diagnostic.phase"] = new[] { "checkpoint", "error", "input", "output" },
-            ["qyl.instrumentation.domain"] = new[] { "aspnetcore.server", "azure.sdk", "db.client", "db.efcore", "db.elasticsearch", "db.mongodb", "db.redis", "db.sqlclient", "elastic.transport", "graphql", "http.client", "job.quartz", "log.ilogger", "log.log4net", "log.nlog", "messaging.kafka", "messaging.masstransit", "messaging.nservicebus", "messaging.rabbitmq", "rpc.grpc", "rpc.wcf.client" },
+            ["qyl.instrumentation.domain"] = new[] { "aspnetcore.server", "azure.sdk", "db.client", "db.efcore", "db.elasticsearch", "db.mongodb", "db.redis", "db.sqlclient", "elastic.transport", "graphql", "http.client", "job.quartz", "messaging.kafka", "messaging.masstransit", "messaging.nservicebus", "messaging.rabbitmq", "rpc.grpc", "rpc.wcf.client" },
             ["rpc.connect_rpc.error_code"] = new[] { "aborted", "already_exists", "cancelled", "data_loss", "deadline_exceeded", "failed_precondition", "internal", "invalid_argument", "not_found", "out_of_range", "permission_denied", "resource_exhausted", "unauthenticated", "unavailable", "unimplemented", "unknown" },
             ["rpc.grpc.status_code"] = new[] { "0", "1", "10", "11", "12", "13", "14", "15", "16", "2", "3", "4", "5", "6", "7", "8", "9" },
             ["rpc.message.type"] = new[] { "RECEIVED", "SENT" },

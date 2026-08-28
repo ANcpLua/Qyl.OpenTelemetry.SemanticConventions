@@ -157,17 +157,38 @@ public sealed class RegistryShapeGateTests
             row.GetProperty("source_date_epoch").ValueKind.Should().Be(JsonValueKind.Null);
         }
 
+        // The value is the wire token; the id is the C# identifier source (every emitter names
+        // members from PascalCase(id)), so both are published API and both are pinned here.
+        // The ids are snake_case rather than the dotted value because ToPascalCase splits on
+        // '.' identically to '_': "db.mongodb" would emit DbMongodb, "db_mongo_db" emits
+        // DbMongoDb. qyl's log-as-span lane is deleted, so no log.* domain remains.
         var domain = qylAttributes.Single(attribute => attribute.GetProperty("key").GetString() == "qyl.instrumentation.domain");
-        var members = domain.GetProperty("type").GetProperty("members").EnumerateArray().ToArray();
-        members.Should().HaveCount(21);
-        members.Should().OnlyContain(member => member.GetProperty("id").GetString() == member.GetProperty("value").GetString());
-        members.Select(member => member.GetProperty("value").GetString()).Should().BeEquivalentTo(
+        var members = domain.GetProperty("type").GetProperty("members").EnumerateArray()
+            .Select(member => (Id: member.GetProperty("id").GetString(), Value: member.GetProperty("value").GetString()))
+            .ToArray();
+        members.Should().HaveCount(18);
+        members.Should().BeEquivalentTo(
         [
-            "aspnetcore.server", "azure.sdk", "db.client", "db.efcore", "db.elasticsearch", "db.mongodb", "db.redis",
-            "db.sqlclient", "elastic.transport", "graphql", "http.client", "job.quartz", "log.ilogger", "log.log4net",
-            "log.nlog", "messaging.kafka", "messaging.masstransit", "messaging.nservicebus", "messaging.rabbitmq",
-            "rpc.grpc", "rpc.wcf.client",
+            (Id: "asp_net_core_server", Value: "aspnetcore.server"),
+            (Id: "azure_sdk", Value: "azure.sdk"),
+            (Id: "db_client", Value: "db.client"),
+            (Id: "db_ef_core", Value: "db.efcore"),
+            (Id: "db_elasticsearch", Value: "db.elasticsearch"),
+            (Id: "db_mongo_db", Value: "db.mongodb"),
+            (Id: "db_redis", Value: "db.redis"),
+            (Id: "db_sql_client", Value: "db.sqlclient"),
+            (Id: "elastic_transport", Value: "elastic.transport"),
+            (Id: "graph_ql", Value: "graphql"),
+            (Id: "http_client", Value: "http.client"),
+            (Id: "job_quartz", Value: "job.quartz"),
+            (Id: "messaging_kafka", Value: "messaging.kafka"),
+            (Id: "messaging_mass_transit", Value: "messaging.masstransit"),
+            (Id: "messaging_n_service_bus", Value: "messaging.nservicebus"),
+            (Id: "messaging_rabbit_mq", Value: "messaging.rabbitmq"),
+            (Id: "rpc_grpc", Value: "rpc.grpc"),
+            (Id: "rpc_wcf_client", Value: "rpc.wcf.client"),
         ]);
+        members.Should().OnlyContain(member => !member.Value!.StartsWith("log.", StringComparison.Ordinal));
 
         var metric = root.GetProperty("metrics").EnumerateArray()
             .Single(metric => metric.GetProperty("metric_name").GetString() == "nservicebus.messaging.operation.duration");
