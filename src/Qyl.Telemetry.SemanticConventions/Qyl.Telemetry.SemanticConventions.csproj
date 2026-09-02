@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net10.0;netstandard2.0</TargetFrameworks>
 
-    <Description>OpenTelemetry semantic-conventions stable attribute keys, generated from the OTel registry pinned at SemConvSchemaVersion (Version.props), plus the semantic-convention definition types (MetricDefinition&lt;T&gt;, SpanDefinition&lt;T&gt;, EventDefinition, EntityDefinition) that Qyl.Telemetry.SemanticConventions.SourceGeneration emits against. Keys outside the stable surface live in the .Incubating sibling package.</Description>
+    <Description>OpenTelemetry semantic-conventions stable attribute keys, generated from the OTel registry pinned at SemConvSchemaVersion (Version.props), plus the semantic-convention definition types (MetricDefinition&lt;T&gt;, SpanDefinition&lt;T&gt;, EventDefinition, EntityDefinition) that Qyl.Telemetry.SemanticConventions.SourceGeneration emits against. Also carries the qyl-owned telemetry scope and event names (Names.QylTelemetryNames), which the Qyl.Telemetry producer packages build their ActivitySource and Meter from. Keys outside the stable surface live in the .Incubating sibling package.</Description>
     <PackageTags>opentelemetry;semantic-conventions;otel;attributes;stable</PackageTags>
 
     <IsPackable>true</IsPackable>

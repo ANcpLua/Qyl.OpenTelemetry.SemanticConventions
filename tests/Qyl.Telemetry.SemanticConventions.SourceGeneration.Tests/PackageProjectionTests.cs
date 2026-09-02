@@ -12,7 +12,9 @@ namespace Qyl.Telemetry.SemanticConventions.SourceGeneration.Tests;
 /// <c>SemanticConventionAttributesPackage</c>, <c>SemanticConventionIncubatingAttributesPackage</c>
 /// and <c>SemanticConventionTelemetryNamesPackage</c> markers must reproduce the files the
 /// <c>Qyl.Telemetry.SemanticConventions</c> and <c>.Incubating</c> packages ship, byte for
-/// byte. Five full-file snapshots were seeded from those shipped files, and
+/// byte. The stable package carries the attributes, <c>SchemaUrl</c> and the qyl-owned
+/// telemetry names; the incubating package carries only its attribute tier. Five full-file
+/// snapshots were seeded from those shipped files, and
 /// <c>qyl.package.manifest.sha256</c> pins the SHA-256 of every file both projections emit,
 /// so the whole shipped surface is covered, not only the sampled files.
 /// </summary>
@@ -21,20 +23,25 @@ public sealed class PackageProjectionTests
     private const string StableSource = """
         using Qyl.Telemetry.SemanticConventions.SourceGeneration;
         [assembly: SemanticConventionAttributesPackage("Qyl.Telemetry.SemanticConventions")]
+        [assembly: SemanticConventionTelemetryNamesPackage("Qyl.Telemetry.SemanticConventions")]
         """;
 
     private const string IncubatingSource = """
         using Qyl.Telemetry.SemanticConventions.SourceGeneration;
         [assembly: SemanticConventionIncubatingAttributesPackage("Qyl.Telemetry.SemanticConventions.Incubating")]
-        [assembly: SemanticConventionTelemetryNamesPackage("Qyl.Telemetry.SemanticConventions.Incubating")]
         """;
 
     [Theory]
     [InlineData("Qyl.Telemetry.SemanticConventions.Attributes.Http.HttpAttributes.g.cs", "qyl.package.attributes.http.stable.expected.txt")]
     [InlineData("Qyl.Telemetry.SemanticConventions.SchemaUrl.g.cs", "qyl.package.schemaurl.expected.txt")]
+    [InlineData("Qyl.Telemetry.SemanticConventions.Names.QylTelemetryNames.g.cs", "qyl.package.names.expected.txt")]
     public void Stable_Package_Projection_Matches_Shipped_File(string hintName, string snapshotName)
     {
-        var (result, output) = DefinitionsTestHost.Run<SemConvAttributesGenerator>(StableSource);
+        var (result, output) = DefinitionsTestHost.Run(
+            StableSource,
+            referenceVocabulary: true,
+            new SemConvAttributesGenerator(),
+            new SemConvTelemetryNamesGenerator());
 
         var actual = result.GeneratedText(hintName);
         var expected = Snapshot.LoadOrRegen(actual, snapshotName);
@@ -46,14 +53,11 @@ public sealed class PackageProjectionTests
     [Theory]
     [InlineData("Qyl.Telemetry.SemanticConventions.Incubating.Attributes.Http.HttpAttributes.g.cs", "qyl.package.attributes.http.incubating.expected.txt")]
     [InlineData("Qyl.Telemetry.SemanticConventions.Incubating.Attributes.Qyl.QylAttributes.g.cs", "qyl.package.attributes.qyl.incubating.expected.txt")]
-    [InlineData("Qyl.Telemetry.SemanticConventions.Incubating.Names.QylTelemetryNames.g.cs", "qyl.package.names.expected.txt")]
     public void Incubating_Package_Projection_Matches_Shipped_File(string hintName, string snapshotName)
     {
-        var (result, output) = DefinitionsTestHost.Run(
+        var (result, output) = DefinitionsTestHost.Run<SemConvAttributesGenerator>(
             IncubatingSource,
-            referenceVocabulary: false,
-            new SemConvAttributesGenerator(),
-            new SemConvTelemetryNamesGenerator());
+            referenceVocabulary: false);
 
         var actual = result.GeneratedText(hintName);
         var expected = Snapshot.LoadOrRegen(actual, snapshotName);
@@ -80,7 +84,10 @@ public sealed class PackageProjectionTests
         incubatingFiles.Should().BeGreaterThan(stableFiles, "the incubating tier is a superset of roots");
         hintNames.Should().Contain("Qyl.Telemetry.SemanticConventions.SchemaUrl.g.cs")
             .And.Contain("Qyl.Telemetry.SemanticConventions.Incubating.Attributes.Qyl.QylAttributes.g.cs")
-            .And.Contain("Qyl.Telemetry.SemanticConventions.Incubating.Names.QylTelemetryNames.g.cs")
+            .And.Contain("Qyl.Telemetry.SemanticConventions.Names.QylTelemetryNames.g.cs",
+                "the producer packages construct their scopes from these names and may not read the incubating tier")
+            .And.NotContain("Qyl.Telemetry.SemanticConventions.Incubating.Names.QylTelemetryNames.g.cs",
+                "the telemetry names ship from the stable package only")
             .And.NotContain("Qyl.Telemetry.SemanticConventions.Attributes.Qyl.QylAttributes.g.cs",
                 "every qyl.* row is development-stability and therefore incubating-only");
 

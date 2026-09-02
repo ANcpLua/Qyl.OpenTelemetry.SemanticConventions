@@ -8,9 +8,9 @@
 
 #nullable enable
 
-namespace Qyl.Telemetry.SemanticConventions.Incubating.Names;
+namespace Qyl.Telemetry.SemanticConventions.Names;
 
-/// <summary>qyl-owned telemetry names (incubating).</summary>
+/// <summary>qyl-owned telemetry names.</summary>
 /// <remarks>
 /// The same registry input drives the QYL0200 analyzer allowlist, so a name
 /// referenced through these constants is a name the analyzer accepts and the

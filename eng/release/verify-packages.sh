@@ -118,6 +118,7 @@ EOF
 
 cat > "${consumer_directory}/Program.cs" <<'EOF'
 using Qyl.Telemetry.SemanticConventions.Attributes.Http;
+using Qyl.Telemetry.SemanticConventions.Names;
 using Qyl.Telemetry.SemanticConventions.Incubating.Attributes.GenAi;
 using Qyl.Telemetry.SemanticConventions.Incubating.Registry;
 using Qyl.Telemetry.SemanticConventions.SourceGeneration;
@@ -132,17 +133,26 @@ internal static class Program
 {
     public static int Main()
     {
+        // QylTelemetryNames is read from the stable package on purpose: the Qyl.Telemetry
+        // producer packages construct their ActivitySource and Meter from these scope names
+        // and may not reference the incubating tier.
         string[] actual =
         [
             HttpAttributes.RequestMethod,
             GenAiAttributes.OperationName,
             GeneratedHttp.AttributeHttpRequestMethod,
+            QylTelemetryNames.Scopes.QylTelemetryAutoInstrumentation,
+            QylTelemetryNames.Scopes.QylTelemetryAutoInstrumentationDatabase,
+            QylTelemetryNames.Scopes.QylTelemetryAutoInstrumentationNServiceBus,
         ];
         string[] expected =
         [
             "http.request.method",
             "gen_ai.operation.name",
             "http.request.method",
+            "Qyl.Telemetry.AutoInstrumentation",
+            "Qyl.Telemetry.AutoInstrumentation.Database",
+            "Qyl.Telemetry.AutoInstrumentation.NServiceBus",
         ];
 
         if (!actual.SequenceEqual(expected, StringComparer.Ordinal))

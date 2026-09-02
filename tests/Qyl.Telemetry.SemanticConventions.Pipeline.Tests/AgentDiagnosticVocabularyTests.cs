@@ -1,6 +1,6 @@
 using AwesomeAssertions;
 using Qyl.Telemetry.SemanticConventions.Incubating.Attributes.Qyl;
-using Qyl.Telemetry.SemanticConventions.Incubating.Names;
+using Qyl.Telemetry.SemanticConventions.Names;
 using Xunit;
 
 namespace Qyl.Telemetry.SemanticConventions.Pipeline.Tests;

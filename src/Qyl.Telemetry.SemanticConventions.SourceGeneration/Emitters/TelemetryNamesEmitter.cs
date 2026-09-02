@@ -33,7 +33,7 @@ internal static class TelemetryNamesEmitter
         w.Line();
         w.Line("namespace " + ns + ";");
         w.Line();
-        w.Line("/// <summary>qyl-owned telemetry names (incubating).</summary>");
+        w.Line("/// <summary>qyl-owned telemetry names.</summary>");
         w.Line("/// <remarks>");
         w.Line("/// The same registry input drives the QYL0200 analyzer allowlist, so a name");
         w.Line("/// referenced through these constants is a name the analyzer accepts and the");

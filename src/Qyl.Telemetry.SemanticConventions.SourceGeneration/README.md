@@ -114,7 +114,7 @@ packages ship, under the package root namespace they name. They take no prefix.
 |---|---|
 | `[assembly: SemanticConventionAttributesPackage("<root>")]` | `<root>.Attributes.{Root}.{Root}Attributes` (`public static class`) for every registry root with a stable or deprecated row, plus `<root>.SchemaUrl` carrying the pinned schema URL. |
 | `[assembly: SemanticConventionIncubatingAttributesPackage("<root>")]` | `<root>.Attributes.{Root}.{Root}Attributes` for every registry root, all stability tiers. |
-| `[assembly: SemanticConventionTelemetryNamesPackage("<root>")]` | `<root>.Names.QylTelemetryNames` with the qyl-owned `Scopes` and `Events` constants. |
+| `[assembly: SemanticConventionTelemetryNamesPackage("<root>")]` | `<root>.Names.QylTelemetryNames` with the qyl-owned `Scopes` and `Events` constants. Declared by the stable package: the `Qyl.Telemetry` producer packages build their `ActivitySource` and `Meter` from these scope names and may not read the incubating tier. |
 
 Member names in the package layout drop the root segment (`http.route` → `HttpAttributes.Route`),
 unlike the contrib-shape class markers (`AttributeHttpRoute`). The projection is exactly how the
@@ -129,7 +129,8 @@ the generator never references those packages.
 ```
 
 `PackageProjectionTests` pins the whole projection: five full-file byte-identity snapshots
-(`http` stable and incubating, `qyl`, `QylTelemetryNames`, `SchemaUrl`) and
+(`http` stable and incubating, `qyl`, `QylTelemetryNames`, `SchemaUrl`) — with
+`QylTelemetryNames` asserted in the stable projection and absent from the incubating one — and
 `Snapshots/qyl.package.manifest.sha256`, one `<sha256>  <hint name>` line per file both
 projections emit; a mismatch names every differing, missing, and extra file, and only
 `REGEN_SNAPSHOTS` rewrites them. Doc comments are rendered from the registry's markdown

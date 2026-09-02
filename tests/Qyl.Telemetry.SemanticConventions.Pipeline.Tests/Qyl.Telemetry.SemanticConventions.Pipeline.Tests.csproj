@@ -14,6 +14,8 @@
 
   <ItemGroup>
     <ProjectReference Include="../../src/Qyl.Telemetry.SemanticConventions.Analyzers/Qyl.Telemetry.SemanticConventions.Analyzers.csproj"/>
+    <!-- Both tiers: the qyl attribute constants are incubating, the telemetry names are stable. -->
+    <ProjectReference Include="../../src/Qyl.Telemetry.SemanticConventions/Qyl.Telemetry.SemanticConventions.csproj"/>
     <ProjectReference Include="../../src/Qyl.Telemetry.SemanticConventions.Incubating/Qyl.Telemetry.SemanticConventions.Incubating.csproj"/>
   </ItemGroup>
 
