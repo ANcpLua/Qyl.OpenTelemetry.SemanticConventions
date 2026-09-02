@@ -12,7 +12,8 @@ package_directory="${3:-}"
 stable_id="Qyl.Telemetry.SemanticConventions"
 incubating_id="${stable_id}.Incubating"
 source_generation_id="${stable_id}.SourceGeneration"
-package_ids=("${stable_id}" "${incubating_id}" "${source_generation_id}")
+analyzers_id="${stable_id}.Analyzers"
+package_ids=("${stable_id}" "${incubating_id}" "${source_generation_id}" "${analyzers_id}")
 
 require_archive_entry() {
   local package="$1"
@@ -42,8 +43,9 @@ if [[ -n "${package_directory}" ]]; then
   stable_package="${package_directory}/${stable_id}.${version}.nupkg"
   incubating_package="${package_directory}/${incubating_id}.${version}.nupkg"
   source_generation_package="${package_directory}/${source_generation_id}.${version}.nupkg"
+  analyzers_package="${package_directory}/${analyzers_id}.${version}.nupkg"
 
-  for package in "${stable_package}" "${incubating_package}" "${source_generation_package}"; do
+  for package in "${stable_package}" "${incubating_package}" "${source_generation_package}" "${analyzers_package}"; do
     if [[ ! -f "${package}" ]]; then
       echo "error: expected package was not produced: ${package}" >&2
       exit 1
@@ -72,6 +74,11 @@ if [[ -n "${package_directory}" ]]; then
   require_archive_entry \
     "${source_generation_package}" \
     "build/${source_generation_id}.props"
+  require_archive_entry "${analyzers_package}" "analyzers/dotnet/cs/${analyzers_id}.dll"
+  require_archive_entry "${analyzers_package}" "buildTransitive/${analyzers_id}.props"
+  for profile in Default AllRulesAsErrors AllRulesDisabled; do
+    require_archive_entry "${analyzers_package}" "buildTransitive/editorconfig/${profile}.editorconfig"
+  done
 fi
 
 work_directory="$(mktemp -d)"
@@ -112,6 +119,7 @@ cat > "${consumer_directory}/ReleaseSmoke.csproj" <<EOF
     <PackageReference Include="${incubating_id}" Version="${version}" />
     <PackageReference Include="${source_generation_id}" Version="${version}"
                       OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    <PackageReference Include="${analyzers_id}" Version="${version}" />
   </ItemGroup>
 </Project>
 EOF

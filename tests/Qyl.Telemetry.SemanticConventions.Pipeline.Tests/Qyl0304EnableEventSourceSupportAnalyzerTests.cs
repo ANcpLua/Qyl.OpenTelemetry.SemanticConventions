@@ -36,9 +36,9 @@ public sealed class Qyl0304EnableEventSourceSupportAnalyzerTests
 
     private const string PlainClass = "public class C { }";
 
-    private const string PreviewAnalyzerPackageId = "Qyl.Telemetry.SemanticConventions.Analyzers";
+    private const string AnalyzerPackageId = "Qyl.Telemetry.SemanticConventions.Analyzers";
 
-    private const string PreviewAnalyzerVersion = "0.0.0-qyl0304-test";
+    private const string AnalyzerTestVersion = "0.0.0-qyl0304-test";
 
     private const string EventSourceApp = """
         using System.Diagnostics.Tracing;
@@ -96,18 +96,17 @@ public sealed class Qyl0304EnableEventSourceSupportAnalyzerTests
                 "--no-restore",
                 "--output",
                 feedDirectory.FullName,
-                "-p:PackPreviewAnalyzers=true",
-                $"-p:PackageVersion={PreviewAnalyzerVersion}",
+                $"-p:PackageVersion={AnalyzerTestVersion}",
                 "--nologo");
-            pack.ExitCode.Should().Be(0, "the preview analyzer package must pack successfully:\n{0}", pack.Output);
+            pack.ExitCode.Should().Be(0, "the analyzer package must pack successfully:\n{0}", pack.Output);
 
             var packagePath = Directory.EnumerateFiles(feedDirectory.FullName, "*.nupkg").Should()
                 .ContainSingle().Which;
             using (var package = ZipFile.OpenRead(packagePath))
             {
                 var entries = package.Entries.Select(static entry => entry.FullName);
-                entries.Should().Contain($"analyzers/dotnet/cs/{PreviewAnalyzerPackageId}.dll");
-                entries.Should().Contain($"buildTransitive/{PreviewAnalyzerPackageId}.props");
+                entries.Should().Contain($"analyzers/dotnet/cs/{AnalyzerPackageId}.dll");
+                entries.Should().Contain($"buildTransitive/{AnalyzerPackageId}.props");
             }
 
             var nugetConfigPath = Path.Combine(temporaryDirectory.FullName, "NuGet.Config");
@@ -268,8 +267,8 @@ public sealed class Qyl0304EnableEventSourceSupportAnalyzerTests
                 <EnableNETAnalyzers>false</EnableNETAnalyzers>
               </PropertyGroup>
               <ItemGroup>
-                <PackageReference Include="{{PreviewAnalyzerPackageId}}"
-                                  Version="{{PreviewAnalyzerVersion}}"
+                <PackageReference Include="{{AnalyzerPackageId}}"
+                                  Version="{{AnalyzerTestVersion}}"
                                   PrivateAssets="all" />
               </ItemGroup>
             </Project>

@@ -10,9 +10,7 @@
     <Description>Roslyn diagnostic analyzers + code fixes for OpenTelemetry semantic-conventions consumers. Flags deprecated attributes, schema-url omission, missing required attributes (GenAI, HTTP), and a wider band of OTel observability/instrumentation patterns at compile time.</Description>
     <PackageTags>opentelemetry;semantic-conventions;roslyn;analyzer;codefix;otel</PackageTags>
 
-    <!-- Stable packaging is blocked until the analyzer surface has consumer evidence and behavior coverage. -->
-    <PackPreviewAnalyzers Condition="'$(PackPreviewAnalyzers)' == ''">false</PackPreviewAnalyzers>
-    <IsPackable>$(PackPreviewAnalyzers)</IsPackable>
+    <IsPackable>true</IsPackable>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <GenerateDependencyFile>false</GenerateDependencyFile>
     <DevelopmentDependency>true</DevelopmentDependency>
@@ -114,12 +112,6 @@
     <Exec Command="dotnet run --project &quot;$(_DocsGenProject)&quot; --configuration $(Configuration) -- --check"
           WorkingDirectory="$(MSBuildThisFileDirectory)../.."
           EnvironmentVariables="_QylInsideConsistencyCheck=true"/>
-  </Target>
-
-  <Target Name="_RequirePreviewAnalyzerVersion"
-          BeforeTargets="GenerateNuspec"
-          Condition="'$(IsPackable)' == 'true' AND !$([System.String]::Copy('$(PackageVersion)').Contains('-'))">
-    <Error Text="The analyzer package is preview-only. Use a prerelease PackageVersion while PackPreviewAnalyzers=true."/>
   </Target>
 
 </Project>

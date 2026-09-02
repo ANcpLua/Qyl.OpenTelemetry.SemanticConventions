@@ -16,17 +16,16 @@ emit an attribute name its own collector does not know.
 | `Qyl.Telemetry.SemanticConventions` | Stable and deprecated attribute-key constants (every enum-value class carries `AllValues` and `Contains`), plus the semantic-convention definition types (`MetricDefinition<TInstrument>`, `SpanDefinition<TKind>`, `EventDefinition`, `EntityDefinition`, and their `Stability`/`Deprecation`/`RequirementLevel`/`AttributeRef`/`EntityRef` companions) |
 | `.Incubating` | Development and unstable constants, the complete resolved registry, and upstream GenAI payload schemas |
 | `.SourceGeneration` | Roslyn generators for typed telemetry declarations; its definition surfaces are typed against the base package |
-| `.Analyzers` | Preview diagnostics and code fixes; built and documented, but excluded from stable releases |
+| `.Analyzers` | Roslyn diagnostics and code fixes for semantic-convention consumers, with a generated rule catalog and severity profiles |
 
 ```bash
 dotnet add package Qyl.Telemetry.SemanticConventions
 ```
 
-The three supported packages are published on
+All four packages are published on
 [nuget.org](https://www.nuget.org/profiles/ANcpLua); the package version is defined in
-[`Directory.Build.props`](Directory.Build.props). `.Analyzers` is preview-only and is
-not among them. Incubating APIs intentionally track unstable upstream conventions and
-may change between minor releases.
+[`Directory.Build.props`](Directory.Build.props). Incubating APIs intentionally track
+unstable upstream conventions and may change between minor releases.
 
 **Coming from `Qyl.OpenTelemetry.SemanticConventions`?** These are new package IDs, not
 new versions of the old ones. The `Qyl.OpenTelemetry.SemanticConventions*` IDs stop at
@@ -104,10 +103,9 @@ client-visible product requests, responses, stream events, and errors remain own
 
 ## Analyzer documentation
 
-The analyzer project exposes a generated rule catalog. Qyl does not consume it, so it
-remains preview-only and is not included in stable package builds.
-`PackPreviewAnalyzers=true` enables an explicit prerelease pack; the build rejects a
-stable analyzer version.
+The analyzer project exposes a generated rule catalog and ships as the fourth released
+package; `eng/release/verify-packages.sh` proves it installs into a clean consumer
+alongside the other three.
 
 The generated analyzer reference includes the
 [`index`](docs/Qyl.Telemetry.SemanticConventions.Analyzers.md),
