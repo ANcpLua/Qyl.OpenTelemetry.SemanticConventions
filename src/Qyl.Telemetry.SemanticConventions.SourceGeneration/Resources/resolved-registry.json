@@ -23,7 +23,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     }
   ],
@@ -178025,6 +178025,30 @@
                 "id": "pulsar",
                 "stability": "development",
                 "value": "pulsar"
+              },
+              {
+                "id": "masstransit",
+                "value": "masstransit",
+                "stability": "development",
+                "brief": "MassTransit.",
+                "note": "Local to qyl: this value is absent from upstream OpenTelemetry semantic conventions.",
+                "source_registry": "qyl",
+                "schema_url": null,
+                "source_ref": "qyl-registry.json",
+                "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+                "source_date_epoch": null
+              },
+              {
+                "id": "nservicebus",
+                "value": "nservicebus",
+                "stability": "development",
+                "brief": "NServiceBus.",
+                "note": "Local to qyl: this value is absent from upstream OpenTelemetry semantic conventions.",
+                "source_registry": "qyl",
+                "schema_url": null,
+                "source_ref": "qyl-registry.json",
+                "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+                "source_date_epoch": null
               }
             ]
           },
@@ -178035,7 +178059,7 @@
           "source_registry": "qyl",
           "schema_url": null,
           "source_ref": "qyl-registry.json",
-          "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+          "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
           "source_date_epoch": null
         },
         {
@@ -178105,7 +178129,7 @@
           "source_registry": "qyl",
           "schema_url": null,
           "source_ref": "qyl-registry.json",
-          "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+          "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
           "source_date_epoch": null
         },
         {
@@ -178123,14 +178147,14 @@
           "source_registry": "qyl",
           "schema_url": null,
           "source_ref": "qyl-registry.json",
-          "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+          "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
           "source_date_epoch": null
         }
       ],
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     }
   ],
@@ -191625,6 +191649,30 @@
             "id": "pulsar",
             "stability": "development",
             "value": "pulsar"
+          },
+          {
+            "id": "masstransit",
+            "value": "masstransit",
+            "stability": "development",
+            "brief": "MassTransit.",
+            "note": "Local to qyl: this value is absent from upstream OpenTelemetry semantic conventions.",
+            "source_registry": "qyl",
+            "schema_url": null,
+            "source_ref": "qyl-registry.json",
+            "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+            "source_date_epoch": null
+          },
+          {
+            "id": "nservicebus",
+            "value": "nservicebus",
+            "stability": "development",
+            "brief": "NServiceBus.",
+            "note": "Local to qyl: this value is absent from upstream OpenTelemetry semantic conventions.",
+            "source_registry": "qyl",
+            "schema_url": null,
+            "source_ref": "qyl-registry.json",
+            "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+            "source_date_epoch": null
           }
         ]
       },
@@ -199676,7 +199724,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -199688,7 +199736,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -199700,7 +199748,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -199712,7 +199760,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -199835,7 +199883,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -199847,7 +199895,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -199859,7 +199907,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -199871,7 +199919,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -199910,7 +199958,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -199949,7 +199997,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -199961,7 +200009,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -199973,7 +200021,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -199985,7 +200033,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -199997,7 +200045,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -200009,7 +200057,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -200021,7 +200069,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -200033,7 +200081,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -200045,7 +200093,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -200057,7 +200105,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -200069,7 +200117,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -200081,7 +200129,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -200093,7 +200141,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -200105,7 +200153,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -200117,7 +200165,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -200129,7 +200177,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -200141,7 +200189,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -200153,7 +200201,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     },
     {
@@ -200165,7 +200213,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     }
   ],
@@ -243190,6 +243238,30 @@
                 "id": "pulsar",
                 "stability": "development",
                 "value": "pulsar"
+              },
+              {
+                "id": "masstransit",
+                "value": "masstransit",
+                "stability": "development",
+                "brief": "MassTransit.",
+                "note": "Local to qyl: this value is absent from upstream OpenTelemetry semantic conventions.",
+                "source_registry": "qyl",
+                "schema_url": null,
+                "source_ref": "qyl-registry.json",
+                "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+                "source_date_epoch": null
+              },
+              {
+                "id": "nservicebus",
+                "value": "nservicebus",
+                "stability": "development",
+                "brief": "NServiceBus.",
+                "note": "Local to qyl: this value is absent from upstream OpenTelemetry semantic conventions.",
+                "source_registry": "qyl",
+                "schema_url": null,
+                "source_ref": "qyl-registry.json",
+                "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+                "source_date_epoch": null
               }
             ]
           },
@@ -243200,7 +243272,7 @@
           "source_registry": "qyl",
           "schema_url": null,
           "source_ref": "qyl-registry.json",
-          "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+          "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
           "source_date_epoch": null
         },
         {
@@ -243270,7 +243342,7 @@
           "source_registry": "qyl",
           "schema_url": null,
           "source_ref": "qyl-registry.json",
-          "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+          "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
           "source_date_epoch": null
         },
         {
@@ -243288,14 +243360,14 @@
           "source_registry": "qyl",
           "schema_url": null,
           "source_ref": "qyl-registry.json",
-          "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+          "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
           "source_date_epoch": null
         }
       ],
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "40dcb009b5f9949f922f83c6a23df2faf2826146ae15fe0312726a26c122d098",
+      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
       "source_date_epoch": null
     }
   ],

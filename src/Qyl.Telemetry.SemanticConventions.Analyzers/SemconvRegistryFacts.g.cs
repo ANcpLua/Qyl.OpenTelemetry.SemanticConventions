@@ -1146,7 +1146,7 @@ internal static class SemconvRegistryFacts
             ["messaging.rocketmq.consumption_model"] = new[] { "broadcasting", "clustering" },
             ["messaging.rocketmq.message.type"] = new[] { "delay", "fifo", "normal", "transaction" },
             ["messaging.servicebus.disposition_status"] = new[] { "abandon", "complete", "dead_letter", "defer" },
-            ["messaging.system"] = new[] { "activemq", "aws.sns", "aws_sqs", "eventgrid", "eventhubs", "gcp_pubsub", "jms", "kafka", "pulsar", "rabbitmq", "rocketmq", "servicebus" },
+            ["messaging.system"] = new[] { "activemq", "aws.sns", "aws_sqs", "eventgrid", "eventhubs", "gcp_pubsub", "jms", "kafka", "masstransit", "nservicebus", "pulsar", "rabbitmq", "rocketmq", "servicebus" },
             ["net.sock.family"] = new[] { "inet", "inet6", "unix" },
             ["net.transport"] = new[] { "inproc", "ip_tcp", "ip_udp", "other", "pipe" },
             ["network.connection.state"] = new[] { "close_wait", "closed", "closing", "established", "fin_wait_1", "fin_wait_2", "last_ack", "listen", "syn_received", "syn_sent", "time_wait" },

@@ -6,7 +6,9 @@ Three sources, one model. Rows are deduplicated per kind (group id, attribute ke
 metric name, event name, entity id; the last source wins), so the qyl registry is
 guarded before it is merged: every qyl attribute key must start with `qyl.` and no qyl
 attribute, metric, or metric group may shadow an upstream row. A violation aborts
-generation naming the offending key.
+generation naming the offending key. `local_attribute_values` is the one sanctioned way
+to touch an upstream row: it appends qyl-local members to an upstream open enum, and
+fails the moment upstream lands the same value.
 
 qyl is a real third source. Its `sources` entry has `source_ref: qyl-registry.json`
 and `source_commit` = SHA-256 of that file's bytes (deterministic; no dates), and every
@@ -31,6 +33,7 @@ except ImportError as exc:  # pragma: no cover - environment guard
 QYL_SOURCE = "qyl"
 QYL_SOURCE_REF = "qyl-registry.json"
 QYL_NAMESPACE = "qyl."
+QYL_LOCAL_VALUES = "local_attribute_values"
 
 
 class MergeError(ValueError):
@@ -238,6 +241,46 @@ def guard_qyl_registry(qyl_registry, core, genai):
             raise MergeError(
                 f"qyl-registry.json metric group '{group_id}' shadows the upstream {upstream_groups[group_id]} group of the same id")
 
+    for local in qyl_registry.get(QYL_LOCAL_VALUES, []):
+        key = local.get("key", "")
+        if key.startswith(QYL_NAMESPACE):
+            raise MergeError(
+                f"qyl-registry.json {QYL_LOCAL_VALUES} entry '{key}' names a qyl-owned attribute; "
+                "declare its members inline under `attributes` instead")
+        if key not in upstream_keys:
+            raise MergeError(
+                f"qyl-registry.json {QYL_LOCAL_VALUES} entry '{key}' names no upstream attribute")
+
+
+def apply_local_attribute_values(qyl_registry, catalog_by_key, provenance):
+    """Add qyl-local members to an *upstream* enum attribute.
+
+    Some values qyl emits have no upstream spelling — the upstream attribute is an open
+    enum, so the value is legal on the wire, but nothing in the pinned registry declares
+    it and every registry-derived projection (analyzer enum facts, generated value sets)
+    would treat it as unknown. `local_attribute_values` declares those members next to
+    the upstream ones, stamped with the qyl provenance so a reader can tell them apart,
+    and each carries a `note` saying it is local to qyl.
+
+    Deletion-targeted, like the qyl.mcp.* staging namespace: the moment an upstream bump
+    lands the same value the merge fails, naming it, so the local declaration is removed
+    rather than silently shadowing the upstream member.
+    """
+    for local in qyl_registry.get(QYL_LOCAL_VALUES, []):
+        attribute = catalog_by_key[local["key"]]
+        raw_type = attribute.get("type")
+        if not isinstance(raw_type, dict) or not isinstance(raw_type.get("members"), list):
+            raise MergeError(
+                f"qyl-registry.json {QYL_LOCAL_VALUES} entry '{local['key']}' names a non-enum upstream attribute")
+        upstream_values = {str(member.get("value")) for member in raw_type["members"]}
+        for member in local.get("members", []):
+            if str(member["value"]) in upstream_values:
+                raise MergeError(
+                    f"qyl-registry.json {QYL_LOCAL_VALUES} member '{local['key']}={member['value']}' "
+                    "now exists upstream; delete the local declaration")
+            raw_type["members"].append({**member, **provenance})
+    return catalog_by_key
+
 
 def qyl_catalog_rows(qyl_registry, provenance):
     """qyl-owned attributes in the catalog row shape: the same key/type/brief/note/
@@ -352,6 +395,7 @@ def merge(core, genai, qyl, qyl_bytes, core_model_dir, genai_model_dir, schema_v
         catalog_key,
     )
     catalog_by_key = {attribute["key"]: attribute for attribute in catalog}
+    apply_local_attribute_values(qyl, catalog_by_key, provenance)
     qyl_metrics, qyl_groups = qyl_metric_rows(qyl, catalog_by_key, provenance)
 
     return {
