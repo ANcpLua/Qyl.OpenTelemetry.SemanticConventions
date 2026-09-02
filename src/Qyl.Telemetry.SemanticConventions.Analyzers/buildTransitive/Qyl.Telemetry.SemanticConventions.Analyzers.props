@@ -8,6 +8,11 @@
     <CompilerVisibleProperty Include="EventSourceSupport" />
   </ItemGroup>
 
+  <!-- QYL0008 opt-out: an instrumentation library that version-locks with the incubating tier. -->
+  <ItemGroup>
+    <CompilerVisibleProperty Include="OtelSemConvInstrumentationLibrary" />
+  </ItemGroup>
+
   <ItemGroup Condition=" '$(OtelSemConvAnalysisMode)' == 'Default' ">
     <EditorConfigFiles Include="$(MSBuildThisFileDirectory)editorconfig/Default.editorconfig" />
   </ItemGroup>

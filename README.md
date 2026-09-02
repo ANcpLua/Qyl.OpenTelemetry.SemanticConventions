@@ -122,6 +122,41 @@ The generated analyzer reference includes the
 Supported values are `Default`, `AllAsErrors`, and `Disabled`. If the property is
 unset, the consumer's editorconfig remains authoritative.
 
+### QYL0008 in instrumentation libraries
+
+[`QYL0008`](docs/rules/QYL0008_IncubatingSemconvInLibrary.md) flags a direct reference to
+an `*.SemanticConventions.Incubating` member from a library project, because the library
+would then pin every downstream consumer to its exact package version. Copying the value
+into the library is the mitigation, and the analyzer stays silent for all three copy
+forms plus a method-local `const`:
+
+```csharp
+private const string MessagingSystem = MessagingAttributes.System;
+private static readonly string OperationType = MessagingAttributes.OperationType;
+private static readonly string[] Copies = [MessagingAttributes.OperationName];
+
+public static void Tag(Activity activity)
+{
+    const string destination = MessagingAttributes.DestinationName;
+    activity.SetTag(destination, "orders");
+}
+```
+
+An instrumentation library that deliberately version-locks with the incubating tier —
+`Qyl.Telemetry.AutoInstrumentation` ships in lockstep with this package family — opts the
+whole project out instead of copying every constant:
+
+```xml
+<!-- Directory.Build.props -->
+<Project>
+  <PropertyGroup>
+    <OtelSemConvInstrumentationLibrary>true</OtelSemConvInstrumentationLibrary>
+  </PropertyGroup>
+</Project>
+```
+
+The property is opt-in and per-project; QYL0008 keeps reporting everywhere it is unset.
+
 ## Build and test
 
 ```bash

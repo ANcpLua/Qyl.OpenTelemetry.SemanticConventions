@@ -91,7 +91,7 @@ internal static class DiagnosticDescriptors
         category: Category,
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Members under any *.SemanticConventions.Incubating namespace may rename or change values across minor package releases. Library projects (non-exe, non-test) baking direct references push that volatility onto every downstream consumer.",
+        description: "Members under any *.SemanticConventions.Incubating namespace may rename or change values across minor package releases. Library projects (non-exe, non-test) baking direct references push that volatility onto every downstream consumer. Copying the value into the library suppresses the rule: a const field, a static readonly field, or a static readonly array of copies, and a method-local const. A library that deliberately version-locks with the incubating tier opts the whole project out with the MSBuild property OtelSemConvInstrumentationLibrary set to true.",
         helpLinkUri: RuleDocs.HelpLink("QYL0008", "IncubatingSemconvInLibrary"));
 
     public static readonly DiagnosticDescriptor SupplementalExactSemconvMigration = new(

@@ -33,18 +33,25 @@ internal static class AnalyzerHarness
         string source,
         string filePath = "/repo/Consumer.cs",
         ImmutableArray<MetadataReference> additionalReferences = default,
-        AnalyzerOptions? options = null)
+        AnalyzerOptions? options = null,
+        bool excludeTestFrameworkReferences = false)
     {
         var syntaxTree = CSharpSyntaxTree.ParseText(
             source,
             CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Latest),
             filePath);
+        MetadataReference[] references = additionalReferences.IsDefaultOrEmpty
+            ? PlatformReferences
+            : [.. PlatformReferences, .. additionalReferences];
+        if (excludeTestFrameworkReferences)
+        {
+            references = [.. references.Where(IsNotTestFrameworkReference)];
+        }
+
         var compilation = CSharpCompilation.Create(
             $"analyzer-harness-{Guid.NewGuid():N}",
             [syntaxTree],
-            additionalReferences.IsDefaultOrEmpty
-                ? PlatformReferences
-                : [.. PlatformReferences, .. additionalReferences],
+            references,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
         var errors = compilation.GetDiagnostics()
@@ -59,6 +66,16 @@ internal static class AnalyzerHarness
             : compilation.WithAnalyzers(analyzers, options);
         return await withAnalyzers.GetAnalyzerDiagnosticsAsync();
     }
+
+    /// <summary>
+    /// The harness runs inside the test host, so <see cref="PlatformReferences"/> carries the
+    /// host's own xunit assemblies. Analyzers that classify a compilation as a test project by
+    /// probing for a test-framework attribute (QYL0008) would then never see a library project,
+    /// so those fixtures drop the xunit references.
+    /// </summary>
+    private static bool IsNotTestFrameworkReference(MetadataReference reference) =>
+        reference.Display is not { } display
+        || !Path.GetFileName(display).StartsWith("xunit", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>Compiles a fixture source and returns it as a metadata reference.</summary>
     public static PortableExecutableReference CompileReference(string source)
