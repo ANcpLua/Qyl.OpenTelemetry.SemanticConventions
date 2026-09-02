@@ -6,7 +6,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 ///     Base class for all ANcpLua analyzers.
 ///     Extends <see cref="DiagnosticAnalyzerBase"/> with resource-based rule creation.
 /// </summary>
-public abstract class AlAnalyzer : DiagnosticAnalyzerBase {
+internal abstract class AlAnalyzer : DiagnosticAnalyzerBase {
     /// <summary>
     ///     Creates a <see cref="DiagnosticDescriptor"/> using resource-based localization.
     ///     The <c>helpLinkUri</c> is derived from <paramref name="callerFile"/>

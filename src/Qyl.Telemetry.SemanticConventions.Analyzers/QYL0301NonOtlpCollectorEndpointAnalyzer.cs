@@ -14,7 +14,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Qyl0301NonOtlpCollectorEndpointAnalyzer : AlAnalyzer {
+internal sealed class Qyl0301NonOtlpCollectorEndpointAnalyzer : AlAnalyzer {
     private static readonly string[] s_otlpPatterns = [
         "4317", // gRPC default port
         "4318", // HTTP default port

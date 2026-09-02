@@ -9,6 +9,23 @@ clean `net10.0` consumer.
 
 ## [Unreleased]
 
+### Fixed
+
+- `Qyl.Telemetry.SemanticConventions.Analyzers` no longer ships `ANcpLua.Roslyn.Utilities.dll`
+  beside its own assembly. The compiler loads every analyzer package's dependencies by assembly
+  name, so a consumer that also referenced another analyzer package carrying a different build of
+  that assembly (`ANcpLua.Analyzers` 2.1.2 carries 2.2.44 against this package's 2.2.41) could not
+  create a single rule: every analyzer failed with CS8032, an error under
+  `TreatWarningsAsErrors`. The utilities are now compiled in from
+  `ANcpLua.Roslyn.Utilities.Sources`, the way the source generator already does, so the package
+  has no runtime dependency to collide. As a consequence the analyzer classes are `internal`
+  (their base type is now an internal source-included type); nothing outside this repository
+  referenced them, and Roslyn discovers analyzers by attribute, not by visibility.
+- `QYL0101` honours the `OtelSemConvInstrumentationLibrary` opt-out introduced in 7.1.0. An
+  instrumentation library declares its `ActivitySource`s for a separate hosting package to
+  register, so the `AddSource()` call the rule looks for is never in the library's own
+  compilation and the report was a false positive there.
+
 ## [7.1.0] - 2026-09-02
 
 ### Added

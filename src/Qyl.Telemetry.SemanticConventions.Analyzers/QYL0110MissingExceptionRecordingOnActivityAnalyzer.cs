@@ -17,7 +17,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Qyl0110MissingExceptionRecordingOnActivityAnalyzer : AlAnalyzer {
+internal sealed class Qyl0110MissingExceptionRecordingOnActivityAnalyzer : AlAnalyzer {
     /// <summary>The diagnostic identifier for QYL0110.</summary>
     private const string DiagnosticId = "QYL0110";
 

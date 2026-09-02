@@ -17,7 +17,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 ///     grouped class per field.
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Qyl0305LegacySemanticConventionsAccessorAnalyzer : AlAnalyzer {
+internal sealed class Qyl0305LegacySemanticConventionsAccessorAnalyzer : AlAnalyzer {
     private const string DiagnosticId = "QYL0305";
 
     private static readonly DiagnosticDescriptor s_rule = CreateRule(

@@ -12,7 +12,7 @@
 
 ## Description
 
-ActivitySources must be registered with AddSource() in the OpenTelemetry tracing configuration to be included in the trace pipeline. Unregistered sources will not emit spans.
+ActivitySources must be registered with AddSource() in the OpenTelemetry tracing configuration to be included in the trace pipeline. Unregistered sources will not emit spans. An instrumentation library whose sources are registered by a separate hosting package sets OtelSemConvInstrumentationLibrary=true and the rule does not report in that project.
 
 ## See also
 

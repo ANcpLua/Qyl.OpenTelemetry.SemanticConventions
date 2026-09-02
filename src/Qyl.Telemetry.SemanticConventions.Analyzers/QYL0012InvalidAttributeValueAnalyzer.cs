@@ -8,7 +8,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 /// GenAI category and severity; the guard chain is otherwise identical.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Qyl0012InvalidAttributeValueAnalyzer : AlAnalyzer
+internal sealed class Qyl0012InvalidAttributeValueAnalyzer : AlAnalyzer
 {
     private const string DiagnosticId = "QYL0012";
 

@@ -20,7 +20,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Qyl0702BatchExportDisabledAnalyzer : AlAnalyzer {
+internal sealed class Qyl0702BatchExportDisabledAnalyzer : AlAnalyzer {
     /// <summary>The diagnostic identifier for QYL0702.</summary>
     private const string DiagnosticId = "QYL0702";
 

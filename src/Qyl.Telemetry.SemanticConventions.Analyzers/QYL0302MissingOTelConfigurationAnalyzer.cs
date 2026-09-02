@@ -27,7 +27,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Qyl0302MissingOTelConfigurationAnalyzer : AlAnalyzer {
+internal sealed class Qyl0302MissingOTelConfigurationAnalyzer : AlAnalyzer {
     private static readonly string[] s_serviceDefaultsMethods = [
         "AddServiceDefaults",
         "AddQylServiceDefaults",

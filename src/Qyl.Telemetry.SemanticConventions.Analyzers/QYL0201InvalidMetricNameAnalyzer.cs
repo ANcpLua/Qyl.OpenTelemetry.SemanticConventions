@@ -15,7 +15,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Qyl0201InvalidMetricNameAnalyzer : AlAnalyzer {
+internal sealed class Qyl0201InvalidMetricNameAnalyzer : AlAnalyzer {
     private const string CounterAttributeFullName = "Qyl.Instrumentation.Instrumentation.CounterAttribute";
     private const string HistogramAttributeFullName = "Qyl.Instrumentation.Instrumentation.HistogramAttribute";
 
