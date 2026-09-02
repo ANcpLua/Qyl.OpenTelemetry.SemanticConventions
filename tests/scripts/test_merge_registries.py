@@ -151,6 +151,57 @@ class MergeRegistriesTests(unittest.TestCase):
             self.run_merge({"metrics": [{"metric_name": "qyl.m", "instrument": "counter", "unit": "1", "attributes": ["nope"]}]})
         self.assertEqual(str(raised.exception), "qyl metric references unknown attribute 'nope'")
 
+    def _enum_core_attribute(self):
+        row = attribute("messaging.system", "core")
+        row["type"] = {"members": [{"id": "kafka", "value": "kafka", "stability": "development", "brief": "Apache Kafka"}]}
+        self.core["catalog"].append(row)
+        return row
+
+    def test_local_attribute_values_extend_an_upstream_enum(self):
+        row = self._enum_core_attribute()
+        merged, _ = self.run_merge({"local_attribute_values": [
+            {"key": "messaging.system", "members": [
+                {"id": "masstransit", "value": "masstransit", "stability": "development", "brief": "MassTransit.", "note": "local"}]}]})
+        members = next(a for a in merged["catalog"] if a["key"] == "messaging.system")["type"]["members"]
+        self.assertEqual([member["value"] for member in members], ["kafka", "masstransit"])
+        self.assertEqual(members[0].get("source_registry"), None)
+        self.assertEqual(members[1]["source_registry"], "qyl")
+        self.assertEqual(members[1]["source_ref"], "qyl-registry.json")
+        self.assertEqual(row["type"]["members"][1]["note"], "local")
+
+    def test_local_attribute_values_for_an_unknown_attribute_are_refused(self):
+        with self.assertRaises(MergeError) as raised:
+            self.run_merge({"local_attribute_values": [{"key": "messaging.system", "members": []}]})
+        self.assertEqual(
+            str(raised.exception),
+            "qyl-registry.json local_attribute_values entry 'messaging.system' names no upstream attribute")
+
+    def test_local_attribute_values_naming_a_qyl_attribute_are_refused(self):
+        with self.assertRaises(MergeError) as raised:
+            self.run_merge({"local_attribute_values": [{"key": "qyl.thing", "members": []}]})
+        self.assertEqual(
+            str(raised.exception),
+            "qyl-registry.json local_attribute_values entry 'qyl.thing' names a qyl-owned attribute; "
+            "declare its members inline under `attributes` instead")
+
+    def test_local_attribute_value_that_landed_upstream_is_refused(self):
+        self._enum_core_attribute()
+        with self.assertRaises(MergeError) as raised:
+            self.run_merge({"local_attribute_values": [
+                {"key": "messaging.system", "members": [{"id": "kafka", "value": "kafka"}]}]})
+        self.assertEqual(
+            str(raised.exception),
+            "qyl-registry.json local_attribute_values member 'messaging.system=kafka' now exists upstream; "
+            "delete the local declaration")
+
+    def test_local_attribute_values_on_a_non_enum_attribute_are_refused(self):
+        with self.assertRaises(MergeError) as raised:
+            self.run_merge({"local_attribute_values": [{"key": "http.route", "members": []}]})
+        self.assertEqual(
+            str(raised.exception),
+            "qyl-registry.json local_attribute_values entry 'http.route' names a non-enum upstream attribute")
+
+
 
 if __name__ == "__main__":
     unittest.main()

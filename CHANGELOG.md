@@ -9,6 +9,19 @@ clean `net10.0` consumer.
 
 ## [Unreleased]
 
+### Added
+
+- `qyl-registry.json` gains `local_attribute_values`: qyl-local members appended to an *upstream*
+  open enum, the only sanctioned way a qyl row touches an upstream row. `messaging.system` declares
+  `masstransit` and `nservicebus`, each noted as local to qyl and absent from upstream OpenTelemetry
+  semantic conventions, so the registry-derived projections stop treating them as unknown values.
+  The merge fails naming the value the moment an upstream bump lands it, so the local declaration is
+  deleted rather than shadowing upstream.
+- [`UPSTREAM-dotnet_wcf.md`](UPSTREAM-dotnet_wcf.md): a draft issue for
+  open-telemetry/semantic-conventions asking where `dotnet_wcf` belongs now that `rpc.system` is
+  renamed to `rpc.system.name`, which declares no WCF member. Not filed; `dotnet_wcf` is unchanged
+  in this repo.
+
 ## [7.0.0] - 2026-09-02
 
 ### Changed
