@@ -34,19 +34,19 @@ public static class QylTelemetryNames
         public const string QylInstrumentationErrorCapture = "Qyl.Instrumentation.ErrorCapture";
 
         /// <summary>
-        /// The <c>Qyl.OpenTelemetry.AutoInstrumentation</c> telemetry scope.
+        /// The <c>Qyl.Telemetry.AutoInstrumentation</c> telemetry scope.
         /// </summary>
-        public const string QylOpenTelemetryAutoInstrumentation = "Qyl.OpenTelemetry.AutoInstrumentation";
+        public const string QylTelemetryAutoInstrumentation = "Qyl.Telemetry.AutoInstrumentation";
 
         /// <summary>
-        /// The <c>Qyl.OpenTelemetry.AutoInstrumentation.Database</c> telemetry scope.
+        /// The <c>Qyl.Telemetry.AutoInstrumentation.Database</c> telemetry scope.
         /// </summary>
-        public const string QylOpenTelemetryAutoInstrumentationDatabase = "Qyl.OpenTelemetry.AutoInstrumentation.Database";
+        public const string QylTelemetryAutoInstrumentationDatabase = "Qyl.Telemetry.AutoInstrumentation.Database";
 
         /// <summary>
-        /// The <c>Qyl.OpenTelemetry.AutoInstrumentation.NServiceBus</c> telemetry scope.
+        /// The <c>Qyl.Telemetry.AutoInstrumentation.NServiceBus</c> telemetry scope.
         /// </summary>
-        public const string QylOpenTelemetryAutoInstrumentationNServiceBus = "Qyl.OpenTelemetry.AutoInstrumentation.NServiceBus";
+        public const string QylTelemetryAutoInstrumentationNServiceBus = "Qyl.Telemetry.AutoInstrumentation.NServiceBus";
 
         /// <summary>
         /// The <c>System.Runtime</c> telemetry scope.

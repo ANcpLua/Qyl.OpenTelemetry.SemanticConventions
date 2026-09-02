@@ -10,7 +10,7 @@ versioning, and enablement.
 This is the **application-side** consumption mode: the generator emits only the
 declared groups into your own assembly, with internal visibility and nothing
 you did not ask for. Libraries that need one pinned registry version across a
-package family (for example `Qyl.OpenTelemetry.AutoInstrumentation`) reference
+package family (for example `Qyl.Telemetry.AutoInstrumentation`) reference
 the compiled `Qyl.Telemetry.SemanticConventions` packages instead; see the
 repository README's "Choosing between the compiled packages and the source
 generator" section.

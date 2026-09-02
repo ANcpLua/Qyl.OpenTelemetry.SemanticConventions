@@ -363,9 +363,9 @@
   "scope_names": [
     "Qyl.Collector",
     "Qyl.Instrumentation.ErrorCapture",
-    "Qyl.OpenTelemetry.AutoInstrumentation",
-    "Qyl.OpenTelemetry.AutoInstrumentation.Database",
-    "Qyl.OpenTelemetry.AutoInstrumentation.NServiceBus",
+    "Qyl.Telemetry.AutoInstrumentation",
+    "Qyl.Telemetry.AutoInstrumentation.Database",
+    "Qyl.Telemetry.AutoInstrumentation.NServiceBus",
     "System.Runtime"
   ],
   "event_names": [

@@ -206,7 +206,7 @@ public sealed class RegistryShapeGateTests
             .Should().Contain(group => group.GetProperty("id").GetString() == "metric.nservicebus.messaging.operation.duration");
 
         root.GetProperty("scope_names").EnumerateArray().Select(name => name.GetString())
-            .Should().Contain("Qyl.OpenTelemetry.AutoInstrumentation").And.BeInAscendingOrder();
+            .Should().Contain("Qyl.Telemetry.AutoInstrumentation").And.BeInAscendingOrder();
         root.GetProperty("event_names").EnumerateArray().Select(name => name.GetString())
             .Should().Contain("qyl.agent.diagnostic.snapshot").And.BeInAscendingOrder();
     }
