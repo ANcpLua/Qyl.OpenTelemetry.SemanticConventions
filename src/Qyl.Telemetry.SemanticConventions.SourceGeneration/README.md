@@ -105,6 +105,24 @@ literals, so a deprecated constant never raises CS0618, and it is netstandard2.0
 `cassandra.consistency.level` declares a constant `All`; the emitter fails generation if a
 registry member ever collides with `AllValues` or `Contains`.
 
+### Free-form attributes have no value set
+
+An attribute the registry types as a plain string has no `…Values` class, and qyl will not
+add one. `messaging.operation.name` is the standing case: upstream types it `string` with
+`examples: ack, nack, send` — a *system-specific* operation name deliberately left open —
+while the enumerated sibling is `messaging.operation.type` (`create`, `send`, `receive`,
+`process`, `settle`, plus the deprecated `deliver`/`publish`). qyl cannot enumerate
+`messaging.operation.name` even if it wanted to: the attribute is upstream-owned, and
+`merge_registries.py` refuses any qyl row outside the `qyl.*` namespace and any qyl row
+that shadows an upstream one, so a qyl-authored member list would either be rejected at
+merge time or fork the definition away from the schema URL the packages publish.
+Instrumentation therefore chooses its own `messaging.operation.name` values (`send`,
+`publish`, …) and validates only `messaging.operation.type` against
+`MessagingAttributes.OperationTypeValues.AllValues`. `publish` being a deprecated
+*operation type* says nothing about `publish` as an *operation name*, and the analyzers
+agree: `QYL0012`/`QYL0013` and the deprecated-value analyzer key off the registry's enum
+members, so they never constrain a free-form string attribute.
+
 ### Package projections
 
 Three assembly-level markers project a whole registry tier in the layout the compiled
