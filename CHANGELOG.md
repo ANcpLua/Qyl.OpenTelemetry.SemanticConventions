@@ -9,6 +9,8 @@ clean `net10.0` consumer.
 
 ## [Unreleased]
 
+## [7.1.0] - 2026-09-02
+
 ### Added
 
 - `qyl-registry.json` gains `local_attribute_values`: qyl-local members appended to an *upstream*
