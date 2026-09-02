@@ -134,7 +134,7 @@
                 "text": "Incubating semantic-convention member used in a library"
               },
               "fullDescription": {
-                "text": "Members under any *.SemanticConventions.Incubating namespace may rename or change values across minor package releases. Library projects (non-exe, non-test) baking direct references push that volatility onto every downstream consumer."
+                "text": "Members under any *.SemanticConventions.Incubating namespace may rename or change values across minor package releases. Library projects (non-exe, non-test) baking direct references push that volatility onto every downstream consumer. Copying the value into the library suppresses the rule: a const field, a static readonly field, or a static readonly array of copies, and a method-local const. A library that deliberately version-locks with the incubating tier opts the whole project out with the MSBuild property OtelSemConvInstrumentationLibrary set to true."
               },
               "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0008_IncubatingSemconvInLibrary.md",
               "defaultConfiguration": {

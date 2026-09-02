@@ -7,8 +7,10 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 /// QYL0008: Flags references to members under any
 /// <c>*.SemanticConventions.Incubating</c> namespace from within library projects
 /// (non-exe, non-test). The recommended mitigation is to copy the constant locally;
-/// the analyzer suppresses itself when the usage is inside a <c>const</c> field
-/// declaration (the local-copy pattern).
+/// the analyzer suppresses itself when the usage sits in a local-copy declaration —
+/// a <c>const</c> field, a <c>static readonly</c> field (including a
+/// <c>static readonly string[]</c> table), or a method-local <c>const</c>. A whole
+/// project opts out with <c>build_property.OtelSemConvInstrumentationLibrary</c>.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class IncubatingSemconvInLibraryAnalyzer : DiagnosticAnalyzer
@@ -35,6 +37,14 @@ public sealed class IncubatingSemconvInLibraryAnalyzer : DiagnosticAnalyzer
     private static void OnCompilationStart(CompilationStartAnalysisContext context)
     {
         if (!IsLibraryProject(context.Compilation))
+        {
+            return;
+        }
+
+        // Per-project opt-out: instrumentation libraries that deliberately version-lock
+        // with the incubating tier set OtelSemConvInstrumentationLibrary=true.
+        if (SemconvAnalyzerOptions.IsInstrumentationLibrary(
+                context.Options.AnalyzerConfigOptionsProvider.GlobalOptions))
         {
             return;
         }
@@ -66,7 +76,7 @@ public sealed class IncubatingSemconvInLibraryAnalyzer : DiagnosticAnalyzer
 
         // Suppress when the usage is itself a const-field declaration — the
         // local-copy mitigation pattern.
-        if (IsInsideConstFieldDeclaration(context.Operation.Syntax))
+        if (IsInsideLocalCopyDeclaration(context.Operation.Syntax))
         {
             return;
         }
@@ -113,14 +123,18 @@ public sealed class IncubatingSemconvInLibraryAnalyzer : DiagnosticAnalyzer
         return true;
     }
 
-    private static bool IsInsideConstFieldDeclaration(SyntaxNode node)
+    private static bool IsInsideLocalCopyDeclaration(SyntaxNode node)
     {
         for (var current = node.Parent; current is not null; current = current.Parent)
         {
-            if (current is FieldDeclarationSyntax field
-                && field.Modifiers.Any(m => m.IsKind(SyntaxKind.ConstKeyword)))
+            switch (current)
             {
-                return true;
+                case FieldDeclarationSyntax field:
+                    return field.Modifiers.Any(m => m.IsKind(SyntaxKind.ConstKeyword))
+                        || (field.Modifiers.Any(m => m.IsKind(SyntaxKind.StaticKeyword))
+                            && field.Modifiers.Any(m => m.IsKind(SyntaxKind.ReadOnlyKeyword)));
+                case LocalDeclarationStatementSyntax local:
+                    return local.IsConst;
             }
         }
         return false;

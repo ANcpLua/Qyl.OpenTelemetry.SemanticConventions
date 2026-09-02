@@ -21,6 +21,21 @@ clean `net10.0` consumer.
   open-telemetry/semantic-conventions asking where `dotnet_wcf` belongs now that `rpc.system` is
   renamed to `rpc.system.name`, which declares no WCF member. Not filed; `dotnet_wcf` is unchanged
   in this repo.
+- `OtelSemConvInstrumentationLibrary` — a per-project MSBuild opt-out for `QYL0008`. An
+  instrumentation library that deliberately version-locks with the incubating tier sets
+  `<OtelSemConvInstrumentationLibrary>true</OtelSemConvInstrumentationLibrary>` and the rule
+  stops reporting in that project; every project that leaves it unset is unaffected. The
+  property is exposed to Roslyn through the package's `buildTransitive` props, alongside the
+  existing `PublishAot` and `EventSourceSupport` entries.
+
+### Changed
+
+- `QYL0008` recognises every local-copy form of the mitigation it recommends, not only a
+  `const` field. A `private static readonly string` copy, a `private static readonly string[]`
+  table of copies, and a method-local `const string` copy now suppress the diagnostic the same
+  way, so a library that follows the documented advice is no longer warned for doing it in the
+  shape its own code calls for. A direct incubating reference in any other position still
+  reports.
 
 ## [7.0.0] - 2026-09-02
 

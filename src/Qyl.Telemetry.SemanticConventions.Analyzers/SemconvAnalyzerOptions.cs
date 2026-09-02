@@ -23,4 +23,17 @@ internal static class SemconvAnalyzerOptions
     public static bool ShouldAllowNonAttributesTiers(AnalyzerConfigOptions options) =>
         options.TryGetValue(NonAttributesTiersBuildProperty, out var value)
         && string.Equals(value, "true", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// <c>build_property.OtelSemConvInstrumentationLibrary</c> — when <c>true</c>,
+    /// QYL0008 does not report in that project. Set it in instrumentation libraries
+    /// that intentionally ship against the incubating tier and version-lock with it
+    /// (for example <c>Qyl.Telemetry.AutoInstrumentation</c>), so the rule stays on
+    /// for ordinary libraries that must not push that volatility downstream.
+    /// </summary>
+    public const string InstrumentationLibraryBuildProperty = "build_property.OtelSemConvInstrumentationLibrary";
+
+    public static bool IsInstrumentationLibrary(AnalyzerConfigOptions options) =>
+        options.TryGetValue(InstrumentationLibraryBuildProperty, out var value)
+        && string.Equals(value, "true", StringComparison.OrdinalIgnoreCase);
 }
