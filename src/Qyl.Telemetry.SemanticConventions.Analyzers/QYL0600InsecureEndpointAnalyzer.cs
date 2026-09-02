@@ -22,7 +22,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Qyl0600InsecureEndpointAnalyzer : AlAnalyzer {
+internal sealed class Qyl0600InsecureEndpointAnalyzer : AlAnalyzer {
     private const string HttpPrefix = "http://";
     private const string HttpsPrefix = "https://";
 

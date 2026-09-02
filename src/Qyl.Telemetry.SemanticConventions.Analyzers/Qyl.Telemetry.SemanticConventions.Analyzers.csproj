@@ -50,8 +50,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ANcpLua.Roslyn.Utilities" PrivateAssets="all"/>
-    <PackageReference Include="ANcpLua.Roslyn.Utilities.Polyfills" PrivateAssets="all"/>
+    <!-- Sources, not the binary: an analyzer package that ships ANcpLua.Roslyn.Utilities.dll collides in the
+         compiler with any other analyzer package shipping a different version of the same assembly
+         (ANcpLua.Analyzers 2.1.2 carries 2.2.44 and every rule here then fails to load with CS8032).
+         The Sources package already includes its polyfills; adding Polyfills separately duplicates types. -->
+    <PackageReference Include="ANcpLua.Roslyn.Utilities.Sources" PrivateAssets="all"/>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all"/>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" PrivateAssets="all"/>
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all">
@@ -84,7 +87,6 @@
   <Target Name="_AddAnalyzersToPackage" Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <ItemGroup>
       <TfmSpecificPackageFile Include="$(OutputPath)$(AssemblyName).dll"          PackagePath="analyzers/dotnet/cs"/>
-      <TfmSpecificPackageFile Include="$(OutputPath)ANcpLua.Roslyn.Utilities.dll" PackagePath="analyzers/dotnet/cs"/>
 
       <!-- Ship generated severity profiles beside the props file that imports them. -->
       <TfmSpecificPackageFile Include="$(MSBuildThisFileDirectory)buildTransitive/$(PackageId).props"

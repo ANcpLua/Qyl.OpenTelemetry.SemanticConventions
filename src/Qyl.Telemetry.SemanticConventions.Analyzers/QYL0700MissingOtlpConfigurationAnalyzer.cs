@@ -27,7 +27,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Qyl0700MissingOtlpConfigurationAnalyzer : AlAnalyzer {
+internal sealed class Qyl0700MissingOtlpConfigurationAnalyzer : AlAnalyzer {
     /// <summary>The diagnostic identifier for QYL0700.</summary>
     private const string DiagnosticId = "QYL0700";
 

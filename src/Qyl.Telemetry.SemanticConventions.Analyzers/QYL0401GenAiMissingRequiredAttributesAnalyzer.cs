@@ -7,7 +7,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 /// MCP span definition selected by its registry discriminator and <c>ActivityKind</c>.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Qyl0401GenAiMissingRequiredAttributesAnalyzer : AlAnalyzer
+internal sealed class Qyl0401GenAiMissingRequiredAttributesAnalyzer : AlAnalyzer
 {
     private const string DiagnosticId = "QYL0401";
 

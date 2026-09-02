@@ -25,7 +25,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Qyl0202HighCardinalityMetricTagAnalyzer : AlAnalyzer {
+internal sealed class Qyl0202HighCardinalityMetricTagAnalyzer : AlAnalyzer {
     private enum KnownType { TagAttribute, CounterAttribute, HistogramAttribute }
 
     private static readonly string[] s_knownTypeNames = [

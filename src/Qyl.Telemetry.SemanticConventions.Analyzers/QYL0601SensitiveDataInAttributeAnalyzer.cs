@@ -24,7 +24,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Qyl0601SensitiveDataInAttributeAnalyzer : AlAnalyzer {
+internal sealed class Qyl0601SensitiveDataInAttributeAnalyzer : AlAnalyzer {
     /// <summary>
     ///     Patterns in attribute names that indicate sensitive data.
     /// </summary>

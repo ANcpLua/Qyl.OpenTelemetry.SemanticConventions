@@ -15,7 +15,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Qyl0101UnregisteredActivitySourceAnalyzer : AlAnalyzer {
+internal sealed class Qyl0101UnregisteredActivitySourceAnalyzer : AlAnalyzer {
     /// <summary>The diagnostic identifier for QYL0101.</summary>
     private const string DiagnosticId = "QYL0101";
 
@@ -35,6 +35,12 @@ public sealed class Qyl0101UnregisteredActivitySourceAnalyzer : AlAnalyzer {
 
     private static void OnCompilationStart(CompilationStartAnalysisContext context) {
         if (context.Compilation.GetTypeByMetadataName(ActivitySourceTypeName) is not { } activitySourceSymbol) {
+            return;
+        }
+
+        // An instrumentation library declares sources for a host to register; the AddSource() call lives
+        // in the host's compilation, so an unmatched source here says nothing. Same opt-out as QYL0008.
+        if (SemconvAnalyzerOptions.IsInstrumentationLibrary(context.Options.AnalyzerConfigOptionsProvider.GlobalOptions)) {
             return;
         }
 

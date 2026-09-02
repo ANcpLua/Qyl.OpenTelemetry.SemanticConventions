@@ -5,7 +5,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 /// complete metric inventory in the pinned registry.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Qyl0402UseTokenUsageHistogramAnalyzer : AlAnalyzer
+internal sealed class Qyl0402UseTokenUsageHistogramAnalyzer : AlAnalyzer
 {
     private const string HistogramAttributeFullName = "Qyl.Instrumentation.Instrumentation.HistogramAttribute";
     private const string DiagnosticId = "QYL0402";

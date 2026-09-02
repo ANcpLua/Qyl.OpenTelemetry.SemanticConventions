@@ -31,7 +31,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Qyl0103DuplicateInstrumentationAnalyzer : AlAnalyzer {
+internal sealed class Qyl0103DuplicateInstrumentationAnalyzer : AlAnalyzer {
     /// <summary>The diagnostic identifier for QYL0103.</summary>
     private const string DiagnosticId = "QYL0103";
 

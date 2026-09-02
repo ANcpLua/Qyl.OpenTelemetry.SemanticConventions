@@ -92,7 +92,7 @@
         <value>ActivitySource '{0}' is not registered with AddSource() in the tracing configuration</value>
     </data>
     <data name="QYL0101AnalyzerDescription" xml:space="preserve">
-        <value>ActivitySources must be registered with AddSource() in the OpenTelemetry tracing configuration to be included in the trace pipeline. Unregistered sources will not emit spans.</value>
+        <value>ActivitySources must be registered with AddSource() in the OpenTelemetry tracing configuration to be included in the trace pipeline. Unregistered sources will not emit spans. An instrumentation library whose sources are registered by a separate hosting package sets OtelSemConvInstrumentationLibrary=true and the rule does not report in that project.</value>
     </data>
     <!-- AL0064: GenAI span missing required attributes -->
     <data name="QYL0401AnalyzerTitle" xml:space="preserve">

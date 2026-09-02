@@ -19,7 +19,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 ///     — bypass this pipeline and emit no telemetry.
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Qyl0406DirectGenAiSdkUsageAnalyzer : AlAnalyzer {
+internal sealed class Qyl0406DirectGenAiSdkUsageAnalyzer : AlAnalyzer {
     /// <summary>The diagnostic identifier for QYL0406.</summary>
     private const string DiagnosticId = "QYL0406";
 

@@ -5,7 +5,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 /// the type in the complete pinned semantic-convention registry.
 /// </summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Qyl0013IncorrectAttributeTypeAnalyzer : AlAnalyzer
+internal sealed class Qyl0013IncorrectAttributeTypeAnalyzer : AlAnalyzer
 {
     private const string DiagnosticId = "QYL0013";
 

@@ -16,7 +16,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 ///     mislead developers into thinking agent spans are being created.
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class Qyl0405NonInterceptableAgentTracedAnalyzer : AlAnalyzer {
+internal sealed class Qyl0405NonInterceptableAgentTracedAnalyzer : AlAnalyzer {
     /// <summary>The diagnostic identifier for QYL0405.</summary>
     public const string DiagnosticId = "QYL0405";
 
