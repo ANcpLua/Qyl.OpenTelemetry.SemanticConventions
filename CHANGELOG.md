@@ -9,6 +9,8 @@ clean `net10.0` consumer.
 
 ## [Unreleased]
 
+## [7.1.1] - 2026-09-02
+
 ### Fixed
 
 - `Qyl.Telemetry.SemanticConventions.Analyzers` no longer ships `ANcpLua.Roslyn.Utilities.dll`
