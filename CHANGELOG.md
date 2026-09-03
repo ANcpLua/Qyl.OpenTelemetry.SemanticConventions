@@ -67,6 +67,43 @@ clean `net10.0` consumer.
   [`check_pin_freshness.py`](src/Qyl.Telemetry.SemanticConventions.SourceGeneration/scripts/check_pin_freshness.py)
   has always named in its stale-pin report, but which no commit had created.
 
+### Removed
+
+**Breaking (`8.0.0`).** The qyl-owned observer vocabulary. Its only producer, the qyl Codex
+observer, is gone; nothing emits or reads these names any more, so they are deleted outright
+rather than deprecated. Removed in one wave with qyl `3.0.0`, `qyl.mcp` `4.0.0` and
+`qyl-api-schema` `9.0.0`.
+
+- Nine `qyl.agent.diagnostic.*` attributes drop out of
+  [`Resources/qyl-registry.json`](src/Qyl.Telemetry.SemanticConventions.SourceGeneration/Resources/qyl-registry.json)
+  and therefore out of the merged projection, the QYL0200/QYL0201 allowlists and the shipped
+  constants: `qyl.agent.diagnostic.extension.id`, `qyl.agent.diagnostic.snapshot.id`,
+  `qyl.agent.diagnostic.format.version`, `qyl.agent.diagnostic.probe.id`,
+  `qyl.agent.diagnostic.phase` (with its four enum members), `qyl.agent.diagnostic.outcome`
+  (with its four enum members), `qyl.agent.diagnostic.variable.count`,
+  `qyl.agent.diagnostic.check.count` and `qyl.agent.diagnostic.check.failed_count`.
+
+- Five `qyl.workflow.*` correlation attributes go with them: `qyl.workflow.run.id`,
+  `qyl.workflow.event.id`, `qyl.workflow.attempt.id`, `qyl.workflow.agent.id` and
+  `qyl.workflow.tool_call.id`.
+
+- The event name `qyl.agent.diagnostic.snapshot`. The two surviving qyl-owned event names,
+  `qyl.http.client` and `qyl.rpc.grpc`, are untouched, as are all six `scope_names` and the one
+  qyl-owned metric — that metric references only `messaging.*` attributes, so nothing it needs
+  was deleted.
+
+  The projected public surface loses exactly sixteen members from
+  `Qyl.Telemetry.SemanticConventions.Incubating.Attributes.Qyl.QylAttributes` —
+  `AgentDiagnosticExtensionId`, `AgentDiagnosticSnapshotId`, `AgentDiagnosticFormatVersion`,
+  `AgentDiagnosticProbeId`, `AgentDiagnosticPhase`, `AgentDiagnosticPhaseValues`,
+  `AgentDiagnosticOutcome`, `AgentDiagnosticOutcomeValues`, `AgentDiagnosticVariableCount`,
+  `AgentDiagnosticCheckCount`, `AgentDiagnosticCheckFailedCount`, `WorkflowRunId`,
+  `WorkflowEventId`, `WorkflowAttemptId`, `WorkflowAgentId` and `WorkflowToolCallId` — plus
+  `QylTelemetryNames.Events.QylAgentDiagnosticSnapshot` from the stable package. The two
+  `…Values` classes take their four constants each with them. Nothing is renamed and no
+  `[Obsolete]` shim is left behind: of the 131 files pinned by
+  `qyl.package.manifest.sha256`, only `QylAttributes.g.cs` and `QylTelemetryNames.g.cs` change.
+
 ## [7.1.1] - 2026-09-02
 
 ### Fixed

@@ -2,12 +2,6 @@
   "description": "qyl-owned vocabulary, first-class next to the pinned upstream registries (qyl architecture, loop 1). scripts/generate.sh (merge_registries.py) merges this file into resolved-registry.json as the third source: a `sources` entry {source_registry: qyl, source_ref: qyl-registry.json, source_commit: SHA-256 of this file's bytes, schema_url: null, source_date_epoch: null} (qyl publishes no schema URL and has no upstream date), and every merged qyl row carries the same five provenance fields. Attributes join the catalog, metrics join metrics and groups with attribute references resolved against the merged catalog, local_attribute_values append qyl-local members to an upstream open enum (the only sanctioned way a qyl row touches an upstream row; each member carries a note saying the value is local to qyl and absent upstream, and the merge fails the moment upstream lands the same value so the local declaration is deleted), and scope_names / event_names land at the root. The merge refuses an attribute outside the qyl.* namespace and any attribute, metric, or metric group that shadows an upstream row. Attributes are qyl.* names the platform emits and the collector must recognize; scope_names are the ActivitySource/Meter names qyl constructs; event_names are qyl-owned Activity or DiagnosticSource event names. Every downstream projection (Roslyn generators, emit_analyzer_registry.py QYL0200/QYL0201 allowlists, the public registry stream) reads the merged file; emit_typespec_keys.py deliberately excludes qyl rows. Entries under qyl.mcp.* are the experimental staging namespace: deletion-targeted on every upstream registry bump that lands an equivalent.",
   "attributes": [
     {
-      "key": "qyl.agent.diagnostic.extension.id",
-      "type": "string",
-      "stability": "development",
-      "brief": "Stable discriminator of the machine-readable agent diagnostic extension."
-    },
-    {
       "key": "qyl.capability.id",
       "type": "string",
       "stability": "development",
@@ -143,138 +137,6 @@
       "brief": "qyl auto-instrumentation domain that emitted the span or metric."
     },
     {
-      "key": "qyl.agent.diagnostic.snapshot.id",
-      "type": "string",
-      "stability": "development",
-      "brief": "Stable identifier of one immutable agent diagnostic state frame."
-    },
-    {
-      "key": "qyl.agent.diagnostic.format.version",
-      "type": "int",
-      "stability": "development",
-      "brief": "Version of the machine-readable agent diagnostic state-frame format."
-    },
-    {
-      "key": "qyl.agent.diagnostic.probe.id",
-      "type": "string",
-      "stability": "development",
-      "brief": "Bounded machine identifier of the diagnostic probe that captured the state frame."
-    },
-    {
-      "key": "qyl.agent.diagnostic.phase",
-      "type": {
-        "members": [
-          {
-            "id": "input",
-            "value": "input",
-            "stability": "development",
-            "brief": "State captured before the probed operation."
-          },
-          {
-            "id": "output",
-            "value": "output",
-            "stability": "development",
-            "brief": "State captured after the probed operation."
-          },
-          {
-            "id": "error",
-            "value": "error",
-            "stability": "development",
-            "brief": "State captured on an error path."
-          },
-          {
-            "id": "checkpoint",
-            "value": "checkpoint",
-            "stability": "development",
-            "brief": "State captured at an explicit verification checkpoint."
-          }
-        ]
-      },
-      "stability": "development",
-      "brief": "Program boundary at which an agent diagnostic state frame was captured."
-    },
-    {
-      "key": "qyl.agent.diagnostic.outcome",
-      "type": {
-        "members": [
-          {
-            "id": "pass",
-            "value": "pass",
-            "stability": "development",
-            "brief": "Every evaluated diagnostic check passed."
-          },
-          {
-            "id": "fail",
-            "value": "fail",
-            "stability": "development",
-            "brief": "At least one evaluated diagnostic check failed."
-          },
-          {
-            "id": "unknown",
-            "value": "unknown",
-            "stability": "development",
-            "brief": "No failed check was observed, but at least one check could not be evaluated."
-          },
-          {
-            "id": "not_evaluated",
-            "value": "not_evaluated",
-            "stability": "development",
-            "brief": "The state frame contained no diagnostic checks."
-          }
-        ]
-      },
-      "stability": "development",
-      "brief": "Deterministically computed aggregate outcome of an agent diagnostic state frame."
-    },
-    {
-      "key": "qyl.agent.diagnostic.variable.count",
-      "type": "int",
-      "stability": "development",
-      "brief": "Number of dynamic variables described by an agent diagnostic state frame."
-    },
-    {
-      "key": "qyl.agent.diagnostic.check.count",
-      "type": "int",
-      "stability": "development",
-      "brief": "Number of machine-readable checks in an agent diagnostic state frame."
-    },
-    {
-      "key": "qyl.agent.diagnostic.check.failed_count",
-      "type": "int",
-      "stability": "development",
-      "brief": "Number of failed checks in an agent diagnostic state frame."
-    },
-    {
-      "key": "qyl.workflow.run.id",
-      "type": "string",
-      "stability": "development",
-      "brief": "Stable workflow run identifier mirrored into telemetry for journal correlation."
-    },
-    {
-      "key": "qyl.workflow.event.id",
-      "type": "string",
-      "stability": "development",
-      "brief": "Stable immutable workflow journal event identifier mirrored into telemetry for correlation."
-    },
-    {
-      "key": "qyl.workflow.attempt.id",
-      "type": "string",
-      "stability": "development",
-      "brief": "Stable workflow attempt identifier mirrored into telemetry for journal correlation."
-    },
-    {
-      "key": "qyl.workflow.agent.id",
-      "type": "string",
-      "stability": "development",
-      "brief": "Stable workflow agent identifier mirrored into telemetry for journal correlation."
-    },
-    {
-      "key": "qyl.workflow.tool_call.id",
-      "type": "string",
-      "stability": "development",
-      "brief": "Stable workflow tool-call identifier mirrored into telemetry for journal correlation."
-    },
-    {
       "key": "qyl.project.id",
       "type": "string",
       "stability": "development",
@@ -390,7 +252,6 @@
     "System.Runtime"
   ],
   "event_names": [
-    "qyl.agent.diagnostic.snapshot",
     "qyl.http.client",
     "qyl.rpc.grpc"
   ]

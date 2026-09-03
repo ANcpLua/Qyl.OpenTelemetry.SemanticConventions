@@ -23,7 +23,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
       "source_date_epoch": null
     }
   ],
@@ -178038,7 +178038,7 @@
                 "source_registry": "qyl",
                 "schema_url": null,
                 "source_ref": "qyl-registry.json",
-                "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+                "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
                 "source_date_epoch": null
               },
               {
@@ -178050,7 +178050,7 @@
                 "source_registry": "qyl",
                 "schema_url": null,
                 "source_ref": "qyl-registry.json",
-                "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+                "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
                 "source_date_epoch": null
               }
             ]
@@ -178062,7 +178062,7 @@
           "source_registry": "qyl",
           "schema_url": null,
           "source_ref": "qyl-registry.json",
-          "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+          "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
           "source_date_epoch": null
         },
         {
@@ -178132,7 +178132,7 @@
           "source_registry": "qyl",
           "schema_url": null,
           "source_ref": "qyl-registry.json",
-          "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+          "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
           "source_date_epoch": null
         },
         {
@@ -178150,14 +178150,14 @@
           "source_registry": "qyl",
           "schema_url": null,
           "source_ref": "qyl-registry.json",
-          "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+          "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
           "source_date_epoch": null
         }
       ],
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
       "source_date_epoch": null
     }
   ],
@@ -191662,7 +191662,7 @@
             "source_registry": "qyl",
             "schema_url": null,
             "source_ref": "qyl-registry.json",
-            "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+            "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
             "source_date_epoch": null
           },
           {
@@ -191674,7 +191674,7 @@
             "source_registry": "qyl",
             "schema_url": null,
             "source_ref": "qyl-registry.json",
-            "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+            "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
             "source_date_epoch": null
           }
         ]
@@ -199724,18 +199724,6 @@
       "source_date_epoch": "1788399101"
     },
     {
-      "key": "qyl.agent.diagnostic.extension.id",
-      "type": "string",
-      "brief": "Stable discriminator of the machine-readable agent diagnostic extension.",
-      "note": "",
-      "stability": "development",
-      "source_registry": "qyl",
-      "schema_url": null,
-      "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
-      "source_date_epoch": null
-    },
-    {
       "key": "qyl.capability.id",
       "type": "string",
       "brief": "Stable identifier of the qyl capability that produced the telemetry.",
@@ -199744,7 +199732,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
       "source_date_epoch": null
     },
     {
@@ -199756,7 +199744,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
       "source_date_epoch": null
     },
     {
@@ -199768,7 +199756,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
       "source_date_epoch": null
     },
     {
@@ -199891,217 +199879,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
-      "source_date_epoch": null
-    },
-    {
-      "key": "qyl.agent.diagnostic.snapshot.id",
-      "type": "string",
-      "brief": "Stable identifier of one immutable agent diagnostic state frame.",
-      "note": "",
-      "stability": "development",
-      "source_registry": "qyl",
-      "schema_url": null,
-      "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
-      "source_date_epoch": null
-    },
-    {
-      "key": "qyl.agent.diagnostic.format.version",
-      "type": "int",
-      "brief": "Version of the machine-readable agent diagnostic state-frame format.",
-      "note": "",
-      "stability": "development",
-      "source_registry": "qyl",
-      "schema_url": null,
-      "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
-      "source_date_epoch": null
-    },
-    {
-      "key": "qyl.agent.diagnostic.probe.id",
-      "type": "string",
-      "brief": "Bounded machine identifier of the diagnostic probe that captured the state frame.",
-      "note": "",
-      "stability": "development",
-      "source_registry": "qyl",
-      "schema_url": null,
-      "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
-      "source_date_epoch": null
-    },
-    {
-      "key": "qyl.agent.diagnostic.phase",
-      "type": {
-        "members": [
-          {
-            "id": "input",
-            "value": "input",
-            "stability": "development",
-            "brief": "State captured before the probed operation."
-          },
-          {
-            "id": "output",
-            "value": "output",
-            "stability": "development",
-            "brief": "State captured after the probed operation."
-          },
-          {
-            "id": "error",
-            "value": "error",
-            "stability": "development",
-            "brief": "State captured on an error path."
-          },
-          {
-            "id": "checkpoint",
-            "value": "checkpoint",
-            "stability": "development",
-            "brief": "State captured at an explicit verification checkpoint."
-          }
-        ]
-      },
-      "brief": "Program boundary at which an agent diagnostic state frame was captured.",
-      "note": "",
-      "stability": "development",
-      "source_registry": "qyl",
-      "schema_url": null,
-      "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
-      "source_date_epoch": null
-    },
-    {
-      "key": "qyl.agent.diagnostic.outcome",
-      "type": {
-        "members": [
-          {
-            "id": "pass",
-            "value": "pass",
-            "stability": "development",
-            "brief": "Every evaluated diagnostic check passed."
-          },
-          {
-            "id": "fail",
-            "value": "fail",
-            "stability": "development",
-            "brief": "At least one evaluated diagnostic check failed."
-          },
-          {
-            "id": "unknown",
-            "value": "unknown",
-            "stability": "development",
-            "brief": "No failed check was observed, but at least one check could not be evaluated."
-          },
-          {
-            "id": "not_evaluated",
-            "value": "not_evaluated",
-            "stability": "development",
-            "brief": "The state frame contained no diagnostic checks."
-          }
-        ]
-      },
-      "brief": "Deterministically computed aggregate outcome of an agent diagnostic state frame.",
-      "note": "",
-      "stability": "development",
-      "source_registry": "qyl",
-      "schema_url": null,
-      "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
-      "source_date_epoch": null
-    },
-    {
-      "key": "qyl.agent.diagnostic.variable.count",
-      "type": "int",
-      "brief": "Number of dynamic variables described by an agent diagnostic state frame.",
-      "note": "",
-      "stability": "development",
-      "source_registry": "qyl",
-      "schema_url": null,
-      "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
-      "source_date_epoch": null
-    },
-    {
-      "key": "qyl.agent.diagnostic.check.count",
-      "type": "int",
-      "brief": "Number of machine-readable checks in an agent diagnostic state frame.",
-      "note": "",
-      "stability": "development",
-      "source_registry": "qyl",
-      "schema_url": null,
-      "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
-      "source_date_epoch": null
-    },
-    {
-      "key": "qyl.agent.diagnostic.check.failed_count",
-      "type": "int",
-      "brief": "Number of failed checks in an agent diagnostic state frame.",
-      "note": "",
-      "stability": "development",
-      "source_registry": "qyl",
-      "schema_url": null,
-      "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
-      "source_date_epoch": null
-    },
-    {
-      "key": "qyl.workflow.run.id",
-      "type": "string",
-      "brief": "Stable workflow run identifier mirrored into telemetry for journal correlation.",
-      "note": "",
-      "stability": "development",
-      "source_registry": "qyl",
-      "schema_url": null,
-      "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
-      "source_date_epoch": null
-    },
-    {
-      "key": "qyl.workflow.event.id",
-      "type": "string",
-      "brief": "Stable immutable workflow journal event identifier mirrored into telemetry for correlation.",
-      "note": "",
-      "stability": "development",
-      "source_registry": "qyl",
-      "schema_url": null,
-      "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
-      "source_date_epoch": null
-    },
-    {
-      "key": "qyl.workflow.attempt.id",
-      "type": "string",
-      "brief": "Stable workflow attempt identifier mirrored into telemetry for journal correlation.",
-      "note": "",
-      "stability": "development",
-      "source_registry": "qyl",
-      "schema_url": null,
-      "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
-      "source_date_epoch": null
-    },
-    {
-      "key": "qyl.workflow.agent.id",
-      "type": "string",
-      "brief": "Stable workflow agent identifier mirrored into telemetry for journal correlation.",
-      "note": "",
-      "stability": "development",
-      "source_registry": "qyl",
-      "schema_url": null,
-      "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
-      "source_date_epoch": null
-    },
-    {
-      "key": "qyl.workflow.tool_call.id",
-      "type": "string",
-      "brief": "Stable workflow tool-call identifier mirrored into telemetry for journal correlation.",
-      "note": "",
-      "stability": "development",
-      "source_registry": "qyl",
-      "schema_url": null,
-      "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
       "source_date_epoch": null
     },
     {
@@ -200113,7 +199891,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
       "source_date_epoch": null
     },
     {
@@ -200125,7 +199903,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
       "source_date_epoch": null
     },
     {
@@ -200137,7 +199915,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
       "source_date_epoch": null
     },
     {
@@ -200149,7 +199927,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
       "source_date_epoch": null
     },
     {
@@ -200161,7 +199939,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
       "source_date_epoch": null
     },
     {
@@ -200173,7 +199951,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
       "source_date_epoch": null
     },
     {
@@ -200185,7 +199963,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
       "source_date_epoch": null
     },
     {
@@ -200197,7 +199975,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
       "source_date_epoch": null
     },
     {
@@ -200209,7 +199987,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
       "source_date_epoch": null
     },
     {
@@ -200221,7 +199999,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
       "source_date_epoch": null
     }
   ],
@@ -243256,7 +243034,7 @@
                 "source_registry": "qyl",
                 "schema_url": null,
                 "source_ref": "qyl-registry.json",
-                "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+                "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
                 "source_date_epoch": null
               },
               {
@@ -243268,7 +243046,7 @@
                 "source_registry": "qyl",
                 "schema_url": null,
                 "source_ref": "qyl-registry.json",
-                "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+                "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
                 "source_date_epoch": null
               }
             ]
@@ -243280,7 +243058,7 @@
           "source_registry": "qyl",
           "schema_url": null,
           "source_ref": "qyl-registry.json",
-          "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+          "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
           "source_date_epoch": null
         },
         {
@@ -243350,7 +243128,7 @@
           "source_registry": "qyl",
           "schema_url": null,
           "source_ref": "qyl-registry.json",
-          "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+          "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
           "source_date_epoch": null
         },
         {
@@ -243368,14 +243146,14 @@
           "source_registry": "qyl",
           "schema_url": null,
           "source_ref": "qyl-registry.json",
-          "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+          "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
           "source_date_epoch": null
         }
       ],
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "8bb5e2e7b08bd990cc5f871a3e10292cdb4dd5912295f64b6f29c2306dfa165c",
+      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
       "source_date_epoch": null
     }
   ],
@@ -251598,7 +251376,6 @@
     "System.Runtime"
   ],
   "event_names": [
-    "qyl.agent.diagnostic.snapshot",
     "qyl.http.client",
     "qyl.rpc.grpc"
   ]

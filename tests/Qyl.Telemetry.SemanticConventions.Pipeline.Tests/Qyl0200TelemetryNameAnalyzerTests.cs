@@ -36,15 +36,13 @@ public sealed class Qyl0200TelemetryNameAnalyzerTests
                 """
                 activity?.SetTag("http.request.method", "GET");
                 activity?.SetTag("qyl.instrumentation.domain", "http");
-                activity?.SetTag("qyl.agent.diagnostic.extension.id", "qyl.agent.diagnostic.snapshot");
-                activity?.SetTag("qyl.agent.diagnostic.format.version", 1);
-                activity?.SetTag("qyl.agent.diagnostic.snapshot.id", "snapshot-1");
-                activity?.SetTag("qyl.agent.diagnostic.probe.id", "vcs.root.resolve");
-                activity?.SetTag("qyl.agent.diagnostic.phase", "checkpoint");
-                activity?.SetTag("qyl.agent.diagnostic.outcome", "pass");
-                activity?.SetTag("qyl.agent.diagnostic.variable.count", 3);
-                activity?.SetTag("qyl.agent.diagnostic.check.count", 2);
-                activity?.SetTag("qyl.agent.diagnostic.check.failed_count", 0);
+                activity?.SetTag("qyl.capability.id", "capability-1");
+                activity?.SetTag("qyl.capability.kind", "instrumentation");
+                activity?.SetTag("qyl.exception.source", "error-capture");
+                activity?.SetTag("qyl.project.id", "project-1");
+                activity?.SetTag("qyl.workspace.id", "workspace-1");
+                activity?.SetTag("qyl.mcp.server.id", "server-1");
+                activity?.SetTag("qyl.mcp.tool.name", "search");
                 """));
 
         diagnostics.Should().BeEmpty();
@@ -131,7 +129,7 @@ public sealed class Qyl0200TelemetryNameAnalyzerTests
             ActivitySink(
                 """
                 activity?.AddEvent(new ActivityEvent("exception"));
-                activity?.AddEvent(new ActivityEvent("qyl.agent.diagnostic.snapshot"));
+                activity?.AddEvent(new ActivityEvent("qyl.http.client"));
                 """));
         clean.Should().BeEmpty();
 
