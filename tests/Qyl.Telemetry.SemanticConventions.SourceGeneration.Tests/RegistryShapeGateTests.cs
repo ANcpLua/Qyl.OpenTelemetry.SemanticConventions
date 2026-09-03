@@ -48,7 +48,7 @@ public sealed class RegistryShapeGateTests
             .GetProperty("source_ref").GetString().Should().Be("v1.44.0");
         sources.Single(source => source.GetProperty("source_registry").GetString() == "genai")
             .GetProperty("source_commit").GetString().Should()
-            .Be("eaefa142a94cefe5d199d47e4a73727dfbd825df");
+            .Be("3bda5760dcc5727a3c3ca4e898e79fad646988bc");
 
         // qyl: ref is the file, commit is the SHA-256 of its bytes, and there is no schema
         // URL or upstream date to cite.

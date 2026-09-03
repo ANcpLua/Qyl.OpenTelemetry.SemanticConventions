@@ -9,6 +9,40 @@ clean `net10.0` consumer.
 
 ## [Unreleased]
 
+### Changed
+
+- `SemConvGenAiRef` moves from `eaefa14` to `3bda576`, the head of
+  open-telemetry/semantic-conventions-genai `main`, absorbing eleven upstream commits. The core
+  schema stays `1.44.0` and Weaver stays `0.25.1`: the pinned GenAI manifest still declares
+  `1.44.0` as its dependency, so `generate.sh`'s core-dependency guard passes without a coupled
+  bump. The registry was regenerated and is idempotent on a second run. **Nothing was added,
+  removed, or renamed** — 980 catalog attributes, 1287 groups, 64 entities before and after, and
+  no generated constant disappeared, so no published package's public API moves. Three substantive
+  deltas, everything else in the regenerated `resolved-registry.json` being per-row pin
+  provenance:
+  - `gen_ai.usage.cache_read.input_tokens` and `gen_ai.usage.cache_write.input_tokens` are no
+    longer referenced by the `gen_ai.invoke_agent.internal` span (upstream #469). Both were
+    `recommended` there, never required; both attributes stay in the catalog, stay `development`,
+    stay undeprecated, and stay on the inference spans, so `SemconvRegistryFacts.g.cs` and
+    `QYL0401` are unaffected.
+  - The per-message `finish_reason` field of the `gen_ai.output.messages` payload schema is
+    deprecated in favour of `gen_ai.response.finish_reasons` (upstream #363). In the shipped
+    `schemas/gen-ai/gen-ai-output-messages.json` it leaves the `OutputMessage` `required` list and
+    gains `"deprecated": true`, a `null` type member, and a `null` default — a relaxation, so a
+    document that omits it now validates and one that carries it still does.
+  - `gen_ai.response.finish_reasons` gains a note pinning its contract (one entry per returned
+    generation, in order; `error` for a position whose reason never arrived) and a third example.
+    Its type, stability, and brief are unchanged.
+
+  Across all 136 files the package projections emit, the only changes are the provenance header sha
+  in `GenAiAttributes.g.cs`, `McpAttributes.g.cs` and `OpenaiAttributes.g.cs`, and the two doc
+  comments above. Every member name is identical, and the stable tier does not move at all.
+
+  The delta is recorded in [`qyl-references/REFERENCE-STATUS.md`](qyl-references/REFERENCE-STATUS.md),
+  which this change also introduces — the path
+  [`check_pin_freshness.py`](src/Qyl.Telemetry.SemanticConventions.SourceGeneration/scripts/check_pin_freshness.py)
+  has always named in its stale-pin report, but which no commit had created.
+
 ## [7.1.1] - 2026-09-02
 
 ### Fixed
