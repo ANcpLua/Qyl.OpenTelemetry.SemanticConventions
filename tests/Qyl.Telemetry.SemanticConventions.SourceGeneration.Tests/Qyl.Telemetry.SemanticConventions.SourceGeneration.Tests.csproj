@@ -22,6 +22,8 @@
                       LogicalName="qyl.metricdefinitions.http-server.stable.expected.txt"/>
     <EmbeddedResource Include="Snapshots\qyl.metricdefinitions.http-server.incubating.expected.txt"
                       LogicalName="qyl.metricdefinitions.http-server.incubating.expected.txt"/>
+    <EmbeddedResource Include="Snapshots\qyl.metricdefinitions.container.incubating.expected.txt"
+                      LogicalName="qyl.metricdefinitions.container.incubating.expected.txt"/>
     <EmbeddedResource Include="Snapshots\qyl.activities.http.stable.expected.txt"
                       LogicalName="qyl.activities.http.stable.expected.txt"/>
     <EmbeddedResource Include="Snapshots\qyl.activities.http.incubating.expected.txt"

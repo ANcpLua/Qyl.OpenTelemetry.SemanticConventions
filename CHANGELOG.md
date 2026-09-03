@@ -9,6 +9,13 @@ clean `net10.0` consumer.
 
 ## [Unreleased]
 
+### Added
+
+- `qyl.metricdefinitions.container.incubating.expected.txt`: a second metric-definitions
+  byte-identity snapshot, at a root whose metrics carry entity associations. The existing
+  `http.server` snapshots pin a root with none, so they cannot see a regression in how
+  `entity_associations` is read — the `container` snapshot pins 14 populated `EntityRef`s.
+
 ### Changed
 
 - `WeaverVersion` moves from `0.25.1` to `0.26.1`, in the same pin wave. The re-rendered projection
@@ -22,14 +29,13 @@ clean `net10.0` consumer.
   `RegistryLoader.ParseStringArray` keeps only string items and drops anything else silently, so
   the new shape parsed as **empty** and every populated `entities:` argument in the generated
   `MetricDefinition`s collapsed to `Array.Empty<EntityRef>()` — 275 metrics across the `container`,
-  `k8s.pod`, `process` and `system` roots — with no compile error and no failing snapshot, because
-  the sampled `http.server` root has no entity associations. `merge_registries.py` now normalises
+  `k8s.pod`, `process` and `system` roots — with no compile error. `merge_registries.py` now normalises
   `entity_associations` to entity-type strings on groups, metrics and events, keeping the qyl-owned
   projection's documented shape stable across Weaver versions; a shape that is neither string nor
   `{"type": ...}` raises a `MergeError` naming the row instead of being dropped.
 
-- `SemConvGenAiRef` moves from `eaefa14` to `3bda576`, the head of
-  open-telemetry/semantic-conventions-genai `main`, absorbing eleven upstream commits. The core
+- `SemConvGenAiRef` moves from `eaefa14` to `fee465d`, the head of
+  open-telemetry/semantic-conventions-genai `main`, absorbing twelve upstream commits. The core
   schema stays `1.44.0` and Weaver stays `0.25.1`: the pinned GenAI manifest still declares
   `1.44.0` as its dependency, so `generate.sh`'s core-dependency guard passes without a coupled
   bump. The registry was regenerated and is idempotent on a second run. **Nothing was added,

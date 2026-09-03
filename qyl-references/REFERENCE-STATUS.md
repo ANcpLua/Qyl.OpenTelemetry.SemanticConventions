@@ -13,12 +13,12 @@ changed in the generated surface — added, removed, renamed, or deprecated attr
 events, spans and payload schemas. A removal is a public-API change for the published packages and
 is called out as such.
 
-## 2026-09-03 — `SemConvGenAiRef` `eaefa14` → `3bda576`, Weaver `0.25.1` → `0.26.1`
+## 2026-09-03 — `SemConvGenAiRef` `eaefa14` → `fee465d`, Weaver `0.25.1` → `0.26.1`
 
 | Pin | Before | After |
 |---|---|---|
 | `SemConvSchemaVersion` | `1.44.0` | `1.44.0` (unchanged) |
-| `SemConvGenAiRef` | `eaefa142a94cefe5d199d47e4a73727dfbd825df` | `3bda5760dcc5727a3c3ca4e898e79fad646988bc` |
+| `SemConvGenAiRef` | `eaefa142a94cefe5d199d47e4a73727dfbd825df` | `fee465db333bdd6a7d2faa320edab5cf3101a4f4` |
 | `WeaverVersion` | `0.25.1` | `0.26.1` |
 
 Both moving pins land in one wave, each verified on its own: the GenAI ref first, then Weaver on
@@ -31,7 +31,7 @@ is idempotent: a second run leaves no further diff.
 
 ### GenAI registry: upstream commits absorbed
 
-open-telemetry/semantic-conventions-genai, `eaefa14..3bda576` (11 commits):
+open-telemetry/semantic-conventions-genai, `eaefa14..fee465d` (12 commits):
 
 - `55a32cd` Add concise PR description and unslop skills (#465)
 - `56d6b11` Exclude Slack workspace links from the link check (#467)
@@ -44,10 +44,12 @@ open-telemetry/semantic-conventions-genai, `eaefa14..3bda576` (11 commits):
 - `ac46a5d` Update reference implementation dependencies (non-major) (#486)
 - `ebf42b1` Update tooling dependencies (#491)
 - `3bda576` Update tooling dependencies to v10 (#492)
+- `fee465d` Update dependency open-telemetry/weaver to v0.26.0 (#494)
 
 Only three upstream model files moved: `model/gen-ai/registry.yaml`, `model/gen-ai/spans.yaml`, and
 `model/gen-ai/gen-ai-output-messages.json`. The rest are repository tooling, CI, and lockfiles with
-no projection into the registry.
+no projection into the registry — `fee465d`, which landed while this change was in flight, touches
+only `versions.env` and leaves the merged registry identical apart from the recorded pin.
 
 ### GenAI registry: generated-surface delta
 
@@ -132,9 +134,15 @@ representation.
 But `RegistryLoader.ParseStringArray` keeps only `JsonString` items and drops anything else without
 complaint, so the object shape parses as **empty**. Rendering the metric definitions against the
 unnormalised 0.26.0 projection showed exactly that: every populated `entities:` argument collapsed
-to `Array.Empty<EntityRef>()` across the `container`, `k8s.pod`, `process` and `system` roots. No
-compile error, no failing snapshot on the sampled `http.server` root — which has no entity
-associations — just a quietly emptier shipped surface.
+to `Array.Empty<EntityRef>()` across the `container`, `k8s.pod`, `process` and `system` roots — 275
+metrics — with no compile error.
+
+CI would not have missed it: `SemConvMetricDefinitionsGeneratorTests.Emits_FirstClass_Definitions_For_Process_Marker`
+asserts `entities: new EntityRef[] { new("process") }` and fails on the unnormalised projection.
+The byte-identity snapshots would have missed it, because the only sampled metric root is
+`http.server`, which has no entity associations. So the gate held by one `Contain` on one metric.
+`qyl.metricdefinitions.container.incubating.expected.txt` now pins a populated root byte for byte
+(14 `EntityRef`s), so the next shape change shows its full blast radius instead of one assertion.
 
 `merge_registries.py` now normalises `entity_associations` to entity-type strings on groups,
 metrics and events, so the qyl projection keeps one documented shape across Weaver versions. This is
