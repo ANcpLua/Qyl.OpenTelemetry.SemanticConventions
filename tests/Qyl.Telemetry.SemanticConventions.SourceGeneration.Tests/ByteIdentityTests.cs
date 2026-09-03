@@ -79,6 +79,35 @@ public sealed class ByteIdentityTests
             "emitted 'HttpServerIncubatingMetricDefinitions.g.cs' must be byte-identical to qyl.metricdefinitions.http-server.incubating.expected.txt");
     }
 
+    /// <summary>
+    /// The `container` root is the entity-association sample. Every `http.server` metric has an
+    /// empty `entities:` argument, so the two snapshots above cannot see a regression in how
+    /// `entity_associations` is read — as when Weaver 0.26.0 changed that field from a list of
+    /// strings to a list of `{"type": ...}` objects, which `RegistryLoader.ParseStringArray`
+    /// parses as empty, emptying every populated `entities:` in the shipped `MetricDefinition`s.
+    /// `SemConvMetricDefinitionsGeneratorTests.Emits_FirstClass_Definitions_For_Process_Marker`
+    /// catches that through one `Contain` on one metric; this snapshot covers a populated root
+    /// byte for byte, so the blast radius of the next such change is visible rather than inferred.
+    /// </summary>
+    [Fact]
+    public void MetricDefinitions_Container_Incubating_Matches_Snapshot()
+    {
+        const string source = """
+            using Qyl.Telemetry.SemanticConventions.SourceGeneration;
+            namespace OpenTelemetry.SemanticConventions;
+            [SemanticConventionIncubatingMetricDefinitions("container")]
+            public static partial class ContainerIncubatingMetricDefinitions;
+            """;
+
+        var actual = RunAndGetGenerated<SemConvMetricDefinitionsGenerator>(source, "ContainerIncubatingMetricDefinitions.g.cs");
+        var expected = LoadOrRegen(actual, "qyl.metricdefinitions.container.incubating.expected.txt");
+
+        actual.Should().Be(expected,
+            "emitted 'ContainerIncubatingMetricDefinitions.g.cs' must be byte-identical to qyl.metricdefinitions.container.incubating.expected.txt");
+        actual.Should().Contain("entities: new global::Qyl.Telemetry.SemanticConventions.EntityRef[] { new(\"container\") }",
+            "the container metrics carry an entity association; an empty EntityRef array means entity_associations stopped being read");
+    }
+
     [Fact]
     public void Activities_Http_Stable_Matches_Snapshot()
     {

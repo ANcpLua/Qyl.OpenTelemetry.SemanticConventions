@@ -9,6 +9,64 @@ clean `net10.0` consumer.
 
 ## [Unreleased]
 
+### Added
+
+- `qyl.metricdefinitions.container.incubating.expected.txt`: a second metric-definitions
+  byte-identity snapshot, at a root whose metrics carry entity associations. The existing
+  `http.server` snapshots pin a root with none, so they cannot see a regression in how
+  `entity_associations` is read — the `container` snapshot pins 14 populated `EntityRef`s.
+
+### Changed
+
+- `WeaverVersion` moves from `0.25.1` to `0.26.1`, in the same pin wave. The re-rendered projection
+  is identical to the `0.25.1` one except the recorded `weaver_version`, and all 136 files the
+  package projections emit are byte-identical, so no member changes and no baseline moves for this
+  pin. (`0.26.1` released while this change was in flight; its projection differs from `0.26.0`'s
+  only by the recorded `weaver_version`.)
+
+  That holds only because of one fix in the same commit. Weaver 0.26.0 changes
+  `entity_associations` from a list of strings to a list of `{"type": ...}` objects.
+  `RegistryLoader.ParseStringArray` keeps only string items and drops anything else silently, so
+  the new shape parsed as **empty** and every populated `entities:` argument in the generated
+  `MetricDefinition`s collapsed to `Array.Empty<EntityRef>()` — 275 metrics across the `container`,
+  `k8s.pod`, `process` and `system` roots — with no compile error. `merge_registries.py` now normalises
+  `entity_associations` to entity-type strings on groups, metrics and events, keeping the qyl-owned
+  projection's documented shape stable across Weaver versions; a shape that is neither string nor
+  `{"type": ...}` raises a `MergeError` naming the row instead of being dropped.
+
+- `SemConvGenAiRef` moves from `eaefa14` to `fee465d`, the head of
+  open-telemetry/semantic-conventions-genai `main`, absorbing twelve upstream commits. The core
+  schema stays `1.44.0` and Weaver stays `0.25.1`: the pinned GenAI manifest still declares
+  `1.44.0` as its dependency, so `generate.sh`'s core-dependency guard passes without a coupled
+  bump. The registry was regenerated and is idempotent on a second run. **Nothing was added,
+  removed, or renamed** — 980 catalog attributes, 1287 groups, 64 entities before and after, and
+  no generated constant disappeared, so no published package's public API moves. Three substantive
+  deltas, everything else in the regenerated `resolved-registry.json` being per-row pin
+  provenance:
+  - `gen_ai.usage.cache_read.input_tokens` and `gen_ai.usage.cache_write.input_tokens` are no
+    longer referenced by the `gen_ai.invoke_agent.internal` span (upstream #469). Both were
+    `recommended` there, never required; both attributes stay in the catalog, stay `development`,
+    stay undeprecated, and stay on the inference spans, so `SemconvRegistryFacts.g.cs` and
+    `QYL0401` are unaffected.
+  - The per-message `finish_reason` field of the `gen_ai.output.messages` payload schema is
+    deprecated in favour of `gen_ai.response.finish_reasons` (upstream #363). In the shipped
+    `schemas/gen-ai/gen-ai-output-messages.json` it leaves the `OutputMessage` `required` list and
+    gains `"deprecated": true`, a `null` type member, and a `null` default — a relaxation, so a
+    document that omits it now validates and one that carries it still does.
+  - `gen_ai.response.finish_reasons` gains a note pinning its contract (one entry per returned
+    generation, in order; `error` for a position whose reason never arrived) and a third example.
+    Its type, stability, and brief are unchanged.
+
+  Across all 136 files the package projections emit, the only changes are the provenance header sha
+  in `GenAiAttributes.g.cs`, `McpAttributes.g.cs` and `OpenaiAttributes.g.cs`, and the two doc
+  comments above. Every member name is identical, and the stable tier does not move at all.
+
+  Both pins' deltas are recorded in
+  [`qyl-references/REFERENCE-STATUS.md`](qyl-references/REFERENCE-STATUS.md),
+  which this change also introduces — the path
+  [`check_pin_freshness.py`](src/Qyl.Telemetry.SemanticConventions.SourceGeneration/scripts/check_pin_freshness.py)
+  has always named in its stale-pin report, but which no commit had created.
+
 ## [7.1.1] - 2026-09-02
 
 ### Fixed
