@@ -7,7 +7,7 @@ gate: CI packs the solution, publishes through NuGet trusted publishing, and
 [`eng/release/verify-packages.sh`](eng/release/verify-packages.sh) proves the indexed packages in a
 clean `net10.0` consumer.
 
-## [Unreleased]
+## [8.0.0] - 2026-09-03
 
 ### Added
 
