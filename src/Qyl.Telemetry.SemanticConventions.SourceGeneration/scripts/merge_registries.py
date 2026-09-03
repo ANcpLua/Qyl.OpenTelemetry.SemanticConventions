@@ -372,6 +372,36 @@ def qyl_metric_rows(qyl_registry, catalog_by_key, provenance):
     return metrics, groups
 
 
+def normalize_entity_associations(rows):
+    """Pin `entity_associations` to a list of entity-type strings.
+
+    Weaver emits this as a list of plain strings up to 0.25.1 and as a list of
+    `{"type": ...}` objects from 0.26.0 onward. The qyl projection is qyl-owned JSON, not
+    Weaver's resolved-registry contract, and `RegistryLoader.ParseStringArray` reads
+    strings — an object shape parses as *empty*, which would silently drop the entity
+    associations of every metric definition instead of failing. Normalising here keeps
+    one documented shape across Weaver versions. An association that is neither shape
+    is a generation-time fault, not something to drop quietly.
+    """
+    for row in rows:
+        associations = row.get("entity_associations")
+        if not associations:
+            continue
+        normalized = []
+        for association in associations:
+            if isinstance(association, str):
+                normalized.append(association)
+            elif isinstance(association, dict) and isinstance(association.get("type"), str):
+                normalized.append(association["type"])
+            else:
+                raise MergeError(
+                    f"unrecognised entity association {association!r} in row "
+                    f"{row.get('id') or row.get('metric_name') or row.get('event_name')!r}; "
+                    "Weaver changed the shape again — teach normalize_entity_associations the new one")
+        row["entity_associations"] = normalized
+    return rows
+
+
 def merge(core, genai, qyl, qyl_bytes, core_model_dir, genai_model_dir, schema_version, weaver_version):
     guard_qyl_registry(qyl, core, genai)
 
@@ -408,10 +438,12 @@ def merge(core, genai, qyl, qyl_bytes, core_model_dir, genai_model_dir, schema_v
         "manifests": collect_manifests(model_dirs, source_by_registry),
         "model_files": collect_model_files(model_dirs, source_by_registry),
         "json_schemas": collect_json_schemas(catalog, model_dirs, source_by_registry),
-        "groups": unique_by(list(core.get("groups", [])) + list(genai.get("groups", [])) + qyl_groups, group_key),
+        "groups": normalize_entity_associations(
+            unique_by(list(core.get("groups", [])) + list(genai.get("groups", [])) + qyl_groups, group_key)),
         "catalog": catalog,
-        "metrics": unique_by(list(core.get("metrics", [])) + list(genai.get("metrics", [])) + qyl_metrics, metric_key),
-        "events": events,
+        "metrics": normalize_entity_associations(
+            unique_by(list(core.get("metrics", [])) + list(genai.get("metrics", [])) + qyl_metrics, metric_key)),
+        "events": normalize_entity_associations(events),
         "entities": unique_by(
             list(core.get("entities", [])) + list(genai.get("entities", [])),
             lambda entity: entity.get("id", "") or entity.get("name", ""),

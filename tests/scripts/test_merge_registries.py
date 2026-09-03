@@ -201,6 +201,24 @@ class MergeRegistriesTests(unittest.TestCase):
             str(raised.exception),
             "qyl-registry.json local_attribute_values entry 'http.route' names a non-enum upstream attribute")
 
+    def test_entity_associations_are_normalised_to_type_strings(self):
+        """Weaver <=0.25.1 emits entity associations as strings, >=0.26.0 as {"type": ...}.
+
+        RegistryLoader.ParseStringArray reads strings, so an unnormalised object shape
+        parses as empty and silently drops every metric definition's entities.
+        """
+        self.core["metrics"][0]["entity_associations"] = [{"type": "container"}, "host"]
+        self.core["groups"][0]["entity_associations"] = [{"type": "k8s.pod"}]
+        merged, _ = self.run_merge({})
+        self.assertEqual(merged["metrics"][0]["entity_associations"], ["container", "host"])
+        self.assertEqual(merged["groups"][0]["entity_associations"], ["k8s.pod"])
+
+    def test_an_unrecognised_entity_association_shape_is_refused(self):
+        self.core["metrics"][0]["entity_associations"] = [{"name": "container"}]
+        with self.assertRaises(MergeError) as raised:
+            self.run_merge({})
+        self.assertIn("unrecognised entity association", str(raised.exception))
+
 
 
 if __name__ == "__main__":

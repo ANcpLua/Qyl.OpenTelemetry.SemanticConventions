@@ -13,20 +13,23 @@ changed in the generated surface — added, removed, renamed, or deprecated attr
 events, spans and payload schemas. A removal is a public-API change for the published packages and
 is called out as such.
 
-## 2026-09-03 — `SemConvGenAiRef` `eaefa14` → `3bda576`
+## 2026-09-03 — `SemConvGenAiRef` `eaefa14` → `3bda576`, Weaver `0.25.1` → `0.26.1`
 
 | Pin | Before | After |
 |---|---|---|
 | `SemConvSchemaVersion` | `1.44.0` | `1.44.0` (unchanged) |
 | `SemConvGenAiRef` | `eaefa142a94cefe5d199d47e4a73727dfbd825df` | `3bda5760dcc5727a3c3ca4e898e79fad646988bc` |
-| `WeaverVersion` | `0.25.1` | `0.25.1` (unchanged) |
+| `WeaverVersion` | `0.25.1` | `0.26.1` |
+
+Both moving pins land in one wave, each verified on its own: the GenAI ref first, then Weaver on
+top of it, so the two deltas below are attributable independently.
 
 The pinned GenAI manifest still declares `https://opentelemetry.io/schemas/1.44.0` as its core
 dependency and still publishes `https://opentelemetry.io/schemas/gen-ai-dev/1.42.0-dev`, so
 `generate.sh`'s core-dependency guard passes without touching `SemConvSchemaVersion`. Regeneration
 is idempotent: a second run leaves no further diff.
 
-### Upstream commits absorbed
+### GenAI registry: upstream commits absorbed
 
 open-telemetry/semantic-conventions-genai, `eaefa14..3bda576` (11 commits):
 
@@ -46,7 +49,7 @@ Only three upstream model files moved: `model/gen-ai/registry.yaml`, `model/gen-
 `model/gen-ai/gen-ai-output-messages.json`. The rest are repository tooling, CI, and lockfiles with
 no projection into the registry.
 
-### Generated-surface delta
+### GenAI registry: generated-surface delta
 
 **Nothing was added, removed, or renamed.** The merged catalog holds 980 attributes before and
 after; groups 1287, entities 64, events 1, metrics 1, `scope_names` 6, `event_names` 3 — all
@@ -79,7 +82,7 @@ and 58 groups sourced from `genai`, 7944 of those lines):
   generations, not a filtered or truncated message list. Type (`string[]`), stability
   (`development`), and brief are unchanged, so no constant or analyzer fact moves.
 
-### Shipped generated code
+### GenAI registry: shipped generated code
 
 All 136 files the package projections emit were rendered under both pins and compared. The file set
 is identical and every member name is identical (`GenAiAttributes` 124 members, `McpAttributes` 31,
@@ -99,12 +102,53 @@ comments, neither because a member changed:
 The full-file snapshots (`qyl.package.attributes.http.*`, `qyl.package.attributes.qyl.incubating`,
 `qyl.package.names`, `qyl.package.schemaurl`) are untouched: the stable tier does not move.
 
+
+### Weaver `0.25.1` → `0.26.1`
+
+Binary fetched the way `generate.sh` documents: `gh release download v0.26.1 --repo
+open-telemetry/weaver --pattern 'weaver-aarch64-apple-darwin.tar.xz*'`, checksum verified with
+`shasum -a 256 -c` (OK), extracted under `.tools/weaver/0.26.1/`. `generate.sh`'s version guard
+accepts it once `WeaverVersion` names it.
+
+Upstream released `0.26.1` while this change was in flight, so the pin lands there rather than on
+`0.26.0`. Both were rendered: `0.26.1`'s projection differs from `0.26.0`'s only by the recorded
+`weaver_version`, and the `entity_associations` change below arrived in `0.26.0`.
+
+**The re-rendered projection is identical to the 0.25.1 projection except the one
+`"weaver_version"` line** — 980 catalog attributes, 1287 groups, 547 metrics, 27 events, 64
+entities, all byte-identical row for row; `model_files`, `json_schemas`, `manifests` and `sources`
+unchanged. All 136 files the package projections emit are byte-identical, so **no member was added,
+removed, or renamed, and no baseline moved for the Weaver bump.**
+
+That required one code change, because Weaver 0.26.0 changes a shape the projection depends on.
+
+#### `entity_associations` changed shape upstream, and it would have failed silently
+
+Weaver emits `entity_associations` as a list of plain strings up to 0.25.1 and as a list of
+`{"type": ...}` objects from 0.26.0. Nothing is lost in Weaver's own output — all 1834 rows keep the
+same entity types in the same order, and 825 of them (550 groups, 275 metrics) merely change
+representation.
+
+But `RegistryLoader.ParseStringArray` keeps only `JsonString` items and drops anything else without
+complaint, so the object shape parses as **empty**. Rendering the metric definitions against the
+unnormalised 0.26.0 projection showed exactly that: every populated `entities:` argument collapsed
+to `Array.Empty<EntityRef>()` across the `container`, `k8s.pod`, `process` and `system` roots. No
+compile error, no failing snapshot on the sampled `http.server` root — which has no entity
+associations — just a quietly emptier shipped surface.
+
+`merge_registries.py` now normalises `entity_associations` to entity-type strings on groups,
+metrics and events, so the qyl projection keeps one documented shape across Weaver versions. This is
+the projection's own contract, not Weaver's: it is qyl-owned JSON, as the source-generation README
+states. A shape that is neither a string nor `{"type": ...}` now raises a `MergeError` naming the
+row rather than being dropped. Two cases in `tests/scripts/test_merge_registries.py` cover both.
+
+With the normalisation, the metric definitions re-rendered under 0.26.0 are byte-identical to the
+0.25.1 ones.
+
 ### Gates
 
 `dotnet build Qyl.Telemetry.SemanticConventions.slnx -c Release` succeeded at 0 warnings, 0 errors.
-Pipeline tests 73/73, source-generation tests 81/81. Regeneration is idempotent on a second run.
+Pipeline tests 73/73, source-generation tests 81/81, merge-script tests 30/30. Regeneration is
+idempotent on a second run under both pins.
 
-`check_pin_freshness.py` now reports `SemConvSchemaVersion` and `SemConvGenAiRef` current. It also
-reports `WeaverVersion` behind: upstream released weaver `v0.26.0` after issue #37 was filed, which
-recorded `0.25.1` as current. That pin is deliberately **not** moved here — a Weaver bump re-renders
-every projection and is its own reviewed change.
+`check_pin_freshness.py` exits 0: every pin matches upstream.

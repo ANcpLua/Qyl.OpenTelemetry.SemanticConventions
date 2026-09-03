@@ -3,7 +3,7 @@
   "schema_url": "https://opentelemetry.io/schemas/1.44.0",
   "genai_schema_url": "https://opentelemetry.io/schemas/gen-ai-dev/1.42.0-dev",
   "semconv_commit": "e10a930844c6951757a43b849d364f7d056ac32b",
-  "weaver_version": "0.25.1",
+  "weaver_version": "0.26.1",
   "sources": [
     {
       "source_registry": "core",
