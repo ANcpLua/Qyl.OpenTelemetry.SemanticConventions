@@ -148,7 +148,7 @@ public sealed class RegistryShapeGateTests
             .Concat(root.GetProperty("groups").EnumerateArray())
             .Where(row => row.GetProperty("source_registry").GetString() == "qyl")
             .ToArray();
-        qylRows.Should().HaveCount(28 + 1 + 1, "28 attributes, one metric, and its group");
+        qylRows.Should().HaveCount(14 + 1 + 1, "14 attributes, one metric, and its group");
         foreach (var row in qylRows)
         {
             row.GetProperty("source_ref").GetString().Should().Be("qyl-registry.json");
@@ -208,7 +208,7 @@ public sealed class RegistryShapeGateTests
         root.GetProperty("scope_names").EnumerateArray().Select(name => name.GetString())
             .Should().Contain("Qyl.Telemetry.AutoInstrumentation").And.BeInAscendingOrder();
         root.GetProperty("event_names").EnumerateArray().Select(name => name.GetString())
-            .Should().Contain("qyl.agent.diagnostic.snapshot").And.BeInAscendingOrder();
+            .Should().Contain("qyl.http.client").And.BeInAscendingOrder();
     }
 
     [Fact]

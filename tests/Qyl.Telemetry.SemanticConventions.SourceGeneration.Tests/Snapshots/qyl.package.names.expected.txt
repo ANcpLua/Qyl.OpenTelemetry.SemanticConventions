@@ -60,11 +60,6 @@ public static class QylTelemetryNames
     public static class Events
     {
         /// <summary>
-        /// The <c>qyl.agent.diagnostic.snapshot</c> telemetry event.
-        /// </summary>
-        public const string QylAgentDiagnosticSnapshot = "qyl.agent.diagnostic.snapshot";
-
-        /// <summary>
         /// The <c>qyl.http.client</c> telemetry event.
         /// </summary>
         public const string QylHttpClient = "qyl.http.client";

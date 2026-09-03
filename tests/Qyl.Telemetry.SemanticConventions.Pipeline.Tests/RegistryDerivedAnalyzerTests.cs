@@ -38,21 +38,15 @@ public sealed class RegistryDerivedAnalyzerTests
     }
 
     [Fact]
-    public async Task Qyl0013_enforces_agent_diagnostic_summary_types()
+    public async Task Qyl0013_enforces_registry_integer_types()
     {
         var diagnostics = await AnalyzerHarness.RunAsync(
             new Qyl0013IncorrectAttributeTypeAnalyzer(),
             SinkSource(
                 """
-                SetTag("qyl.agent.diagnostic.extension.id", "qyl.agent.diagnostic.snapshot");
-                SetTag("qyl.agent.diagnostic.format.version", "1");
-                SetTag("qyl.agent.diagnostic.snapshot.id", "snapshot-1");
-                SetTag("qyl.agent.diagnostic.probe.id", "probe-1");
-                SetTag("qyl.agent.diagnostic.phase", "checkpoint");
-                SetTag("qyl.agent.diagnostic.outcome", "pass");
-                SetTag("qyl.agent.diagnostic.variable.count", 3);
-                SetTag("qyl.agent.diagnostic.check.count", 2);
-                SetTag("qyl.agent.diagnostic.check.failed_count", 0);
+                SetTag("http.request.method", "GET");
+                SetTag("http.request.resend_count", 1);
+                SetTag("http.response.status_code", "200");
                 """));
 
         diagnostics.Should().ContainSingle();
@@ -61,22 +55,22 @@ public sealed class RegistryDerivedAnalyzerTests
     }
 
     [Fact]
-    public async Task Qyl0012_enforces_agent_diagnostic_phase_and_outcome_tokens()
+    public async Task Qyl0012_enforces_qyl_owned_enum_tokens()
     {
         var diagnostics = await AnalyzerHarness.RunAsync(
             new Qyl0012InvalidAttributeValueAnalyzer(),
             SinkSource(
                 """
-                SetTag("qyl.agent.diagnostic.phase", "CHECKPOINT");
-                SetTag("qyl.agent.diagnostic.outcome", "PASS");
+                SetTag("qyl.instrumentation.domain", "HTTP.CLIENT");
+                SetTag("qyl.instrumentation.domain", "Messaging.RabbitMq");
                 """));
 
         diagnostics.Should().HaveCount(2);
         diagnostics.Select(static diagnostic => diagnostic.Id).Should().OnlyContain(static id => id == "QYL0012");
         diagnostics.Select(static diagnostic => diagnostic.GetMessage(CultureInfo.InvariantCulture))
-            .Should().Contain(static message => message.Contains("checkpoint", StringComparison.Ordinal));
+            .Should().Contain(static message => message.Contains("http.client", StringComparison.Ordinal));
         diagnostics.Select(static diagnostic => diagnostic.GetMessage(CultureInfo.InvariantCulture))
-            .Should().Contain(static message => message.Contains("pass", StringComparison.Ordinal));
+            .Should().Contain(static message => message.Contains("messaging.rabbitmq", StringComparison.Ordinal));
     }
 
     [Fact]
