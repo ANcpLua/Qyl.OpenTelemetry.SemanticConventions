@@ -36,7 +36,7 @@ clean `net10.0` consumer.
 
 - `SemConvGenAiRef` moves from `eaefa14` to `fee465d`, the head of
   open-telemetry/semantic-conventions-genai `main`, absorbing twelve upstream commits. The core
-  schema stays `1.44.0` and Weaver stays `0.25.1`: the pinned GenAI manifest still declares
+  schema stays `1.44.0` and Weaver is `0.26.1`: the pinned GenAI manifest still declares
   `1.44.0` as its dependency, so `generate.sh`'s core-dependency guard passes without a coupled
   bump. The registry was regenerated and is idempotent on a second run. **Nothing was added,
   removed, or renamed** — 980 catalog attributes, 1287 groups, 64 entities before and after, and
