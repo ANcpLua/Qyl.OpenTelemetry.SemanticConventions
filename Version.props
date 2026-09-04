@@ -5,13 +5,13 @@
     <SemConvGenAiRef>fee465db333bdd6a7d2faa320edab5cf3101a4f4</SemConvGenAiRef>
     <WeaverVersion>0.26.1</WeaverVersion>
 
-    <ANcpLuaRoslynUtilitiesVersion>2.2.41</ANcpLuaRoslynUtilitiesVersion>
+    <ANcpLuaRoslynUtilitiesVersion>2.2.46</ANcpLuaRoslynUtilitiesVersion>
     <MicrosoftCodeAnalysisVersion>5.9.0</MicrosoftCodeAnalysisVersion>
 
     <NukeVersion>10.1.0</NukeVersion>
 
-    <XunitVersion>3.2.2</XunitVersion>
-    <AwesomeAssertionsVersion>9.4.0</AwesomeAssertionsVersion>
+    <XunitVersion>4.0.0</XunitVersion>
+    <AwesomeAssertionsVersion>9.6.0</AwesomeAssertionsVersion>
 
     <NuGetPackagingVersion>7.9.0</NuGetPackagingVersion>
     <SystemSecurityCryptographyXmlVersion>10.0.11</SystemSecurityCryptographyXmlVersion>
