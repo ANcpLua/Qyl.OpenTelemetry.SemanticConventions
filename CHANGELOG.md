@@ -133,9 +133,9 @@ rather than deprecated. Removed in one wave with qyl `3.0.0`, `qyl.mcp` `4.0.0` 
   semantic conventions, so the registry-derived projections stop treating them as unknown values.
   The merge fails naming the value the moment an upstream bump lands it, so the local declaration is
   deleted rather than shadowing upstream.
-- [`UPSTREAM-dotnet_wcf.md`](UPSTREAM-dotnet_wcf.md): a draft issue for
+- `UPSTREAM-dotnet_wcf.md`: a draft issue for
   open-telemetry/semantic-conventions asking where `dotnet_wcf` belongs now that `rpc.system` is
-  renamed to `rpc.system.name`, which declares no WCF member. Not filed; `dotnet_wcf` is unchanged
+  renamed to `rpc.system.name`, which declares no WCF member. Not filed, withdrawn on 2026-09-04: upstream PR 3176 left WCF out on purpose pending WCF conventions; `dotnet_wcf` is unchanged
   in this repo.
 - `OtelSemConvInstrumentationLibrary` — a per-project MSBuild opt-out for `QYL0008`. An
   instrumentation library that deliberately version-locks with the incubating tier sets
