@@ -7,6 +7,36 @@ gate: CI packs the solution, publishes through NuGet trusted publishing, and
 [`eng/release/verify-packages.sh`](eng/release/verify-packages.sh) proves the indexed packages in a
 clean `net10.0` consumer.
 
+## [8.0.1] - 2026-09-04
+
+### Changed
+
+- Every third-party pin moves to its current latest stable, in one wave:
+
+  | Package | Before | After |
+  |---|---|---|
+  | `ANcpLua.Roslyn.Utilities`, `.Sources`, `.Polyfills`, `.Testing` | `2.2.41` | `2.2.46` |
+  | `AwesomeAssertions` | `9.4.0` | `9.6.0` |
+  | `xunit.v3.mtp-v2` | `3.2.2` | `4.0.0` |
+
+  `ANcpLua.Roslyn.Utilities.Sources` is a `PrivateAssets="all"` source package, so it compiles
+  into the shipped assemblies rather than being declared as a dependency: this is why the pin
+  move is a release at all. `Qyl.Telemetry.SemanticConventions.SourceGeneration.dll` and
+  `Qyl.Telemetry.SemanticConventions.Analyzers.dll` are rebuilt against `2.2.46`, and neither
+  package gains or loses a `<dependency>`. `AwesomeAssertions`, `xunit.v3.mtp-v2` and
+  `ANcpLua.Roslyn.Utilities` (the binary) are referenced only by the test projects and reach no
+  published package; the xunit major needed no test change.
+
+  Nothing else moves. `SemConvSchemaVersion` stays `1.44.0`, `SemConvGenAiRef` stays `fee465d`
+  and `WeaverVersion` stays `0.26.1` — all three are already current upstream, so the registry and
+  the generated projection are byte-identical to `8.0.0` and
+  [`qyl-references/REFERENCE-STATUS.md`](qyl-references/REFERENCE-STATUS.md) gains no entry.
+  `Microsoft.CodeAnalysis` `5.9.0`, `Nuke.Common` `10.1.0`, `NuGet.Packaging` `7.9.0` and
+  `System.Security.Cryptography.Xml` `10.0.11` were already latest on nuget.org.
+
+  No public API moves in any of the four packages: no constant, analyzer rule or generator output
+  is added, removed or renamed. This is a rebuild, hence a patch.
+
 ## [8.0.0] - 2026-09-03
 
 ### Added
