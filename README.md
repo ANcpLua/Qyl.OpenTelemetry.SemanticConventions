@@ -91,8 +91,31 @@ mismatch names each differing, missing, or extra file, and only `REGEN_SNAPSHOTS
 rewrites them. The other generated files carry their owning script and are guarded by
 `--check` commands or generated documentation checks.
 
-The incubating package exposes the complete source-attributed resolved model through
-`SemanticConventionRegistry.OpenResolvedRegistry()`. The eight structured GenAI
+### Vendor models
+
+`qyl-registry.json` owns one more thing than qyl's own vocabulary: the keys a pinned
+third-party library emits on its own `ActivitySource` or `Meter` and that upstream
+semantic conventions do not define. The collector's attribute allowlist is generated
+from the registry, so a key nothing declares is dropped at ingest — which is exactly
+what happens the moment an application stops wrapping a library and subscribes to its
+native source instead.
+
+The merge refuses any attribute outside `qyl.*` unless a `vendor_models` entry declares
+it. There is no prefix allowlist: a vendor model names the library, the exact version
+qyl pins, the repository and tag its attributes were read at, the licence, and the
+`ActivitySource` names it emits on — and every attribute in it carries the file and line
+of the library that sets the key. A model that cannot answer those questions fails
+generation, and so does a vendor key that shadows an upstream row. Vendor rows are
+`development` stability, carry the qyl provenance (the finding is written down in
+`qyl-registry.json`, whose SHA-256 is the source commit), and stay out of the TypeSpec
+projection, which is the upstream key surface.
+
+The ActivitySource names themselves are registry facts too: they land in
+`vendor_scope_names`, ship as `QylTelemetryNames.VendorActivitySources`, and join
+QYL0200's allowlist, so `AddSource` and a span processor's source match need no literal.
+
+The incubating package exposes the complete source-attributed resolved model — vendor
+models and all — through `SemanticConventionRegistry.OpenResolvedRegistry()`. The eight structured GenAI
 `type: any` attributes expose their exact upstream JSON Schemas through
 `TryOpenPayloadSchema`. These raw schemas are the payload contract; the package does
 not invent parallel DTOs or a partial JSON Schema implementation.

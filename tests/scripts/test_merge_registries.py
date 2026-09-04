@@ -72,8 +72,37 @@ class MergeRegistriesTests(unittest.TestCase):
         self.tmp.cleanup()
 
     def run_merge(self, qyl):
+        """Merge `qyl` against the two-row upstream fixture.
+
+        `qyl.attribute.namespace` is a closed value set the merge recomputes, so every
+        fixture carries one that matches whatever the merged catalog ends up holding —
+        except the tests that deliberately break it.
+        """
+        qyl = dict(qyl)
+        if "attributes" not in qyl or not any(
+                attribute["key"] == "qyl.attribute.namespace" for attribute in qyl.get("attributes", [])):
+            qyl["attributes"] = list(qyl.get("attributes", [])) + [self.namespace_attribute(qyl)]
         qyl_bytes = json.dumps(qyl).encode("utf-8")
         return merge(self.core, self.genai, qyl, qyl_bytes, self.core_model, self.genai_model, "1.44.0", "0.25.1"), qyl_bytes
+
+    def namespace_attribute(self, qyl, extra=(), drop=()):
+        keys = (
+            [row["key"] for row in self.core["catalog"]]
+            + [row["key"] for row in self.genai["catalog"]]
+            + [row["key"] for row in qyl.get("attributes", [])]
+            + [attribute["key"] for model in qyl.get("vendor_models", []) for attribute in model.get("attributes", [])]
+            + ["qyl.attribute.namespace"]
+        )
+        roots = ({key.split(".", 1)[0] for key in keys} | {"other"} | set(extra)) - set(drop)
+        return {
+            "key": "qyl.attribute.namespace",
+            "type": {"members": [
+                {"id": root, "value": root, "stability": "development", "brief": f"The {root} namespace."}
+                for root in sorted(roots)
+            ]},
+            "stability": "development",
+            "brief": "First dot-segment of an attribute key.",
+        }
 
     def test_qyl_is_the_third_source_and_every_qyl_row_carries_its_provenance(self):
         qyl = {
@@ -95,7 +124,7 @@ class MergeRegistriesTests(unittest.TestCase):
 
         qyl_rows = [row for section in ("catalog", "metrics", "groups") for row in merged[section]
                     if row.get("source_registry") == "qyl"]
-        self.assertEqual(len(qyl_rows), 3)
+        self.assertEqual(len(qyl_rows), 4)  # the attribute, the namespace enum, the metric, its group
         for row in qyl_rows:
             self.assertEqual(row["source_ref"], "qyl-registry.json")
             self.assertEqual(row["source_commit"], expected_commit)
@@ -106,7 +135,8 @@ class MergeRegistriesTests(unittest.TestCase):
         self.assertEqual(nested["source_registry"], "qyl")
         self.assertEqual(nested["source_commit"], expected_commit)
 
-        self.assertEqual([row["key"] for row in merged["catalog"]], ["http.route", "gen_ai.operation.name", "qyl.project.id"])
+        self.assertEqual([row["key"] for row in merged["catalog"]],
+                         ["http.route", "gen_ai.operation.name", "qyl.project.id", "qyl.attribute.namespace"])
         self.assertEqual(merged["scope_names"], ["Qyl.Collector"])
         self.assertEqual(merged["event_names"], ["qyl.http.client"])
 
@@ -121,7 +151,8 @@ class MergeRegistriesTests(unittest.TestCase):
             self.run_merge({"attributes": [{"key": "http.route", "type": "string", "stability": "stable", "brief": "b"}]})
         self.assertEqual(
             str(raised.exception),
-            "qyl-registry.json attribute 'http.route' is outside the qyl.* namespace; qyl-owned attributes must start with 'qyl.'")
+            "qyl-registry.json attribute 'http.route' is outside the qyl.* namespace; qyl-owned attributes must "
+            "start with 'qyl.', and a third-party key belongs in a declared vendor_models entry")
 
     def test_attribute_shadowing_an_upstream_key_is_refused(self):
         self.core["catalog"].append(attribute("qyl.taken", "core"))
@@ -219,6 +250,114 @@ class MergeRegistriesTests(unittest.TestCase):
             self.run_merge({})
         self.assertIn("unrecognised entity association", str(raised.exception))
 
+
+
+    # ------------------------------------------------------------------ vendor models
+    def vendor_model(self, **overrides):
+        model = {
+            "library": "MassTransit",
+            "version": "8.5.10",
+            "repository": "https://github.com/MassTransit/MassTransit",
+            "ref": "v8.5.10",
+            "license": "Apache-2.0",
+            "brief": "b",
+            "activity_sources": [{"name": "MassTransit", "note": "DiagnosticHeaders.cs:6"}],
+            "attributes": [{
+                "key": "messaging.masstransit.saga_id",
+                "type": "string",
+                "stability": "development",
+                "brief": "b",
+                "note": "LogContextActivityExtensions.cs:129",
+            }],
+        }
+        model.update(overrides)
+        return model
+
+    def test_a_vendor_model_is_the_one_door_for_a_non_qyl_key(self):
+        merged, qyl_bytes = self.run_merge({"vendor_models": [self.vendor_model()]})
+        row = next(row for row in merged["catalog"] if row["key"] == "messaging.masstransit.saga_id")
+        self.assertEqual(row["source_registry"], "qyl")
+        self.assertEqual(row["source_commit"], hashlib.sha256(qyl_bytes).hexdigest())
+        self.assertEqual(row["vendor_library"], "MassTransit")
+        self.assertEqual(row["vendor_version"], "8.5.10")
+        self.assertEqual(row["vendor_ref"], "v8.5.10")
+        self.assertEqual(merged["vendor_scope_names"], ["MassTransit"])
+        self.assertEqual(merged["vendor_models"][0]["attribute_keys"], ["messaging.masstransit.saga_id"])
+
+    def test_a_non_qyl_attribute_outside_a_vendor_model_is_still_refused(self):
+        with self.assertRaises(MergeError) as raised:
+            self.run_merge({"attributes": [{"key": "messaging.masstransit.saga_id", "type": "string"}]})
+        self.assertEqual(
+            str(raised.exception),
+            "qyl-registry.json attribute 'messaging.masstransit.saga_id' is outside the qyl.* namespace; "
+            "qyl-owned attributes must start with 'qyl.', and a third-party key belongs in a "
+            "declared vendor_models entry")
+
+    def test_a_vendor_model_without_its_pin_is_refused(self):
+        with self.assertRaises(MergeError) as raised:
+            self.run_merge({"vendor_models": [self.vendor_model(version="")]})
+        self.assertIn("is missing 'version'", str(raised.exception))
+
+    def test_a_vendor_attribute_without_a_finding_is_refused(self):
+        model = self.vendor_model()
+        del model["attributes"][0]["note"]
+        with self.assertRaises(MergeError) as raised:
+            self.run_merge({"vendor_models": [model]})
+        self.assertEqual(
+            str(raised.exception),
+            "qyl-registry.json vendor_models attribute 'messaging.masstransit.saga_id' carries no finding; "
+            "cite the file and line of the library that sets it")
+
+    def test_a_vendor_attribute_shadowing_an_upstream_row_is_refused(self):
+        model = self.vendor_model()
+        model["attributes"][0]["key"] = "http.route"
+        with self.assertRaises(MergeError) as raised:
+            self.run_merge({"vendor_models": [model]})
+        self.assertEqual(
+            str(raised.exception),
+            "qyl-registry.json vendor_models entry 'MassTransit' attribute 'http.route' shadows the upstream "
+            "core catalog row of the same key")
+
+    def test_a_qyl_owned_key_in_a_vendor_model_is_refused(self):
+        model = self.vendor_model()
+        model["attributes"][0]["key"] = "qyl.project.id"
+        with self.assertRaises(MergeError) as raised:
+            self.run_merge({"vendor_models": [model]})
+        self.assertIn("declares qyl-owned attribute 'qyl.project.id'", str(raised.exception))
+
+    def test_two_vendor_models_may_not_claim_the_same_key(self):
+        with self.assertRaises(MergeError) as raised:
+            self.run_merge({"vendor_models": [self.vendor_model(), self.vendor_model(library="Other")]})
+        self.assertEqual(
+            str(raised.exception),
+            "qyl-registry.json vendor_models attribute 'messaging.masstransit.saga_id' is declared by both "
+            "'MassTransit' and 'Other'")
+
+    def test_a_library_that_emits_no_vendor_key_still_declares_its_source_name(self):
+        merged, _ = self.run_merge({"vendor_models": [self.vendor_model(
+            library="MySqlConnector",
+            activity_sources=[{"name": "MySqlConnector", "note": "ActivitySourceHelper.cs:96"}],
+            attributes=[])]})
+        self.assertEqual(merged["vendor_scope_names"], ["MySqlConnector"])
+        self.assertEqual(merged["vendor_models"][0]["attribute_keys"], [])
+
+    # ------------------------------------------------- the closed namespace value set
+    def test_a_namespace_missing_from_the_closed_value_set_fails_the_merge(self):
+        qyl = {"vendor_models": [self.vendor_model()]}
+        qyl["attributes"] = [self.namespace_attribute(qyl, drop=["messaging"])]
+        with self.assertRaises(MergeError) as raised:
+            self.run_merge(qyl)
+        self.assertEqual(
+            str(raised.exception),
+            "qyl.attribute.namespace does not list the merged catalog's namespaces: "
+            "missing ['messaging'], unknown []; the value set is closed, so update it in qyl-registry.json")
+
+    def test_a_namespace_the_catalog_does_not_have_fails_the_merge(self):
+        qyl = {}
+        qyl["attributes"] = [self.namespace_attribute(qyl, extra=["quartz"])]
+        with self.assertRaises(MergeError) as raised:
+            self.run_merge(qyl)
+        self.assertIn("missing [], unknown ['quartz']", str(raised.exception))
 
 
 if __name__ == "__main__":

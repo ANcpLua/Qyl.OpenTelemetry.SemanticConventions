@@ -211,7 +211,10 @@ def generate(registry: dict) -> str:
             enums.append((attribute["key"], values))
 
     metric_names = sorted({metric["metric_name"] for metric in registry["metrics"]})
-    scope_names = sorted(set(registry.get("scope_names", [])))
+    # A scope qyl subscribes to is a scope qyl names: QYL0200 must accept the vendor
+    # ActivitySource names next to the ones qyl constructs, or every AddSource of a
+    # wave library would be reported as an unknown telemetry name.
+    scope_names = sorted(set(registry.get("scope_names", [])) | set(registry.get("vendor_scope_names", [])))
     event_names = sorted(
         {
             group["event_name"]

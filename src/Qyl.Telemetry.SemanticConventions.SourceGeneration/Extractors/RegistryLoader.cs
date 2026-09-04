@@ -61,7 +61,7 @@ internal static class RegistryLoader
     internal static RegistryModel ParseRegistry(JsonObject? root)
     {
         if (root is null)
-            return new RegistryModel(default, default, default, default, default);
+            return new RegistryModel(default, default, default, default, default, default);
 
         var groups = root.TryGetArray("groups") is { } groupsArr
             ? ParseGroups(groupsArr)
@@ -76,6 +76,7 @@ internal static class RegistryLoader
             catalog,
             ParsePin(root),
             ParseStringArray(root.TryGetArray("scope_names")),
+            ParseStringArray(root.TryGetArray("vendor_scope_names")),
             ParseStringArray(root.TryGetArray("event_names")));
     }
 
@@ -209,7 +210,8 @@ internal static class RegistryLoader
                 Stability: RegistryParsing.ParseStability(metric.GetString("stability")),
                 Deprecated: RegistryParsing.ParseDeprecated(metric.TryGet("deprecated") as JsonObject),
                 Attributes: attributes,
-                EntityAssociations: ParseStringArray(metric.TryGetArray("entity_associations"))));
+                EntityAssociations: ParseStringArray(metric.TryGetArray("entity_associations")),
+                SourceRegistry: metric.GetString("source_registry")));
         }
         return metrics.ToEquatableArray();
     }

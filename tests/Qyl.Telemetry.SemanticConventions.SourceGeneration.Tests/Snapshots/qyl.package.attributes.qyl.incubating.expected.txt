@@ -14,6 +14,505 @@ namespace Qyl.Telemetry.SemanticConventions.Incubating.Attributes.Qyl;
 public static class QylAttributes
 {
     /// <summary>
+    /// First dot-segment of the attribute key a collector measurement is about.
+    /// </summary>
+    /// <remarks>
+    /// The value set is closed and is exactly the attribute namespaces present in the merged registry plus <c>other</c>: the collector clamps every value it records to this set, so an inbound payload carrying an unknown key cannot fork the series. merge_registries.py recomputes the set from the merged catalog on every generation and fails the merge when the two disagree, so a registry that gains a namespace cannot silently leave it unlisted.
+    /// </remarks>
+    public const string AttributeNamespace = "qyl.attribute.namespace";
+
+    /// <summary>
+    /// Values for the <c>AttributeNamespace</c> attribute.
+    /// </summary>
+    public static class AttributeNamespaceValues
+    {
+        /// <summary>
+        /// The <c>android</c> attribute namespace.
+        /// </summary>
+        public const string Android = "android";
+
+        /// <summary>
+        /// The <c>app</c> attribute namespace.
+        /// </summary>
+        public const string App = "app";
+
+        /// <summary>
+        /// The <c>artifact</c> attribute namespace.
+        /// </summary>
+        public const string Artifact = "artifact";
+
+        /// <summary>
+        /// The <c>aspnetcore</c> attribute namespace.
+        /// </summary>
+        public const string Aspnetcore = "aspnetcore";
+
+        /// <summary>
+        /// The <c>aws</c> attribute namespace.
+        /// </summary>
+        public const string Aws = "aws";
+
+        /// <summary>
+        /// The <c>az</c> attribute namespace.
+        /// </summary>
+        public const string Az = "az";
+
+        /// <summary>
+        /// The <c>azure</c> attribute namespace.
+        /// </summary>
+        public const string Azure = "azure";
+
+        /// <summary>
+        /// The <c>browser</c> attribute namespace.
+        /// </summary>
+        public const string Browser = "browser";
+
+        /// <summary>
+        /// The <c>cassandra</c> attribute namespace.
+        /// </summary>
+        public const string Cassandra = "cassandra";
+
+        /// <summary>
+        /// The <c>cicd</c> attribute namespace.
+        /// </summary>
+        public const string Cicd = "cicd";
+
+        /// <summary>
+        /// The <c>client</c> attribute namespace.
+        /// </summary>
+        public const string Client = "client";
+
+        /// <summary>
+        /// The <c>cloud</c> attribute namespace.
+        /// </summary>
+        public const string Cloud = "cloud";
+
+        /// <summary>
+        /// The <c>cloudevents</c> attribute namespace.
+        /// </summary>
+        public const string Cloudevents = "cloudevents";
+
+        /// <summary>
+        /// The <c>cloudfoundry</c> attribute namespace.
+        /// </summary>
+        public const string Cloudfoundry = "cloudfoundry";
+
+        /// <summary>
+        /// The <c>code</c> attribute namespace.
+        /// </summary>
+        public const string Code = "code";
+
+        /// <summary>
+        /// The <c>container</c> attribute namespace.
+        /// </summary>
+        public const string Container = "container";
+
+        /// <summary>
+        /// The <c>cpu</c> attribute namespace.
+        /// </summary>
+        public const string Cpu = "cpu";
+
+        /// <summary>
+        /// The <c>cpython</c> attribute namespace.
+        /// </summary>
+        public const string Cpython = "cpython";
+
+        /// <summary>
+        /// The <c>db</c> attribute namespace.
+        /// </summary>
+        public const string Db = "db";
+
+        /// <summary>
+        /// The <c>deployment</c> attribute namespace.
+        /// </summary>
+        public const string Deployment = "deployment";
+
+        /// <summary>
+        /// The <c>destination</c> attribute namespace.
+        /// </summary>
+        public const string Destination = "destination";
+
+        /// <summary>
+        /// The <c>device</c> attribute namespace.
+        /// </summary>
+        public const string Device = "device";
+
+        /// <summary>
+        /// The <c>disk</c> attribute namespace.
+        /// </summary>
+        public const string Disk = "disk";
+
+        /// <summary>
+        /// The <c>dns</c> attribute namespace.
+        /// </summary>
+        public const string Dns = "dns";
+
+        /// <summary>
+        /// The <c>dotnet</c> attribute namespace.
+        /// </summary>
+        public const string Dotnet = "dotnet";
+
+        /// <summary>
+        /// The <c>elastic</c> attribute namespace.
+        /// </summary>
+        public const string Elastic = "elastic";
+
+        /// <summary>
+        /// The <c>elasticsearch</c> attribute namespace.
+        /// </summary>
+        public const string Elasticsearch = "elasticsearch";
+
+        /// <summary>
+        /// The <c>enduser</c> attribute namespace.
+        /// </summary>
+        public const string Enduser = "enduser";
+
+        /// <summary>
+        /// The <c>error</c> attribute namespace.
+        /// </summary>
+        public const string Error = "error";
+
+        /// <summary>
+        /// The <c>event</c> attribute namespace.
+        /// </summary>
+        public const string Event = "event";
+
+        /// <summary>
+        /// The <c>exception</c> attribute namespace.
+        /// </summary>
+        public const string Exception = "exception";
+
+        /// <summary>
+        /// The <c>execution</c> attribute namespace.
+        /// </summary>
+        public const string Execution = "execution";
+
+        /// <summary>
+        /// The <c>faas</c> attribute namespace.
+        /// </summary>
+        public const string Faas = "faas";
+
+        /// <summary>
+        /// The <c>feature_flag</c> attribute namespace.
+        /// </summary>
+        public const string FeatureFlag = "feature_flag";
+
+        /// <summary>
+        /// The <c>file</c> attribute namespace.
+        /// </summary>
+        public const string File = "file";
+
+        /// <summary>
+        /// The <c>gcp</c> attribute namespace.
+        /// </summary>
+        public const string Gcp = "gcp";
+
+        /// <summary>
+        /// The <c>gen_ai</c> attribute namespace.
+        /// </summary>
+        public const string GenAi = "gen_ai";
+
+        /// <summary>
+        /// The <c>geo</c> attribute namespace.
+        /// </summary>
+        public const string Geo = "geo";
+
+        /// <summary>
+        /// The <c>go</c> attribute namespace.
+        /// </summary>
+        public const string Go = "go";
+
+        /// <summary>
+        /// The <c>graphql</c> attribute namespace.
+        /// </summary>
+        public const string Graphql = "graphql";
+
+        /// <summary>
+        /// The <c>heroku</c> attribute namespace.
+        /// </summary>
+        public const string Heroku = "heroku";
+
+        /// <summary>
+        /// The <c>host</c> attribute namespace.
+        /// </summary>
+        public const string Host = "host";
+
+        /// <summary>
+        /// The <c>http</c> attribute namespace.
+        /// </summary>
+        public const string Http = "http";
+
+        /// <summary>
+        /// The <c>hw</c> attribute namespace.
+        /// </summary>
+        public const string Hw = "hw";
+
+        /// <summary>
+        /// The <c>ios</c> attribute namespace.
+        /// </summary>
+        public const string Ios = "ios";
+
+        /// <summary>
+        /// The <c>jsonrpc</c> attribute namespace.
+        /// </summary>
+        public const string Jsonrpc = "jsonrpc";
+
+        /// <summary>
+        /// The <c>jvm</c> attribute namespace.
+        /// </summary>
+        public const string Jvm = "jvm";
+
+        /// <summary>
+        /// The <c>k8s</c> attribute namespace.
+        /// </summary>
+        public const string K8s = "k8s";
+
+        /// <summary>
+        /// The <c>linux</c> attribute namespace.
+        /// </summary>
+        public const string Linux = "linux";
+
+        /// <summary>
+        /// The <c>log</c> attribute namespace.
+        /// </summary>
+        public const string Log = "log";
+
+        /// <summary>
+        /// The <c>mainframe</c> attribute namespace.
+        /// </summary>
+        public const string Mainframe = "mainframe";
+
+        /// <summary>
+        /// The <c>mcp</c> attribute namespace.
+        /// </summary>
+        public const string Mcp = "mcp";
+
+        /// <summary>
+        /// The <c>message</c> attribute namespace.
+        /// </summary>
+        public const string Message = "message";
+
+        /// <summary>
+        /// The <c>messaging</c> attribute namespace.
+        /// </summary>
+        public const string Messaging = "messaging";
+
+        /// <summary>
+        /// The <c>net</c> attribute namespace.
+        /// </summary>
+        public const string Net = "net";
+
+        /// <summary>
+        /// The <c>network</c> attribute namespace.
+        /// </summary>
+        public const string Network = "network";
+
+        /// <summary>
+        /// The <c>nfs</c> attribute namespace.
+        /// </summary>
+        public const string Nfs = "nfs";
+
+        /// <summary>
+        /// The <c>nodejs</c> attribute namespace.
+        /// </summary>
+        public const string Nodejs = "nodejs";
+
+        /// <summary>
+        /// The <c>nservicebus</c> attribute namespace.
+        /// </summary>
+        public const string Nservicebus = "nservicebus";
+
+        /// <summary>
+        /// The <c>oci</c> attribute namespace.
+        /// </summary>
+        public const string Oci = "oci";
+
+        /// <summary>
+        /// The <c>onc_rpc</c> attribute namespace.
+        /// </summary>
+        public const string OncRpc = "onc_rpc";
+
+        /// <summary>
+        /// The <c>openai</c> attribute namespace.
+        /// </summary>
+        public const string Openai = "openai";
+
+        /// <summary>
+        /// The <c>openshift</c> attribute namespace.
+        /// </summary>
+        public const string Openshift = "openshift";
+
+        /// <summary>
+        /// The <c>opentracing</c> attribute namespace.
+        /// </summary>
+        public const string Opentracing = "opentracing";
+
+        /// <summary>
+        /// The <c>oracle</c> attribute namespace.
+        /// </summary>
+        public const string Oracle = "oracle";
+
+        /// <summary>
+        /// The <c>oracle_cloud</c> attribute namespace.
+        /// </summary>
+        public const string OracleCloud = "oracle_cloud";
+
+        /// <summary>
+        /// The <c>os</c> attribute namespace.
+        /// </summary>
+        public const string Os = "os";
+
+        /// <summary>
+        /// The <c>otel</c> attribute namespace.
+        /// </summary>
+        public const string Otel = "otel";
+
+        /// <summary>
+        /// Any attribute namespace outside the pinned registry.
+        /// </summary>
+        public const string Other = "other";
+
+        /// <summary>
+        /// The <c>peer</c> attribute namespace.
+        /// </summary>
+        public const string Peer = "peer";
+
+        /// <summary>
+        /// The <c>pool</c> attribute namespace.
+        /// </summary>
+        public const string Pool = "pool";
+
+        /// <summary>
+        /// The <c>pprof</c> attribute namespace.
+        /// </summary>
+        public const string Pprof = "pprof";
+
+        /// <summary>
+        /// The <c>process</c> attribute namespace.
+        /// </summary>
+        public const string Process = "process";
+
+        /// <summary>
+        /// The <c>profile</c> attribute namespace.
+        /// </summary>
+        public const string Profile = "profile";
+
+        /// <summary>
+        /// The <c>quartz</c> attribute namespace.
+        /// </summary>
+        public const string Quartz = "quartz";
+
+        /// <summary>
+        /// The <c>qyl</c> attribute namespace.
+        /// </summary>
+        public const string Qyl = "qyl";
+
+        /// <summary>
+        /// The <c>rpc</c> attribute namespace.
+        /// </summary>
+        public const string Rpc = "rpc";
+
+        /// <summary>
+        /// The <c>security_rule</c> attribute namespace.
+        /// </summary>
+        public const string SecurityRule = "security_rule";
+
+        /// <summary>
+        /// The <c>server</c> attribute namespace.
+        /// </summary>
+        public const string Server = "server";
+
+        /// <summary>
+        /// The <c>service</c> attribute namespace.
+        /// </summary>
+        public const string Service = "service";
+
+        /// <summary>
+        /// The <c>session</c> attribute namespace.
+        /// </summary>
+        public const string Session = "session";
+
+        /// <summary>
+        /// The <c>signalr</c> attribute namespace.
+        /// </summary>
+        public const string Signalr = "signalr";
+
+        /// <summary>
+        /// The <c>source</c> attribute namespace.
+        /// </summary>
+        public const string Source = "source";
+
+        /// <summary>
+        /// The <c>state</c> attribute namespace.
+        /// </summary>
+        public const string State = "state";
+
+        /// <summary>
+        /// The <c>system</c> attribute namespace.
+        /// </summary>
+        public const string System = "system";
+
+        /// <summary>
+        /// The <c>telemetry</c> attribute namespace.
+        /// </summary>
+        public const string Telemetry = "telemetry";
+
+        /// <summary>
+        /// The <c>test</c> attribute namespace.
+        /// </summary>
+        public const string Test = "test";
+
+        /// <summary>
+        /// The <c>thread</c> attribute namespace.
+        /// </summary>
+        public const string Thread = "thread";
+
+        /// <summary>
+        /// The <c>tls</c> attribute namespace.
+        /// </summary>
+        public const string Tls = "tls";
+
+        /// <summary>
+        /// The <c>url</c> attribute namespace.
+        /// </summary>
+        public const string Url = "url";
+
+        /// <summary>
+        /// The <c>user</c> attribute namespace.
+        /// </summary>
+        public const string User = "user";
+
+        /// <summary>
+        /// The <c>user_agent</c> attribute namespace.
+        /// </summary>
+        public const string UserAgent = "user_agent";
+
+        /// <summary>
+        /// The <c>v8js</c> attribute namespace.
+        /// </summary>
+        public const string V8js = "v8js";
+
+        /// <summary>
+        /// The <c>vcs</c> attribute namespace.
+        /// </summary>
+        public const string Vcs = "vcs";
+
+        /// <summary>
+        /// The <c>webengine</c> attribute namespace.
+        /// </summary>
+        public const string Webengine = "webengine";
+
+        /// <summary>
+        /// The <c>zos</c> attribute namespace.
+        /// </summary>
+        public const string Zos = "zos";
+
+        /// <summary>Every catalogued value, in the order the constants are declared.</summary>
+        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "android", "app", "artifact", "aspnetcore", "aws", "az", "azure", "browser", "cassandra", "cicd", "client", "cloud", "cloudevents", "cloudfoundry", "code", "container", "cpu", "cpython", "db", "deployment", "destination", "device", "disk", "dns", "dotnet", "elastic", "elasticsearch", "enduser", "error", "event", "exception", "execution", "faas", "feature_flag", "file", "gcp", "gen_ai", "geo", "go", "graphql", "heroku", "host", "http", "hw", "ios", "jsonrpc", "jvm", "k8s", "linux", "log", "mainframe", "mcp", "message", "messaging", "net", "network", "nfs", "nodejs", "nservicebus", "oci", "onc_rpc", "openai", "openshift", "opentracing", "oracle", "oracle_cloud", "os", "otel", "other", "peer", "pool", "pprof", "process", "profile", "quartz", "qyl", "rpc", "security_rule", "server", "service", "session", "signalr", "source", "state", "system", "telemetry", "test", "thread", "tls", "url", "user", "user_agent", "v8js", "vcs", "webengine", "zos" };
+        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
+        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
+    }
+
+    /// <summary>
     /// Stable identifier of the qyl capability that produced the telemetry.
     /// </summary>
     public const string CapabilityId = "qyl.capability.id";

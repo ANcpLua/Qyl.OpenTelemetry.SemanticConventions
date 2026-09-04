@@ -22,7 +22,8 @@ internal readonly record struct MetricDescriptorModel(
     StabilityModel Stability,
     DeprecatedModel? Deprecated,
     EquatableArray<SignalAttributeModel> Attributes,
-    EquatableArray<string> EntityAssociations);
+    EquatableArray<string> EntityAssociations,
+    string SourceRegistry);
 
 /// <summary>
 /// One signal-specific attribute reference, preserving the upstream requirement

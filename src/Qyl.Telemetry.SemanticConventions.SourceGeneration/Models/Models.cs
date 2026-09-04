@@ -10,6 +10,7 @@ internal readonly record struct RegistryModel(
     EquatableArray<AttributeModel> Catalog,
     RegistryPinModel Pin,
     EquatableArray<string> ScopeNames,
+    EquatableArray<string> VendorScopeNames,
     EquatableArray<string> EventNames);
 
 /// <summary>The pinned schema facts of the projection: version, schema URL, and the core registry commit.</summary>

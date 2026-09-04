@@ -3,12 +3,19 @@ using Qyl.Telemetry.SemanticConventions.SourceGeneration.Models;
 namespace Qyl.Telemetry.SemanticConventions.SourceGeneration.Emitters;
 
 /// <summary>
-/// Emits the qyl-owned telemetry names — the <c>ActivitySource</c>/<c>Meter</c> scope names
-/// qyl constructs and the qyl-owned <c>Activity</c>/<c>DiagnosticSource</c> event names — as
+/// Emits the telemetry names the registry knows — the <c>ActivitySource</c>/<c>Meter</c> scope
+/// names qyl constructs, the <c>ActivitySource</c> names of the pinned third-party libraries qyl
+/// subscribes to, and the qyl-owned <c>Activity</c>/<c>DiagnosticSource</c> event names — as
 /// <c>{package root}.Names.QylTelemetryNames</c>. The same registry input drives the QYL0200
 /// analyzer allowlist, so a name referenced through these constants is a name the analyzer
 /// accepts and the collector recognises.
 /// </summary>
+/// <remarks>
+/// The vendor names are the exact strings the pinned libraries construct their sources with, read
+/// from their source at the pinned tag and declared in <c>qyl-registry.json</c>'s vendor models:
+/// <c>AddSource</c> and a span processor's source match take them from here rather than repeating
+/// a literal.
+/// </remarks>
 internal static class TelemetryNamesEmitter
 {
     private const string ClassName = "QylTelemetryNames";
@@ -18,6 +25,7 @@ internal static class TelemetryNamesEmitter
     {
         var ns = marker.RootNamespace + ".Names";
         var scopes = NameMembers(registry.ScopeNames, "scope name");
+        var vendorSources = NameMembers(registry.VendorScopeNames, "vendor activity source name");
         var events = NameMembers(registry.EventNames, "event name");
 
         var w = new PackageSourceWriter();
@@ -43,6 +51,13 @@ internal static class TelemetryNamesEmitter
         w.Line("{");
 
         WriteGroup(w, "Scopes", "Names of the <c>ActivitySource</c> and <c>Meter</c> scopes qyl constructs.", "telemetry scope", scopes);
+        w.Line();
+        WriteGroup(
+            w,
+            "VendorActivitySources",
+            "Names of the <c>ActivitySource</c>s of the pinned third-party libraries qyl subscribes to.",
+            "vendor activity source",
+            vendorSources);
         w.Line();
         WriteGroup(w, "Events", "Names of qyl-owned <c>Activity</c> and <c>DiagnosticSource</c> events.", "telemetry event", events);
 

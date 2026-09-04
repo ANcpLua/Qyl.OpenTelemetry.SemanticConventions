@@ -7,6 +7,129 @@ gate: CI packs the solution, publishes through NuGet trusted publishing, and
 [`eng/release/verify-packages.sh`](eng/release/verify-packages.sh) proves the indexed packages in a
 clean `net10.0` consumer.
 
+## [8.1.0] - 2026-09-04
+
+### Added
+
+- **Vendor attribute models.** `qyl-registry.json` gains `vendor_models`: one entry per pinned
+  third-party library whose native `ActivitySource` qyl subscribes to, declaring the library, the
+  exact version qyl pins, the repository and tag the keys were read at, the licence, the source
+  names it emits on, and — per attribute — the file and line of the library that sets it. Only keys
+  upstream semantic conventions `1.44.0` does not define are declared, and only keys the library
+  actually emits. 97 attributes over eleven libraries:
+
+  | Library | Version | ActivitySource(s) | Keys |
+  |---|---|---|--:|
+  | MassTransit | `8.5.10` | `MassTransit` | 14 |
+  | Elastic.Transport | `1.0.0` | `Elastic.Transport` | 7 |
+  | Quartz.NET | `4.0.0` | `Quartz` | 13 |
+  | NServiceBus | `10.2.9` | `NServiceBus.Core` | 45 |
+  | MongoDB.Driver | `3.11.1` | `MongoDB.Driver` | 7 |
+  | RabbitMQ.Client | `7.2.2` | `RabbitMQ.Client.Publisher`, `RabbitMQ.Client.Subscriber` | 1 |
+  | Npgsql | `10.0.3` | `Npgsql` | 4 |
+  | ODP.NET Core | `23.4.0` | `Oracle.ManagedDataAccess.Core` | 6 |
+  | MySqlConnector | `2.6.2` | `MySqlConnector` | 0 |
+  | MySql.Data | `9.7.0` | `connector-net` | 0 |
+  | GraphQL.NET | `8.8.5` | `GraphQL` | 0 |
+
+  The findings, key by key:
+
+  - **MassTransit** `messaging.masstransit.{message_id, correlation_id, request_id, initiator_id,
+    source_address, destination_address, input_address, tracking_number, message_types,
+    consumer_type, saga_id, begin_state, end_state}` and `peer.address` — declared in
+    `DiagnosticHeaders.cs`, set in `LogContextActivityExtensions.cs` (send, receive, consume, saga,
+    Courier) and `StateMachineSagaMessageFilter.cs` (the two state tags). `peer.address` is
+    MassTransit's own spelling of the consumed message type's diagnostic address and is not an
+    upstream key. `messaging.rabbitmq.destination.routing_key` and `messaging.message.body.size`,
+    which MassTransit also sets, are already upstream and are not redeclared.
+  - **Elastic.Transport** `elastic.transport.{product.name, product.version, version, schema_url,
+    attempted_nodes, prepare_request_ms, deserialize_response_ms}` — `DistributedTransport.cs`, the
+    two request invokers, and the two response builders. `db.elasticsearch.schema_url` is *not*
+    declared: the transport only reads that tag, the client above it writes it.
+  - **Quartz.NET** `quartz.{scheduler.name, scheduler.id, fire.instance.id, trigger.group,
+    trigger.name, job.type, job.group, job.name, execution.group, jobstore.trigger.count,
+    jobstore.batch.size}` on the `Quartz` `ActivitySource` (`QuartzActivitySource.cs`,
+    `TracingJobStore.cs`), plus `quartz.{jobstore.operation, cluster.recovered.instance.id}` on the
+    same-named `Meter` (`Meters.cs`).
+  - **NServiceBus** 32 header-promoted span tags (`ActivityDecorator.cs`'s `HeaderMapping`), five
+    written directly (`nservicebus.{native_message_id, handler.handler_type, handler.saga_id,
+    event_types, cancelled}`), `nservicebus.outbox.deduplicate-message` (the hyphen is the spelling
+    the library emits), and seven tags of the `NServiceBus.Core.Pipeline.Incoming` `Meter`
+    (`nservicebus.{discriminator, queue, message_type, message_handler_types, message_handler_type,
+    envelope.unwrapper_type}` and `execution.result`).
+  - **MongoDB.Driver** `db.mongodb.{lsid, txn_number, server_connection_id, driver_connection_id,
+    cursor_id}` plus `db.command.name` and `db.operation.summary`, all in `MongoTelemetry.cs`. The
+    last two are `db.*`-shaped but absent from `1.44.0`.
+  - **RabbitMQ.Client** `messaging.rabbitmq.delivery_tag` (`RabbitMQActivitySource.cs:213`).
+    Upstream spells the same fact `messaging.rabbitmq.message.delivery_tag`; this client does not
+    emit that key.
+  - **Npgsql** `db.npgsql.{connection_id, data_source, prepared, rows}`
+    (`NpgsqlActivitySource.cs`).
+  - **ODP.NET Core** `db.odp.{connection.id, roundtrip.count, roundtrip.duration, rows_affected,
+    sql_id, user.statement}`. The one model whose finding is a vendor document rather than source at
+    a tag — the provider is closed-source — so the note cites Oracle's own attribute table and says
+    so.
+  - **MySqlConnector**, **MySql.Data** and **GraphQL.NET** declare no attributes: they emit only
+    OpenTelemetry keys (pre-stable ones included, which `1.44.0` no longer carries and which
+    `qyl.collector.attributes.dropped` now counts). Their models exist for the source name alone.
+
+- **The ActivitySource names of the wave libraries are registry facts.** They land in the merged
+  registry as `vendor_scope_names`, ship as `QylTelemetryNames.VendorActivitySources` (stable
+  package) — `MassTransit`, `Elastic.Transport`, `Quartz`, `NServiceBus.Core`, `MongoDB.Driver`,
+  `RabbitMQ.Client.Publisher`, `RabbitMQ.Client.Subscriber`, `Npgsql`, `MySqlConnector`,
+  `connector-net`, `Oracle.ManagedDataAccess.Core`, `GraphQL` — and join QYL0200's known-name
+  allowlist, so `AddSource` and a processor's source match carry no literal and the analyzer does
+  not report them.
+
+- **`qyl.collector.attributes.dropped`**, a `counter` in `{attribute}`: attributes the collector
+  dropped at ingest because their key is not in the pinned registry. Its one required tag is the new
+  `qyl.attribute.namespace`, whose value set is **closed** — exactly the attribute namespaces of the
+  merged catalog plus `other` (96 members). The collector clamps what it records to that set, so an
+  inbound payload cannot fork the series; `merge_registries.py` recomputes the set from the merged
+  catalog on every generation and fails, naming the namespace, when the two disagree.
+
+  Both reach the collector as constants, which is what it needs: it may not reference this package
+  family and reflects over `*.Attributes.*` types instead. `QylAttributes.AttributeNamespace` and
+  the nested `QylAttributes.AttributeNamespaceValues` carry the tag and its closed values, and a new
+  emitter projects the qyl-owned instruments as
+  `Qyl.Telemetry.SemanticConventions.Incubating.Attributes.Qyl.QylMetricAttributes`
+  (`CollectorAttributesDropped`, `CollectorAttributesDroppedUnit`) and
+  `…Attributes.Nservicebus.NservicebusMetricAttributes` (`MessagingOperationDuration`,
+  `MessagingOperationDurationUnit`). Only rows the registry attributes to qyl are projected this
+  way: an upstream instrument is OpenTelemetry's and reaches consumers as a `MetricDefinition` or
+  through the embedded registry.
+
+- **`dotnet_wcf` as a local value of `rpc.system.name`**, through the `local_attribute_values`
+  mechanism from `7.1.0`: the deprecated `rpc.system` carried it, its `rpc.system.name` replacement
+  does not, and qyl's WCF client instrumentation emits it. The `masstransit` and `nservicebus`
+  members of `messaging.system` were already declared there and are unchanged.
+
+### Changed
+
+- **The merge rule.** `merge_registries.py` refused every attribute outside `qyl.*`; it now refuses
+  every attribute outside `qyl.*` that no `vendor_models` entry declares. `guard_vendor_models`
+  fails generation when a model omits its library, version, repository, ref, licence,
+  ActivitySources or brief, when an ActivitySource has no finding, when a vendor key is qyl-owned,
+  shadows an upstream row, is claimed twice, is not `development`, or carries no citation; and
+  `guard_attribute_namespace_enum` holds the closed namespace set to the merged catalog.
+  `vendor_catalog_rows` stamps the qyl provenance plus `vendor_library` / `vendor_version` /
+  `vendor_ref` on each row, and the merged registry gains `vendor_models` and `vendor_scope_names`
+  at its root. `emit_analyzer_registry.py` unions `vendor_scope_names` into the QYL0200 allowlist.
+  `emit_typespec_keys.py` is unchanged and still excludes every qyl-sourced row, vendor rows
+  included: that projection is the upstream key surface.
+
+- The registry pins do not move. `SemConvSchemaVersion` stays `1.44.0`, `SemConvGenAiRef` stays
+  `fee465d`, `WeaverVersion` stays `0.26.1`, so
+  [`qyl-references/REFERENCE-STATUS.md`](qyl-references/REFERENCE-STATUS.md) gains no entry: nothing
+  upstream changed. Regeneration is idempotent on a second run.
+
+- New generated files, all additive: `ElasticAttributes`, `QuartzAttributes`,
+  `NservicebusAttributes` and `ExecutionAttributes` (new roots, incubating tier only — every vendor
+  row is `development`), the two `*MetricAttributes` classes, and new members on `DbAttributes`,
+  `MessagingAttributes`, `PeerAttributes`, `RpcAttributes` (the `dotnet_wcf` value), `QylAttributes`
+  and `QylTelemetryNames`. No member is removed or renamed; the stable tier gains only
+  `QylTelemetryNames.VendorActivitySources` and `RpcAttributes`' local value.
+
 ## [8.0.1] - 2026-09-04
 
 ### Changed

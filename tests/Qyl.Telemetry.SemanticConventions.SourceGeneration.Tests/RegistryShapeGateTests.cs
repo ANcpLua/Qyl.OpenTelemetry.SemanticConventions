@@ -147,8 +147,9 @@ public sealed class RegistryShapeGateTests
             .Concat(root.GetProperty("metrics").EnumerateArray())
             .Concat(root.GetProperty("groups").EnumerateArray())
             .Where(row => row.GetProperty("source_registry").GetString() == "qyl")
+            .Where(row => !row.TryGetProperty("vendor_library", out _))
             .ToArray();
-        qylRows.Should().HaveCount(14 + 1 + 1, "14 attributes, one metric, and its group");
+        qylRows.Should().HaveCount(15 + 2 + 2, "15 attributes, two metrics, and their groups");
         foreach (var row in qylRows)
         {
             row.GetProperty("source_ref").GetString().Should().Be("qyl-registry.json");
@@ -190,6 +191,16 @@ public sealed class RegistryShapeGateTests
         ]);
         members.Should().OnlyContain(member => !member.Value!.StartsWith("log.", StringComparison.Ordinal));
 
+        var dropped = root.GetProperty("metrics").EnumerateArray()
+            .Single(metric => metric.GetProperty("metric_name").GetString() == "qyl.collector.attributes.dropped");
+        dropped.GetProperty("instrument").GetString().Should().Be("counter");
+        dropped.GetProperty("unit").GetString().Should().Be("{attribute}");
+        dropped.GetProperty("attributes").EnumerateArray()
+            .Select(attribute => attribute.GetProperty("key").GetString())
+            .Should().BeEquivalentTo(["qyl.attribute.namespace"]);
+        dropped.GetProperty("attributes").EnumerateArray().Single()
+            .GetProperty("requirement_level").GetString().Should().Be("required");
+
         var metric = root.GetProperty("metrics").EnumerateArray()
             .Single(metric => metric.GetProperty("metric_name").GetString() == "nservicebus.messaging.operation.duration");
         metric.GetProperty("source_registry").GetString().Should().Be("qyl");
@@ -204,6 +215,18 @@ public sealed class RegistryShapeGateTests
                 "metric attribute references are resolved against the merged catalog");
         root.GetProperty("groups").EnumerateArray()
             .Should().Contain(group => group.GetProperty("id").GetString() == "metric.nservicebus.messaging.operation.duration");
+
+        // The value set of qyl.attribute.namespace is closed: exactly the merged catalog's
+        // namespaces plus `other`, which is what lets the collector clamp the tag it records.
+        var namespaces = qylAttributes.Single(attribute => attribute.GetProperty("key").GetString() == "qyl.attribute.namespace")
+            .GetProperty("type").GetProperty("members").EnumerateArray()
+            .Select(member => member.GetProperty("value").GetString()!)
+            .ToHashSet(StringComparer.Ordinal);
+        var catalogNamespaces = root.GetProperty("catalog").EnumerateArray()
+            .Select(attribute => attribute.GetProperty("key").GetString()!.Split('.')[0])
+            .Append("other")
+            .ToHashSet(StringComparer.Ordinal);
+        namespaces.Should().BeEquivalentTo(catalogNamespaces);
 
         root.GetProperty("scope_names").EnumerateArray().Select(name => name.GetString())
             .Should().Contain("Qyl.Telemetry.AutoInstrumentation").And.BeInAscendingOrder();
@@ -221,11 +244,23 @@ public sealed class RegistryShapeGateTests
         var root = LoadRoot();
 
         var catalog = root.GetProperty("catalog").EnumerateArray()
-            .Select(attribute => (Key: attribute.GetProperty("key").GetString()!, Source: attribute.GetProperty("source_registry").GetString()))
+            .Select(attribute => (
+                Key: attribute.GetProperty("key").GetString()!,
+                Source: attribute.GetProperty("source_registry").GetString(),
+                IsVendor: attribute.TryGetProperty("vendor_library", out _)))
             .ToArray();
         catalog.Select(row => row.Key).Should().OnlyHaveUniqueItems();
-        catalog.Where(row => row.Source == "qyl").Should().OnlyContain(row => row.Key.StartsWith("qyl.", StringComparison.Ordinal));
-        catalog.Where(row => row.Key.StartsWith("qyl.", StringComparison.Ordinal)).Should().OnlyContain(row => row.Source == "qyl");
+        catalog.Where(row => row.Source == "qyl" && !row.IsVendor).Should().OnlyContain(row => row.Key.StartsWith("qyl.", StringComparison.Ordinal));
+        catalog.Where(row => row.Key.StartsWith("qyl.", StringComparison.Ordinal)).Should().OnlyContain(row => row.Source == "qyl" && !row.IsVendor);
+
+        // A key outside qyl.* is in the catalog only because a vendor model declares it, and
+        // a vendor model is only a finding if it says which library, at which version, and
+        // where the key was read. Provenance is still qyl's: qyl-registry.json is where the
+        // finding is written down.
+        var vendorRows = catalog.Where(row => row.IsVendor).ToArray();
+        vendorRows.Should().NotBeEmpty();
+        vendorRows.Should().OnlyContain(row => row.Source == "qyl");
+        vendorRows.Should().OnlyContain(row => !row.Key.StartsWith("qyl.", StringComparison.Ordinal));
 
         var metrics = root.GetProperty("metrics").EnumerateArray()
             .Select(metric => (Name: metric.GetProperty("metric_name").GetString()!, Source: metric.GetProperty("source_registry").GetString()))
@@ -339,5 +374,61 @@ public sealed class RegistryShapeGateTests
                         $"group '{id}' contains a non-string attribute_ref the loaders would skip");
             }
         }
+    }
+
+    [Fact]
+    public void Every_vendor_key_is_declared_by_a_vendor_model_that_cites_its_finding()
+    {
+        // The merge accepts a non-qyl key only from a declared vendor model, so the shipped
+        // projection must be able to answer, for every such key: which library, at which
+        // version, read where. A vendor model that cannot answer that is a prefix allowlist
+        // with extra steps.
+        var root = LoadRoot();
+        var models = root.GetProperty("vendor_models").EnumerateArray().ToArray();
+        models.Should().NotBeEmpty();
+
+        var declaredKeys = new List<string>();
+        foreach (var model in models)
+        {
+            foreach (var field in new[] { "library", "version", "repository", "ref", "license", "brief" })
+                model.GetProperty(field).GetString().Should().NotBeNullOrWhiteSpace($"vendor models declare their {field}");
+
+            var sources = model.GetProperty("activity_sources").EnumerateArray().ToArray();
+            sources.Should().NotBeEmpty("a vendor model exists because qyl subscribes to its ActivitySource");
+            foreach (var source in sources)
+            {
+                source.GetProperty("name").GetString().Should().NotBeNullOrWhiteSpace();
+                source.GetProperty("note").GetString().Should().NotBeNullOrWhiteSpace("the name is a finding, not a guess");
+            }
+
+            declaredKeys.AddRange(model.GetProperty("attribute_keys").EnumerateArray().Select(key => key.GetString()!));
+        }
+
+        declaredKeys.Should().OnlyHaveUniqueItems();
+
+        var vendorRows = root.GetProperty("catalog").EnumerateArray()
+            .Where(attribute => attribute.TryGetProperty("vendor_library", out _))
+            .ToArray();
+        vendorRows.Select(row => row.GetProperty("key").GetString()).Should().BeEquivalentTo(declaredKeys);
+        foreach (var row in vendorRows)
+        {
+            row.GetProperty("stability").GetString().Should().Be("development");
+            row.GetProperty("note").GetString().Should().NotBeNullOrWhiteSpace("every vendor key cites what sets it");
+            row.GetProperty("vendor_version").GetString().Should().NotBeNullOrWhiteSpace();
+            row.GetProperty("vendor_ref").GetString().Should().NotBeNullOrWhiteSpace();
+        }
+
+        // The ActivitySource names the wave subscribes to are registry facts of their own, so
+        // AddSource and a span processor's source match need no literal.
+        var vendorScopes = root.GetProperty("vendor_scope_names").EnumerateArray()
+            .Select(name => name.GetString()!)
+            .ToArray();
+        vendorScopes.Should().BeInAscendingOrder().And.OnlyHaveUniqueItems();
+        vendorScopes.Should().BeEquivalentTo(
+            models.SelectMany(model => model.GetProperty("activity_sources").EnumerateArray())
+                .Select(source => source.GetProperty("name").GetString()));
+        vendorScopes.Should().Contain(["MassTransit", "NServiceBus.Core", "Quartz", "Elastic.Transport",
+            "MongoDB.Driver", "RabbitMQ.Client.Publisher", "RabbitMQ.Client.Subscriber", "Npgsql",
+            "MySqlConnector", "connector-net", "Oracle.ManagedDataAccess.Core", "GraphQL"]);
     }
 }

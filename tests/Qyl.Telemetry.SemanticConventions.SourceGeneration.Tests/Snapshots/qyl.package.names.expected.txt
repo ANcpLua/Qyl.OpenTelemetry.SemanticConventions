@@ -55,6 +55,72 @@ public static class QylTelemetryNames
     }
 
     /// <summary>
+    /// Names of the <c>ActivitySource</c>s of the pinned third-party libraries qyl subscribes to.
+    /// </summary>
+    public static class VendorActivitySources
+    {
+        /// <summary>
+        /// The <c>Elastic.Transport</c> vendor activity source.
+        /// </summary>
+        public const string ElasticTransport = "Elastic.Transport";
+
+        /// <summary>
+        /// The <c>GraphQL</c> vendor activity source.
+        /// </summary>
+        public const string GraphQL = "GraphQL";
+
+        /// <summary>
+        /// The <c>MassTransit</c> vendor activity source.
+        /// </summary>
+        public const string MassTransit = "MassTransit";
+
+        /// <summary>
+        /// The <c>MongoDB.Driver</c> vendor activity source.
+        /// </summary>
+        public const string MongoDBDriver = "MongoDB.Driver";
+
+        /// <summary>
+        /// The <c>MySqlConnector</c> vendor activity source.
+        /// </summary>
+        public const string MySqlConnector = "MySqlConnector";
+
+        /// <summary>
+        /// The <c>NServiceBus.Core</c> vendor activity source.
+        /// </summary>
+        public const string NServiceBusCore = "NServiceBus.Core";
+
+        /// <summary>
+        /// The <c>Npgsql</c> vendor activity source.
+        /// </summary>
+        public const string Npgsql = "Npgsql";
+
+        /// <summary>
+        /// The <c>Oracle.ManagedDataAccess.Core</c> vendor activity source.
+        /// </summary>
+        public const string OracleManagedDataAccessCore = "Oracle.ManagedDataAccess.Core";
+
+        /// <summary>
+        /// The <c>Quartz</c> vendor activity source.
+        /// </summary>
+        public const string Quartz = "Quartz";
+
+        /// <summary>
+        /// The <c>RabbitMQ.Client.Publisher</c> vendor activity source.
+        /// </summary>
+        public const string RabbitMQClientPublisher = "RabbitMQ.Client.Publisher";
+
+        /// <summary>
+        /// The <c>RabbitMQ.Client.Subscriber</c> vendor activity source.
+        /// </summary>
+        public const string RabbitMQClientSubscriber = "RabbitMQ.Client.Subscriber";
+
+        /// <summary>
+        /// The <c>connector-net</c> vendor activity source.
+        /// </summary>
+        public const string ConnectorNet = "connector-net";
+    }
+
+    /// <summary>
     /// Names of qyl-owned <c>Activity</c> and <c>DiagnosticSource</c> events.
     /// </summary>
     public static class Events

@@ -4,11 +4,18 @@ single resolved-registry.json the generator embeds.
 
 Three sources, one model. Rows are deduplicated per kind (group id, attribute key,
 metric name, event name, entity id; the last source wins), so the qyl registry is
-guarded before it is merged: every qyl attribute key must start with `qyl.` and no qyl
-attribute, metric, or metric group may shadow an upstream row. A violation aborts
-generation naming the offending key. `local_attribute_values` is the one sanctioned way
-to touch an upstream row: it appends qyl-local members to an upstream open enum, and
-fails the moment upstream lands the same value.
+guarded before it is merged: every attribute under `attributes` must start with `qyl.`
+and no qyl attribute, metric, or metric group may shadow an upstream row. A violation
+aborts generation naming the offending key. `local_attribute_values` is the one
+sanctioned way to touch an upstream row: it appends qyl-local members to an upstream
+open enum, and fails the moment upstream lands the same value.
+
+A key outside the `qyl.` namespace reaches the catalog through exactly one door:
+`vendor_models`. One entry per third-party library, naming the library, the exact
+version qyl pins, the repository and tag its attributes were read at, and the
+ActivitySources it emits on; every attribute in it carries the file and line that sets
+it. That is the whole rule — there is no prefix allowlist, and an attribute outside
+`qyl.` that is not declared in a vendor model is still refused.
 
 qyl is a real third source. Its `sources` entry has `source_ref: qyl-registry.json`
 and `source_commit` = SHA-256 of that file's bytes (deterministic; no dates), and every
@@ -34,6 +41,10 @@ QYL_SOURCE = "qyl"
 QYL_SOURCE_REF = "qyl-registry.json"
 QYL_NAMESPACE = "qyl."
 QYL_LOCAL_VALUES = "local_attribute_values"
+VENDOR_MODELS = "vendor_models"
+VENDOR_MODEL_FIELDS = ("library", "version", "repository", "ref", "license", "activity_sources", "brief")
+NAMESPACE_ATTRIBUTE = "qyl.attribute.namespace"
+NAMESPACE_OTHER = "other"
 
 
 class MergeError(ValueError):
@@ -226,7 +237,8 @@ def guard_qyl_registry(qyl_registry, core, genai):
         if not key.startswith(QYL_NAMESPACE):
             raise MergeError(
                 f"qyl-registry.json attribute '{key}' is outside the qyl.* namespace; "
-                "qyl-owned attributes must start with 'qyl.'")
+                "qyl-owned attributes must start with 'qyl.', and a third-party key belongs in a "
+                f"declared {VENDOR_MODELS} entry")
         if key in upstream_keys:
             raise MergeError(
                 f"qyl-registry.json attribute '{key}' shadows the upstream {upstream_keys[key]} catalog row of the same key")
@@ -250,6 +262,141 @@ def guard_qyl_registry(qyl_registry, core, genai):
         if key not in upstream_keys:
             raise MergeError(
                 f"qyl-registry.json {QYL_LOCAL_VALUES} entry '{key}' names no upstream attribute")
+
+    guard_vendor_models(qyl_registry, upstream_keys)
+
+
+def guard_vendor_models(qyl_registry, upstream_keys):
+    """Refuse a vendor model that is not a citable finding.
+
+    A vendor model is the only way a non-qyl key enters the catalog, so it has to carry
+    what makes the key checkable by a reader: which library at which exact version, read
+    at which repository and tag, emitting on which ActivitySources, and — per attribute —
+    the file and line that sets it. A key that upstream already defines is refused here
+    too: upstream owns it, and the vendor row would shadow it.
+    """
+    seen = {}
+    for model in qyl_registry.get(VENDOR_MODELS, []):
+        label = model.get("library") or "<unnamed>"
+        for field in VENDOR_MODEL_FIELDS:
+            if not model.get(field):
+                raise MergeError(
+                    f"qyl-registry.json {VENDOR_MODELS} entry '{label}' is missing '{field}'; "
+                    "a vendor model must name the library, version, repository, ref, license, "
+                    "activity_sources and brief it was read from")
+        for source in model["activity_sources"]:
+            if not source.get("name") or not source.get("note"):
+                raise MergeError(
+                    f"qyl-registry.json {VENDOR_MODELS} entry '{label}' declares an ActivitySource "
+                    "without a name and the finding that names it")
+
+        # A library that emits no key of its own still declares its ActivitySource names:
+        # `attributes` is then empty, and the model exists for the name alone.
+        for attribute in model.get("attributes") or []:
+            key = attribute.get("key", "")
+            if key.startswith(QYL_NAMESPACE):
+                raise MergeError(
+                    f"qyl-registry.json {VENDOR_MODELS} entry '{label}' declares qyl-owned attribute '{key}'; "
+                    "declare it under `attributes` instead")
+            if key in upstream_keys:
+                raise MergeError(
+                    f"qyl-registry.json {VENDOR_MODELS} entry '{label}' attribute '{key}' shadows the upstream "
+                    f"{upstream_keys[key]} catalog row of the same key")
+            if key in seen:
+                raise MergeError(
+                    f"qyl-registry.json {VENDOR_MODELS} attribute '{key}' is declared by both "
+                    f"'{seen[key]}' and '{label}'")
+            if attribute.get("stability", "development") != "development":
+                raise MergeError(
+                    f"qyl-registry.json {VENDOR_MODELS} attribute '{key}' is not development-stability; "
+                    "a vendor key is whatever the pinned library emits, which qyl does not get to call stable")
+            if not attribute.get("note"):
+                raise MergeError(
+                    f"qyl-registry.json {VENDOR_MODELS} attribute '{key}' carries no finding; "
+                    "cite the file and line of the library that sets it")
+            seen[key] = label
+
+
+def vendor_catalog_rows(qyl_registry, provenance):
+    """Vendor-declared attributes in the catalog row shape, stamped with the qyl source.
+
+    They are qyl rows: qyl-registry.json is where the finding is written down, and its
+    SHA-256 is what a reader checks the declaration against. The library and version the
+    key was read at travel on the row so the merged model stays self-describing.
+    """
+    rows = []
+    for model in qyl_registry.get(VENDOR_MODELS, []):
+        for attribute in model.get("attributes") or []:
+            row = {
+                "key": attribute["key"],
+                "type": attribute.get("type", "string"),
+                "brief": attribute.get("brief", ""),
+                "note": attribute.get("note", ""),
+                "stability": attribute.get("stability", "development"),
+                "vendor_library": model["library"],
+                "vendor_version": model["version"],
+                "vendor_ref": model["ref"],
+            }
+            if "examples" in attribute:
+                row["examples"] = attribute["examples"]
+            row.update(provenance)
+            rows.append(row)
+    return rows
+
+
+def vendor_model_declarations(qyl_registry):
+    """The vendor models as declared, so the shipped registry carries the finding itself."""
+    return [
+        {
+            "library": model["library"],
+            "version": model["version"],
+            "repository": model["repository"],
+            "ref": model["ref"],
+            "license": model["license"],
+            "brief": model["brief"],
+            "activity_sources": list(model["activity_sources"]),
+            "attribute_keys": [attribute["key"] for attribute in model.get("attributes") or []],
+        }
+        for model in qyl_registry.get(VENDOR_MODELS, [])
+    ]
+
+
+def vendor_scope_names(qyl_registry):
+    """The ActivitySource names qyl subscribes to but does not own."""
+    return sorted({
+        source["name"]
+        for model in qyl_registry.get(VENDOR_MODELS, [])
+        for source in model["activity_sources"]
+    })
+
+
+def guard_attribute_namespace_enum(catalog_by_key):
+    """Hold `qyl.attribute.namespace` to a closed set: every namespace in the merged
+    catalog, plus `other`.
+
+    The collector clamps the tag it records to this set, so an inbound payload cannot
+    fork the series — which only holds while the set is complete. Recomputing it here
+    means a registry pin (or a vendor model) that adds a namespace fails generation
+    naming it, rather than shipping a value set that silently misses it.
+    """
+    attribute = catalog_by_key.get(NAMESPACE_ATTRIBUTE)
+    if attribute is None:
+        raise MergeError(f"the merged catalog has no {NAMESPACE_ATTRIBUTE} attribute")
+
+    raw_type = attribute.get("type")
+    if not isinstance(raw_type, dict) or not isinstance(raw_type.get("members"), list):
+        raise MergeError(f"{NAMESPACE_ATTRIBUTE} must be an enum attribute")
+
+    declared = {str(member.get("value")) for member in raw_type["members"]}
+    expected = {key.split(".", 1)[0] for key in catalog_by_key} | {NAMESPACE_OTHER}
+
+    missing = sorted(expected - declared)
+    extra = sorted(declared - expected)
+    if missing or extra:
+        raise MergeError(
+            f"{NAMESPACE_ATTRIBUTE} does not list the merged catalog's namespaces: "
+            f"missing {missing or '[]'}, unknown {extra or '[]'}; "
+            "the value set is closed, so update it in qyl-registry.json")
 
 
 def apply_local_attribute_values(qyl_registry, catalog_by_key, provenance):
@@ -421,11 +568,15 @@ def merge(core, genai, qyl, qyl_bytes, core_model_dir, genai_model_dir, schema_v
     events = unique_by(list(core.get("events", [])) + list(genai.get("events", [])), event_key)
     events = rehydrate_event_bodies(events, collect_event_bodies(core_model_dir, genai_model_dir))
     catalog = unique_by(
-        list(core.get("catalog", [])) + list(genai.get("catalog", [])) + qyl_catalog_rows(qyl, provenance),
+        list(core.get("catalog", []))
+        + list(genai.get("catalog", []))
+        + qyl_catalog_rows(qyl, provenance)
+        + vendor_catalog_rows(qyl, provenance),
         catalog_key,
     )
     catalog_by_key = {attribute["key"]: attribute for attribute in catalog}
     apply_local_attribute_values(qyl, catalog_by_key, provenance)
+    guard_attribute_namespace_enum(catalog_by_key)
     qyl_metrics, qyl_groups = qyl_metric_rows(qyl, catalog_by_key, provenance)
 
     return {
@@ -449,7 +600,9 @@ def merge(core, genai, qyl, qyl_bytes, core_model_dir, genai_model_dir, schema_v
             lambda entity: entity.get("id", "") or entity.get("name", ""),
         ),
         "scope_names": sorted(set(qyl.get("scope_names", []))),
+        "vendor_scope_names": vendor_scope_names(qyl),
         "event_names": sorted(set(qyl.get("event_names", []))),
+        "vendor_models": vendor_model_declarations(qyl),
     }
 
 

@@ -23,7 +23,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
       "source_date_epoch": null
     }
   ],
@@ -178038,7 +178038,7 @@
                 "source_registry": "qyl",
                 "schema_url": null,
                 "source_ref": "qyl-registry.json",
-                "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+                "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
                 "source_date_epoch": null
               },
               {
@@ -178050,7 +178050,7 @@
                 "source_registry": "qyl",
                 "schema_url": null,
                 "source_ref": "qyl-registry.json",
-                "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+                "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
                 "source_date_epoch": null
               }
             ]
@@ -178062,7 +178062,7 @@
           "source_registry": "qyl",
           "schema_url": null,
           "source_ref": "qyl-registry.json",
-          "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+          "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
           "source_date_epoch": null
         },
         {
@@ -178132,7 +178132,7 @@
           "source_registry": "qyl",
           "schema_url": null,
           "source_ref": "qyl-registry.json",
-          "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+          "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
           "source_date_epoch": null
         },
         {
@@ -178150,14 +178150,628 @@
           "source_registry": "qyl",
           "schema_url": null,
           "source_ref": "qyl-registry.json",
-          "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+          "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
           "source_date_epoch": null
         }
       ],
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "id": "metric.qyl.collector.attributes.dropped",
+      "type": "metric",
+      "brief": "Attributes the collector dropped at ingest because their key is not in the pinned registry.",
+      "note": "The collector's attribute allowlist is generated from the pinned registry plus the qyl-owned and vendor rows; a key outside it is dropped rather than forwarded. Counting the drops by namespace is how an undeclared key is noticed at all.",
+      "prefix": "",
+      "stability": "development",
+      "metric_name": "qyl.collector.attributes.dropped",
+      "instrument": "counter",
+      "unit": "{attribute}",
+      "metric_requirement_level": "recommended",
+      "attribute_refs": [
+        "qyl.attribute.namespace"
+      ],
+      "attributes": [
+        {
+          "key": "qyl.attribute.namespace",
+          "type": {
+            "members": [
+              {
+                "id": "android",
+                "value": "android",
+                "stability": "development",
+                "brief": "The `android` attribute namespace."
+              },
+              {
+                "id": "app",
+                "value": "app",
+                "stability": "development",
+                "brief": "The `app` attribute namespace."
+              },
+              {
+                "id": "artifact",
+                "value": "artifact",
+                "stability": "development",
+                "brief": "The `artifact` attribute namespace."
+              },
+              {
+                "id": "aspnetcore",
+                "value": "aspnetcore",
+                "stability": "development",
+                "brief": "The `aspnetcore` attribute namespace."
+              },
+              {
+                "id": "aws",
+                "value": "aws",
+                "stability": "development",
+                "brief": "The `aws` attribute namespace."
+              },
+              {
+                "id": "az",
+                "value": "az",
+                "stability": "development",
+                "brief": "The `az` attribute namespace."
+              },
+              {
+                "id": "azure",
+                "value": "azure",
+                "stability": "development",
+                "brief": "The `azure` attribute namespace."
+              },
+              {
+                "id": "browser",
+                "value": "browser",
+                "stability": "development",
+                "brief": "The `browser` attribute namespace."
+              },
+              {
+                "id": "cassandra",
+                "value": "cassandra",
+                "stability": "development",
+                "brief": "The `cassandra` attribute namespace."
+              },
+              {
+                "id": "cicd",
+                "value": "cicd",
+                "stability": "development",
+                "brief": "The `cicd` attribute namespace."
+              },
+              {
+                "id": "client",
+                "value": "client",
+                "stability": "development",
+                "brief": "The `client` attribute namespace."
+              },
+              {
+                "id": "cloud",
+                "value": "cloud",
+                "stability": "development",
+                "brief": "The `cloud` attribute namespace."
+              },
+              {
+                "id": "cloudevents",
+                "value": "cloudevents",
+                "stability": "development",
+                "brief": "The `cloudevents` attribute namespace."
+              },
+              {
+                "id": "cloudfoundry",
+                "value": "cloudfoundry",
+                "stability": "development",
+                "brief": "The `cloudfoundry` attribute namespace."
+              },
+              {
+                "id": "code",
+                "value": "code",
+                "stability": "development",
+                "brief": "The `code` attribute namespace."
+              },
+              {
+                "id": "container",
+                "value": "container",
+                "stability": "development",
+                "brief": "The `container` attribute namespace."
+              },
+              {
+                "id": "cpu",
+                "value": "cpu",
+                "stability": "development",
+                "brief": "The `cpu` attribute namespace."
+              },
+              {
+                "id": "cpython",
+                "value": "cpython",
+                "stability": "development",
+                "brief": "The `cpython` attribute namespace."
+              },
+              {
+                "id": "db",
+                "value": "db",
+                "stability": "development",
+                "brief": "The `db` attribute namespace."
+              },
+              {
+                "id": "deployment",
+                "value": "deployment",
+                "stability": "development",
+                "brief": "The `deployment` attribute namespace."
+              },
+              {
+                "id": "destination",
+                "value": "destination",
+                "stability": "development",
+                "brief": "The `destination` attribute namespace."
+              },
+              {
+                "id": "device",
+                "value": "device",
+                "stability": "development",
+                "brief": "The `device` attribute namespace."
+              },
+              {
+                "id": "disk",
+                "value": "disk",
+                "stability": "development",
+                "brief": "The `disk` attribute namespace."
+              },
+              {
+                "id": "dns",
+                "value": "dns",
+                "stability": "development",
+                "brief": "The `dns` attribute namespace."
+              },
+              {
+                "id": "dotnet",
+                "value": "dotnet",
+                "stability": "development",
+                "brief": "The `dotnet` attribute namespace."
+              },
+              {
+                "id": "elastic",
+                "value": "elastic",
+                "stability": "development",
+                "brief": "The `elastic` attribute namespace."
+              },
+              {
+                "id": "elasticsearch",
+                "value": "elasticsearch",
+                "stability": "development",
+                "brief": "The `elasticsearch` attribute namespace."
+              },
+              {
+                "id": "enduser",
+                "value": "enduser",
+                "stability": "development",
+                "brief": "The `enduser` attribute namespace."
+              },
+              {
+                "id": "error",
+                "value": "error",
+                "stability": "development",
+                "brief": "The `error` attribute namespace."
+              },
+              {
+                "id": "event",
+                "value": "event",
+                "stability": "development",
+                "brief": "The `event` attribute namespace."
+              },
+              {
+                "id": "exception",
+                "value": "exception",
+                "stability": "development",
+                "brief": "The `exception` attribute namespace."
+              },
+              {
+                "id": "execution",
+                "value": "execution",
+                "stability": "development",
+                "brief": "The `execution` attribute namespace."
+              },
+              {
+                "id": "faas",
+                "value": "faas",
+                "stability": "development",
+                "brief": "The `faas` attribute namespace."
+              },
+              {
+                "id": "feature_flag",
+                "value": "feature_flag",
+                "stability": "development",
+                "brief": "The `feature_flag` attribute namespace."
+              },
+              {
+                "id": "file",
+                "value": "file",
+                "stability": "development",
+                "brief": "The `file` attribute namespace."
+              },
+              {
+                "id": "gcp",
+                "value": "gcp",
+                "stability": "development",
+                "brief": "The `gcp` attribute namespace."
+              },
+              {
+                "id": "gen_ai",
+                "value": "gen_ai",
+                "stability": "development",
+                "brief": "The `gen_ai` attribute namespace."
+              },
+              {
+                "id": "geo",
+                "value": "geo",
+                "stability": "development",
+                "brief": "The `geo` attribute namespace."
+              },
+              {
+                "id": "go",
+                "value": "go",
+                "stability": "development",
+                "brief": "The `go` attribute namespace."
+              },
+              {
+                "id": "graphql",
+                "value": "graphql",
+                "stability": "development",
+                "brief": "The `graphql` attribute namespace."
+              },
+              {
+                "id": "heroku",
+                "value": "heroku",
+                "stability": "development",
+                "brief": "The `heroku` attribute namespace."
+              },
+              {
+                "id": "host",
+                "value": "host",
+                "stability": "development",
+                "brief": "The `host` attribute namespace."
+              },
+              {
+                "id": "http",
+                "value": "http",
+                "stability": "development",
+                "brief": "The `http` attribute namespace."
+              },
+              {
+                "id": "hw",
+                "value": "hw",
+                "stability": "development",
+                "brief": "The `hw` attribute namespace."
+              },
+              {
+                "id": "ios",
+                "value": "ios",
+                "stability": "development",
+                "brief": "The `ios` attribute namespace."
+              },
+              {
+                "id": "jsonrpc",
+                "value": "jsonrpc",
+                "stability": "development",
+                "brief": "The `jsonrpc` attribute namespace."
+              },
+              {
+                "id": "jvm",
+                "value": "jvm",
+                "stability": "development",
+                "brief": "The `jvm` attribute namespace."
+              },
+              {
+                "id": "k8s",
+                "value": "k8s",
+                "stability": "development",
+                "brief": "The `k8s` attribute namespace."
+              },
+              {
+                "id": "linux",
+                "value": "linux",
+                "stability": "development",
+                "brief": "The `linux` attribute namespace."
+              },
+              {
+                "id": "log",
+                "value": "log",
+                "stability": "development",
+                "brief": "The `log` attribute namespace."
+              },
+              {
+                "id": "mainframe",
+                "value": "mainframe",
+                "stability": "development",
+                "brief": "The `mainframe` attribute namespace."
+              },
+              {
+                "id": "mcp",
+                "value": "mcp",
+                "stability": "development",
+                "brief": "The `mcp` attribute namespace."
+              },
+              {
+                "id": "message",
+                "value": "message",
+                "stability": "development",
+                "brief": "The `message` attribute namespace."
+              },
+              {
+                "id": "messaging",
+                "value": "messaging",
+                "stability": "development",
+                "brief": "The `messaging` attribute namespace."
+              },
+              {
+                "id": "net",
+                "value": "net",
+                "stability": "development",
+                "brief": "The `net` attribute namespace."
+              },
+              {
+                "id": "network",
+                "value": "network",
+                "stability": "development",
+                "brief": "The `network` attribute namespace."
+              },
+              {
+                "id": "nfs",
+                "value": "nfs",
+                "stability": "development",
+                "brief": "The `nfs` attribute namespace."
+              },
+              {
+                "id": "nodejs",
+                "value": "nodejs",
+                "stability": "development",
+                "brief": "The `nodejs` attribute namespace."
+              },
+              {
+                "id": "nservicebus",
+                "value": "nservicebus",
+                "stability": "development",
+                "brief": "The `nservicebus` attribute namespace."
+              },
+              {
+                "id": "oci",
+                "value": "oci",
+                "stability": "development",
+                "brief": "The `oci` attribute namespace."
+              },
+              {
+                "id": "onc_rpc",
+                "value": "onc_rpc",
+                "stability": "development",
+                "brief": "The `onc_rpc` attribute namespace."
+              },
+              {
+                "id": "openai",
+                "value": "openai",
+                "stability": "development",
+                "brief": "The `openai` attribute namespace."
+              },
+              {
+                "id": "openshift",
+                "value": "openshift",
+                "stability": "development",
+                "brief": "The `openshift` attribute namespace."
+              },
+              {
+                "id": "opentracing",
+                "value": "opentracing",
+                "stability": "development",
+                "brief": "The `opentracing` attribute namespace."
+              },
+              {
+                "id": "oracle",
+                "value": "oracle",
+                "stability": "development",
+                "brief": "The `oracle` attribute namespace."
+              },
+              {
+                "id": "oracle_cloud",
+                "value": "oracle_cloud",
+                "stability": "development",
+                "brief": "The `oracle_cloud` attribute namespace."
+              },
+              {
+                "id": "os",
+                "value": "os",
+                "stability": "development",
+                "brief": "The `os` attribute namespace."
+              },
+              {
+                "id": "otel",
+                "value": "otel",
+                "stability": "development",
+                "brief": "The `otel` attribute namespace."
+              },
+              {
+                "id": "other",
+                "value": "other",
+                "stability": "development",
+                "brief": "Any attribute namespace outside the pinned registry."
+              },
+              {
+                "id": "peer",
+                "value": "peer",
+                "stability": "development",
+                "brief": "The `peer` attribute namespace."
+              },
+              {
+                "id": "pool",
+                "value": "pool",
+                "stability": "development",
+                "brief": "The `pool` attribute namespace."
+              },
+              {
+                "id": "pprof",
+                "value": "pprof",
+                "stability": "development",
+                "brief": "The `pprof` attribute namespace."
+              },
+              {
+                "id": "process",
+                "value": "process",
+                "stability": "development",
+                "brief": "The `process` attribute namespace."
+              },
+              {
+                "id": "profile",
+                "value": "profile",
+                "stability": "development",
+                "brief": "The `profile` attribute namespace."
+              },
+              {
+                "id": "quartz",
+                "value": "quartz",
+                "stability": "development",
+                "brief": "The `quartz` attribute namespace."
+              },
+              {
+                "id": "qyl",
+                "value": "qyl",
+                "stability": "development",
+                "brief": "The `qyl` attribute namespace."
+              },
+              {
+                "id": "rpc",
+                "value": "rpc",
+                "stability": "development",
+                "brief": "The `rpc` attribute namespace."
+              },
+              {
+                "id": "security_rule",
+                "value": "security_rule",
+                "stability": "development",
+                "brief": "The `security_rule` attribute namespace."
+              },
+              {
+                "id": "server",
+                "value": "server",
+                "stability": "development",
+                "brief": "The `server` attribute namespace."
+              },
+              {
+                "id": "service",
+                "value": "service",
+                "stability": "development",
+                "brief": "The `service` attribute namespace."
+              },
+              {
+                "id": "session",
+                "value": "session",
+                "stability": "development",
+                "brief": "The `session` attribute namespace."
+              },
+              {
+                "id": "signalr",
+                "value": "signalr",
+                "stability": "development",
+                "brief": "The `signalr` attribute namespace."
+              },
+              {
+                "id": "source",
+                "value": "source",
+                "stability": "development",
+                "brief": "The `source` attribute namespace."
+              },
+              {
+                "id": "state",
+                "value": "state",
+                "stability": "development",
+                "brief": "The `state` attribute namespace."
+              },
+              {
+                "id": "system",
+                "value": "system",
+                "stability": "development",
+                "brief": "The `system` attribute namespace."
+              },
+              {
+                "id": "telemetry",
+                "value": "telemetry",
+                "stability": "development",
+                "brief": "The `telemetry` attribute namespace."
+              },
+              {
+                "id": "test",
+                "value": "test",
+                "stability": "development",
+                "brief": "The `test` attribute namespace."
+              },
+              {
+                "id": "thread",
+                "value": "thread",
+                "stability": "development",
+                "brief": "The `thread` attribute namespace."
+              },
+              {
+                "id": "tls",
+                "value": "tls",
+                "stability": "development",
+                "brief": "The `tls` attribute namespace."
+              },
+              {
+                "id": "url",
+                "value": "url",
+                "stability": "development",
+                "brief": "The `url` attribute namespace."
+              },
+              {
+                "id": "user",
+                "value": "user",
+                "stability": "development",
+                "brief": "The `user` attribute namespace."
+              },
+              {
+                "id": "user_agent",
+                "value": "user_agent",
+                "stability": "development",
+                "brief": "The `user_agent` attribute namespace."
+              },
+              {
+                "id": "v8js",
+                "value": "v8js",
+                "stability": "development",
+                "brief": "The `v8js` attribute namespace."
+              },
+              {
+                "id": "vcs",
+                "value": "vcs",
+                "stability": "development",
+                "brief": "The `vcs` attribute namespace."
+              },
+              {
+                "id": "webengine",
+                "value": "webengine",
+                "stability": "development",
+                "brief": "The `webengine` attribute namespace."
+              },
+              {
+                "id": "zos",
+                "value": "zos",
+                "stability": "development",
+                "brief": "The `zos` attribute namespace."
+              }
+            ]
+          },
+          "requirement_level": "required",
+          "brief": "First dot-segment of the attribute key a collector measurement is about.",
+          "note": "The value set is closed and is exactly the attribute namespaces present in the merged registry plus `other`: the collector clamps every value it records to this set, so an inbound payload carrying an unknown key cannot fork the series. merge_registries.py recomputes the set from the merged catalog on every generation and fails the merge when the two disagree, so a registry that gains a namespace cannot silently leave it unlisted.",
+          "stability": "development",
+          "source_registry": "qyl",
+          "schema_url": null,
+          "source_ref": "qyl-registry.json",
+          "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+          "source_date_epoch": null
+        }
+      ],
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
       "source_date_epoch": null
     }
   ],
@@ -191662,7 +192276,7 @@
             "source_registry": "qyl",
             "schema_url": null,
             "source_ref": "qyl-registry.json",
-            "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+            "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
             "source_date_epoch": null
           },
           {
@@ -191674,7 +192288,7 @@
             "source_registry": "qyl",
             "schema_url": null,
             "source_ref": "qyl-registry.json",
-            "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+            "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
             "source_date_epoch": null
           }
         ]
@@ -194956,6 +195570,18 @@
             "id": "jsonrpc",
             "stability": "development",
             "value": "jsonrpc"
+          },
+          {
+            "id": "dotnet_wcf",
+            "value": "dotnet_wcf",
+            "stability": "development",
+            "brief": ".NET WCF.",
+            "note": "Local to qyl: this value is absent from upstream OpenTelemetry semantic conventions. The deprecated `rpc.system` carried it; the `rpc.system.name` replacement does not, and qyl's WCF client instrumentation emits it.",
+            "source_registry": "qyl",
+            "schema_url": null,
+            "source_ref": "qyl-registry.json",
+            "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+            "source_date_epoch": null
           }
         ]
       },
@@ -199724,6 +200350,597 @@
       "source_date_epoch": "1788399101"
     },
     {
+      "key": "qyl.attribute.namespace",
+      "type": {
+        "members": [
+          {
+            "id": "android",
+            "value": "android",
+            "stability": "development",
+            "brief": "The `android` attribute namespace."
+          },
+          {
+            "id": "app",
+            "value": "app",
+            "stability": "development",
+            "brief": "The `app` attribute namespace."
+          },
+          {
+            "id": "artifact",
+            "value": "artifact",
+            "stability": "development",
+            "brief": "The `artifact` attribute namespace."
+          },
+          {
+            "id": "aspnetcore",
+            "value": "aspnetcore",
+            "stability": "development",
+            "brief": "The `aspnetcore` attribute namespace."
+          },
+          {
+            "id": "aws",
+            "value": "aws",
+            "stability": "development",
+            "brief": "The `aws` attribute namespace."
+          },
+          {
+            "id": "az",
+            "value": "az",
+            "stability": "development",
+            "brief": "The `az` attribute namespace."
+          },
+          {
+            "id": "azure",
+            "value": "azure",
+            "stability": "development",
+            "brief": "The `azure` attribute namespace."
+          },
+          {
+            "id": "browser",
+            "value": "browser",
+            "stability": "development",
+            "brief": "The `browser` attribute namespace."
+          },
+          {
+            "id": "cassandra",
+            "value": "cassandra",
+            "stability": "development",
+            "brief": "The `cassandra` attribute namespace."
+          },
+          {
+            "id": "cicd",
+            "value": "cicd",
+            "stability": "development",
+            "brief": "The `cicd` attribute namespace."
+          },
+          {
+            "id": "client",
+            "value": "client",
+            "stability": "development",
+            "brief": "The `client` attribute namespace."
+          },
+          {
+            "id": "cloud",
+            "value": "cloud",
+            "stability": "development",
+            "brief": "The `cloud` attribute namespace."
+          },
+          {
+            "id": "cloudevents",
+            "value": "cloudevents",
+            "stability": "development",
+            "brief": "The `cloudevents` attribute namespace."
+          },
+          {
+            "id": "cloudfoundry",
+            "value": "cloudfoundry",
+            "stability": "development",
+            "brief": "The `cloudfoundry` attribute namespace."
+          },
+          {
+            "id": "code",
+            "value": "code",
+            "stability": "development",
+            "brief": "The `code` attribute namespace."
+          },
+          {
+            "id": "container",
+            "value": "container",
+            "stability": "development",
+            "brief": "The `container` attribute namespace."
+          },
+          {
+            "id": "cpu",
+            "value": "cpu",
+            "stability": "development",
+            "brief": "The `cpu` attribute namespace."
+          },
+          {
+            "id": "cpython",
+            "value": "cpython",
+            "stability": "development",
+            "brief": "The `cpython` attribute namespace."
+          },
+          {
+            "id": "db",
+            "value": "db",
+            "stability": "development",
+            "brief": "The `db` attribute namespace."
+          },
+          {
+            "id": "deployment",
+            "value": "deployment",
+            "stability": "development",
+            "brief": "The `deployment` attribute namespace."
+          },
+          {
+            "id": "destination",
+            "value": "destination",
+            "stability": "development",
+            "brief": "The `destination` attribute namespace."
+          },
+          {
+            "id": "device",
+            "value": "device",
+            "stability": "development",
+            "brief": "The `device` attribute namespace."
+          },
+          {
+            "id": "disk",
+            "value": "disk",
+            "stability": "development",
+            "brief": "The `disk` attribute namespace."
+          },
+          {
+            "id": "dns",
+            "value": "dns",
+            "stability": "development",
+            "brief": "The `dns` attribute namespace."
+          },
+          {
+            "id": "dotnet",
+            "value": "dotnet",
+            "stability": "development",
+            "brief": "The `dotnet` attribute namespace."
+          },
+          {
+            "id": "elastic",
+            "value": "elastic",
+            "stability": "development",
+            "brief": "The `elastic` attribute namespace."
+          },
+          {
+            "id": "elasticsearch",
+            "value": "elasticsearch",
+            "stability": "development",
+            "brief": "The `elasticsearch` attribute namespace."
+          },
+          {
+            "id": "enduser",
+            "value": "enduser",
+            "stability": "development",
+            "brief": "The `enduser` attribute namespace."
+          },
+          {
+            "id": "error",
+            "value": "error",
+            "stability": "development",
+            "brief": "The `error` attribute namespace."
+          },
+          {
+            "id": "event",
+            "value": "event",
+            "stability": "development",
+            "brief": "The `event` attribute namespace."
+          },
+          {
+            "id": "exception",
+            "value": "exception",
+            "stability": "development",
+            "brief": "The `exception` attribute namespace."
+          },
+          {
+            "id": "execution",
+            "value": "execution",
+            "stability": "development",
+            "brief": "The `execution` attribute namespace."
+          },
+          {
+            "id": "faas",
+            "value": "faas",
+            "stability": "development",
+            "brief": "The `faas` attribute namespace."
+          },
+          {
+            "id": "feature_flag",
+            "value": "feature_flag",
+            "stability": "development",
+            "brief": "The `feature_flag` attribute namespace."
+          },
+          {
+            "id": "file",
+            "value": "file",
+            "stability": "development",
+            "brief": "The `file` attribute namespace."
+          },
+          {
+            "id": "gcp",
+            "value": "gcp",
+            "stability": "development",
+            "brief": "The `gcp` attribute namespace."
+          },
+          {
+            "id": "gen_ai",
+            "value": "gen_ai",
+            "stability": "development",
+            "brief": "The `gen_ai` attribute namespace."
+          },
+          {
+            "id": "geo",
+            "value": "geo",
+            "stability": "development",
+            "brief": "The `geo` attribute namespace."
+          },
+          {
+            "id": "go",
+            "value": "go",
+            "stability": "development",
+            "brief": "The `go` attribute namespace."
+          },
+          {
+            "id": "graphql",
+            "value": "graphql",
+            "stability": "development",
+            "brief": "The `graphql` attribute namespace."
+          },
+          {
+            "id": "heroku",
+            "value": "heroku",
+            "stability": "development",
+            "brief": "The `heroku` attribute namespace."
+          },
+          {
+            "id": "host",
+            "value": "host",
+            "stability": "development",
+            "brief": "The `host` attribute namespace."
+          },
+          {
+            "id": "http",
+            "value": "http",
+            "stability": "development",
+            "brief": "The `http` attribute namespace."
+          },
+          {
+            "id": "hw",
+            "value": "hw",
+            "stability": "development",
+            "brief": "The `hw` attribute namespace."
+          },
+          {
+            "id": "ios",
+            "value": "ios",
+            "stability": "development",
+            "brief": "The `ios` attribute namespace."
+          },
+          {
+            "id": "jsonrpc",
+            "value": "jsonrpc",
+            "stability": "development",
+            "brief": "The `jsonrpc` attribute namespace."
+          },
+          {
+            "id": "jvm",
+            "value": "jvm",
+            "stability": "development",
+            "brief": "The `jvm` attribute namespace."
+          },
+          {
+            "id": "k8s",
+            "value": "k8s",
+            "stability": "development",
+            "brief": "The `k8s` attribute namespace."
+          },
+          {
+            "id": "linux",
+            "value": "linux",
+            "stability": "development",
+            "brief": "The `linux` attribute namespace."
+          },
+          {
+            "id": "log",
+            "value": "log",
+            "stability": "development",
+            "brief": "The `log` attribute namespace."
+          },
+          {
+            "id": "mainframe",
+            "value": "mainframe",
+            "stability": "development",
+            "brief": "The `mainframe` attribute namespace."
+          },
+          {
+            "id": "mcp",
+            "value": "mcp",
+            "stability": "development",
+            "brief": "The `mcp` attribute namespace."
+          },
+          {
+            "id": "message",
+            "value": "message",
+            "stability": "development",
+            "brief": "The `message` attribute namespace."
+          },
+          {
+            "id": "messaging",
+            "value": "messaging",
+            "stability": "development",
+            "brief": "The `messaging` attribute namespace."
+          },
+          {
+            "id": "net",
+            "value": "net",
+            "stability": "development",
+            "brief": "The `net` attribute namespace."
+          },
+          {
+            "id": "network",
+            "value": "network",
+            "stability": "development",
+            "brief": "The `network` attribute namespace."
+          },
+          {
+            "id": "nfs",
+            "value": "nfs",
+            "stability": "development",
+            "brief": "The `nfs` attribute namespace."
+          },
+          {
+            "id": "nodejs",
+            "value": "nodejs",
+            "stability": "development",
+            "brief": "The `nodejs` attribute namespace."
+          },
+          {
+            "id": "nservicebus",
+            "value": "nservicebus",
+            "stability": "development",
+            "brief": "The `nservicebus` attribute namespace."
+          },
+          {
+            "id": "oci",
+            "value": "oci",
+            "stability": "development",
+            "brief": "The `oci` attribute namespace."
+          },
+          {
+            "id": "onc_rpc",
+            "value": "onc_rpc",
+            "stability": "development",
+            "brief": "The `onc_rpc` attribute namespace."
+          },
+          {
+            "id": "openai",
+            "value": "openai",
+            "stability": "development",
+            "brief": "The `openai` attribute namespace."
+          },
+          {
+            "id": "openshift",
+            "value": "openshift",
+            "stability": "development",
+            "brief": "The `openshift` attribute namespace."
+          },
+          {
+            "id": "opentracing",
+            "value": "opentracing",
+            "stability": "development",
+            "brief": "The `opentracing` attribute namespace."
+          },
+          {
+            "id": "oracle",
+            "value": "oracle",
+            "stability": "development",
+            "brief": "The `oracle` attribute namespace."
+          },
+          {
+            "id": "oracle_cloud",
+            "value": "oracle_cloud",
+            "stability": "development",
+            "brief": "The `oracle_cloud` attribute namespace."
+          },
+          {
+            "id": "os",
+            "value": "os",
+            "stability": "development",
+            "brief": "The `os` attribute namespace."
+          },
+          {
+            "id": "otel",
+            "value": "otel",
+            "stability": "development",
+            "brief": "The `otel` attribute namespace."
+          },
+          {
+            "id": "other",
+            "value": "other",
+            "stability": "development",
+            "brief": "Any attribute namespace outside the pinned registry."
+          },
+          {
+            "id": "peer",
+            "value": "peer",
+            "stability": "development",
+            "brief": "The `peer` attribute namespace."
+          },
+          {
+            "id": "pool",
+            "value": "pool",
+            "stability": "development",
+            "brief": "The `pool` attribute namespace."
+          },
+          {
+            "id": "pprof",
+            "value": "pprof",
+            "stability": "development",
+            "brief": "The `pprof` attribute namespace."
+          },
+          {
+            "id": "process",
+            "value": "process",
+            "stability": "development",
+            "brief": "The `process` attribute namespace."
+          },
+          {
+            "id": "profile",
+            "value": "profile",
+            "stability": "development",
+            "brief": "The `profile` attribute namespace."
+          },
+          {
+            "id": "quartz",
+            "value": "quartz",
+            "stability": "development",
+            "brief": "The `quartz` attribute namespace."
+          },
+          {
+            "id": "qyl",
+            "value": "qyl",
+            "stability": "development",
+            "brief": "The `qyl` attribute namespace."
+          },
+          {
+            "id": "rpc",
+            "value": "rpc",
+            "stability": "development",
+            "brief": "The `rpc` attribute namespace."
+          },
+          {
+            "id": "security_rule",
+            "value": "security_rule",
+            "stability": "development",
+            "brief": "The `security_rule` attribute namespace."
+          },
+          {
+            "id": "server",
+            "value": "server",
+            "stability": "development",
+            "brief": "The `server` attribute namespace."
+          },
+          {
+            "id": "service",
+            "value": "service",
+            "stability": "development",
+            "brief": "The `service` attribute namespace."
+          },
+          {
+            "id": "session",
+            "value": "session",
+            "stability": "development",
+            "brief": "The `session` attribute namespace."
+          },
+          {
+            "id": "signalr",
+            "value": "signalr",
+            "stability": "development",
+            "brief": "The `signalr` attribute namespace."
+          },
+          {
+            "id": "source",
+            "value": "source",
+            "stability": "development",
+            "brief": "The `source` attribute namespace."
+          },
+          {
+            "id": "state",
+            "value": "state",
+            "stability": "development",
+            "brief": "The `state` attribute namespace."
+          },
+          {
+            "id": "system",
+            "value": "system",
+            "stability": "development",
+            "brief": "The `system` attribute namespace."
+          },
+          {
+            "id": "telemetry",
+            "value": "telemetry",
+            "stability": "development",
+            "brief": "The `telemetry` attribute namespace."
+          },
+          {
+            "id": "test",
+            "value": "test",
+            "stability": "development",
+            "brief": "The `test` attribute namespace."
+          },
+          {
+            "id": "thread",
+            "value": "thread",
+            "stability": "development",
+            "brief": "The `thread` attribute namespace."
+          },
+          {
+            "id": "tls",
+            "value": "tls",
+            "stability": "development",
+            "brief": "The `tls` attribute namespace."
+          },
+          {
+            "id": "url",
+            "value": "url",
+            "stability": "development",
+            "brief": "The `url` attribute namespace."
+          },
+          {
+            "id": "user",
+            "value": "user",
+            "stability": "development",
+            "brief": "The `user` attribute namespace."
+          },
+          {
+            "id": "user_agent",
+            "value": "user_agent",
+            "stability": "development",
+            "brief": "The `user_agent` attribute namespace."
+          },
+          {
+            "id": "v8js",
+            "value": "v8js",
+            "stability": "development",
+            "brief": "The `v8js` attribute namespace."
+          },
+          {
+            "id": "vcs",
+            "value": "vcs",
+            "stability": "development",
+            "brief": "The `vcs` attribute namespace."
+          },
+          {
+            "id": "webengine",
+            "value": "webengine",
+            "stability": "development",
+            "brief": "The `webengine` attribute namespace."
+          },
+          {
+            "id": "zos",
+            "value": "zos",
+            "stability": "development",
+            "brief": "The `zos` attribute namespace."
+          }
+        ]
+      },
+      "brief": "First dot-segment of the attribute key a collector measurement is about.",
+      "note": "The value set is closed and is exactly the attribute namespaces present in the merged registry plus `other`: the collector clamps every value it records to this set, so an inbound payload carrying an unknown key cannot fork the series. merge_registries.py recomputes the set from the merged catalog on every generation and fails the merge when the two disagree, so a registry that gains a namespace cannot silently leave it unlisted.",
+      "stability": "development",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
       "key": "qyl.capability.id",
       "type": "string",
       "brief": "Stable identifier of the qyl capability that produced the telemetry.",
@@ -199732,7 +200949,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
       "source_date_epoch": null
     },
     {
@@ -199744,7 +200961,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
       "source_date_epoch": null
     },
     {
@@ -199756,7 +200973,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
       "source_date_epoch": null
     },
     {
@@ -199879,7 +201096,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
       "source_date_epoch": null
     },
     {
@@ -199891,7 +201108,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
       "source_date_epoch": null
     },
     {
@@ -199903,7 +201120,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
       "source_date_epoch": null
     },
     {
@@ -199915,7 +201132,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
       "source_date_epoch": null
     },
     {
@@ -199927,7 +201144,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
       "source_date_epoch": null
     },
     {
@@ -199939,7 +201156,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
       "source_date_epoch": null
     },
     {
@@ -199951,7 +201168,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
       "source_date_epoch": null
     },
     {
@@ -199963,7 +201180,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
       "source_date_epoch": null
     },
     {
@@ -199975,7 +201192,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
       "source_date_epoch": null
     },
     {
@@ -199987,7 +201204,7 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
       "source_date_epoch": null
     },
     {
@@ -199999,7 +201216,1462 @@
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "messaging.masstransit.message_id",
+      "type": "string",
+      "brief": "MassTransit message id of the message being sent or consumed.",
+      "note": "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:13; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:195,282.",
+      "stability": "development",
+      "vendor_library": "MassTransit",
+      "vendor_version": "8.5.10",
+      "vendor_ref": "v8.5.10",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "messaging.masstransit.correlation_id",
+      "type": "string",
+      "brief": "MassTransit correlation id of the message.",
+      "note": "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:14; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:199,286.",
+      "stability": "development",
+      "vendor_library": "MassTransit",
+      "vendor_version": "8.5.10",
+      "vendor_ref": "v8.5.10",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "messaging.masstransit.initiator_id",
+      "type": "string",
+      "brief": "Id of the message that initiated the conversation this message belongs to.",
+      "note": "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:15; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:203,290.",
+      "stability": "development",
+      "vendor_library": "MassTransit",
+      "vendor_version": "8.5.10",
+      "vendor_ref": "v8.5.10",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "messaging.masstransit.request_id",
+      "type": "string",
+      "brief": "Request id of the message, when it is part of a request/response exchange.",
+      "note": "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:16; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:201,288.",
+      "stability": "development",
+      "vendor_library": "MassTransit",
+      "vendor_version": "8.5.10",
+      "vendor_ref": "v8.5.10",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "messaging.masstransit.source_address",
+      "type": "string",
+      "brief": "Endpoint address the message was sent from.",
+      "note": "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:17; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:205,292.",
+      "stability": "development",
+      "vendor_library": "MassTransit",
+      "vendor_version": "8.5.10",
+      "vendor_ref": "v8.5.10",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "messaging.masstransit.destination_address",
+      "type": "string",
+      "brief": "Endpoint address the message was sent to.",
+      "note": "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:18; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:207,294.",
+      "stability": "development",
+      "vendor_library": "MassTransit",
+      "vendor_version": "8.5.10",
+      "vendor_ref": "v8.5.10",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "messaging.masstransit.input_address",
+      "type": "string",
+      "brief": "Input address of the receive endpoint that consumed the message.",
+      "note": "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:19; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:90.",
+      "stability": "development",
+      "vendor_library": "MassTransit",
+      "vendor_version": "8.5.10",
+      "vendor_ref": "v8.5.10",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "messaging.masstransit.tracking_number",
+      "type": "string",
+      "brief": "Tracking number of the Courier routing slip an activity is executing or compensating.",
+      "note": "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:20; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:153,165.",
+      "stability": "development",
+      "vendor_library": "MassTransit",
+      "vendor_version": "8.5.10",
+      "vendor_ref": "v8.5.10",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "messaging.masstransit.message_types",
+      "type": "string",
+      "brief": "Comma-separated list of the message types supported by the message.",
+      "note": "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:22; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:209,296 and src/MassTransit/Logging/Diagnostics/DiagnosticActivityExtensions.cs:38.",
+      "stability": "development",
+      "vendor_library": "MassTransit",
+      "vendor_version": "8.5.10",
+      "vendor_ref": "v8.5.10",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "messaging.masstransit.consumer_type",
+      "type": "string",
+      "brief": "Short type name of the consumer, handler, saga, state machine or Courier activity processing the message.",
+      "note": "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:24; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:108,118,130,142,154,166.",
+      "stability": "development",
+      "vendor_library": "MassTransit",
+      "vendor_version": "8.5.10",
+      "vendor_ref": "v8.5.10",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "messaging.masstransit.saga_id",
+      "type": "string",
+      "brief": "Correlation id of the saga instance handling the message.",
+      "note": "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:30; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:129,141.",
+      "stability": "development",
+      "vendor_library": "MassTransit",
+      "vendor_version": "8.5.10",
+      "vendor_ref": "v8.5.10",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "messaging.masstransit.begin_state",
+      "type": "string",
+      "brief": "Name of the state machine state the instance was in before the event was raised.",
+      "note": "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:28; set at src/MassTransit/Middleware/StateMachineSagaMessageFilter.cs:63.",
+      "stability": "development",
+      "vendor_library": "MassTransit",
+      "vendor_version": "8.5.10",
+      "vendor_ref": "v8.5.10",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "messaging.masstransit.end_state",
+      "type": "string",
+      "brief": "Name of the state machine state the instance is in after the event was raised.",
+      "note": "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:29; set at src/MassTransit/Middleware/StateMachineSagaMessageFilter.cs:98.",
+      "stability": "development",
+      "vendor_library": "MassTransit",
+      "vendor_version": "8.5.10",
+      "vendor_ref": "v8.5.10",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "peer.address",
+      "type": "string",
+      "brief": "MassTransit diagnostic address of the message type being consumed.",
+      "note": "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:26; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:109,119,131,143,155,167.",
+      "stability": "development",
+      "vendor_library": "MassTransit",
+      "vendor_version": "8.5.10",
+      "vendor_ref": "v8.5.10",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "elastic.transport.product.name",
+      "type": "string",
+      "brief": "Name of the product library consuming Elastic.Transport.",
+      "note": "Span tag on the \"Elastic.Transport\" ActivitySource. Declared at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetryAttributes.cs:15; set at src/Elastic.Transport/DistributedTransport.cs:128.",
+      "stability": "development",
+      "vendor_library": "Elastic.Transport",
+      "vendor_version": "1.0.0",
+      "vendor_ref": "1.0.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "elastic.transport.product.version",
+      "type": "string",
+      "brief": "Informational version of the product library consuming Elastic.Transport.",
+      "note": "Span tag on the \"Elastic.Transport\" ActivitySource. Declared at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetryAttributes.cs:20; set at src/Elastic.Transport/DistributedTransport.cs:129.",
+      "stability": "development",
+      "vendor_library": "Elastic.Transport",
+      "vendor_version": "1.0.0",
+      "vendor_ref": "1.0.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "elastic.transport.version",
+      "type": "string",
+      "brief": "Informational version of the Elastic.Transport library.",
+      "note": "Span tag on the \"Elastic.Transport\" ActivitySource. Declared at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetryAttributes.cs:25; set at src/Elastic.Transport/DistributedTransport.cs:130.",
+      "stability": "development",
+      "vendor_library": "Elastic.Transport",
+      "vendor_version": "1.0.0",
+      "vendor_ref": "1.0.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "elastic.transport.schema_url",
+      "type": "string",
+      "brief": "Semantic-convention schema URL the transport layer's own attributes conform to.",
+      "note": "Span tag on the \"Elastic.Transport\" ActivitySource. Declared at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetryAttributes.cs:30; set at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetry.cs:67.",
+      "stability": "development",
+      "vendor_library": "Elastic.Transport",
+      "vendor_version": "1.0.0",
+      "vendor_ref": "1.0.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "elastic.transport.attempted_nodes",
+      "type": "int",
+      "brief": "Number of nodes attempted during one logical operation.",
+      "note": "Span tag on the \"Elastic.Transport\" ActivitySource. Declared at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetryAttributes.cs:40; set at src/Elastic.Transport/DistributedTransport.cs:278.",
+      "stability": "development",
+      "vendor_library": "Elastic.Transport",
+      "vendor_version": "1.0.0",
+      "vendor_ref": "1.0.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "elastic.transport.prepare_request_ms",
+      "type": "int",
+      "brief": "Milliseconds spent preparing the HTTP request, recorded only above the transport's 20 ms threshold.",
+      "note": "Span tag on the \"Elastic.Transport\" ActivitySource. Declared at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetryAttributes.cs:45; set at src/Elastic.Transport/Components/TransportClient/HttpRequestInvoker.cs:128 and src/Elastic.Transport/Components/TransportClient/HttpWebRequestInvoker.cs:129.",
+      "stability": "development",
+      "vendor_library": "Elastic.Transport",
+      "vendor_version": "1.0.0",
+      "vendor_ref": "1.0.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "elastic.transport.deserialize_response_ms",
+      "type": "int",
+      "brief": "Milliseconds spent deserializing the HTTP response, recorded only above the transport's 20 ms threshold.",
+      "note": "Span tag on the \"Elastic.Transport\" ActivitySource. Declared at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetryAttributes.cs:50; set at src/Elastic.Transport/Components/Pipeline/DefaultResponseBuilder.cs:57 and src/Elastic.Transport/Products/Elasticsearch/Responses/ElasticsearchResponseBuilder.cs:61.",
+      "stability": "development",
+      "vendor_library": "Elastic.Transport",
+      "vendor_version": "1.0.0",
+      "vendor_ref": "1.0.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "quartz.scheduler.name",
+      "type": "string",
+      "brief": "Name of the scheduler that produced the telemetry.",
+      "note": "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:25; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:69 and src/Quartz/Diagnostics/TracingJobStore.cs:570.",
+      "stability": "development",
+      "vendor_library": "Quartz.NET",
+      "vendor_version": "4.0.0",
+      "vendor_ref": "v4.0.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "quartz.scheduler.id",
+      "type": "string",
+      "brief": "Instance id of the scheduler that produced the telemetry, which is what tells two cluster nodes apart.",
+      "note": "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:30; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:70 and src/Quartz/Diagnostics/TracingJobStore.cs:571.",
+      "stability": "development",
+      "vendor_library": "Quartz.NET",
+      "vendor_version": "4.0.0",
+      "vendor_ref": "v4.0.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "quartz.fire.instance.id",
+      "type": "string",
+      "brief": "Identity of one firing, which is what an interrupt names.",
+      "note": "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:35; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:72.",
+      "stability": "development",
+      "vendor_library": "Quartz.NET",
+      "vendor_version": "4.0.0",
+      "vendor_ref": "v4.0.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "quartz.trigger.group",
+      "type": "string",
+      "brief": "Group of the trigger that fired.",
+      "note": "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:40; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:75 and src/Quartz/Diagnostics/TracingJobStore.cs:704.",
+      "stability": "development",
+      "vendor_library": "Quartz.NET",
+      "vendor_version": "4.0.0",
+      "vendor_ref": "v4.0.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "quartz.trigger.name",
+      "type": "string",
+      "brief": "Name of the trigger that fired.",
+      "note": "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:45; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:76 and src/Quartz/Diagnostics/TracingJobStore.cs:705.",
+      "stability": "development",
+      "vendor_library": "Quartz.NET",
+      "vendor_version": "4.0.0",
+      "vendor_ref": "v4.0.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "quartz.job.type",
+      "type": "string",
+      "brief": "Assembly-qualified type name of the job.",
+      "note": "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:50; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:71.",
+      "stability": "development",
+      "vendor_library": "Quartz.NET",
+      "vendor_version": "4.0.0",
+      "vendor_ref": "v4.0.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "quartz.job.group",
+      "type": "string",
+      "brief": "Group of the job.",
+      "note": "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:55; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:77 and src/Quartz/Diagnostics/TracingJobStore.cs:693.",
+      "stability": "development",
+      "vendor_library": "Quartz.NET",
+      "vendor_version": "4.0.0",
+      "vendor_ref": "v4.0.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "quartz.job.name",
+      "type": "string",
+      "brief": "Name of the job.",
+      "note": "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:60; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:78 and src/Quartz/Diagnostics/TracingJobStore.cs:694.",
+      "stability": "development",
+      "vendor_library": "Quartz.NET",
+      "vendor_version": "4.0.0",
+      "vendor_ref": "v4.0.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "quartz.execution.group",
+      "type": "string",
+      "brief": "Execution group the trigger belongs to, which is the bucket a thread limit is applied per. A trigger that names no execution group carries no such attribute at all.",
+      "note": "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:70; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:86.",
+      "stability": "development",
+      "vendor_library": "Quartz.NET",
+      "vendor_version": "4.0.0",
+      "vendor_ref": "v4.0.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "quartz.jobstore.trigger.count",
+      "type": "int",
+      "brief": "Number of triggers a job-store operation was asked for, or handed back.",
+      "note": "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:76; set at src/Quartz/Diagnostics/TracingJobStore.cs:544,648.",
+      "stability": "development",
+      "vendor_library": "Quartz.NET",
+      "vendor_version": "4.0.0",
+      "vendor_ref": "v4.0.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "quartz.jobstore.batch.size",
+      "type": "int",
+      "brief": "Number of triggers the scheduler asked its store for in one acquisition attempt.",
+      "note": "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:81; set at src/Quartz/Diagnostics/TracingJobStore.cs:531.",
+      "stability": "development",
+      "vendor_library": "Quartz.NET",
+      "vendor_version": "4.0.0",
+      "vendor_ref": "v4.0.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "quartz.jobstore.operation",
+      "type": "string",
+      "brief": "Job-store operation a measurement is about.",
+      "note": "Metric tag on the \"Quartz\" Meter. Declared at src/Quartz/Diagnostics/ActivityTags.cs:87; set at src/Quartz/Diagnostics/Meters.cs:172.",
+      "stability": "development",
+      "vendor_library": "Quartz.NET",
+      "vendor_version": "4.0.0",
+      "vendor_ref": "v4.0.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "quartz.cluster.recovered.instance.id",
+      "type": "string",
+      "brief": "Instance id of the cluster node whose work is being recovered, which is a node other than the one reporting the measurement.",
+      "note": "Metric tag on the \"Quartz\" Meter. Declared at src/Quartz/Diagnostics/ActivityTags.cs:98; set at src/Quartz/Diagnostics/Meters.cs:297,325.",
+      "stability": "development",
+      "vendor_library": "Quartz.NET",
+      "vendor_version": "4.0.0",
+      "vendor_ref": "v4.0.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.saga.saga_id",
+      "type": "string",
+      "brief": "Id of the saga instance the message belongs to.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:7; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.message_id",
+      "type": "string",
+      "brief": "NServiceBus message id.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:8; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.correlation_id",
+      "type": "string",
+      "brief": "Correlation id of the message.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:9; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.reply_to_address",
+      "type": "string",
+      "brief": "Address replies to the message are sent to.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:10; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.version",
+      "type": "string",
+      "brief": "NServiceBus version that sent the message.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:11; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.control_message",
+      "type": "string",
+      "brief": "Marks the message as an NServiceBus control message.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:12; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.saga.saga_type",
+      "type": "string",
+      "brief": "Type name of the saga the message belongs to.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:13; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.originating_saga_id",
+      "type": "string",
+      "brief": "Id of the saga that sent the message.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:14; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.originating_saga_type",
+      "type": "string",
+      "brief": "Type name of the saga that sent the message.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:15; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.delayed_retries",
+      "type": "string",
+      "brief": "Number of delayed retries the message has been through.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:16; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.delayed_retries_timestamp",
+      "type": "string",
+      "brief": "Timestamp of the last delayed retry of the message.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:17; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.deliver_at",
+      "type": "string",
+      "brief": "Time the message is to be delivered at.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:18; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.related_to",
+      "type": "string",
+      "brief": "Id of the message this message relates to.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:19; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.enclosed_message_types",
+      "type": "string",
+      "brief": "Message types enclosed in the message body.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:20; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.content_type",
+      "type": "string",
+      "brief": "Content type of the message body.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:21; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.saga.is_timeout",
+      "type": "string",
+      "brief": "Marks the message as a saga timeout.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:22; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.is_deferred",
+      "type": "string",
+      "brief": "Marks the message as deferred.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:23; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.originating_endpoint",
+      "type": "string",
+      "brief": "Endpoint that sent the message.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:24; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.originating_machine",
+      "type": "string",
+      "brief": "Machine that sent the message.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:25; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.originating_host_id",
+      "type": "string",
+      "brief": "Host id that sent the message.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:26; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.processing_endpoint",
+      "type": "string",
+      "brief": "Endpoint processing the message.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:27; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.processing_machine",
+      "type": "string",
+      "brief": "Machine processing the message.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:28; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.host.display_name",
+      "type": "string",
+      "brief": "Display name of the host.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:29; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.host.host_id",
+      "type": "string",
+      "brief": "Id of the host.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:30; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.has_license_expired",
+      "type": "string",
+      "brief": "Whether the license of the endpoint that sent the message had expired.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:31; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.originating_address",
+      "type": "string",
+      "brief": "Address the message originated from.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:32; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.conversation_id",
+      "type": "string",
+      "brief": "Conversation id of the message.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:33; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.previous_conversation_id",
+      "type": "string",
+      "brief": "Conversation id the message's conversation was started from.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:34; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.message_intent",
+      "type": "string",
+      "brief": "Intent of the message (send, publish, subscribe, reply).",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:35; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.time_to_be_received",
+      "type": "string",
+      "brief": "Time-to-be-received of the message.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:36; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.databus.content_type",
+      "type": "string",
+      "brief": "Content type of the claim-check (data bus) payload.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:37; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.non_durable",
+      "type": "string",
+      "brief": "Marks the message as non-durable.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:38; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.native_message_id",
+      "type": "string",
+      "brief": "Transport-native id of the received message.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:39; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityFactory.cs:71.",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.handler.handler_type",
+      "type": "string",
+      "brief": "Type name of the handler invoked for the message.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:40; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityFactory.cs:113.",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.handler.saga_id",
+      "type": "string",
+      "brief": "Id of the saga instance the invoked handler is operating on.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:41; set at src/NServiceBus.Core/Sagas/SagaPersistenceBehavior.cs:93.",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.event_types",
+      "type": "string",
+      "brief": "Event types being subscribed to or unsubscribed from.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:42; set at src/NServiceBus.Core/OpenTelemetry/Tracing/SubscribeDiagnosticsBehavior.cs:15 and src/NServiceBus.Core/OpenTelemetry/Tracing/UnsubscribeDiagnosticsBehavior.cs:15.",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.cancelled",
+      "type": "boolean",
+      "brief": "Set when the operation ended because it was cancelled.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:43; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityExtensions.cs:54.",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.outbox.deduplicate-message",
+      "type": "boolean",
+      "brief": "Set when the outbox deduplicated an incoming message instead of processing it again.",
+      "note": "Span tag on the \"NServiceBus.Core\" ActivitySource. Written as a literal at src/NServiceBus.Core/Pipeline/Incoming/TransportReceiveToPhysicalMessageConnector.cs:60; the hyphen is the spelling NServiceBus 10.2.9 emits.",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.discriminator",
+      "type": "string",
+      "brief": "Discriminator of the endpoint instance the measurement was taken on.",
+      "note": "Metric tag on the \"NServiceBus.Core.Pipeline.Incoming\" Meter. Declared at src/NServiceBus.Core/OpenTelemetry/Metrics/MeterTags.cs:7; set at src/NServiceBus.Core/Pipeline/Incoming/IncomingPipelineMetrics.cs:56.",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.queue",
+      "type": "string",
+      "brief": "Queue the measured message was received from.",
+      "note": "Metric tag on the \"NServiceBus.Core.Pipeline.Incoming\" Meter. Declared at src/NServiceBus.Core/OpenTelemetry/Metrics/MeterTags.cs:8; set at src/NServiceBus.Core/Pipeline/Incoming/IncomingPipelineMetrics.cs:55.",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.message_type",
+      "type": "string",
+      "brief": "Type of the measured message.",
+      "note": "Metric tag on the \"NServiceBus.Core.Pipeline.Incoming\" Meter. Declared at src/NServiceBus.Core/OpenTelemetry/Metrics/MeterTags.cs:9; set at src/NServiceBus.Core/Pipeline/Incoming/DeserializeMessageConnector.cs:35.",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.message_handler_types",
+      "type": "string",
+      "brief": "Semicolon-separated handler types invoked for the measured message.",
+      "note": "Metric tag on the \"NServiceBus.Core.Pipeline.Incoming\" Meter. Declared at src/NServiceBus.Core/OpenTelemetry/Metrics/MeterTags.cs:10; set at src/NServiceBus.Core/Pipeline/Incoming/LoadHandlersConnector.cs:47.",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.message_handler_type",
+      "type": "string",
+      "brief": "Handler type the measurement is about.",
+      "note": "Metric tag on the \"NServiceBus.Core.Pipeline.Incoming\" Meter. Declared at src/NServiceBus.Core/OpenTelemetry/Metrics/MeterTags.cs:11; set at src/NServiceBus.Core/Pipeline/Incoming/IncomingPipelineMetrics.cs:163,183.",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "nservicebus.envelope.unwrapper_type",
+      "type": "string",
+      "brief": "Type of the envelope unwrapper the measurement is about.",
+      "note": "Metric tag on the \"NServiceBus.Core.Pipeline.Incoming\" Meter. Declared at src/NServiceBus.Core/OpenTelemetry/Metrics/MeterTags.cs:14; set at src/NServiceBus.Core/Pipeline/Incoming/IncomingPipelineMetrics.cs:260.",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "execution.result",
+      "type": "string",
+      "brief": "Result of the measured execution, reported by NServiceBus as \"success\" or \"failure\".",
+      "note": "Metric tag on the \"NServiceBus.Core.Pipeline.Incoming\" Meter. Declared at src/NServiceBus.Core/OpenTelemetry/Metrics/MeterTags.cs:12; set at src/NServiceBus.Core/Pipeline/Incoming/IncomingPipelineMetrics.cs:69,89,121,164,184.",
+      "stability": "development",
+      "vendor_library": "NServiceBus",
+      "vendor_version": "10.2.9",
+      "vendor_ref": "10.2.9",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "db.mongodb.lsid",
+      "type": "string",
+      "brief": "Logical session id of the command, as JSON.",
+      "note": "Span tag on the \"MongoDB.Driver\" ActivitySource. Declared at src/MongoDB.Driver/MongoTelemetry.cs:47; set at src/MongoDB.Driver/MongoTelemetry.cs:102,106.",
+      "stability": "development",
+      "vendor_library": "MongoDB.Driver",
+      "vendor_version": "3.11.1",
+      "vendor_ref": "v3.11.1",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "db.mongodb.txn_number",
+      "type": "int",
+      "brief": "Transaction number of the command.",
+      "note": "Span tag on the \"MongoDB.Driver\" ActivitySource. Declared at src/MongoDB.Driver/MongoTelemetry.cs:48; set at src/MongoDB.Driver/MongoTelemetry.cs:111.",
+      "stability": "development",
+      "vendor_library": "MongoDB.Driver",
+      "vendor_version": "3.11.1",
+      "vendor_ref": "v3.11.1",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "db.mongodb.server_connection_id",
+      "type": "int",
+      "brief": "Server-assigned id of the connection the command was issued on.",
+      "note": "Span tag on the \"MongoDB.Driver\" ActivitySource. Declared at src/MongoDB.Driver/MongoTelemetry.cs:49; set at src/MongoDB.Driver/MongoTelemetry.cs:295.",
+      "stability": "development",
+      "vendor_library": "MongoDB.Driver",
+      "vendor_version": "3.11.1",
+      "vendor_ref": "v3.11.1",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "db.mongodb.driver_connection_id",
+      "type": "int",
+      "brief": "Driver-local id of the connection the command was issued on.",
+      "note": "Span tag on the \"MongoDB.Driver\" ActivitySource. Declared at src/MongoDB.Driver/MongoTelemetry.cs:50; set at src/MongoDB.Driver/MongoTelemetry.cs:297.",
+      "stability": "development",
+      "vendor_library": "MongoDB.Driver",
+      "vendor_version": "3.11.1",
+      "vendor_ref": "v3.11.1",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "db.mongodb.cursor_id",
+      "type": "int",
+      "brief": "Cursor id returned by the command.",
+      "note": "Span tag on the \"MongoDB.Driver\" ActivitySource. Declared at src/MongoDB.Driver/MongoTelemetry.cs:51; set at src/MongoDB.Driver/MongoTelemetry.cs:132.",
+      "stability": "development",
+      "vendor_library": "MongoDB.Driver",
+      "vendor_version": "3.11.1",
+      "vendor_ref": "v3.11.1",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "db.command.name",
+      "type": "string",
+      "brief": "Name of the MongoDB command the span covers.",
+      "note": "Span tag on the \"MongoDB.Driver\" ActivitySource. Declared at src/MongoDB.Driver/MongoTelemetry.cs:39; set at src/MongoDB.Driver/MongoTelemetry.cs:82.",
+      "stability": "development",
+      "vendor_library": "MongoDB.Driver",
+      "vendor_version": "3.11.1",
+      "vendor_ref": "v3.11.1",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "db.operation.summary",
+      "type": "string",
+      "brief": "Low-cardinality summary of the driver operation, spelled \"<operation> <database>.<collection>\".",
+      "note": "Span tag on the \"MongoDB.Driver\" ActivitySource. Declared at src/MongoDB.Driver/MongoTelemetry.cs:38; set at src/MongoDB.Driver/MongoTelemetry.cs:165.",
+      "stability": "development",
+      "vendor_library": "MongoDB.Driver",
+      "vendor_version": "3.11.1",
+      "vendor_ref": "v3.11.1",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "messaging.rabbitmq.delivery_tag",
+      "type": "int",
+      "brief": "Delivery tag of the message, as RabbitMQ.Client 7.2.2 spells it.",
+      "note": "Span tag on the \"RabbitMQ.Client.Publisher\" and \"RabbitMQ.Client.Subscriber\" ActivitySources. Declared at projects/RabbitMQ.Client/Impl/RabbitMQActivitySource.cs:34; set at projects/RabbitMQ.Client/Impl/RabbitMQActivitySource.cs:213 (PopulateMessagingTags). Upstream 1.44.0 spells the same fact messaging.rabbitmq.message.delivery_tag; this client does not emit that key.",
+      "stability": "development",
+      "vendor_library": "RabbitMQ.Client",
+      "vendor_version": "7.2.2",
+      "vendor_ref": "v7.2.2",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "db.npgsql.connection_id",
+      "type": "int",
+      "brief": "Npgsql connector id the command ran on.",
+      "note": "Span tag on the \"Npgsql\" ActivitySource. Set as a literal at src/Npgsql/NpgsqlActivitySource.cs:122.",
+      "stability": "development",
+      "vendor_library": "Npgsql",
+      "vendor_version": "10.0.3",
+      "vendor_ref": "v10.0.3",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "db.npgsql.data_source",
+      "type": "string",
+      "brief": "Name of the Npgsql data source the command ran on.",
+      "note": "Span tag on the \"Npgsql\" ActivitySource. Set as a literal at src/Npgsql/NpgsqlActivitySource.cs:86,121.",
+      "stability": "development",
+      "vendor_library": "Npgsql",
+      "vendor_version": "10.0.3",
+      "vendor_ref": "v10.0.3",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "db.npgsql.prepared",
+      "type": "boolean",
+      "brief": "Whether the command was executed as a prepared statement.",
+      "note": "Span tag on the \"Npgsql\" ActivitySource. Set as a literal at src/Npgsql/NpgsqlActivitySource.cs:53.",
+      "stability": "development",
+      "vendor_library": "Npgsql",
+      "vendor_version": "10.0.3",
+      "vendor_ref": "v10.0.3",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "db.npgsql.rows",
+      "type": "int",
+      "brief": "Number of rows the command returned or affected.",
+      "note": "Span tag on the \"Npgsql\" ActivitySource. Set as a literal at src/Npgsql/NpgsqlActivitySource.cs:180.",
+      "stability": "development",
+      "vendor_library": "Npgsql",
+      "vendor_version": "10.0.3",
+      "vendor_ref": "v10.0.3",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "db.odp.connection.id",
+      "type": "string",
+      "brief": "Unique identifier of the ODP.NET connection, for diagnostic purposes.",
+      "note": "Span tag on the \"Oracle.ManagedDataAccess.Core\" ActivitySource. ODP.NET ships no public source, so the finding is the vendor's own attribute table in Oracle's ODP.NET OpenTelemetry documentation, https://docs.oracle.com/en/database/oracle/oracle-database/23/odpnt/featOpenTelemetry.html; the brief is that table's wording and the type follows the fact it describes.",
+      "stability": "development",
+      "vendor_library": "Oracle Data Provider for .NET (ODP.NET Core)",
+      "vendor_version": "23.4.0",
+      "vendor_ref": "23.4.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "db.odp.roundtrip.count",
+      "type": "int",
+      "brief": "Number of database server roundtrips the ODP.NET method makes.",
+      "note": "Span tag on the \"Oracle.ManagedDataAccess.Core\" ActivitySource. ODP.NET ships no public source, so the finding is the vendor's own attribute table in Oracle's ODP.NET OpenTelemetry documentation, https://docs.oracle.com/en/database/oracle/oracle-database/23/odpnt/featOpenTelemetry.html; the brief is that table's wording and the type follows the fact it describes.",
+      "stability": "development",
+      "vendor_library": "Oracle Data Provider for .NET (ODP.NET Core)",
+      "vendor_version": "23.4.0",
+      "vendor_ref": "23.4.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "db.odp.roundtrip.duration",
+      "type": "double",
+      "brief": "Database server roundtrip time, including ODP.NET processing, network send and receive, and database server processing.",
+      "note": "Span tag on the \"Oracle.ManagedDataAccess.Core\" ActivitySource. ODP.NET ships no public source, so the finding is the vendor's own attribute table in Oracle's ODP.NET OpenTelemetry documentation, https://docs.oracle.com/en/database/oracle/oracle-database/23/odpnt/featOpenTelemetry.html; the brief is that table's wording and the type follows the fact it describes.",
+      "stability": "development",
+      "vendor_library": "Oracle Data Provider for .NET (ODP.NET Core)",
+      "vendor_version": "23.4.0",
+      "vendor_ref": "23.4.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "db.odp.rows_affected",
+      "type": "int",
+      "brief": "Row count affected by the SQL DML statement.",
+      "note": "Span tag on the \"Oracle.ManagedDataAccess.Core\" ActivitySource. ODP.NET ships no public source, so the finding is the vendor's own attribute table in Oracle's ODP.NET OpenTelemetry documentation, https://docs.oracle.com/en/database/oracle/oracle-database/23/odpnt/featOpenTelemetry.html; the brief is that table's wording and the type follows the fact it describes.",
+      "stability": "development",
+      "vendor_library": "Oracle Data Provider for .NET (ODP.NET Core)",
+      "vendor_version": "23.4.0",
+      "vendor_ref": "23.4.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "db.odp.sql_id",
+      "type": "string",
+      "brief": "Oracle database SQL statement identifier, equivalent to SQL_ID.",
+      "note": "Span tag on the \"Oracle.ManagedDataAccess.Core\" ActivitySource. ODP.NET ships no public source, so the finding is the vendor's own attribute table in Oracle's ODP.NET OpenTelemetry documentation, https://docs.oracle.com/en/database/oracle/oracle-database/23/odpnt/featOpenTelemetry.html; the brief is that table's wording and the type follows the fact it describes.",
+      "stability": "development",
+      "vendor_library": "Oracle Data Provider for .NET (ODP.NET Core)",
+      "vendor_version": "23.4.0",
+      "vendor_ref": "23.4.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "key": "db.odp.user.statement",
+      "type": "string",
+      "brief": "Redacted ODP.NET user-supplied command text, which can differ from the statement the database executes.",
+      "note": "Span tag on the \"Oracle.ManagedDataAccess.Core\" ActivitySource. ODP.NET ships no public source, so the finding is the vendor's own attribute table in Oracle's ODP.NET OpenTelemetry documentation, https://docs.oracle.com/en/database/oracle/oracle-database/23/odpnt/featOpenTelemetry.html; the brief is that table's wording and the type follows the fact it describes.",
+      "stability": "development",
+      "vendor_library": "Oracle Data Provider for .NET (ODP.NET Core)",
+      "vendor_version": "23.4.0",
+      "vendor_ref": "23.4.0",
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
       "source_date_epoch": null
     }
   ],
@@ -243034,7 +245706,7 @@
                 "source_registry": "qyl",
                 "schema_url": null,
                 "source_ref": "qyl-registry.json",
-                "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+                "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
                 "source_date_epoch": null
               },
               {
@@ -243046,7 +245718,7 @@
                 "source_registry": "qyl",
                 "schema_url": null,
                 "source_ref": "qyl-registry.json",
-                "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+                "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
                 "source_date_epoch": null
               }
             ]
@@ -243058,7 +245730,7 @@
           "source_registry": "qyl",
           "schema_url": null,
           "source_ref": "qyl-registry.json",
-          "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+          "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
           "source_date_epoch": null
         },
         {
@@ -243128,7 +245800,7 @@
           "source_registry": "qyl",
           "schema_url": null,
           "source_ref": "qyl-registry.json",
-          "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+          "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
           "source_date_epoch": null
         },
         {
@@ -243146,14 +245818,626 @@
           "source_registry": "qyl",
           "schema_url": null,
           "source_ref": "qyl-registry.json",
-          "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+          "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
           "source_date_epoch": null
         }
       ],
       "source_registry": "qyl",
       "schema_url": null,
       "source_ref": "qyl-registry.json",
-      "source_commit": "29d943ae97c545f17f5985ddb719201efc15d26904e05aaa5f532dc19dd29b06",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+      "source_date_epoch": null
+    },
+    {
+      "metric_name": "qyl.collector.attributes.dropped",
+      "instrument": "counter",
+      "unit": "{attribute}",
+      "metric_requirement_level": "recommended",
+      "brief": "Attributes the collector dropped at ingest because their key is not in the pinned registry.",
+      "note": "The collector's attribute allowlist is generated from the pinned registry plus the qyl-owned and vendor rows; a key outside it is dropped rather than forwarded. Counting the drops by namespace is how an undeclared key is noticed at all.",
+      "stability": "development",
+      "attribute_refs": [
+        "qyl.attribute.namespace"
+      ],
+      "entity_associations": [],
+      "attributes": [
+        {
+          "key": "qyl.attribute.namespace",
+          "type": {
+            "members": [
+              {
+                "id": "android",
+                "value": "android",
+                "stability": "development",
+                "brief": "The `android` attribute namespace."
+              },
+              {
+                "id": "app",
+                "value": "app",
+                "stability": "development",
+                "brief": "The `app` attribute namespace."
+              },
+              {
+                "id": "artifact",
+                "value": "artifact",
+                "stability": "development",
+                "brief": "The `artifact` attribute namespace."
+              },
+              {
+                "id": "aspnetcore",
+                "value": "aspnetcore",
+                "stability": "development",
+                "brief": "The `aspnetcore` attribute namespace."
+              },
+              {
+                "id": "aws",
+                "value": "aws",
+                "stability": "development",
+                "brief": "The `aws` attribute namespace."
+              },
+              {
+                "id": "az",
+                "value": "az",
+                "stability": "development",
+                "brief": "The `az` attribute namespace."
+              },
+              {
+                "id": "azure",
+                "value": "azure",
+                "stability": "development",
+                "brief": "The `azure` attribute namespace."
+              },
+              {
+                "id": "browser",
+                "value": "browser",
+                "stability": "development",
+                "brief": "The `browser` attribute namespace."
+              },
+              {
+                "id": "cassandra",
+                "value": "cassandra",
+                "stability": "development",
+                "brief": "The `cassandra` attribute namespace."
+              },
+              {
+                "id": "cicd",
+                "value": "cicd",
+                "stability": "development",
+                "brief": "The `cicd` attribute namespace."
+              },
+              {
+                "id": "client",
+                "value": "client",
+                "stability": "development",
+                "brief": "The `client` attribute namespace."
+              },
+              {
+                "id": "cloud",
+                "value": "cloud",
+                "stability": "development",
+                "brief": "The `cloud` attribute namespace."
+              },
+              {
+                "id": "cloudevents",
+                "value": "cloudevents",
+                "stability": "development",
+                "brief": "The `cloudevents` attribute namespace."
+              },
+              {
+                "id": "cloudfoundry",
+                "value": "cloudfoundry",
+                "stability": "development",
+                "brief": "The `cloudfoundry` attribute namespace."
+              },
+              {
+                "id": "code",
+                "value": "code",
+                "stability": "development",
+                "brief": "The `code` attribute namespace."
+              },
+              {
+                "id": "container",
+                "value": "container",
+                "stability": "development",
+                "brief": "The `container` attribute namespace."
+              },
+              {
+                "id": "cpu",
+                "value": "cpu",
+                "stability": "development",
+                "brief": "The `cpu` attribute namespace."
+              },
+              {
+                "id": "cpython",
+                "value": "cpython",
+                "stability": "development",
+                "brief": "The `cpython` attribute namespace."
+              },
+              {
+                "id": "db",
+                "value": "db",
+                "stability": "development",
+                "brief": "The `db` attribute namespace."
+              },
+              {
+                "id": "deployment",
+                "value": "deployment",
+                "stability": "development",
+                "brief": "The `deployment` attribute namespace."
+              },
+              {
+                "id": "destination",
+                "value": "destination",
+                "stability": "development",
+                "brief": "The `destination` attribute namespace."
+              },
+              {
+                "id": "device",
+                "value": "device",
+                "stability": "development",
+                "brief": "The `device` attribute namespace."
+              },
+              {
+                "id": "disk",
+                "value": "disk",
+                "stability": "development",
+                "brief": "The `disk` attribute namespace."
+              },
+              {
+                "id": "dns",
+                "value": "dns",
+                "stability": "development",
+                "brief": "The `dns` attribute namespace."
+              },
+              {
+                "id": "dotnet",
+                "value": "dotnet",
+                "stability": "development",
+                "brief": "The `dotnet` attribute namespace."
+              },
+              {
+                "id": "elastic",
+                "value": "elastic",
+                "stability": "development",
+                "brief": "The `elastic` attribute namespace."
+              },
+              {
+                "id": "elasticsearch",
+                "value": "elasticsearch",
+                "stability": "development",
+                "brief": "The `elasticsearch` attribute namespace."
+              },
+              {
+                "id": "enduser",
+                "value": "enduser",
+                "stability": "development",
+                "brief": "The `enduser` attribute namespace."
+              },
+              {
+                "id": "error",
+                "value": "error",
+                "stability": "development",
+                "brief": "The `error` attribute namespace."
+              },
+              {
+                "id": "event",
+                "value": "event",
+                "stability": "development",
+                "brief": "The `event` attribute namespace."
+              },
+              {
+                "id": "exception",
+                "value": "exception",
+                "stability": "development",
+                "brief": "The `exception` attribute namespace."
+              },
+              {
+                "id": "execution",
+                "value": "execution",
+                "stability": "development",
+                "brief": "The `execution` attribute namespace."
+              },
+              {
+                "id": "faas",
+                "value": "faas",
+                "stability": "development",
+                "brief": "The `faas` attribute namespace."
+              },
+              {
+                "id": "feature_flag",
+                "value": "feature_flag",
+                "stability": "development",
+                "brief": "The `feature_flag` attribute namespace."
+              },
+              {
+                "id": "file",
+                "value": "file",
+                "stability": "development",
+                "brief": "The `file` attribute namespace."
+              },
+              {
+                "id": "gcp",
+                "value": "gcp",
+                "stability": "development",
+                "brief": "The `gcp` attribute namespace."
+              },
+              {
+                "id": "gen_ai",
+                "value": "gen_ai",
+                "stability": "development",
+                "brief": "The `gen_ai` attribute namespace."
+              },
+              {
+                "id": "geo",
+                "value": "geo",
+                "stability": "development",
+                "brief": "The `geo` attribute namespace."
+              },
+              {
+                "id": "go",
+                "value": "go",
+                "stability": "development",
+                "brief": "The `go` attribute namespace."
+              },
+              {
+                "id": "graphql",
+                "value": "graphql",
+                "stability": "development",
+                "brief": "The `graphql` attribute namespace."
+              },
+              {
+                "id": "heroku",
+                "value": "heroku",
+                "stability": "development",
+                "brief": "The `heroku` attribute namespace."
+              },
+              {
+                "id": "host",
+                "value": "host",
+                "stability": "development",
+                "brief": "The `host` attribute namespace."
+              },
+              {
+                "id": "http",
+                "value": "http",
+                "stability": "development",
+                "brief": "The `http` attribute namespace."
+              },
+              {
+                "id": "hw",
+                "value": "hw",
+                "stability": "development",
+                "brief": "The `hw` attribute namespace."
+              },
+              {
+                "id": "ios",
+                "value": "ios",
+                "stability": "development",
+                "brief": "The `ios` attribute namespace."
+              },
+              {
+                "id": "jsonrpc",
+                "value": "jsonrpc",
+                "stability": "development",
+                "brief": "The `jsonrpc` attribute namespace."
+              },
+              {
+                "id": "jvm",
+                "value": "jvm",
+                "stability": "development",
+                "brief": "The `jvm` attribute namespace."
+              },
+              {
+                "id": "k8s",
+                "value": "k8s",
+                "stability": "development",
+                "brief": "The `k8s` attribute namespace."
+              },
+              {
+                "id": "linux",
+                "value": "linux",
+                "stability": "development",
+                "brief": "The `linux` attribute namespace."
+              },
+              {
+                "id": "log",
+                "value": "log",
+                "stability": "development",
+                "brief": "The `log` attribute namespace."
+              },
+              {
+                "id": "mainframe",
+                "value": "mainframe",
+                "stability": "development",
+                "brief": "The `mainframe` attribute namespace."
+              },
+              {
+                "id": "mcp",
+                "value": "mcp",
+                "stability": "development",
+                "brief": "The `mcp` attribute namespace."
+              },
+              {
+                "id": "message",
+                "value": "message",
+                "stability": "development",
+                "brief": "The `message` attribute namespace."
+              },
+              {
+                "id": "messaging",
+                "value": "messaging",
+                "stability": "development",
+                "brief": "The `messaging` attribute namespace."
+              },
+              {
+                "id": "net",
+                "value": "net",
+                "stability": "development",
+                "brief": "The `net` attribute namespace."
+              },
+              {
+                "id": "network",
+                "value": "network",
+                "stability": "development",
+                "brief": "The `network` attribute namespace."
+              },
+              {
+                "id": "nfs",
+                "value": "nfs",
+                "stability": "development",
+                "brief": "The `nfs` attribute namespace."
+              },
+              {
+                "id": "nodejs",
+                "value": "nodejs",
+                "stability": "development",
+                "brief": "The `nodejs` attribute namespace."
+              },
+              {
+                "id": "nservicebus",
+                "value": "nservicebus",
+                "stability": "development",
+                "brief": "The `nservicebus` attribute namespace."
+              },
+              {
+                "id": "oci",
+                "value": "oci",
+                "stability": "development",
+                "brief": "The `oci` attribute namespace."
+              },
+              {
+                "id": "onc_rpc",
+                "value": "onc_rpc",
+                "stability": "development",
+                "brief": "The `onc_rpc` attribute namespace."
+              },
+              {
+                "id": "openai",
+                "value": "openai",
+                "stability": "development",
+                "brief": "The `openai` attribute namespace."
+              },
+              {
+                "id": "openshift",
+                "value": "openshift",
+                "stability": "development",
+                "brief": "The `openshift` attribute namespace."
+              },
+              {
+                "id": "opentracing",
+                "value": "opentracing",
+                "stability": "development",
+                "brief": "The `opentracing` attribute namespace."
+              },
+              {
+                "id": "oracle",
+                "value": "oracle",
+                "stability": "development",
+                "brief": "The `oracle` attribute namespace."
+              },
+              {
+                "id": "oracle_cloud",
+                "value": "oracle_cloud",
+                "stability": "development",
+                "brief": "The `oracle_cloud` attribute namespace."
+              },
+              {
+                "id": "os",
+                "value": "os",
+                "stability": "development",
+                "brief": "The `os` attribute namespace."
+              },
+              {
+                "id": "otel",
+                "value": "otel",
+                "stability": "development",
+                "brief": "The `otel` attribute namespace."
+              },
+              {
+                "id": "other",
+                "value": "other",
+                "stability": "development",
+                "brief": "Any attribute namespace outside the pinned registry."
+              },
+              {
+                "id": "peer",
+                "value": "peer",
+                "stability": "development",
+                "brief": "The `peer` attribute namespace."
+              },
+              {
+                "id": "pool",
+                "value": "pool",
+                "stability": "development",
+                "brief": "The `pool` attribute namespace."
+              },
+              {
+                "id": "pprof",
+                "value": "pprof",
+                "stability": "development",
+                "brief": "The `pprof` attribute namespace."
+              },
+              {
+                "id": "process",
+                "value": "process",
+                "stability": "development",
+                "brief": "The `process` attribute namespace."
+              },
+              {
+                "id": "profile",
+                "value": "profile",
+                "stability": "development",
+                "brief": "The `profile` attribute namespace."
+              },
+              {
+                "id": "quartz",
+                "value": "quartz",
+                "stability": "development",
+                "brief": "The `quartz` attribute namespace."
+              },
+              {
+                "id": "qyl",
+                "value": "qyl",
+                "stability": "development",
+                "brief": "The `qyl` attribute namespace."
+              },
+              {
+                "id": "rpc",
+                "value": "rpc",
+                "stability": "development",
+                "brief": "The `rpc` attribute namespace."
+              },
+              {
+                "id": "security_rule",
+                "value": "security_rule",
+                "stability": "development",
+                "brief": "The `security_rule` attribute namespace."
+              },
+              {
+                "id": "server",
+                "value": "server",
+                "stability": "development",
+                "brief": "The `server` attribute namespace."
+              },
+              {
+                "id": "service",
+                "value": "service",
+                "stability": "development",
+                "brief": "The `service` attribute namespace."
+              },
+              {
+                "id": "session",
+                "value": "session",
+                "stability": "development",
+                "brief": "The `session` attribute namespace."
+              },
+              {
+                "id": "signalr",
+                "value": "signalr",
+                "stability": "development",
+                "brief": "The `signalr` attribute namespace."
+              },
+              {
+                "id": "source",
+                "value": "source",
+                "stability": "development",
+                "brief": "The `source` attribute namespace."
+              },
+              {
+                "id": "state",
+                "value": "state",
+                "stability": "development",
+                "brief": "The `state` attribute namespace."
+              },
+              {
+                "id": "system",
+                "value": "system",
+                "stability": "development",
+                "brief": "The `system` attribute namespace."
+              },
+              {
+                "id": "telemetry",
+                "value": "telemetry",
+                "stability": "development",
+                "brief": "The `telemetry` attribute namespace."
+              },
+              {
+                "id": "test",
+                "value": "test",
+                "stability": "development",
+                "brief": "The `test` attribute namespace."
+              },
+              {
+                "id": "thread",
+                "value": "thread",
+                "stability": "development",
+                "brief": "The `thread` attribute namespace."
+              },
+              {
+                "id": "tls",
+                "value": "tls",
+                "stability": "development",
+                "brief": "The `tls` attribute namespace."
+              },
+              {
+                "id": "url",
+                "value": "url",
+                "stability": "development",
+                "brief": "The `url` attribute namespace."
+              },
+              {
+                "id": "user",
+                "value": "user",
+                "stability": "development",
+                "brief": "The `user` attribute namespace."
+              },
+              {
+                "id": "user_agent",
+                "value": "user_agent",
+                "stability": "development",
+                "brief": "The `user_agent` attribute namespace."
+              },
+              {
+                "id": "v8js",
+                "value": "v8js",
+                "stability": "development",
+                "brief": "The `v8js` attribute namespace."
+              },
+              {
+                "id": "vcs",
+                "value": "vcs",
+                "stability": "development",
+                "brief": "The `vcs` attribute namespace."
+              },
+              {
+                "id": "webengine",
+                "value": "webengine",
+                "stability": "development",
+                "brief": "The `webengine` attribute namespace."
+              },
+              {
+                "id": "zos",
+                "value": "zos",
+                "stability": "development",
+                "brief": "The `zos` attribute namespace."
+              }
+            ]
+          },
+          "requirement_level": "required",
+          "brief": "First dot-segment of the attribute key a collector measurement is about.",
+          "note": "The value set is closed and is exactly the attribute namespaces present in the merged registry plus `other`: the collector clamps every value it records to this set, so an inbound payload carrying an unknown key cannot fork the series. merge_registries.py recomputes the set from the merged catalog on every generation and fails the merge when the two disagree, so a registry that gains a namespace cannot silently leave it unlisted.",
+          "stability": "development",
+          "source_registry": "qyl",
+          "schema_url": null,
+          "source_ref": "qyl-registry.json",
+          "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
+          "source_date_epoch": null
+        }
+      ],
+      "source_registry": "qyl",
+      "schema_url": null,
+      "source_ref": "qyl-registry.json",
+      "source_commit": "6c455a1e4c594a79c88d809294ded6c3c929052833686c0cbd0e52b8e84a8959",
       "source_date_epoch": null
     }
   ],
@@ -251375,8 +254659,298 @@
     "Qyl.Telemetry.AutoInstrumentation.NServiceBus",
     "System.Runtime"
   ],
+  "vendor_scope_names": [
+    "Elastic.Transport",
+    "GraphQL",
+    "MassTransit",
+    "MongoDB.Driver",
+    "MySqlConnector",
+    "NServiceBus.Core",
+    "Npgsql",
+    "Oracle.ManagedDataAccess.Core",
+    "Quartz",
+    "RabbitMQ.Client.Publisher",
+    "RabbitMQ.Client.Subscriber",
+    "connector-net"
+  ],
   "event_names": [
     "qyl.http.client",
     "qyl.rpc.grpc"
+  ],
+  "vendor_models": [
+    {
+      "library": "MassTransit",
+      "version": "8.5.10",
+      "repository": "https://github.com/MassTransit/MassTransit",
+      "ref": "v8.5.10",
+      "license": "Apache-2.0",
+      "brief": "Attributes MassTransit 8.5.10 puts on the spans of its own \"MassTransit\" ActivitySource and that upstream semantic conventions 1.44.0 does not define.",
+      "activity_sources": [
+        {
+          "name": "MassTransit",
+          "note": "DiagnosticHeaders.DefaultListenerName at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:6; the ActivitySource is constructed with it at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:310."
+        }
+      ],
+      "attribute_keys": [
+        "messaging.masstransit.message_id",
+        "messaging.masstransit.correlation_id",
+        "messaging.masstransit.initiator_id",
+        "messaging.masstransit.request_id",
+        "messaging.masstransit.source_address",
+        "messaging.masstransit.destination_address",
+        "messaging.masstransit.input_address",
+        "messaging.masstransit.tracking_number",
+        "messaging.masstransit.message_types",
+        "messaging.masstransit.consumer_type",
+        "messaging.masstransit.saga_id",
+        "messaging.masstransit.begin_state",
+        "messaging.masstransit.end_state",
+        "peer.address"
+      ]
+    },
+    {
+      "library": "Elastic.Transport",
+      "version": "1.0.0",
+      "repository": "https://github.com/elastic/elastic-transport-net",
+      "ref": "1.0.0",
+      "license": "Apache-2.0",
+      "brief": "Attributes Elastic.Transport 1.0.0 puts on the spans of its own \"Elastic.Transport\" ActivitySource and that upstream semantic conventions 1.44.0 does not define.",
+      "activity_sources": [
+        {
+          "name": "Elastic.Transport",
+          "note": "OpenTelemetry.ElasticTransportActivitySourceName at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetry.cs:26; the ActivitySource is constructed with it at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetry.cs:28."
+        }
+      ],
+      "attribute_keys": [
+        "elastic.transport.product.name",
+        "elastic.transport.product.version",
+        "elastic.transport.version",
+        "elastic.transport.schema_url",
+        "elastic.transport.attempted_nodes",
+        "elastic.transport.prepare_request_ms",
+        "elastic.transport.deserialize_response_ms"
+      ]
+    },
+    {
+      "library": "Quartz.NET",
+      "version": "4.0.0",
+      "repository": "https://github.com/quartznet/quartznet",
+      "ref": "v4.0.0",
+      "license": "Apache-2.0",
+      "brief": "Attributes Quartz.NET 4.0.0 puts on the spans of its own \"Quartz\" ActivitySource and on the instruments of its \"Quartz\" Meter, and that upstream semantic conventions 1.44.0 does not define.",
+      "activity_sources": [
+        {
+          "name": "Quartz",
+          "note": "QuartzInstrumentation.ActivitySourceName at src/Quartz/Diagnostics/QuartzInstrumentation.cs:23; QuartzInstrumentation.MeterName at src/Quartz/Diagnostics/QuartzInstrumentation.cs:34 is the same string."
+        }
+      ],
+      "attribute_keys": [
+        "quartz.scheduler.name",
+        "quartz.scheduler.id",
+        "quartz.fire.instance.id",
+        "quartz.trigger.group",
+        "quartz.trigger.name",
+        "quartz.job.type",
+        "quartz.job.group",
+        "quartz.job.name",
+        "quartz.execution.group",
+        "quartz.jobstore.trigger.count",
+        "quartz.jobstore.batch.size",
+        "quartz.jobstore.operation",
+        "quartz.cluster.recovered.instance.id"
+      ]
+    },
+    {
+      "library": "NServiceBus",
+      "version": "10.2.9",
+      "repository": "https://github.com/Particular/NServiceBus",
+      "ref": "10.2.9",
+      "license": "RPL-1.5",
+      "brief": "Attributes NServiceBus 10.2.9 puts on the spans of its own \"NServiceBus.Core\" ActivitySource and on the instruments of its \"NServiceBus.Core.Pipeline.Incoming\" Meter, and that upstream semantic conventions 1.44.0 does not define. The header-promoted tags are written by ActivityDecorator.PromoteHeadersToTags, which maps one NServiceBus message header to one tag.",
+      "activity_sources": [
+        {
+          "name": "NServiceBus.Core",
+          "note": "ActivitySources.Main at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivitySources.cs:10. The endpoint's instruments live on a differently named Meter, \"NServiceBus.Core.Pipeline.Incoming\", created at src/NServiceBus.Core/Pipeline/Incoming/IncomingPipelineMetrics.cs:27."
+        }
+      ],
+      "attribute_keys": [
+        "nservicebus.saga.saga_id",
+        "nservicebus.message_id",
+        "nservicebus.correlation_id",
+        "nservicebus.reply_to_address",
+        "nservicebus.version",
+        "nservicebus.control_message",
+        "nservicebus.saga.saga_type",
+        "nservicebus.originating_saga_id",
+        "nservicebus.originating_saga_type",
+        "nservicebus.delayed_retries",
+        "nservicebus.delayed_retries_timestamp",
+        "nservicebus.deliver_at",
+        "nservicebus.related_to",
+        "nservicebus.enclosed_message_types",
+        "nservicebus.content_type",
+        "nservicebus.saga.is_timeout",
+        "nservicebus.is_deferred",
+        "nservicebus.originating_endpoint",
+        "nservicebus.originating_machine",
+        "nservicebus.originating_host_id",
+        "nservicebus.processing_endpoint",
+        "nservicebus.processing_machine",
+        "nservicebus.host.display_name",
+        "nservicebus.host.host_id",
+        "nservicebus.has_license_expired",
+        "nservicebus.originating_address",
+        "nservicebus.conversation_id",
+        "nservicebus.previous_conversation_id",
+        "nservicebus.message_intent",
+        "nservicebus.time_to_be_received",
+        "nservicebus.databus.content_type",
+        "nservicebus.non_durable",
+        "nservicebus.native_message_id",
+        "nservicebus.handler.handler_type",
+        "nservicebus.handler.saga_id",
+        "nservicebus.event_types",
+        "nservicebus.cancelled",
+        "nservicebus.outbox.deduplicate-message",
+        "nservicebus.discriminator",
+        "nservicebus.queue",
+        "nservicebus.message_type",
+        "nservicebus.message_handler_types",
+        "nservicebus.message_handler_type",
+        "nservicebus.envelope.unwrapper_type",
+        "execution.result"
+      ]
+    },
+    {
+      "library": "MongoDB.Driver",
+      "version": "3.11.1",
+      "repository": "https://github.com/mongodb/mongo-csharp-driver",
+      "ref": "v3.11.1",
+      "license": "Apache-2.0",
+      "brief": "Attributes MongoDB.Driver 3.11.1 puts on the spans of its own \"MongoDB.Driver\" ActivitySource and that upstream semantic conventions 1.44.0 does not define.",
+      "activity_sources": [
+        {
+          "name": "MongoDB.Driver",
+          "note": "MongoTelemetry.ActivitySourceName at src/MongoDB.Driver/MongoTelemetry.cs:63; the ActivitySource is constructed with it at src/MongoDB.Driver/MongoTelemetry.cs:65."
+        }
+      ],
+      "attribute_keys": [
+        "db.mongodb.lsid",
+        "db.mongodb.txn_number",
+        "db.mongodb.server_connection_id",
+        "db.mongodb.driver_connection_id",
+        "db.mongodb.cursor_id",
+        "db.command.name",
+        "db.operation.summary"
+      ]
+    },
+    {
+      "library": "RabbitMQ.Client",
+      "version": "7.2.2",
+      "repository": "https://github.com/rabbitmq/rabbitmq-dotnet-client",
+      "ref": "v7.2.2",
+      "license": "Apache-2.0",
+      "brief": "Attributes RabbitMQ.Client 7.2.2 puts on the spans of its own \"RabbitMQ.Client.Publisher\" and \"RabbitMQ.Client.Subscriber\" ActivitySources and that upstream semantic conventions 1.44.0 does not define.",
+      "activity_sources": [
+        {
+          "name": "RabbitMQ.Client.Publisher",
+          "note": "RabbitMQActivitySource.PublisherSourceName at projects/RabbitMQ.Client/Impl/RabbitMQActivitySource.cs:46; the ActivitySource is constructed with it at projects/RabbitMQ.Client/Impl/RabbitMQActivitySource.cs:41."
+        },
+        {
+          "name": "RabbitMQ.Client.Subscriber",
+          "note": "RabbitMQActivitySource.SubscriberSourceName at projects/RabbitMQ.Client/Impl/RabbitMQActivitySource.cs:47; the ActivitySource is constructed with it at projects/RabbitMQ.Client/Impl/RabbitMQActivitySource.cs:44."
+        }
+      ],
+      "attribute_keys": [
+        "messaging.rabbitmq.delivery_tag"
+      ]
+    },
+    {
+      "library": "Npgsql",
+      "version": "10.0.3",
+      "repository": "https://github.com/npgsql/npgsql",
+      "ref": "v10.0.3",
+      "license": "PostgreSQL",
+      "brief": "Attributes Npgsql 10.0.3 puts on the spans of its own \"Npgsql\" ActivitySource and that upstream semantic conventions 1.44.0 does not define.",
+      "activity_sources": [
+        {
+          "name": "Npgsql",
+          "note": "The ActivitySource is constructed with the literal at src/Npgsql/NpgsqlActivitySource.cs:15."
+        }
+      ],
+      "attribute_keys": [
+        "db.npgsql.connection_id",
+        "db.npgsql.data_source",
+        "db.npgsql.prepared",
+        "db.npgsql.rows"
+      ]
+    },
+    {
+      "library": "MySqlConnector",
+      "version": "2.6.2",
+      "repository": "https://github.com/mysql-net/MySqlConnector",
+      "ref": "2.6.2",
+      "license": "MIT",
+      "brief": "MySqlConnector 2.6.2 declares no attribute namespace of its own: every tag it sets is an OpenTelemetry key (db.system, db.name, db.statement, net.peer.*, thread.*), pre-stable ones included, declared at src/MySqlConnector/Utilities/ActivitySourceHelper.cs:10-29. Only its ActivitySource name is a registry fact; the pre-stable keys upstream 1.44.0 no longer carries are not registry material and are counted by qyl.collector.attributes.dropped.",
+      "activity_sources": [
+        {
+          "name": "MySqlConnector",
+          "note": "The ActivitySource is constructed with the literal at src/MySqlConnector/Utilities/ActivitySourceHelper.cs:96."
+        }
+      ],
+      "attribute_keys": []
+    },
+    {
+      "library": "MySql.Data",
+      "version": "9.7.0",
+      "repository": "https://github.com/mysql/mysql-connector-net",
+      "ref": "9.7.0",
+      "license": "GPL-2.0-with-FOSS-exception",
+      "brief": "MySql.Data 9.7.0 declares no attribute namespace of its own; only its ActivitySource name — which is \"connector-net\", not the package name — is a registry fact.",
+      "activity_sources": [
+        {
+          "name": "connector-net",
+          "note": "The ActivitySource is constructed with the literal at MySQL.Data/src/MySQLActivitySource.cs:47."
+        }
+      ],
+      "attribute_keys": []
+    },
+    {
+      "library": "Oracle Data Provider for .NET (ODP.NET Core)",
+      "version": "23.4.0",
+      "repository": "https://www.nuget.org/packages/Oracle.ManagedDataAccess.Core",
+      "ref": "23.4.0",
+      "license": "OTN (proprietary)",
+      "brief": "Attributes ODP.NET Core puts on the spans of its own \"Oracle.ManagedDataAccess.Core\" ActivitySource and that upstream semantic conventions 1.44.0 does not define. This is the one vendor model whose finding is a vendor document rather than source at a tag: the provider is closed-source.",
+      "activity_sources": [
+        {
+          "name": "Oracle.ManagedDataAccess.Core",
+          "note": "ODP.NET ships no public source; the name is the one its own documentation instruments and instructs AddSource with, Oracle's ODP.NET OpenTelemetry documentation, https://docs.oracle.com/en/database/oracle/oracle-database/23/odpnt/featOpenTelemetry.html."
+        }
+      ],
+      "attribute_keys": [
+        "db.odp.connection.id",
+        "db.odp.roundtrip.count",
+        "db.odp.roundtrip.duration",
+        "db.odp.rows_affected",
+        "db.odp.sql_id",
+        "db.odp.user.statement"
+      ]
+    },
+    {
+      "library": "GraphQL.NET",
+      "version": "8.8.5",
+      "repository": "https://github.com/graphql-dotnet/graphql-dotnet",
+      "ref": "8.8.5",
+      "license": "MIT",
+      "brief": "GraphQL.NET 8.8.5 declares no attribute namespace of its own; only its ActivitySource name is a registry fact.",
+      "activity_sources": [
+        {
+          "name": "GraphQL",
+          "note": "GraphQLTelemetryProvider.SourceName at src/GraphQL/Telemetry/GraphQLTelemetryProvider.cs:33; the ActivitySource is constructed with it at src/GraphQL/Telemetry/GraphQLTelemetryProvider.cs:37. The telemetry is opt-in through UseTelemetry()."
+        }
+      ],
+      "attribute_keys": []
+    }
   ]
 }
