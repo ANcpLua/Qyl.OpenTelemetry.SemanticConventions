@@ -1,0 +1,25 @@
+# MySql.Data 9.7.0 — the attributes the library puts on the spans of its own
+# ActivitySource and that upstream semantic conventions do not define. Vendor keys are
+# tags: the collector passes them through, the application never renames them.
+#
+# Two groups: `registry.vendor.*` carries the attributes into the resolved catalog (which
+# drops group annotations), `vendor.*` carries the library metadata, which survives as a
+# plain attribute group.
+groups:
+  - id: vendor.mysql_data
+    type: attribute_group
+    display_name: "MySql.Data Vendor Metadata"
+    brief: "The pinned MySql.Data release qyl read its ActivitySource and attribute findings at."
+    annotations:
+      qyl:
+        vendor:
+          library: "MySql.Data"
+          version: "9.7.0"
+          repository: "https://github.com/mysql/mysql-connector-net"
+          ref: "9.7.0"
+          license: "GPL-2.0-with-FOSS-exception"
+          activity_sources:
+            - name: "connector-net"
+              note: "The ActivitySource is constructed with the literal at MySQL.Data/src/MySQLActivitySource.cs:47."
+    attributes:
+      - ref: qyl.instrumentation.domain

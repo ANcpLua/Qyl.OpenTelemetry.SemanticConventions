@@ -1,0 +1,25 @@
+# MySqlConnector 2.6.2 — the attributes the library puts on the spans of its own
+# ActivitySource and that upstream semantic conventions do not define. Vendor keys are
+# tags: the collector passes them through, the application never renames them.
+#
+# Two groups: `registry.vendor.*` carries the attributes into the resolved catalog (which
+# drops group annotations), `vendor.*` carries the library metadata, which survives as a
+# plain attribute group.
+groups:
+  - id: vendor.mysqlconnector
+    type: attribute_group
+    display_name: "MySqlConnector Vendor Metadata"
+    brief: "The pinned MySqlConnector release qyl read its ActivitySource and attribute findings at."
+    annotations:
+      qyl:
+        vendor:
+          library: "MySqlConnector"
+          version: "2.6.2"
+          repository: "https://github.com/mysql-net/MySqlConnector"
+          ref: "2.6.2"
+          license: "MIT"
+          activity_sources:
+            - name: "MySqlConnector"
+              note: "The ActivitySource is constructed with the literal at src/MySqlConnector/Utilities/ActivitySourceHelper.cs:96."
+    attributes:
+      - ref: qyl.instrumentation.domain

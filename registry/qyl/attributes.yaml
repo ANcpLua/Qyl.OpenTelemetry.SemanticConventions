@@ -1,0 +1,526 @@
+# qyl-owned attributes. Every key here starts with qyl.; policies/qyl_namespace.rego enforces it.
+groups:
+  - id: registry.qyl
+    type: attribute_group
+    display_name: qyl Attributes
+    brief: Attributes qyl's own platform emits and the collector must recognise.
+    attributes:
+      - id: qyl.attribute.namespace
+        type:
+          members:
+            - id: android
+              value: "android"
+              stability: development
+              brief: "The `android` attribute namespace."
+            - id: app
+              value: "app"
+              stability: development
+              brief: "The `app` attribute namespace."
+            - id: artifact
+              value: "artifact"
+              stability: development
+              brief: "The `artifact` attribute namespace."
+            - id: aspnetcore
+              value: "aspnetcore"
+              stability: development
+              brief: "The `aspnetcore` attribute namespace."
+            - id: aws
+              value: "aws"
+              stability: development
+              brief: "The `aws` attribute namespace."
+            - id: az
+              value: "az"
+              stability: development
+              brief: "The `az` attribute namespace."
+            - id: azure
+              value: "azure"
+              stability: development
+              brief: "The `azure` attribute namespace."
+            - id: browser
+              value: "browser"
+              stability: development
+              brief: "The `browser` attribute namespace."
+            - id: cassandra
+              value: "cassandra"
+              stability: development
+              brief: "The `cassandra` attribute namespace."
+            - id: cicd
+              value: "cicd"
+              stability: development
+              brief: "The `cicd` attribute namespace."
+            - id: client
+              value: "client"
+              stability: development
+              brief: "The `client` attribute namespace."
+            - id: cloud
+              value: "cloud"
+              stability: development
+              brief: "The `cloud` attribute namespace."
+            - id: cloudevents
+              value: "cloudevents"
+              stability: development
+              brief: "The `cloudevents` attribute namespace."
+            - id: cloudfoundry
+              value: "cloudfoundry"
+              stability: development
+              brief: "The `cloudfoundry` attribute namespace."
+            - id: code
+              value: "code"
+              stability: development
+              brief: "The `code` attribute namespace."
+            - id: container
+              value: "container"
+              stability: development
+              brief: "The `container` attribute namespace."
+            - id: cpu
+              value: "cpu"
+              stability: development
+              brief: "The `cpu` attribute namespace."
+            - id: cpython
+              value: "cpython"
+              stability: development
+              brief: "The `cpython` attribute namespace."
+            - id: db
+              value: "db"
+              stability: development
+              brief: "The `db` attribute namespace."
+            - id: deployment
+              value: "deployment"
+              stability: development
+              brief: "The `deployment` attribute namespace."
+            - id: destination
+              value: "destination"
+              stability: development
+              brief: "The `destination` attribute namespace."
+            - id: device
+              value: "device"
+              stability: development
+              brief: "The `device` attribute namespace."
+            - id: disk
+              value: "disk"
+              stability: development
+              brief: "The `disk` attribute namespace."
+            - id: dns
+              value: "dns"
+              stability: development
+              brief: "The `dns` attribute namespace."
+            - id: dotnet
+              value: "dotnet"
+              stability: development
+              brief: "The `dotnet` attribute namespace."
+            - id: elastic
+              value: "elastic"
+              stability: development
+              brief: "The `elastic` attribute namespace."
+            - id: elasticsearch
+              value: "elasticsearch"
+              stability: development
+              brief: "The `elasticsearch` attribute namespace."
+            - id: enduser
+              value: "enduser"
+              stability: development
+              brief: "The `enduser` attribute namespace."
+            - id: error
+              value: "error"
+              stability: development
+              brief: "The `error` attribute namespace."
+            - id: event
+              value: "event"
+              stability: development
+              brief: "The `event` attribute namespace."
+            - id: exception
+              value: "exception"
+              stability: development
+              brief: "The `exception` attribute namespace."
+            - id: execution
+              value: "execution"
+              stability: development
+              brief: "The `execution` attribute namespace."
+            - id: faas
+              value: "faas"
+              stability: development
+              brief: "The `faas` attribute namespace."
+            - id: feature_flag
+              value: "feature_flag"
+              stability: development
+              brief: "The `feature_flag` attribute namespace."
+            - id: file
+              value: "file"
+              stability: development
+              brief: "The `file` attribute namespace."
+            - id: gcp
+              value: "gcp"
+              stability: development
+              brief: "The `gcp` attribute namespace."
+            - id: gen_ai
+              value: "gen_ai"
+              stability: development
+              brief: "The `gen_ai` attribute namespace."
+            - id: geo
+              value: "geo"
+              stability: development
+              brief: "The `geo` attribute namespace."
+            - id: go
+              value: "go"
+              stability: development
+              brief: "The `go` attribute namespace."
+            - id: graphql
+              value: "graphql"
+              stability: development
+              brief: "The `graphql` attribute namespace."
+            - id: heroku
+              value: "heroku"
+              stability: development
+              brief: "The `heroku` attribute namespace."
+            - id: host
+              value: "host"
+              stability: development
+              brief: "The `host` attribute namespace."
+            - id: http
+              value: "http"
+              stability: development
+              brief: "The `http` attribute namespace."
+            - id: hw
+              value: "hw"
+              stability: development
+              brief: "The `hw` attribute namespace."
+            - id: ios
+              value: "ios"
+              stability: development
+              brief: "The `ios` attribute namespace."
+            - id: jsonrpc
+              value: "jsonrpc"
+              stability: development
+              brief: "The `jsonrpc` attribute namespace."
+            - id: jvm
+              value: "jvm"
+              stability: development
+              brief: "The `jvm` attribute namespace."
+            - id: k8s
+              value: "k8s"
+              stability: development
+              brief: "The `k8s` attribute namespace."
+            - id: linux
+              value: "linux"
+              stability: development
+              brief: "The `linux` attribute namespace."
+            - id: log
+              value: "log"
+              stability: development
+              brief: "The `log` attribute namespace."
+            - id: mainframe
+              value: "mainframe"
+              stability: development
+              brief: "The `mainframe` attribute namespace."
+            - id: mcp
+              value: "mcp"
+              stability: development
+              brief: "The `mcp` attribute namespace."
+            - id: message
+              value: "message"
+              stability: development
+              brief: "The `message` attribute namespace."
+            - id: messaging
+              value: "messaging"
+              stability: development
+              brief: "The `messaging` attribute namespace."
+            - id: net
+              value: "net"
+              stability: development
+              brief: "The `net` attribute namespace."
+            - id: network
+              value: "network"
+              stability: development
+              brief: "The `network` attribute namespace."
+            - id: nfs
+              value: "nfs"
+              stability: development
+              brief: "The `nfs` attribute namespace."
+            - id: nodejs
+              value: "nodejs"
+              stability: development
+              brief: "The `nodejs` attribute namespace."
+            - id: nservicebus
+              value: "nservicebus"
+              stability: development
+              brief: "The `nservicebus` attribute namespace."
+            - id: oci
+              value: "oci"
+              stability: development
+              brief: "The `oci` attribute namespace."
+            - id: onc_rpc
+              value: "onc_rpc"
+              stability: development
+              brief: "The `onc_rpc` attribute namespace."
+            - id: openai
+              value: "openai"
+              stability: development
+              brief: "The `openai` attribute namespace."
+            - id: openshift
+              value: "openshift"
+              stability: development
+              brief: "The `openshift` attribute namespace."
+            - id: opentracing
+              value: "opentracing"
+              stability: development
+              brief: "The `opentracing` attribute namespace."
+            - id: oracle
+              value: "oracle"
+              stability: development
+              brief: "The `oracle` attribute namespace."
+            - id: oracle_cloud
+              value: "oracle_cloud"
+              stability: development
+              brief: "The `oracle_cloud` attribute namespace."
+            - id: os
+              value: "os"
+              stability: development
+              brief: "The `os` attribute namespace."
+            - id: otel
+              value: "otel"
+              stability: development
+              brief: "The `otel` attribute namespace."
+            - id: other
+              value: "other"
+              stability: development
+              brief: "Any attribute namespace outside the pinned registry."
+            - id: peer
+              value: "peer"
+              stability: development
+              brief: "The `peer` attribute namespace."
+            - id: pool
+              value: "pool"
+              stability: development
+              brief: "The `pool` attribute namespace."
+            - id: pprof
+              value: "pprof"
+              stability: development
+              brief: "The `pprof` attribute namespace."
+            - id: process
+              value: "process"
+              stability: development
+              brief: "The `process` attribute namespace."
+            - id: profile
+              value: "profile"
+              stability: development
+              brief: "The `profile` attribute namespace."
+            - id: quartz
+              value: "quartz"
+              stability: development
+              brief: "The `quartz` attribute namespace."
+            - id: qyl
+              value: "qyl"
+              stability: development
+              brief: "The `qyl` attribute namespace."
+            - id: rpc
+              value: "rpc"
+              stability: development
+              brief: "The `rpc` attribute namespace."
+            - id: security_rule
+              value: "security_rule"
+              stability: development
+              brief: "The `security_rule` attribute namespace."
+            - id: server
+              value: "server"
+              stability: development
+              brief: "The `server` attribute namespace."
+            - id: service
+              value: "service"
+              stability: development
+              brief: "The `service` attribute namespace."
+            - id: session
+              value: "session"
+              stability: development
+              brief: "The `session` attribute namespace."
+            - id: signalr
+              value: "signalr"
+              stability: development
+              brief: "The `signalr` attribute namespace."
+            - id: source
+              value: "source"
+              stability: development
+              brief: "The `source` attribute namespace."
+            - id: state
+              value: "state"
+              stability: development
+              brief: "The `state` attribute namespace."
+            - id: system
+              value: "system"
+              stability: development
+              brief: "The `system` attribute namespace."
+            - id: telemetry
+              value: "telemetry"
+              stability: development
+              brief: "The `telemetry` attribute namespace."
+            - id: test
+              value: "test"
+              stability: development
+              brief: "The `test` attribute namespace."
+            - id: thread
+              value: "thread"
+              stability: development
+              brief: "The `thread` attribute namespace."
+            - id: tls
+              value: "tls"
+              stability: development
+              brief: "The `tls` attribute namespace."
+            - id: url
+              value: "url"
+              stability: development
+              brief: "The `url` attribute namespace."
+            - id: user
+              value: "user"
+              stability: development
+              brief: "The `user` attribute namespace."
+            - id: user_agent
+              value: "user_agent"
+              stability: development
+              brief: "The `user_agent` attribute namespace."
+            - id: v8js
+              value: "v8js"
+              stability: development
+              brief: "The `v8js` attribute namespace."
+            - id: vcs
+              value: "vcs"
+              stability: development
+              brief: "The `vcs` attribute namespace."
+            - id: webengine
+              value: "webengine"
+              stability: development
+              brief: "The `webengine` attribute namespace."
+            - id: zos
+              value: "zos"
+              stability: development
+              brief: "The `zos` attribute namespace."
+        stability: development
+        brief: "First dot-segment of the attribute key a collector measurement is about."
+        note: "The value set is closed and is exactly the attribute namespaces present in the merged registry plus `other`: the collector clamps every value it records to this set, so an inbound payload carrying an unknown key cannot fork the series. merge_registries.py recomputes the set from the merged catalog on every generation and fails the merge when the two disagree, so a registry that gains a namespace cannot silently leave it unlisted."
+      - id: qyl.capability.id
+        type: string
+        stability: development
+        brief: "Stable identifier of the qyl capability that produced the telemetry."
+      - id: qyl.capability.kind
+        type: string
+        stability: development
+        brief: "Kind of the qyl capability that produced the telemetry."
+      - id: qyl.exception.source
+        type: string
+        stability: development
+        brief: "Origin of a captured exception inside a qyl process (which capture layer recorded it)."
+      - id: qyl.instrumentation.domain
+        type:
+          members:
+            - id: asp_net_core_server
+              value: "aspnetcore.server"
+              stability: development
+              brief: "qyl aspnetcore.server instrumentation domain."
+            - id: azure_sdk
+              value: "azure.sdk"
+              stability: development
+              brief: "qyl azure.sdk instrumentation domain."
+            - id: db_client
+              value: "db.client"
+              stability: development
+              brief: "qyl db.client instrumentation domain."
+            - id: db_ef_core
+              value: "db.efcore"
+              stability: development
+              brief: "qyl db.efcore instrumentation domain."
+            - id: db_elasticsearch
+              value: "db.elasticsearch"
+              stability: development
+              brief: "qyl db.elasticsearch instrumentation domain."
+            - id: db_mongo_db
+              value: "db.mongodb"
+              stability: development
+              brief: "qyl db.mongodb instrumentation domain."
+            - id: db_redis
+              value: "db.redis"
+              stability: development
+              brief: "qyl db.redis instrumentation domain."
+            - id: db_sql_client
+              value: "db.sqlclient"
+              stability: development
+              brief: "qyl db.sqlclient instrumentation domain."
+            - id: elastic_transport
+              value: "elastic.transport"
+              stability: development
+              brief: "qyl elastic.transport instrumentation domain."
+            - id: graph_ql
+              value: "graphql"
+              stability: development
+              brief: "qyl graphql instrumentation domain."
+            - id: http_client
+              value: "http.client"
+              stability: development
+              brief: "qyl http.client instrumentation domain."
+            - id: job_quartz
+              value: "job.quartz"
+              stability: development
+              brief: "qyl job.quartz instrumentation domain."
+            - id: messaging_kafka
+              value: "messaging.kafka"
+              stability: development
+              brief: "qyl messaging.kafka instrumentation domain."
+            - id: messaging_mass_transit
+              value: "messaging.masstransit"
+              stability: development
+              brief: "qyl messaging.masstransit instrumentation domain."
+            - id: messaging_n_service_bus
+              value: "messaging.nservicebus"
+              stability: development
+              brief: "qyl messaging.nservicebus instrumentation domain."
+            - id: messaging_rabbit_mq
+              value: "messaging.rabbitmq"
+              stability: development
+              brief: "qyl messaging.rabbitmq instrumentation domain."
+            - id: rpc_grpc
+              value: "rpc.grpc"
+              stability: development
+              brief: "qyl rpc.grpc instrumentation domain."
+            - id: rpc_wcf_client
+              value: "rpc.wcf.client"
+              stability: development
+              brief: "qyl rpc.wcf.client instrumentation domain."
+        stability: development
+        brief: "qyl auto-instrumentation domain that emitted the span or metric."
+      - id: qyl.mcp.evaluation_run.id
+        type: string
+        stability: development
+        brief: "Identifier of the MCP evaluation run. Staging: upstream semconv has no equivalent yet."
+      - id: qyl.mcp.execution.id
+        type: string
+        stability: development
+        brief: "Identifier of the MCP workbench execution. Staging: upstream semconv has no equivalent yet."
+      - id: qyl.mcp.flow.id
+        type: string
+        stability: development
+        brief: "Identifier of the MCP flow. Staging: upstream semconv has no equivalent yet."
+      - id: qyl.mcp.protocol.era
+        type: string
+        stability: development
+        brief: "Negotiated MCP protocol era. Derived from the negotiated protocol version, never from envelope presence."
+      - id: qyl.mcp.sdk.tier
+        type: string
+        stability: development
+        brief: "MCP SDK tier observed on the connection. Staging: upstream semconv has no equivalent yet."
+      - id: qyl.mcp.server.id
+        type: string
+        stability: development
+        brief: "Identifier of the MCP server as registered in the qyl workbench. Staging: upstream semconv has no equivalent yet."
+      - id: qyl.mcp.test_case.id
+        type: string
+        stability: development
+        brief: "Identifier of the MCP test case. Staging: upstream semconv has no equivalent yet."
+      - id: qyl.mcp.tool.name
+        type: string
+        stability: development
+        brief: "Name of the MCP tool the telemetry concerns. Staging: upstream semconv has no equivalent yet."
+      - id: qyl.project.id
+        type: string
+        stability: development
+        brief: "qyl project identifier the telemetry belongs to."
+      - id: qyl.workspace.id
+        type: string
+        stability: development
+        brief: "qyl workspace identifier the telemetry belongs to."

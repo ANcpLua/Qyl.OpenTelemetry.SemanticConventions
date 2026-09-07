@@ -1,0 +1,95 @@
+# Quartz.NET 4.0.0 — the attributes the library puts on the spans of its own
+# ActivitySource and that upstream semantic conventions do not define. Vendor keys are
+# tags: the collector passes them through, the application never renames them.
+#
+# Two groups: `registry.vendor.*` carries the attributes into the resolved catalog (which
+# drops group annotations), `vendor.*` carries the library metadata, which survives as a
+# plain attribute group.
+groups:
+  - id: registry.vendor.quartz_net
+    type: attribute_group
+    display_name: "Quartz.NET Vendor Attributes"
+    brief: "Attributes Quartz.NET 4.0.0 puts on the spans of its own \"Quartz\" ActivitySource and on the instruments of its \"Quartz\" Meter, and that upstream semantic conventions 1.44.0 does not define."
+    attributes:
+      - id: quartz.scheduler.name
+        type: string
+        stability: development
+        brief: "Name of the scheduler that produced the telemetry."
+        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:25; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:69 and src/Quartz/Diagnostics/TracingJobStore.cs:570."
+      - id: quartz.scheduler.id
+        type: string
+        stability: development
+        brief: "Instance id of the scheduler that produced the telemetry, which is what tells two cluster nodes apart."
+        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:30; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:70 and src/Quartz/Diagnostics/TracingJobStore.cs:571."
+      - id: quartz.fire.instance.id
+        type: string
+        stability: development
+        brief: "Identity of one firing, which is what an interrupt names."
+        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:35; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:72."
+      - id: quartz.trigger.group
+        type: string
+        stability: development
+        brief: "Group of the trigger that fired."
+        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:40; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:75 and src/Quartz/Diagnostics/TracingJobStore.cs:704."
+      - id: quartz.trigger.name
+        type: string
+        stability: development
+        brief: "Name of the trigger that fired."
+        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:45; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:76 and src/Quartz/Diagnostics/TracingJobStore.cs:705."
+      - id: quartz.job.type
+        type: string
+        stability: development
+        brief: "Assembly-qualified type name of the job."
+        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:50; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:71."
+      - id: quartz.job.group
+        type: string
+        stability: development
+        brief: "Group of the job."
+        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:55; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:77 and src/Quartz/Diagnostics/TracingJobStore.cs:693."
+      - id: quartz.job.name
+        type: string
+        stability: development
+        brief: "Name of the job."
+        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:60; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:78 and src/Quartz/Diagnostics/TracingJobStore.cs:694."
+      - id: quartz.execution.group
+        type: string
+        stability: development
+        brief: "Execution group the trigger belongs to, which is the bucket a thread limit is applied per. A trigger that names no execution group carries no such attribute at all."
+        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:70; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:86."
+      - id: quartz.jobstore.trigger.count
+        type: int
+        stability: development
+        brief: "Number of triggers a job-store operation was asked for, or handed back."
+        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:76; set at src/Quartz/Diagnostics/TracingJobStore.cs:544,648."
+      - id: quartz.jobstore.batch.size
+        type: int
+        stability: development
+        brief: "Number of triggers the scheduler asked its store for in one acquisition attempt."
+        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:81; set at src/Quartz/Diagnostics/TracingJobStore.cs:531."
+      - id: quartz.jobstore.operation
+        type: string
+        stability: development
+        brief: "Job-store operation a measurement is about."
+        note: "Metric tag on the \"Quartz\" Meter. Declared at src/Quartz/Diagnostics/ActivityTags.cs:87; set at src/Quartz/Diagnostics/Meters.cs:172."
+      - id: quartz.cluster.recovered.instance.id
+        type: string
+        stability: development
+        brief: "Instance id of the cluster node whose work is being recovered, which is a node other than the one reporting the measurement."
+        note: "Metric tag on the \"Quartz\" Meter. Declared at src/Quartz/Diagnostics/ActivityTags.cs:98; set at src/Quartz/Diagnostics/Meters.cs:297,325."
+  - id: vendor.quartz_net
+    type: attribute_group
+    display_name: "Quartz.NET Vendor Metadata"
+    brief: "The pinned Quartz.NET release qyl read its ActivitySource and attribute findings at."
+    annotations:
+      qyl:
+        vendor:
+          library: "Quartz.NET"
+          version: "4.0.0"
+          repository: "https://github.com/quartznet/quartznet"
+          ref: "v4.0.0"
+          license: "Apache-2.0"
+          activity_sources:
+            - name: "Quartz"
+              note: "QuartzInstrumentation.ActivitySourceName at src/Quartz/Diagnostics/QuartzInstrumentation.cs:23; QuartzInstrumentation.MeterName at src/Quartz/Diagnostics/QuartzInstrumentation.cs:34 is the same string."
+    attributes:
+      - ref: qyl.instrumentation.domain

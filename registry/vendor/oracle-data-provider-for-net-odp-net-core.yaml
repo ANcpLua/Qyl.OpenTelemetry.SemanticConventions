@@ -1,0 +1,60 @@
+# Oracle Data Provider for .NET (ODP.NET Core) 23.4.0 — the attributes the library puts on the spans of its own
+# ActivitySource and that upstream semantic conventions do not define. Vendor keys are
+# tags: the collector passes them through, the application never renames them.
+#
+# Two groups: `registry.vendor.*` carries the attributes into the resolved catalog (which
+# drops group annotations), `vendor.*` carries the library metadata, which survives as a
+# plain attribute group.
+groups:
+  - id: registry.vendor.oracle_data_provider_for_net_odp_net_core
+    type: attribute_group
+    display_name: "Oracle Data Provider for .NET (ODP.NET Core) Vendor Attributes"
+    brief: "Attributes ODP.NET Core puts on the spans of its own \"Oracle.ManagedDataAccess.Core\" ActivitySource and that upstream semantic conventions 1.44.0 does not define. This is the one vendor model whose finding is a vendor document rather than source at a tag: the provider is closed-source."
+    attributes:
+      - id: db.odp.connection.id
+        type: string
+        stability: development
+        brief: "Unique identifier of the ODP.NET connection, for diagnostic purposes."
+        note: "Span tag on the \"Oracle.ManagedDataAccess.Core\" ActivitySource. ODP.NET ships no public source, so the finding is the vendor's own attribute table in Oracle's ODP.NET OpenTelemetry documentation, https://docs.oracle.com/en/database/oracle/oracle-database/23/odpnt/featOpenTelemetry.html; the brief is that table's wording and the type follows the fact it describes."
+      - id: db.odp.roundtrip.count
+        type: int
+        stability: development
+        brief: "Number of database server roundtrips the ODP.NET method makes."
+        note: "Span tag on the \"Oracle.ManagedDataAccess.Core\" ActivitySource. ODP.NET ships no public source, so the finding is the vendor's own attribute table in Oracle's ODP.NET OpenTelemetry documentation, https://docs.oracle.com/en/database/oracle/oracle-database/23/odpnt/featOpenTelemetry.html; the brief is that table's wording and the type follows the fact it describes."
+      - id: db.odp.roundtrip.duration
+        type: double
+        stability: development
+        brief: "Database server roundtrip time, including ODP.NET processing, network send and receive, and database server processing."
+        note: "Span tag on the \"Oracle.ManagedDataAccess.Core\" ActivitySource. ODP.NET ships no public source, so the finding is the vendor's own attribute table in Oracle's ODP.NET OpenTelemetry documentation, https://docs.oracle.com/en/database/oracle/oracle-database/23/odpnt/featOpenTelemetry.html; the brief is that table's wording and the type follows the fact it describes."
+      - id: db.odp.rows_affected
+        type: int
+        stability: development
+        brief: "Row count affected by the SQL DML statement."
+        note: "Span tag on the \"Oracle.ManagedDataAccess.Core\" ActivitySource. ODP.NET ships no public source, so the finding is the vendor's own attribute table in Oracle's ODP.NET OpenTelemetry documentation, https://docs.oracle.com/en/database/oracle/oracle-database/23/odpnt/featOpenTelemetry.html; the brief is that table's wording and the type follows the fact it describes."
+      - id: db.odp.sql_id
+        type: string
+        stability: development
+        brief: "Oracle database SQL statement identifier, equivalent to SQL_ID."
+        note: "Span tag on the \"Oracle.ManagedDataAccess.Core\" ActivitySource. ODP.NET ships no public source, so the finding is the vendor's own attribute table in Oracle's ODP.NET OpenTelemetry documentation, https://docs.oracle.com/en/database/oracle/oracle-database/23/odpnt/featOpenTelemetry.html; the brief is that table's wording and the type follows the fact it describes."
+      - id: db.odp.user.statement
+        type: string
+        stability: development
+        brief: "Redacted ODP.NET user-supplied command text, which can differ from the statement the database executes."
+        note: "Span tag on the \"Oracle.ManagedDataAccess.Core\" ActivitySource. ODP.NET ships no public source, so the finding is the vendor's own attribute table in Oracle's ODP.NET OpenTelemetry documentation, https://docs.oracle.com/en/database/oracle/oracle-database/23/odpnt/featOpenTelemetry.html; the brief is that table's wording and the type follows the fact it describes."
+  - id: vendor.oracle_data_provider_for_net_odp_net_core
+    type: attribute_group
+    display_name: "Oracle Data Provider for .NET (ODP.NET Core) Vendor Metadata"
+    brief: "The pinned Oracle Data Provider for .NET (ODP.NET Core) release qyl read its ActivitySource and attribute findings at."
+    annotations:
+      qyl:
+        vendor:
+          library: "Oracle Data Provider for .NET (ODP.NET Core)"
+          version: "23.4.0"
+          repository: "https://www.nuget.org/packages/Oracle.ManagedDataAccess.Core"
+          ref: "23.4.0"
+          license: "OTN (proprietary)"
+          activity_sources:
+            - name: "Oracle.ManagedDataAccess.Core"
+              note: "ODP.NET ships no public source; the name is the one its own documentation instruments and instructs AddSource with, Oracle's ODP.NET OpenTelemetry documentation, https://docs.oracle.com/en/database/oracle/oracle-database/23/odpnt/featOpenTelemetry.html."
+    attributes:
+      - ref: qyl.instrumentation.domain

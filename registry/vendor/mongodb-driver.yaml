@@ -1,0 +1,65 @@
+# MongoDB.Driver 3.11.1 — the attributes the library puts on the spans of its own
+# ActivitySource and that upstream semantic conventions do not define. Vendor keys are
+# tags: the collector passes them through, the application never renames them.
+#
+# Two groups: `registry.vendor.*` carries the attributes into the resolved catalog (which
+# drops group annotations), `vendor.*` carries the library metadata, which survives as a
+# plain attribute group.
+groups:
+  - id: registry.vendor.mongodb_driver
+    type: attribute_group
+    display_name: "MongoDB.Driver Vendor Attributes"
+    brief: "Attributes MongoDB.Driver 3.11.1 puts on the spans of its own \"MongoDB.Driver\" ActivitySource and that upstream semantic conventions 1.44.0 does not define."
+    attributes:
+      - id: db.mongodb.lsid
+        type: string
+        stability: development
+        brief: "Logical session id of the command, as JSON."
+        note: "Span tag on the \"MongoDB.Driver\" ActivitySource. Declared at src/MongoDB.Driver/MongoTelemetry.cs:47; set at src/MongoDB.Driver/MongoTelemetry.cs:102,106."
+      - id: db.mongodb.txn_number
+        type: int
+        stability: development
+        brief: "Transaction number of the command."
+        note: "Span tag on the \"MongoDB.Driver\" ActivitySource. Declared at src/MongoDB.Driver/MongoTelemetry.cs:48; set at src/MongoDB.Driver/MongoTelemetry.cs:111."
+      - id: db.mongodb.server_connection_id
+        type: int
+        stability: development
+        brief: "Server-assigned id of the connection the command was issued on."
+        note: "Span tag on the \"MongoDB.Driver\" ActivitySource. Declared at src/MongoDB.Driver/MongoTelemetry.cs:49; set at src/MongoDB.Driver/MongoTelemetry.cs:295."
+      - id: db.mongodb.driver_connection_id
+        type: int
+        stability: development
+        brief: "Driver-local id of the connection the command was issued on."
+        note: "Span tag on the \"MongoDB.Driver\" ActivitySource. Declared at src/MongoDB.Driver/MongoTelemetry.cs:50; set at src/MongoDB.Driver/MongoTelemetry.cs:297."
+      - id: db.mongodb.cursor_id
+        type: int
+        stability: development
+        brief: "Cursor id returned by the command."
+        note: "Span tag on the \"MongoDB.Driver\" ActivitySource. Declared at src/MongoDB.Driver/MongoTelemetry.cs:51; set at src/MongoDB.Driver/MongoTelemetry.cs:132."
+      - id: db.command.name
+        type: string
+        stability: development
+        brief: "Name of the MongoDB command the span covers."
+        note: "Span tag on the \"MongoDB.Driver\" ActivitySource. Declared at src/MongoDB.Driver/MongoTelemetry.cs:39; set at src/MongoDB.Driver/MongoTelemetry.cs:82."
+      - id: db.operation.summary
+        type: string
+        stability: development
+        brief: "Low-cardinality summary of the driver operation, spelled \"<operation> <database>.<collection>\"."
+        note: "Span tag on the \"MongoDB.Driver\" ActivitySource. Declared at src/MongoDB.Driver/MongoTelemetry.cs:38; set at src/MongoDB.Driver/MongoTelemetry.cs:165."
+  - id: vendor.mongodb_driver
+    type: attribute_group
+    display_name: "MongoDB.Driver Vendor Metadata"
+    brief: "The pinned MongoDB.Driver release qyl read its ActivitySource and attribute findings at."
+    annotations:
+      qyl:
+        vendor:
+          library: "MongoDB.Driver"
+          version: "3.11.1"
+          repository: "https://github.com/mongodb/mongo-csharp-driver"
+          ref: "v3.11.1"
+          license: "Apache-2.0"
+          activity_sources:
+            - name: "MongoDB.Driver"
+              note: "MongoTelemetry.ActivitySourceName at src/MongoDB.Driver/MongoTelemetry.cs:63; the ActivitySource is constructed with it at src/MongoDB.Driver/MongoTelemetry.cs:65."
+    attributes:
+      - ref: qyl.instrumentation.domain
