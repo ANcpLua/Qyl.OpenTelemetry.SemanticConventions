@@ -155,11 +155,9 @@ internal static class Program
             return 2;
         }
 
-        // The pre-generated setter extensions of both packages, which the marker consumer
-        // used to declare a partial class for and have generated at compile time. The two
-        // tiers are disjoint since 9.0.0, so a stable and an incubating Activities namespace
-        // can be imported together: the stable http setter and the incubating gen_ai one
-        // resolve without an ambiguous call. A bare Activity exercises them and needs no
+        // The pre-generated setter extensions of both packages. The two tiers are disjoint,
+        // so a stable and an incubating Activities namespace can be imported together: the
+        // stable http setter and the incubating gen_ai one resolve without an ambiguous call. A bare Activity exercises them and needs no
         // ActivitySource, so nothing here has to be registered or suppressed.
         using var activity = new Activity("release-smoke").Start();
         activity.SetHttpRequestMethod(HttpAttributes.RequestMethodValues.Get);

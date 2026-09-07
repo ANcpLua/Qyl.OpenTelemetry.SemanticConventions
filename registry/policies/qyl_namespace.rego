@@ -4,8 +4,7 @@ import rego.v1
 
 # Every attribute qyl declares itself lives under `qyl.`. A key outside that namespace reaches
 # the registry only through a vendor group, which names the library, its exact pinned version,
-# the repository and ref the finding was read at, and the ActivitySources it emits on. This is
-# the guard merge_registries.py used to carry ("the merge refuses a qyl row outside qyl.*").
+# the repository and ref the finding was read at, and the ActivitySources it emits on.
 deny contains attr_registry_violation(description, group.id, attr.name) if {
 	some group in input.groups
 	group.id == "registry.qyl"

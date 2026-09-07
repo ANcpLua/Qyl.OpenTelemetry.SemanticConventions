@@ -2,8 +2,8 @@
 {#-
   The compact facts the analyzers decide against: which keys the pinned registry knows and with
   what value kind, which enum values are canonical, which metric, scope and event names exist,
-  and the GenAI span rules QYL0401 resolves a span against. The derivation used to live in
-  emit_analyzer_registry.py; it now lives in this template's JQ filter.
+  and the GenAI span rules QYL0401 resolves a span against. The derivation lives in this
+  template's JQ filter, over the materialized v2 registry.
 -#}
 {%- set scopes = ((params.scope_names ~ "," ~ params.vendor_activity_sources) | split(",") | list | sort(case_sensitive=true)) -%}
 {%- set e = namespace(exec = [], token = []) -%}

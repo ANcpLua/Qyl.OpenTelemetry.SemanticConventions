@@ -12,8 +12,8 @@ namespace Qyl.Telemetry.SemanticConventions.Build;
 
 /// <summary>
 ///   Repository-local build host: compile, and the analyzer documentation targets. The
-///   compiled packages' constant classes are generated at build by the repository's own
-///   source generator, so there is no checked-in constant tree to guard.
+///   packages' generated surface is committed and guarded by scripts/check-generated.sh, so
+///   nothing here regenerates it.
 /// </summary>
 internal sealed class Build : NukeBuild
 {

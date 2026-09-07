@@ -5,8 +5,8 @@ import rego.v1
 # A vendor group declares the keys a pinned third-party library puts on its own ActivitySource
 # and that upstream semantic conventions do not define. Every such group needs its metadata
 # sibling: the library, its exact pinned version, the repository and ref the finding was read
-# at, the license, and the ActivitySources it emits on. This is the check merge_registries.py
-# used to carry on the `vendor_models` entries.
+# at, the license, and the ActivitySources it emits on. A vendor file that cannot answer those
+# questions fails `weaver registry check`.
 
 vendor_ids contains id if {
 	some group in input.groups

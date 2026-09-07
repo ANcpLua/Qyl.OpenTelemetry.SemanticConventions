@@ -21,7 +21,7 @@ public static class QylIncubatingActivityExtensions
     /// First dot-segment of the attribute key a collector measurement is about.
     /// </summary>
     /// <remarks>
-    /// The value set is closed and is exactly the attribute namespaces present in the merged registry plus <c>other</c>: the collector clamps every value it records to this set, so an inbound payload carrying an unknown key cannot fork the series. merge_registries.py recomputes the set from the merged catalog on every generation and fails the merge when the two disagree, so a registry that gains a namespace cannot silently leave it unlisted.
+    /// The value set is closed and is exactly the attribute namespaces present in the resolved registry plus <c>other</c>: the collector clamps every value it records to this set, so an inbound payload carrying an unknown key cannot fork the series. <c>registry/policies-v2/qyl_attribute_namespace.rego</c> recomputes the set from the resolved catalog on every <c>weaver registry check</c> and fails it when the two disagree, so a registry that gains a namespace cannot silently leave it unlisted.
     /// </remarks>
     public static global::System.Diagnostics.Activity SetQylAttributeNamespace(
         this global::System.Diagnostics.Activity activity,
