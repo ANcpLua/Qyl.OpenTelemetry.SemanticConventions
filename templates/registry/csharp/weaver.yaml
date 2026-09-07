@@ -1,0 +1,85 @@
+whitespace_control:
+  trim_blocks: true
+  lstrip_blocks: true
+  keep_trailing_newline: true
+
+comment_formats:
+  csharp:
+    format: markdown
+    prefix: "/// "
+    trim: true
+default_comment_format: csharp
+
+# Defaults for a bare `weaver registry generate`; scripts/generate.sh overrides every one of
+# them with -D from registry/manifest.yaml, so the pins live in exactly one place.
+params:
+  weaver_version: "0.26.1"
+  qyl_schema_url: "https://qyl.at/schemas/9.0.0"
+  core_ref: "v1.44.0"
+  core_commit: ""
+  core_schema_url: "https://opentelemetry.io/schemas/1.44.0"
+  genai_commit: "fee465db333bdd6a7d2faa320edab5cf3101a4f4"
+  genai_schema_url: "https://opentelemetry.io/schemas/gen-ai-dev/1.42.0-dev"
+  scope_names: ""
+  vendor_activity_sources: ""
+
+templates:
+  # One {Root}Attributes class per registry root, per stability tier. The 25 core attributes
+  # that are absent from the top-level `registry.attributes` but present under
+  # `dependencies[...]` are folded in first (top-level wins).
+  - template: attributes.cs.j2
+    filter: >
+      ([.registry.attributes[]]) as $top
+      | ($top | map({key: .key, value: true}) | from_entries) as $seen
+      | ([.dependencies[].registry.attributes[]] | map(select($seen[.key] | not))) as $extra
+      | (($top + $extra) | sort_by(.key)) as $all
+      | (def pascal($s): $s | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join(""); .) as $_
+      | [ ($all
+            | group_by(.key | split(".")[0]) | .[]
+            | (.[0].key | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "incubating", root: $root, pascal_root: $p, attributes: .,
+               class_suffix: " (incubating)",
+               namespace: ("Qyl.Telemetry.SemanticConventions.Incubating.Attributes." + $p),
+               out_dir: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"}),
+          ($all
+            | map(select(.stability == "stable" or (.deprecated != null)))
+            | group_by(.key | split(".")[0]) | .[]
+            | (.[0].key | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "stable", root: $root, pascal_root: $p, attributes: .,
+               class_suffix: "",
+               namespace: ("Qyl.Telemetry.SemanticConventions.Attributes." + $p),
+               out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
+    application_mode: each
+    file_name: "{{ ctx.out_dir }}/Attributes/{{ ctx.pascal_root }}Attributes.g.cs"
+
+  # The pinned core schema URL, in the stable package only.
+  - template: schema_url.cs.j2
+    filter: "."
+    application_mode: single
+    file_name: "src/Qyl.Telemetry.SemanticConventions/Generated/SchemaUrl.g.cs"
+
+  # The qyl-owned telemetry names, in the stable package only: the producer packages build
+  # their ActivitySource and Meter from these and may not read the incubating tier.
+  - template: names.cs.j2
+    filter: >
+      {events: [.registry.events[]
+                 | select(.provenance.path != null and (.provenance.path | startswith("registry/qyl/")))
+                 | .name]}
+    application_mode: single
+    file_name: "src/Qyl.Telemetry.SemanticConventions/Generated/Names/QylTelemetryNames.g.cs"
+
+  # The qyl-owned instruments, in the incubating tier.
+  - template: metric_attributes.cs.j2
+    filter: >
+      [ .registry.metrics
+        | map(select(.provenance.path != null and (.provenance.path | startswith("registry/qyl/"))))
+        | sort_by(.name)
+        | group_by(.name | split(".")[0]) | .[]
+        | (.[0].name | split(".")[0]) as $root
+        | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+        | {root: $root, pascal_root: $p, metrics: .,
+           namespace: ("Qyl.Telemetry.SemanticConventions.Incubating.Attributes." + $p)} ]
+    application_mode: each
+    file_name: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated/Attributes/{{ ctx.pascal_root }}MetricAttributes.g.cs"

@@ -107,20 +107,6 @@ PY
   csharp \
   .
 
-"${WEAVER_CMD[@]}" registry generate \
-  -r registry \
-  --v2 \
-  --include-unreferenced \
-  -t templates \
-  -D "weaver_version=${actual_weaver_version}" \
-  -D "qyl_schema_url=${qyl_schema_url}" \
-  -D "core_ref=${core_ref}" \
-  -D "core_commit=${core_commit}" \
-  -D "core_schema_url=${core_schema_url}" \
-  -D "genai_commit=${genai_commit}" \
-  typespec \
-  .
-
 echo "Regenerated from registry/ with Weaver ${actual_weaver_version}"
 echo "  core:  ${core_ref} (${core_commit})"
 echo "  genai: ${genai_commit}"
