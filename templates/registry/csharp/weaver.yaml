@@ -208,3 +208,123 @@ templates:
                out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
     application_mode: each
     file_name: "{{ ctx.out_dir }}/Entities/{{ ctx.pascal_root }}Entities.g.cs"
+
+  # The registry-derived analyzer facts. Everything the analyzers need to decide whether a key,
+  # metric, scope, event or GenAI span is one the pinned registry knows — derived here rather
+  # than in Python, and committed like every other generated file.
+  #
+  # The GenAI span rules are the involved part: a base span group carries a required enum
+  # discriminator (`*.operation.name` or `*.method.name`), the operation values are handed to
+  # the group whose id segment matches, and whatever is left over goes to the single group that
+  # matched nothing. A span refinement adds a constraint read out of its note
+  # ("`gen_ai.provider.name` MUST be set to `\"anthropic\"`") and inherits its base's
+  # discriminator.
+  - template: analyzer_facts.cs.j2
+    filter: >
+      def genai: (.provenance.source // "") | startswith("https://opentelemetry.io/schemas/gen-ai-dev/");
+      def enumvals: if ((.type | type) == "object") and (.type | has("members"))
+                    then [.type.members[].value | tostring] | unique else [] end;
+      def segment($id): ($id | split(".")) as $p
+                        | if ($p | length) >= 2 then $p[($p | length) - 2] else $id end;
+      def kindof($t):
+        if ($t | type) == "object" then {kind: "String", template: false}
+        elif ($t | type) != "string" then {kind: "Unknown", template: false}
+        else (if ($t | startswith("template[")) then {p: $t[9:-1], template: true}
+              else {p: $t, template: false} end)
+             | {kind: ({"string": "String", "int": "Integer", "double": "Double",
+                        "boolean": "Boolean", "string[]": "StringArray", "int[]": "IntegerArray",
+                        "double[]": "DoubleArray", "boolean[]": "BooleanArray",
+                        "any": "Any"}[.p] // "Unknown"), template: .template}
+        end;
+      def required($g): [$g.attributes[] | select(.requirement_level == "required") | .key] | unique;
+      def disc($g): [$g.attributes[]
+                     | select(((.key | endswith(".operation.name")) or (.key | endswith(".method.name")))
+                              and .requirement_level == "required"
+                              and ((enumvals | length) > 0))] | first;
+      ([.registry.attributes[]]) as $top
+      | ($top | map({key: .key, value: true}) | from_entries) as $seen
+      | ([.dependencies[].registry.attributes[]] | map(select($seen[.key] | not))) as $extra
+      | (($top + $extra) | sort_by(.key)) as $all
+      | ([.registry.metrics[]]) as $mtop
+      | ($mtop | map({key: .name, value: true}) | from_entries) as $mseen
+      | ([.dependencies[].registry.metrics[]] | map(select($mseen[.name] | not))) as $mextra
+      | ($mtop + $mextra) as $allm
+      | ([.registry.events[].name] + [.dependencies[].registry.events[].name] | unique) as $events
+      | ([.registry.spans[] | select(genai)]) as $bases
+      | ([$bases[] | select(disc(.) != null)
+           | {id: .type, kind: .kind, d: disc(.), req: required(.)}]) as $withdisc
+      | ([$withdisc[] | .d.key] | unique) as $dkeys
+      | ([ $dkeys[] as $dk
+           | ([$withdisc[] | select(.d.key == $dk)]) as $entries
+           | ([$entries[] | .d | enumvals] | add | unique) as $vals
+           | (if ($dk | endswith(".method.name"))
+              then [$entries[] | {id: .id, values: $vals}]
+              else
+                ([$entries[] | . as $e | {id: $e.id,
+                    values: [$vals[] | select(. == segment($e.id) or (. | split("_") | index(segment($e.id)) != null))]}]) as $m
+                | ([$m[] | select((.values | length) > 0)]) as $matched
+                | ([$m[] | select((.values | length) == 0) | .id]) as $unmatched
+                | ($vals - ([$matched[] | .values] | add // [])) as $rest
+                | ($matched + (if ($rest | length) > 0 and ($unmatched | length) == 1
+                               then [{id: $unmatched[0], values: $rest}] else [] end))
+              end)
+           | .[] ] ) as $assign
+      | ($assign | map({key: .id, value: .values}) | from_entries) as $assigned
+      | ([$withdisc[] | select($assigned[.id] != null)
+           | {id: .id, kind: .kind, discriminator_key: .d.key,
+              discriminator_values: $assigned[.id],
+              constraint_key: null, constraint_value: null, required_attributes: .req}]) as $baserules
+      | ($baserules | map(select(.discriminator_key | endswith(".operation.name")))
+                    | map({key: (segment(.id) + " " + .kind), value: .}) | from_entries) as $bysuffix
+      | ([$bases[] | .type] | unique) as $baseids
+      | ([.refinements.spans[]
+           | select(genai)
+           | . as $r
+           | select(($baseids | index($r.id)) == null)
+           | select((.note // "") | test("`[^`]+`\\s+MUST be set to\\s+`\\\\?\"[^\"`]+"))
+           | ((.note) | capture("`(?<k>[^`]+)`\\s+MUST be set to\\s+`\\\\?\"(?<v>[^\"`]+)")) as $c
+           | ($bysuffix[segment($r.id) + " " + $r.kind]) as $base
+           | select($base != null)
+           | {id: $r.id, kind: $base.kind, discriminator_key: $base.discriminator_key,
+              discriminator_values: $base.discriminator_values,
+              constraint_key: $c.k, constraint_value: $c.v,
+              required_attributes: required($r)}]) as $refrules
+      | (($baserules + $refrules)
+          | sort_by([(if .constraint_key == null then 1 else 0 end), .id])) as $rules
+      | {attributes: [$all[] | {key: .key} + kindof(.type) + {values: enumvals}],
+         metric_names: ([$allm[] | .name] | unique),
+         genai_metrics: ([$allm[] | select(genai) | .name] | unique),
+         event_names: $events,
+         span_rules: $rules,
+         genai_discriminators: ([$rules[] | .discriminator_key | select(startswith("gen_ai."))] | unique)}
+    application_mode: single
+    file_name: "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvRegistryFacts.g.cs"
+
+  # The collector's normalize table. Renames resolve transitively to the final live key; a
+  # cycle, or a rename target the registry does not know, fails generation here rather than
+  # shipping a table that points at nothing.
+  - template: attribute_mapping.cs.j2
+    filter: >
+      ([.registry.attributes[]]) as $top
+      | ($top | map({key: .key, value: true}) | from_entries) as $seen
+      | ([.dependencies[].registry.attributes[]] | map(select($seen[.key] | not))) as $extra
+      | (($top + $extra) | sort_by(.key)) as $all
+      | ($all | map({key: .key, value: true}) | from_entries) as $known
+      | ($all | map(select(.deprecated.reason == "renamed") | {key: .key, value: .deprecated.renamed_to})
+              | from_entries) as $direct
+      | [ $direct | keys[] as $k
+          | ([$k] | until((($direct[.[-1]] // null) == null) or ((. | length) > 32);
+                          . + [$direct[.[-1]]])) as $chain
+          | if ($chain | unique | length) != ($chain | length)
+            then error("rename cycle for attribute " + $k + ": " + ($chain | join(" -> ")))
+            else . end
+          | ($chain[-1]) as $target
+          | if ($known[$target] | not)
+            then error("attribute " + $k + " is renamed to " + $target + ", which the registry does not define")
+            else . end
+          | {key: $k, target: $target} ] as $renames
+      | {renames: ($renames | sort_by(.key)),
+         vendor_keys: [$all[] | select((.provenance.path // "") | startswith("registry/vendor/")) | .key],
+         namespaces: (([$all[] | .key | split(".")[0]] + ["other"]) | unique)}
+    application_mode: single
+    file_name: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated/Mapping/AttributeMapping.g.cs"
