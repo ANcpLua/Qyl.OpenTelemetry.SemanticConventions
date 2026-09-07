@@ -440,6 +440,62 @@ public static class AttributeMapping
     }
 
     /// <summary>
+    /// Whether the key is deprecated with no replacement to rewrite it to, so the collector
+    /// drops it and counts the drop. <see cref="TryGetRename"/> and this method are disjoint:
+    /// a deprecated key either names a replacement or does not.
+    /// </summary>
+    public static bool IsObsoleted(string key)
+    {
+        switch (key)
+        {
+            case "code.function":
+            case "code.namespace":
+            case "db.connection_string":
+            case "db.cosmosdb.operation_type":
+            case "db.cosmosdb.status_code":
+            case "db.instance.id":
+            case "db.jdbc.driver_classname":
+            case "db.mssql.instance_name":
+            case "db.redis.database_index":
+            case "db.sql.table":
+            case "db.user":
+            case "enduser.role":
+            case "enduser.scope":
+            case "error.message":
+            case "event.name":
+            case "exception.escaped":
+            case "http.flavor":
+            case "http.host":
+            case "http.request_content_length":
+            case "http.response_content_length":
+            case "http.target":
+            case "message.compressed_size":
+            case "message.id":
+            case "message.type":
+            case "message.uncompressed_size":
+            case "messaging.destination_publish.anonymous":
+            case "messaging.destination_publish.name":
+            case "messaging.kafka.destination.partition":
+            case "messaging.rocketmq.client_group":
+            case "net.peer.name":
+            case "net.peer.port":
+            case "net.sock.family":
+            case "net.sock.peer.name":
+            case "rpc.grpc.status_code":
+            case "rpc.jsonrpc.error_code":
+            case "rpc.jsonrpc.error_message":
+            case "rpc.message.compressed_size":
+            case "rpc.message.id":
+            case "rpc.message.type":
+            case "rpc.message.uncompressed_size":
+            case "rpc.service":
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /// <summary>
     /// Whether the key belongs to a pinned third-party library rather than the vocabulary.
     /// Such a key is a tag: the collector forwards it unchanged and never rewrites it.
     /// </summary>

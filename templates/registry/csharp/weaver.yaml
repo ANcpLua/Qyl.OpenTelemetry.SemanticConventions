@@ -444,6 +444,7 @@ templates:
             else . end
           | {key: $k, target: $target} ] as $renames
       | {renames: ($renames | sort_by(.key)),
+         obsoleted_keys: [$all[] | select(.deprecated != null and .deprecated.renamed_to == null) | .key],
          vendor_keys: [$all[] | select((.provenance.path // "") | startswith("registry/vendor/")) | .key],
          namespaces: (([$all[] | .key | split(".")[0]] + ["other"]) | unique)}
       | . + $schema_urls

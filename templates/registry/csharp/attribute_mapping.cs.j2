@@ -73,6 +73,24 @@ public static class AttributeMapping
     }
 
     /// <summary>
+    /// Whether the key is deprecated with no replacement to rewrite it to, so the collector
+    /// drops it and counts the drop. <see cref="TryGetRename"/> and this method are disjoint:
+    /// a deprecated key either names a replacement or does not.
+    /// </summary>
+    public static bool IsObsoleted(string key)
+    {
+        switch (key)
+        {
+{% for k in ctx.obsoleted_keys %}
+            case "{{ k }}":
+{% endfor %}
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /// <summary>
     /// Whether the key belongs to a pinned third-party library rather than the vocabulary.
     /// Such a key is a tag: the collector forwards it unchanged and never rewrites it.
     /// </summary>
