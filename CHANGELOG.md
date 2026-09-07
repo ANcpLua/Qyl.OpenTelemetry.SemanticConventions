@@ -7,6 +7,73 @@ gate: CI packs the solution, publishes through NuGet trusted publishing, and
 [`eng/release/verify-packages.sh`](eng/release/verify-packages.sh) proves the indexed packages in a
 clean `net10.0` consumer.
 
+## [9.1.0] - 2026-09-07
+
+The first live-check run of `Qyl.OpenTelemetry.AutoInstrumentation` 14.0.0 against the 9.0.0
+registry reported 51 violations. Not one of them was on a span qyl writes: every one was on a
+span a pinned library emits on its own `ActivitySource`, which is what qyl subscribes to. The
+run split three ways, and this release answers each — 24 keys nothing declared, 23
+deprecations the collector already handles, and 4 values the collector already coerces. The
+other 39 findings, all undocumented `error.type` values, were already `information`; they are
+now labelled as what they are.
+
+### Added
+
+- **Three vendor models**, for the seven keys the run reported as
+  `missing_attribute`. Each names the library, the exact pinned version, the repository and
+  ref the finding was read at, the licence and the `ActivitySource`s, and each attribute
+  cites the file and line of the upstream release that sets it.
+  - [`registry/vendor/corewcf.yaml`](registry/vendor/corewcf.yaml) — `soap.message_version`,
+    `soap.reply_action`, `wcf.channel.path`, `wcf.channel.scheme`, from CoreWCF `v1.9.1`. The
+    pin is `CoreWCF.Http` 1.9.1; the instrumentation, the source `CoreWCF.Primitives` and all
+    four tags live one assembly down, in `CoreWCF.Primitives`.
+  - [`registry/vendor/azure-core.yaml`](registry/vendor/azure-core.yaml) — `az.schema_url`
+    and `az.client_request_id`, from Azure.Core `1.55.0`, the version
+    `Azure.Storage.Blobs` 12.29.2 restores to. The source name is the `Azure.*` prefix
+    pattern, because Azure.Core builds one source per client type and emits the HTTP spans on
+    a fixed `Azure.Core.Http`.
+  - [`registry/vendor/elastic-clients-elasticsearch.yaml`](registry/vendor/elastic-clients-elasticsearch.yaml)
+    — `db.elasticsearch.schema_url`, from Elastic.Clients.Elasticsearch `9.5.1`. The client
+    owns no `ActivitySource`: it hands a mutator to Elastic.Transport, which writes the tag
+    onto the `Elastic.Transport` Activity. Elastic.Transport 1.0.0 declares the key name and
+    only reads it, so the finding is filed against the client.
+  - `soap` and `wcf` join `qyl.attribute.namespace`, the closed value set the
+    dropped-attribute counter is broken down by.
+- **A live-check advice policy set the registry owns**:
+  [`registry/policies/live_check_advice`](registry/policies/live_check_advice) and
+  [`registry/.weaver.toml`](registry/.weaver.toml). Weaver's default levels are written for a
+  registry that owns everything it sees; these say what the qyl collector actually does with
+  each finding, and decide it from the registry entry alone — there is no attribute-key list
+  anywhere in the set. An undocumented value on an enum carrying `_OTHER` is
+  `open_enum_value`/information, because such an enum is open and the value is prescribed; a
+  deprecation with reason `renamed` is `deprecated_renamed`/improvement, because
+  `TryGetRename` rewrites it; `obsoleted` is `deprecated_obsoleted`/improvement, because
+  `IsObsoleted` drops it; a type mismatch whose value parses as the declared type is
+  `type_coercible`/improvement, because the collector coerces it. Everything else keeps
+  Weaver's level, and Weaver's own default policy is copied into the set verbatim as
+  `otel.rego` so its four name and namespace rules survive the replacement.
+  [`scripts/check-live-check-policies.sh`](scripts/check-live-check-policies.sh) asserts the
+  exact findings per attribute over a sample covering every rule, and CI runs it.
+- **`Incubating.Mapping.AttributeMapping.IsObsoleted`** — every key the registry deprecates
+  without naming a replacement, so the collector can drop it and count the drop instead of
+  forwarding a key upstream removed. `TryGetRename` answered "what does this key become?" but
+  not "does it become anything at all?", so an obsoleted key such as `exception.escaped`,
+  which NServiceBus emits, was indistinguishable from a live one. The two are disjoint by
+  construction and `AttributeMappingTests` proves it against `SemconvDeprecations`.
+
+### Changed
+
+- **`README` documents how to run live-check against a tag of this repository**, verified:
+  Weaver's `<url>[sub-folder]` archive syntax does not work here, because
+  `registry/manifest.yaml` names the core dependency by the local path
+  `.build/core-filtered/model` that only `scripts/fetch-core.sh` materialises, and neither
+  `--config` nor `--advice-policies` accepts a URL at all. `--advice-policies` also fails
+  silently on a path it cannot read, loading no policies. The recipe is to fetch the tag,
+  run `scripts/fetch-core.sh`, and pass local paths for all three.
+- **`lib.pascal` treats `*` as a segment separator**, so a vendor `ActivitySource` name that
+  is an `AddSource` prefix pattern still yields a C# identifier
+  (`VendorActivitySources.Azure = "Azure.*"`).
+
 ## [9.0.0] - 2026-09-07
 
 Weaver is the only generator and YAML the only source. The vocabulary moves into one Weaver

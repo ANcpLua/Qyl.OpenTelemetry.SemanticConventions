@@ -125,6 +125,87 @@ This registry carries telemetry vocabulary only. Qyl's client-visible product re
 responses, stream events, and errors remain owned by
 [`qyl-api-schema`](https://github.com/ANcpLua/qyl-api-schema).
 
+## Checking live telemetry against this registry
+
+`weaver registry live-check` compares emitted spans, metrics and logs against the registry
+and reports a finding per attribute. Its default levels are written for a registry that owns
+everything it sees, which qyl's is not: qyl subscribes to native `ActivitySource`s, so most
+findings are about keys a pinned library emits and the collector already handles. The
+registry therefore ships the policy set that says what the collector does with each one —
+[`registry/policies/live_check_advice`](registry/policies/live_check_advice) and
+[`registry/.weaver.toml`](registry/.weaver.toml) — and every consumer runs live-check with
+both.
+
+```bash
+weaver registry live-check \
+  -r registry --include-unreferenced \
+  --config registry/.weaver.toml \
+  --advice-policies registry/policies/live_check_advice \
+  --input-source spans.json --fail-on violation
+```
+
+Three rules, each decided from the registry entry alone — there is no attribute-key list
+anywhere in the policy:
+
+| finding | level | why |
+| --- | --- | --- |
+| `open_enum_value` | information | The enum carries the member `_OTHER`, so it is open and a value outside the member list is what the specification prescribes. `error.type` is the case that matters: exception type names and status codes are all undocumented values of an open enum. |
+| `undocumented_enum_value` | information | The same on a closed enum. Weaver's default level, kept. |
+| `deprecated_renamed` | improvement | `AttributeMapping.TryGetRename` rewrites the key to its final live replacement. |
+| `deprecated_obsoleted` | improvement | `AttributeMapping.IsObsoleted` tells the collector to drop the key and count the drop. |
+| `deprecated_uncategorized` | violation | The registry names no replacement and the collector has no rule. Weaver's default level, kept. |
+| `type_coercible` | improvement | The value parses as the declared type, so the collector coerces it. |
+| `type_not_coercible` | violation | It does not. Weaver's default level, kept. |
+| `enum_type_invalid` | violation | An enum sample that is neither string nor int. Weaver's default level, kept. |
+
+Everything else is Weaver's, unchanged, including `missing_attribute`, `not_stable`, the
+required/recommended/opt-in findings and the four name and namespace rules that
+[`otel.rego`](registry/policies/live_check_advice/otel.rego) — Weaver's own default policy,
+copied verbatim into the set — carries.
+
+**Both flags are required.** `--advice-policies` replaces the *rego* advisors only: Weaver's
+deprecated, stability, type and enum advisors are compiled into the binary, always run, and
+emit at a level no policy can change. `registry/.weaver.toml` drops the three findings the
+qyl rules replace, by finding id and never by attribute name. Run with `--advice-policies`
+alone and each of those findings is reported twice, once at Weaver's level and once at qyl's,
+and `--fail-on violation` fails on telemetry qyl handles correctly.
+[`scripts/check-live-check-policies.sh`](scripts/check-live-check-policies.sh) pins both
+halves: it asserts the exact findings per attribute over
+[a sample covering every rule](registry/policies/live_check_advice/samples), and asserts that
+dropping `--config` brings the built-in violations back.
+
+### Consuming the registry from another repository
+
+All three of `-r`, `--config` and `--advice-policies` need a local path here. Weaver's
+`<url>[sub-folder]` archive syntax does not work for this registry, and the reason is in
+[`registry/manifest.yaml`](registry/manifest.yaml): the core dependency is a *local filtered
+copy* at `.build/core-filtered/model`, which only
+[`scripts/fetch-core.sh`](scripts/fetch-core.sh) materialises. Pointing `-r` at
+`…/archive/refs/tags/v9.1.0.zip[registry]` fails with
+`IO error for operation on .build/core-filtered/model`. `--advice-policies` and `--config` do
+not accept a URL at all — and `--advice-policies` fails *silently* on a path it cannot read,
+loading no policies and leaving only the built-in advisors, so a typo there looks like a
+registry that suddenly disagrees with itself.
+
+The working recipe is to fetch the tag and materialise the core copy once:
+
+```bash
+curl -sSLo semconv.zip \
+  https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/archive/refs/tags/v9.1.0.zip
+unzip -q semconv.zip                       # -> Qyl.OpenTelemetry.SemanticConventions-9.1.0/
+cd Qyl.OpenTelemetry.SemanticConventions-9.1.0
+./scripts/fetch-core.sh                    # writes .build/core-filtered/model
+weaver registry live-check \
+  -r registry --include-unreferenced \
+  --config registry/.weaver.toml \
+  --advice-policies registry/policies/live_check_advice \
+  --input-source ../spans.json --fail-on violation
+```
+
+`git clone --depth 1 --branch v9.1.0` followed by `./scripts/fetch-core.sh` is equivalent and
+is what `Qyl.OpenTelemetry.AutoInstrumentation`'s live-check workflow does, with
+`actions/checkout` into `.semconv`.
+
 ## Analyzer documentation
 
 The analyzer project exposes a generated rule catalog and ships as the third released
@@ -186,6 +267,7 @@ The property is opt-in and per-project; QYL0008 keeps reporting everywhere it is
 ```bash
 weaver registry check -r registry
 ./scripts/check-generated.sh        # regenerates from registry/ and fails on drift
+./scripts/check-live-check-policies.sh   # pins the findings the advice policies produce
 dotnet build Qyl.Telemetry.SemanticConventions.slnx -c Release
 dotnet run --project tests/Qyl.Telemetry.SemanticConventions.Pipeline.Tests -c Release
 python3 -m unittest discover --start-directory tests/scripts --pattern 'test_*.py'
