@@ -1,0 +1,45 @@
+# Azure.Core 1.55.0 — the attributes the library puts on the spans of its own
+# ActivitySource and that upstream semantic conventions do not define. Vendor keys are
+# tags: the collector passes them through, the application never renames them.
+#
+# Two groups: `registry.vendor.*` carries the attributes into the resolved catalog (which
+# drops group annotations), `vendor.*` carries the library metadata, which survives as a
+# plain attribute group.
+#
+# Azure.Core is not a direct pin: it is the version Azure.Storage.Blobs 12.29.2 restores
+# to. `az.namespace` is not here — upstream defines it, renamed to
+# `azure.resource_provider.namespace`, and the collector rewrites it through
+# AttributeMapping rather than passing it through.
+groups:
+  - id: registry.vendor.azure_core
+    type: attribute_group
+    display_name: "Azure SDK for .NET Vendor Attributes"
+    brief: "Attributes Azure.Core 1.55.0 puts on the spans of the \"Azure.*\" ActivitySources every Azure SDK client emits on, and that upstream semantic conventions 1.44.0 does not define."
+    attributes:
+      - id: az.schema_url
+        type: string
+        stability: development
+        brief: "OpenTelemetry semantic-convention schema URL the Azure SDK's own span attributes conform to."
+        note: "Span tag on the client ActivitySource; the value is the compile-time constant `https://opentelemetry.io/schemas/1.23.0`, which the Azure SDK bumps per release, and it is written only on sampled spans. Key declared at sdk/core/Azure.Core/src/Shared/DiagnosticScope.cs:21, value constant at sdk/core/Azure.Core/src/Shared/DiagnosticScope.cs:25; set at sdk/core/Azure.Core/src/Shared/DiagnosticScope.cs:287."
+      - id: az.client_request_id
+        type: string
+        stability: development
+        brief: "Value of the `x-ms-client-request-id` header the SDK sent with the request."
+        note: "Span tag on the \"Azure.Core.Http\" ActivitySource; the value is `message.Request.ClientRequestId`, the same value ClientRequestIdPolicy writes into the `x-ms-client-request-id` header at sdk/core/Azure.Core/src/Pipeline/Internal/ClientRequestIdPolicy.cs:19. The key is an inline literal with no named constant; set at sdk/core/Azure.Core/src/Pipeline/Internal/RequestActivityPolicy.cs:65, and only when the ActivitySource path is enabled."
+  - id: vendor.azure_core
+    type: attribute_group
+    display_name: "Azure SDK for .NET Vendor Metadata"
+    brief: "The pinned Azure.Core release qyl read its ActivitySource and attribute findings at."
+    annotations:
+      qyl:
+        vendor:
+          library: "Azure.Core"
+          version: "1.55.0"
+          repository: "https://github.com/Azure/azure-sdk-for-net"
+          ref: "Azure.Core_1.55.0"
+          license: "MIT"
+          activity_sources:
+            - name: "Azure.*"
+              note: "One name matches every Azure SDK source because Azure.Core builds a client source name per client type: `<client options namespace>.<client type>`, composed at sdk/core/Azure.Core/src/Shared/DiagnosticScopeFactory.cs:98 and constructed at sdk/core/Azure.Core/src/Shared/DiagnosticScopeFactory.cs:101 (for Azure.Storage.Blobs 12.29.2 that is, for example, \"Azure.Storage.Blobs.BlobClient\"). The HTTP-level spans come from the fixed source \"Azure.Core.Http\", constructed at sdk/core/Azure.Core/src/Pipeline/Internal/RequestActivityPolicy.cs:23. The prefix pattern covers both. The ActivitySource path itself is off until the `Azure.Experimental.EnableActivitySource` switch is set, read at sdk/core/Azure.Core/src/Shared/DiagnosticScope.cs:466."
+    attributes:
+      - ref: qyl.instrumentation.domain

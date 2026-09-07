@@ -437,6 +437,14 @@ public static class DbAttributes
     public const string ElasticsearchPathParts = "db.elasticsearch.path_parts";
 
     /// <summary>
+    /// OpenTelemetry semantic-convention schema URL the Elasticsearch client's own span attributes conform to.
+    /// </summary>
+    /// <remarks>
+    /// Span tag on the "Elastic.Transport" ActivitySource, written by the client's activity mutator. The value is the compile-time constant <c>https://opentelemetry.io/schemas/1.21.0</c>, declared at src/Elastic.Clients.Elasticsearch/_Shared/Client/ElasticsearchClient.cs:25; the key is composed from the prefix constant at src/Elastic.Clients.Elasticsearch/_Shared/Client/ElasticsearchClient.cs:22 and set at src/Elastic.Clients.Elasticsearch/_Shared/Client/ElasticsearchClient.cs:273. Elastic.Transport 1.0.0 declares the same key name at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetryAttributes.cs:35 and only reads it, at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetry.cs:58.
+    /// </remarks>
+    public const string ElasticsearchSchemaUrl = "db.elasticsearch.schema_url";
+
+    /// <summary>
     /// Deprecated, no general replacement at this time. For Elasticsearch, use <c>db.elasticsearch.node.name</c> instead.
     /// </summary>
     [global::System.Obsolete("Removed, no replacement.", false)]

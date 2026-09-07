@@ -60,6 +60,16 @@ public static class QylTelemetryNames
     public static class VendorActivitySources
     {
         /// <summary>
+        /// The <c>Azure.*</c> vendor activity source.
+        /// </summary>
+        public const string Azure = "Azure.*";
+
+        /// <summary>
+        /// The <c>CoreWCF.Primitives</c> vendor activity source.
+        /// </summary>
+        public const string CoreWCFPrimitives = "CoreWCF.Primitives";
+
+        /// <summary>
         /// The <c>Elastic.Transport</c> vendor activity source.
         /// </summary>
         public const string ElasticTransport = "Elastic.Transport";

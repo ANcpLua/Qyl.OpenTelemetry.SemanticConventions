@@ -1,0 +1,54 @@
+# CoreWCF 1.9.1 — the attributes the library puts on the spans of its own
+# ActivitySource and that upstream semantic conventions do not define. Vendor keys are
+# tags: the collector passes them through, the application never renames them.
+#
+# Two groups: `registry.vendor.*` carries the attributes into the resolved catalog (which
+# drops group annotations), `vendor.*` carries the library metadata, which survives as a
+# plain attribute group.
+#
+# The pinned package is CoreWCF.Http 1.9.1, but the instrumentation lives one assembly
+# down, in CoreWCF.Primitives, which is where the ActivitySource and every tag below are
+# declared. Both assemblies ship from the same repository and the same v1.9.1 release.
+groups:
+  - id: registry.vendor.corewcf
+    type: attribute_group
+    display_name: "CoreWCF Vendor Attributes"
+    brief: "Attributes CoreWCF 1.9.1 puts on the spans of its own \"CoreWCF.Primitives\" ActivitySource and that upstream semantic conventions 1.44.0 does not define."
+    attributes:
+      - id: soap.message_version
+        type: string
+        stability: development
+        brief: "SOAP envelope and WS-Addressing version of the incoming request message."
+        note: "Span tag on the \"CoreWCF.Primitives\" ActivitySource; the value is `request.Version.ToString()`, the `MessageVersion` of the received message. Declared at src/CoreWCF.Primitives/src/CoreWCF/Telemetry/WcfInstrumentationConstants.cs:13; set at src/CoreWCF.Primitives/src/CoreWCF/Dispatcher/ImmutableDispatchRuntime.cs:713."
+      - id: soap.reply_action
+        type: string
+        stability: development
+        brief: "SOAP action URI of the reply message the service sent back."
+        note: "Span tag on the \"CoreWCF.Primitives\" ActivitySource; the value is `reply.Headers.Action`, set on the reply path just before the Activity stops, so it is absent on one-way operations. Declared at src/CoreWCF.Primitives/src/CoreWCF/Telemetry/WcfInstrumentationConstants.cs:14; set at src/CoreWCF.Primitives/src/CoreWCF/Dispatcher/ImmutableDispatchRuntime.cs:426."
+      - id: wcf.channel.path
+        type: string
+        stability: development
+        brief: "Local path of the URI the channel that received the request listens on."
+        note: "Span tag on the \"CoreWCF.Primitives\" ActivitySource; the value is `channel.LocalAddress.Uri.LocalPath` and is written only when the channel has a local address. Declared at src/CoreWCF.Primitives/src/CoreWCF/Telemetry/WcfInstrumentationConstants.cs:16; set at src/CoreWCF.Primitives/src/CoreWCF/Dispatcher/ImmutableDispatchRuntime.cs:721."
+      - id: wcf.channel.scheme
+        type: string
+        stability: development
+        brief: "URI scheme of the channel that received the request."
+        note: "Span tag on the \"CoreWCF.Primitives\" ActivitySource; the value is `channel.LocalAddress.Uri.Scheme` and is written only when the channel has a local address. Declared at src/CoreWCF.Primitives/src/CoreWCF/Telemetry/WcfInstrumentationConstants.cs:15; set at src/CoreWCF.Primitives/src/CoreWCF/Dispatcher/ImmutableDispatchRuntime.cs:720."
+  - id: vendor.corewcf
+    type: attribute_group
+    display_name: "CoreWCF Vendor Metadata"
+    brief: "The pinned CoreWCF release qyl read its ActivitySource and attribute findings at."
+    annotations:
+      qyl:
+        vendor:
+          library: "CoreWCF"
+          version: "1.9.1"
+          repository: "https://github.com/CoreWCF/CoreWCF"
+          ref: "v1.9.1"
+          license: "MIT"
+          activity_sources:
+            - name: "CoreWCF.Primitives"
+              note: "WcfInstrumentationActivitySource.ActivitySourceName at src/CoreWCF.Primitives/src/CoreWCF/Telemetry/WcfInstrumentationActivitySource.cs:18, which is the assembly name declared at src/CoreWCF.Primitives/src/CoreWCF.Primitives.csproj:4; the ActivitySource is constructed with it at src/CoreWCF.Primitives/src/CoreWCF/Telemetry/WcfInstrumentationActivitySource.cs:21. The server Activity is started at src/CoreWCF.Primitives/src/CoreWCF/Dispatcher/ImmutableDispatchRuntime.cs:687."
+    attributes:
+      - ref: qyl.instrumentation.domain

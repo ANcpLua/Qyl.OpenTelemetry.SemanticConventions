@@ -116,6 +116,7 @@ public static class AttributeMapping
         "service",
         "session",
         "signalr",
+        "soap",
         "source",
         "state",
         "system",
@@ -128,6 +129,7 @@ public static class AttributeMapping
         "user_agent",
         "v8js",
         "vcs",
+        "wcf",
         "webengine",
         "zos",
     };
@@ -445,7 +447,10 @@ public static class AttributeMapping
     {
         switch (key)
         {
+            case "az.client_request_id":
+            case "az.schema_url":
             case "db.command.name":
+            case "db.elasticsearch.schema_url":
             case "db.mongodb.cursor_id":
             case "db.mongodb.driver_connection_id":
             case "db.mongodb.lsid":
@@ -542,6 +547,10 @@ public static class AttributeMapping
             case "quartz.scheduler.name":
             case "quartz.trigger.group":
             case "quartz.trigger.name":
+            case "soap.message_version":
+            case "soap.reply_action":
+            case "wcf.channel.path":
+            case "wcf.channel.scheme":
                 return true;
             default:
                 return false;
@@ -641,6 +650,7 @@ public static class AttributeMapping
             case "service":
             case "session":
             case "signalr":
+            case "soap":
             case "source":
             case "state":
             case "system":
@@ -653,6 +663,7 @@ public static class AttributeMapping
             case "user_agent":
             case "v8js":
             case "vcs":
+            case "wcf":
             case "webengine":
             case "zos":
                 return root;

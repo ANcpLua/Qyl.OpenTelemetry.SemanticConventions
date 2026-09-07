@@ -437,6 +437,11 @@ public static class QylAttributes
         public const string Signalr = "signalr";
 
         /// <summary>
+        /// The <c>soap</c> attribute namespace.
+        /// </summary>
+        public const string Soap = "soap";
+
+        /// <summary>
         /// The <c>source</c> attribute namespace.
         /// </summary>
         public const string Source = "source";
@@ -497,6 +502,11 @@ public static class QylAttributes
         public const string Vcs = "vcs";
 
         /// <summary>
+        /// The <c>wcf</c> attribute namespace.
+        /// </summary>
+        public const string Wcf = "wcf";
+
+        /// <summary>
         /// The <c>webengine</c> attribute namespace.
         /// </summary>
         public const string Webengine = "webengine";
@@ -507,7 +517,7 @@ public static class QylAttributes
         public const string Zos = "zos";
 
         /// <summary>Every catalogued value, in the order the constants are declared.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "android", "app", "artifact", "aspnetcore", "aws", "az", "azure", "browser", "cassandra", "cicd", "client", "cloud", "cloudevents", "cloudfoundry", "code", "container", "cpu", "cpython", "db", "deployment", "destination", "device", "disk", "dns", "dotnet", "elastic", "elasticsearch", "enduser", "error", "event", "exception", "execution", "faas", "feature_flag", "file", "gcp", "gen_ai", "geo", "go", "graphql", "heroku", "host", "http", "hw", "ios", "jsonrpc", "jvm", "k8s", "linux", "log", "mainframe", "mcp", "message", "messaging", "net", "network", "nfs", "nodejs", "nservicebus", "oci", "onc_rpc", "openai", "openshift", "opentracing", "oracle", "oracle_cloud", "os", "otel", "other", "peer", "pool", "pprof", "process", "profile", "quartz", "qyl", "rpc", "security_rule", "server", "service", "session", "signalr", "source", "state", "system", "telemetry", "test", "thread", "tls", "url", "user", "user_agent", "v8js", "vcs", "webengine", "zos" };
+        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "android", "app", "artifact", "aspnetcore", "aws", "az", "azure", "browser", "cassandra", "cicd", "client", "cloud", "cloudevents", "cloudfoundry", "code", "container", "cpu", "cpython", "db", "deployment", "destination", "device", "disk", "dns", "dotnet", "elastic", "elasticsearch", "enduser", "error", "event", "exception", "execution", "faas", "feature_flag", "file", "gcp", "gen_ai", "geo", "go", "graphql", "heroku", "host", "http", "hw", "ios", "jsonrpc", "jvm", "k8s", "linux", "log", "mainframe", "mcp", "message", "messaging", "net", "network", "nfs", "nodejs", "nservicebus", "oci", "onc_rpc", "openai", "openshift", "opentracing", "oracle", "oracle_cloud", "os", "otel", "other", "peer", "pool", "pprof", "process", "profile", "quartz", "qyl", "rpc", "security_rule", "server", "service", "session", "signalr", "soap", "source", "state", "system", "telemetry", "test", "thread", "tls", "url", "user", "user_agent", "v8js", "vcs", "wcf", "webengine", "zos" };
         /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
         public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
     }

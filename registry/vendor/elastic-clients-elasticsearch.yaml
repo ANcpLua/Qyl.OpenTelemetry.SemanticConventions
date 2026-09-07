@@ -1,0 +1,40 @@
+# Elastic.Clients.Elasticsearch 9.5.1 — the attributes the library puts on the spans of its own
+# ActivitySource and that upstream semantic conventions do not define. Vendor keys are
+# tags: the collector passes them through, the application never renames them.
+#
+# Two groups: `registry.vendor.*` carries the attributes into the resolved catalog (which
+# drops group annotations), `vendor.*` carries the library metadata, which survives as a
+# plain attribute group.
+#
+# The client has no ActivitySource of its own: it hands a mutator to Elastic.Transport, which
+# invokes it on the "Elastic.Transport" Activity. Elastic.Transport 1.0.0 declares the key name
+# as a constant but never writes it — the client does — so the finding is filed here and the
+# transport's own keys stay in registry/vendor/elastic-transport.yaml.
+groups:
+  - id: registry.vendor.elastic_clients_elasticsearch
+    type: attribute_group
+    display_name: "Elastic.Clients.Elasticsearch Vendor Attributes"
+    brief: "Attributes Elastic.Clients.Elasticsearch 9.5.1 puts on the spans of the \"Elastic.Transport\" ActivitySource and that upstream semantic conventions 1.44.0 does not define."
+    attributes:
+      - id: db.elasticsearch.schema_url
+        type: string
+        stability: development
+        brief: "OpenTelemetry semantic-convention schema URL the Elasticsearch client's own span attributes conform to."
+        note: "Span tag on the \"Elastic.Transport\" ActivitySource, written by the client's activity mutator. The value is the compile-time constant `https://opentelemetry.io/schemas/1.21.0`, declared at src/Elastic.Clients.Elasticsearch/_Shared/Client/ElasticsearchClient.cs:25; the key is composed from the prefix constant at src/Elastic.Clients.Elasticsearch/_Shared/Client/ElasticsearchClient.cs:22 and set at src/Elastic.Clients.Elasticsearch/_Shared/Client/ElasticsearchClient.cs:273. Elastic.Transport 1.0.0 declares the same key name at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetryAttributes.cs:35 and only reads it, at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetry.cs:58."
+  - id: vendor.elastic_clients_elasticsearch
+    type: attribute_group
+    display_name: "Elastic.Clients.Elasticsearch Vendor Metadata"
+    brief: "The pinned Elastic.Clients.Elasticsearch release qyl read its ActivitySource and attribute findings at."
+    annotations:
+      qyl:
+        vendor:
+          library: "Elastic.Clients.Elasticsearch"
+          version: "9.5.1"
+          repository: "https://github.com/elastic/elasticsearch-net"
+          ref: "9.5.1"
+          license: "Apache-2.0"
+          activity_sources:
+            - name: "Elastic.Transport"
+              note: "The client owns no ActivitySource. It passes an `Action<Activity>` mutator to the transport at src/Elastic.Clients.Elasticsearch/_Shared/Client/ElasticsearchClient.cs:157, and Elastic.Transport invokes it at src/Elastic.Transport/DistributedTransport.cs:281 on the Activity started at src/Elastic.Transport/DistributedTransport.cs:100 from the source named at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetry.cs:26 and constructed at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetry.cs:28."
+    attributes:
+      - ref: qyl.instrumentation.domain

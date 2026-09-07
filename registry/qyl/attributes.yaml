@@ -336,6 +336,10 @@ groups:
               value: "signalr"
               stability: development
               brief: "The `signalr` attribute namespace."
+            - id: soap
+              value: "soap"
+              stability: development
+              brief: "The `soap` attribute namespace."
             - id: source
               value: "source"
               stability: development
@@ -384,6 +388,10 @@ groups:
               value: "vcs"
               stability: development
               brief: "The `vcs` attribute namespace."
+            - id: wcf
+              value: "wcf"
+              stability: development
+              brief: "The `wcf` attribute namespace."
             - id: webengine
               value: "webengine"
               stability: development

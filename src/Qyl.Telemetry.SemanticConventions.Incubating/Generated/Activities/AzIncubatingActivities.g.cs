@@ -8,10 +8,14 @@
 
 #nullable enable
 
-namespace Qyl.Telemetry.SemanticConventions.Incubating.Attributes.Az;
+namespace Qyl.Telemetry.SemanticConventions.Incubating.Activities;
 
-/// <summary>Az Attributes (incubating).</summary>
-public static class AzAttributes
+/// <summary>
+/// Typed setter extensions for OpenTelemetry semantic-convention attributes on a span.
+/// Each method invokes <c>global::System.Diagnostics.Activity.SetTag</c> with the
+/// registry-defined key and a strongly-typed value.
+/// </summary>
+public static class AzIncubatingActivityExtensions
 {
     /// <summary>
     /// Value of the <c>x-ms-client-request-id</c> header the SDK sent with the request.
@@ -19,13 +23,10 @@ public static class AzAttributes
     /// <remarks>
     /// Span tag on the "Azure.Core.Http" ActivitySource; the value is <c>message.Request.ClientRequestId</c>, the same value ClientRequestIdPolicy writes into the <c>x-ms-client-request-id</c> header at sdk/core/Azure.Core/src/Pipeline/Internal/ClientRequestIdPolicy.cs:19. The key is an inline literal with no named constant; set at sdk/core/Azure.Core/src/Pipeline/Internal/RequestActivityPolicy.cs:65, and only when the ActivitySource path is enabled.
     /// </remarks>
-    public const string ClientRequestId = "az.client_request_id";
-
-    /// <summary>
-    /// Deprecated, use <c>azure.resource_provider.namespace</c> instead.
-    /// </summary>
-    [global::System.Obsolete("Replaced by azure.resource_provider.namespace.", false)]
-    public const string Namespace = "az.namespace";
+    public static global::System.Diagnostics.Activity SetAzClientRequestId(
+        this global::System.Diagnostics.Activity activity,
+        string value)
+        => activity.SetTag("az.client_request_id", value);
 
     /// <summary>
     /// OpenTelemetry semantic-convention schema URL the Azure SDK's own span attributes conform to.
@@ -33,11 +34,8 @@ public static class AzAttributes
     /// <remarks>
     /// Span tag on the client ActivitySource; the value is the compile-time constant <c>https://opentelemetry.io/schemas/1.23.0</c>, which the Azure SDK bumps per release, and it is written only on sampled spans. Key declared at sdk/core/Azure.Core/src/Shared/DiagnosticScope.cs:21, value constant at sdk/core/Azure.Core/src/Shared/DiagnosticScope.cs:25; set at sdk/core/Azure.Core/src/Shared/DiagnosticScope.cs:287.
     /// </remarks>
-    public const string SchemaUrl = "az.schema_url";
-
-    /// <summary>
-    /// Deprecated, use <c>azure.service.request.id</c> instead.
-    /// </summary>
-    [global::System.Obsolete("Replaced by azure.service.request.id.", false)]
-    public const string ServiceRequestId = "az.service_request_id";
+    public static global::System.Diagnostics.Activity SetAzSchemaUrl(
+        this global::System.Diagnostics.Activity activity,
+        string value)
+        => activity.SetTag("az.schema_url", value);
 }
