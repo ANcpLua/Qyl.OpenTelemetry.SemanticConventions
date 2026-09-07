@@ -32,6 +32,9 @@ diffed in CI. Breaking, one wave: nothing from the old pipeline is kept alive.
   values disappear from `SemconvRegistryFacts`'s `EnumValues`. Nothing consumed the first two.
   `dotnet_wcf` is a local literal in `Qyl.Telemetry.AutoInstrumentation`
   (`QylInterceptedWcfClient.cs:16`) and stays one until upstream lands the value.
+- **The TypeSpec keys projection (`emit_typespec_keys.py`, `otel-keys.gen.tsp`) is removed;
+  the registry reaches non-.NET consumers as a Weaver JSON target when one appears.** It had
+  no consumer, and TypeSpec cannot carry deprecation or open enums.
 - **The Python pipeline is gone**: `merge_registries.py`, `emit_analyzer_registry.py`,
   `emit_registry_resources.py`, `emit_common.py`, `emit_typespec_keys.py`,
   `verify_deprecated_catalog.py`, `Resources/qyl-registry.json` and
@@ -47,8 +50,8 @@ diffed in CI. Breaking, one wave: nothing from the old pipeline is kept alive.
   file per pinned third-party library. The pins live in exactly one place: `manifest.yaml`.
   `Version.props` keeps only `WeaverVersion`, and `generated/pins.props` carries the registry
   pins into MSBuild.
-- **`templates/`** is the generator. `registry/csharp` emits the C# surface, `registry/typespec`
-  the key projection `qyl-api-schema` consumes. `scripts/generate.sh` runs Weaver;
+- **`templates/`** is the generator: `registry/csharp` emits the C# surface.
+  `scripts/generate.sh` runs Weaver;
   `scripts/check-generated.sh` regenerates and fails on `git diff`, and CI runs it.
 - **Pre-generated definitions and setter extensions in both packages.** Each package's
   `Generated/` directory holds one file per registry root for six kinds — `Attributes`,
@@ -100,8 +103,6 @@ diffed in CI. Breaking, one wave: nothing from the old pipeline is kept alive.
   is what lets an application `using` a stable and an incubating namespace of the same root
   at once; the earlier shape put an identically named extension method in both and made the
   call ambiguous (CS0121).
-- **`generated/typespec/otel-keys.gen.tsp`** is byte-identical in body to what
-  `emit_typespec_keys.py` produced; only its header changes.
 - **The registry pins do not move.** Core stays `v1.44.0` (`e10a930`), genai stays `fee465db`,
   Weaver stays `0.26.1`. No attribute, metric, span, event or entity changes meaning in this
   release; what changes is who generates the code and when.

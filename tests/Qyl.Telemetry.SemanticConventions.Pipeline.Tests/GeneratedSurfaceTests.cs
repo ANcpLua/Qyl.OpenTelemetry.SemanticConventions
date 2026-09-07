@@ -91,7 +91,6 @@ public sealed class GeneratedSurfaceTests
             .Contain("src/Qyl.Telemetry.SemanticConventions/Generated/SchemaUrl.g.cs")
             .And.Contain("src/Qyl.Telemetry.SemanticConventions/Generated/Names/QylTelemetryNames.g.cs")
             .And.Contain("src/Qyl.Telemetry.SemanticConventions.Incubating/Generated/Mapping/AttributeMapping.g.cs")
-            .And.Contain("generated/typespec/otel-keys.gen.tsp")
             .And.Contain("generated/pins.props");
     }
 

@@ -49,7 +49,6 @@ scripts/generate.sh -> weaver registry generate --v2 --include-unreferenced
         +----> src/Qyl.Telemetry.SemanticConventions/Generated/            (stable tier)
         +----> src/Qyl.Telemetry.SemanticConventions.Incubating/Generated/ (the other tiers)
         +----> src/…Analyzers/SemconvRegistryFacts.g.cs, SemconvDeprecations.g.cs
-        +----> generated/typespec/otel-keys.gen.tsp   (qyl-api-schema key projection)
         +----> generated/pins.props                   (the pins, for MSBuild)
         +----> DocsGenerator ------------------------> analyzer documentation
 ```
@@ -104,8 +103,7 @@ allowlist: one file per library names the library, the exact version qyl pins, t
 and tag its attributes were read at, the licence, and the `ActivitySource` names it emits on
 — and every attribute in it carries the file and line of the library that sets the key. A
 vendor file that cannot answer those questions fails `weaver registry check`. Vendor rows are
-`development` stability, are identified by their registry provenance path, and stay out of
-the TypeSpec projection, which is the upstream key surface.
+`development` stability and are identified by their registry provenance path.
 
 The ActivitySource names themselves are registry facts too: they ride as vendor annotations,
 ship as `QylTelemetryNames.VendorActivitySources`, and join QYL0200's allowlist, so
@@ -116,8 +114,8 @@ Vendor keys are tags. The application never renames one and the collector passes
 `TryGetRename` (every deprecated key resolved transitively to its final live replacement) and
 `NamespaceOf` (the closed namespace set the dropped-attribute counter is broken down by).
 
-The TypeSpec projection contains semantic-convention key names only. Qyl's
-client-visible product requests, responses, stream events, and errors remain owned by
+This registry carries telemetry vocabulary only. Qyl's client-visible product requests,
+responses, stream events, and errors remain owned by
 [`qyl-api-schema`](https://github.com/ANcpLua/qyl-api-schema).
 
 ## Analyzer documentation
