@@ -83,3 +83,128 @@ templates:
            namespace: ("Qyl.Telemetry.SemanticConventions.Incubating.Attributes." + $p)} ]
     application_mode: each
     file_name: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated/Attributes/{{ ctx.pascal_root }}MetricAttributes.g.cs"
+
+  # Typed Activity setter extensions, per stability tier.
+  - template: activities.cs.j2
+    filter: >
+      ([.registry.attributes[]]) as $top
+      | ($top | map({key: .key, value: true}) | from_entries) as $seen
+      | ([.dependencies[].registry.attributes[]] | map(select($seen[.key] | not))) as $extra
+      | (($top + $extra) | sort_by(.key)) as $all
+      | [ ($all
+            | group_by(.key | split(".")[0]) | .[]
+            | (.[0].key | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "incubating", root: $root, pascal_root: $p, attributes: .,
+               namespace: ("Qyl.Telemetry.SemanticConventions.Incubating.Activities"),
+               out_dir: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"}),
+          ($all
+            | map(select(.stability == "stable" or (.deprecated != null)))
+            | group_by(.key | split(".")[0]) | .[]
+            | (.[0].key | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "stable", root: $root, pascal_root: $p, attributes: .,
+               namespace: ("Qyl.Telemetry.SemanticConventions.Activities"),
+               out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
+    application_mode: each
+    file_name: "{{ ctx.out_dir }}/Activities/{{ ctx.pascal_root }}Activities.g.cs"
+
+  # MetricDefinition<TInstrument> rows, per stability tier.
+  - template: metrics.cs.j2
+    filter: >
+      ([.registry.metrics[]]) as $top
+      | ($top | map({key: .name, value: true}) | from_entries) as $seen
+      | ([.dependencies[].registry.metrics[]] | map(select($seen[.name] | not))) as $extra
+      | (($top + $extra) | sort_by(.name)) as $all
+      | [ ($all
+            | group_by(.name | split(".")[0]) | .[]
+            | (.[0].name | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "incubating", root: $root, pascal_root: $p, metrics: .,
+               namespace: "Qyl.Telemetry.SemanticConventions.Incubating.Metrics",
+               out_dir: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"}),
+          ($all
+            | map(select(.stability == "stable" or (.deprecated != null)))
+            | group_by(.name | split(".")[0]) | .[]
+            | (.[0].name | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "stable", root: $root, pascal_root: $p, metrics: .,
+               namespace: "Qyl.Telemetry.SemanticConventions.Metrics",
+               out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
+    application_mode: each
+    file_name: "{{ ctx.out_dir }}/Metrics/{{ ctx.pascal_root }}Metrics.g.cs"
+
+  # SpanDefinition<TKind> rows, per stability tier.
+  - template: spans.cs.j2
+    filter: >
+      ([.registry.spans[]]) as $top
+      | ($top | map({key: .type, value: true}) | from_entries) as $seen
+      | ([.dependencies[].registry.spans[]] | map(select($seen[.type] | not))) as $extra
+      | (($top + $extra) | sort_by(.type)) as $all
+      | [ ($all
+            | group_by(.type | split(".")[0]) | .[]
+            | (.[0].type | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "incubating", root: $root, pascal_root: $p, spans: .,
+               namespace: "Qyl.Telemetry.SemanticConventions.Incubating.Spans",
+               out_dir: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"}),
+          ($all
+            | map(select(.stability == "stable" or (.deprecated != null)))
+            | group_by(.type | split(".")[0]) | .[]
+            | (.[0].type | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "stable", root: $root, pascal_root: $p, spans: .,
+               namespace: "Qyl.Telemetry.SemanticConventions.Spans",
+               out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
+    application_mode: each
+    file_name: "{{ ctx.out_dir }}/Spans/{{ ctx.pascal_root }}Spans.g.cs"
+
+  # EventDefinition rows, per stability tier.
+  - template: events.cs.j2
+    filter: >
+      ([.registry.events[]]) as $top
+      | ($top | map({key: .name, value: true}) | from_entries) as $seen
+      | ([.dependencies[].registry.events[]] | map(select($seen[.name] | not))) as $extra
+      | (($top + $extra) | sort_by(.name)) as $all
+      | [ ($all
+            | group_by(.name | split(".")[0]) | .[]
+            | (.[0].name | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "incubating", root: $root, pascal_root: $p, events: .,
+               namespace: "Qyl.Telemetry.SemanticConventions.Incubating.Events",
+               out_dir: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"}),
+          ($all
+            | map(select(.stability == "stable" or (.deprecated != null)))
+            | group_by(.name | split(".")[0]) | .[]
+            | (.[0].name | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "stable", root: $root, pascal_root: $p, events: .,
+               namespace: "Qyl.Telemetry.SemanticConventions.Events",
+               out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
+    application_mode: each
+    file_name: "{{ ctx.out_dir }}/Events/{{ ctx.pascal_root }}Events.g.cs"
+
+  # EntityDefinition rows, per stability tier.
+  - template: entities.cs.j2
+    filter: >
+      ([.registry.entities[]]) as $top
+      | ($top | map({key: .type, value: true}) | from_entries) as $seen
+      | ([.dependencies[].registry.entities[]] | map(select($seen[.type] | not))) as $extra
+      | (($top + $extra) | sort_by(.type)) as $all
+      | [ ($all
+            | group_by(.type | split(".")[0]) | .[]
+            | (.[0].type | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "incubating", root: $root, pascal_root: $p, entities: .,
+               namespace: "Qyl.Telemetry.SemanticConventions.Incubating.Entities",
+               out_dir: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"}),
+          ($all
+            | map(select(.stability == "stable" or (.deprecated != null)))
+            | group_by(.type | split(".")[0]) | .[]
+            | (.[0].type | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "stable", root: $root, pascal_root: $p, entities: .,
+               namespace: "Qyl.Telemetry.SemanticConventions.Entities",
+               out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
+    application_mode: each
+    file_name: "{{ ctx.out_dir }}/Entities/{{ ctx.pascal_root }}Entities.g.cs"
