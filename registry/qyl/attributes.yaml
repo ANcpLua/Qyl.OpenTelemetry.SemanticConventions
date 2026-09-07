@@ -5,6 +5,13 @@ groups:
     display_name: qyl Attributes
     brief: Attributes qyl's own platform emits and the collector must recognise.
     attributes:
+      - id: qyl.api.contract.revision
+        type: string
+        stability: development
+        brief: "SHA-256 of the committed OpenAPI document the API was built from, as `sha256:<hex>`; a per-process constant set as a resource attribute by Qyl.Api.Sdk's AddQylApi."
+        note: "A resource-level attribute: one value per process, carried on the resource rather than written per span, so every signal the process emits carries it and no hot path touches it. It is computed at build time, not at startup: `Qyl.Api.Sdk`'s build targets run MSBuild's `GetFileHash` over the committed `openapi/<app>.json` and compile the resulting `sha256:<hex>` in as a constant, which `AddQylApi` stamps onto the resource. It answers which contract revision a running process was built from, so a response that disagrees with the published document is traced to a build rather than guessed at from a deployment."
+        examples:
+          - "sha256:264a9e4f1d70289a3b5c6e8f0a1d2c4b7e9f13058a6cd2ef4b91073d5c8e6a2f"
       - id: qyl.attribute.namespace
         type:
           members:

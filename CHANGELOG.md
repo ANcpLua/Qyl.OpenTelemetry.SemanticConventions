@@ -21,6 +21,22 @@ clean `net10.0` consumer.
   key its core and genai dependencies carry, so the flag has no replacement yet. The registry is
   unchanged; revisit when `imports` gains attributes or when Weaver removes the flag.
 
+## [9.2.0] - 2026-09-07
+
+### Added
+
+- **`qyl.api.contract.revision`** in [`registry/qyl/attributes.yaml`](registry/qyl/attributes.yaml)
+  — the SHA-256 of the committed OpenAPI document a process was built from, as
+  `sha256:<hex>`. It is a resource attribute, not a span tag: `Qyl.Api.Sdk`'s build targets
+  run MSBuild's `GetFileHash` over the committed `openapi/<app>.json` and compile the digest
+  in as a constant, and `AddQylApi` stamps it onto the resource, so every signal the process
+  emits carries one value and no hot path touches it. It is declared here because the
+  collector's attribute allowlist is this registry: a key the registry does not carry is
+  dropped at ingest and counted by `qyl.collector.attributes.dropped`, so the SDK could not
+  stamp it and have it survive. Generated as
+  `Incubating.Attributes.Qyl.QylAttributes.ApiContractRevision`, and it joins
+  `SemconvRegistryFacts`'s value-kind table as a string.
+
 ## [9.1.0] - 2026-09-07
 
 The first live-check run of `Qyl.OpenTelemetry.AutoInstrumentation` 14.0.0 against the 9.0.0

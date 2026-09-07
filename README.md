@@ -86,7 +86,7 @@ upstream pins. It names two dependencies:
 - **genai** — `open-telemetry/semantic-conventions-genai`, a git URL pinned to a commit.
 
 qyl's own YAML sits next to them under [`registry/`](registry). [`registry/qyl`](registry/qyl)
-carries the 15 `qyl.*` attributes, the two qyl-owned instruments, the two qyl-owned event
+carries the 16 `qyl.*` attributes, the two qyl-owned instruments, the two qyl-owned event
 names and the six scope names. [`registry/vendor`](registry/vendor) carries one file per
 pinned third-party library: the keys that library puts on its own `ActivitySource` or `Meter`
 and that upstream semantic conventions do not define. Weaver resolves all three layers
