@@ -50,12 +50,14 @@ on:
 
 permissions:
   contents: read
-  id-token: write
-  packages: write
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
     # nuget.org Trusted Publisher policies for this fleet set Environment = 'nuget';
     # the OIDC exchange 401s ("Environment mismatch ... expected 'nuget', actual ''")
     # without this. Policies that set no environment ignore the claim, so this is
