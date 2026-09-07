@@ -13,8 +13,8 @@ internal static class SemconvNamespace
     /// in or under any namespace segment named <c>OpenTelemetry.SemanticConventions</c>
     /// (handles both upstream's flat layout and consumer-side nested layouts, e.g. qyl).
     /// When <paramref name="allowNonAttributesTiers"/> is <c>true</c>, the suffix check
-    /// additionally accepts the three non-Attributes tiers Weaver SourceGeneration
-    /// emits — <c>*Metrics</c>, <c>*Meters</c>, <c>*Activities</c> — gated behind
+    /// additionally accepts the three non-Attributes tiers a semantic-convention
+    /// package pre-generates — <c>*Metrics</c>, <c>*Meters</c>, <c>*Activities</c> — gated behind
     /// <c>build_property.OtelSemConvNonAttributesTiers</c> so consumers explicitly
     /// opt into wider coverage.
     /// </summary>

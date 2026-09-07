@@ -14,8 +14,8 @@ internal static class SemconvAnalyzerOptions
     /// <c>build_property.OtelSemConvNonAttributesTiers</c> — when <c>true</c>,
     /// extends the deprecation-detecting analyzers beyond the conventional
     /// <c>*Attributes</c> classes to also recognise the three non-Attributes
-    /// tiers Weaver SourceGeneration emits (<c>*Metrics</c>, <c>*Meters</c>,
-    /// <c>*Activities</c>). Default <c>false</c> scans only
+    /// tiers a semantic-convention package pre-generates (<c>*Metrics</c>,
+    /// <c>*Meters</c>, <c>*Activities</c>). Default <c>false</c> scans only
     /// <c>*Attributes</c> classes.
     /// </summary>
     public const string NonAttributesTiersBuildProperty = "build_property.OtelSemConvNonAttributesTiers";
