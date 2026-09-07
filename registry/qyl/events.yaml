@@ -1,11 +1,5 @@
 # qyl-owned Activity / DiagnosticSource event names.
 groups:
-  - id: event.qyl_http_client
-    type: event
-    name: qyl.http.client
-    stability: development
-    brief: The qyl.http.client telemetry event.
-    attributes: []
   - id: event.qyl_rpc_grpc
     type: event
     name: qyl.rpc.grpc

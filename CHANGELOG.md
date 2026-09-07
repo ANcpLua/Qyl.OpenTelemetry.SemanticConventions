@@ -21,6 +21,40 @@ clean `net10.0` consumer.
   key its core and genai dependencies carry, so the flag has no replacement yet. The registry is
   unchanged; revisit when `imports` gains attributes or when Weaver removes the flag.
 
+## [9.3.0] - 2026-09-07
+
+Two findings from the `Qyl.OpenTelemetry.AutoInstrumentation` 15.0.0 work, which runs the
+instrumentation against real containers on .NET 10.
+
+### Added
+
+- **[`registry/vendor/grpc-net-client.yaml`](registry/vendor/grpc-net-client.yaml)** — the
+  Grpc.Net.Client model, read at `v2.83.0`, the version `Grpc.Net.Client` is pinned to. The
+  client owns the `Grpc.Net.Client` `ActivitySource` and writes one client span per call,
+  named `Grpc.Net.Client.GrpcOut`, and it puts two keys on that span that upstream semantic
+  conventions do not define:
+  - `grpc.method` — the full method path, `/package.Service/Method`.
+  - `grpc.status_code` — the gRPC status code as its *decimal number* in a string
+    (`status.StatusCode.ToString("D")`), not the enum member name. Upstream's
+    `rpc.grpc.status_code` is a separate key the client never writes; the collector passes
+    both of these through rather than rewriting them.
+
+  The source name is generated as `Names.QylTelemetryNames.VendorActivitySources.GrpcNetClient`,
+  so `AddSource` and a span processor's source match need no literal. `grpc` joins
+  `qyl.attribute.namespace`, the closed value set the dropped-attribute counter is broken down
+  by, and both keys join `AttributeMapping.IsVendorPassThrough`.
+
+### Removed
+
+- **The `qyl.http.client` event** from [`registry/qyl/events.yaml`](registry/qyl/events.yaml).
+  Nothing ever emitted it: it was declared alongside `qyl.rpc.grpc` and its only reader was a
+  branch in `Qyl.OpenTelemetry.AutoInstrumentation`, which 15.0.0 deletes — the HTTP client
+  path carries upstream's `http.client.*` span and needs no qyl-owned event. Removing it drops
+  `Names.QylTelemetryNames.Events.QylHttpClient` and
+  `Incubating.Events.QylIncubatingEventDefinitions.QylHttpClient`, and takes the name out of
+  `SemconvRegistryFacts.KnownEventNames`, so QYL0200 now flags it. `qyl.rpc.grpc` is the one
+  event the registry owns.
+
 ## [9.2.0] - 2026-09-07
 
 ### Added

@@ -175,6 +175,10 @@ groups:
               value: "graphql"
               stability: development
               brief: "The `graphql` attribute namespace."
+            - id: grpc
+              value: "grpc"
+              stability: development
+              brief: "The `grpc` attribute namespace."
             - id: heroku
               value: "heroku"
               stability: development

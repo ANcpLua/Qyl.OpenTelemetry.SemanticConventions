@@ -1,0 +1,44 @@
+# Grpc.Net.Client 2.83.0 — the attributes the library puts on the spans of its own
+# ActivitySource and that upstream semantic conventions do not define. Vendor keys are
+# tags: the collector passes them through, the application never renames them.
+#
+# Two groups: `registry.vendor.*` carries the attributes into the resolved catalog (which
+# drops group annotations), `vendor.*` carries the library metadata, which survives as a
+# plain attribute group.
+#
+# Both keys are the library's own `grpc.*` spelling, not upstream's `rpc.*`: the client
+# writes them itself on every call, upstream defines neither, and the collector passes them
+# through rather than rewriting them onto `rpc.method` / `rpc.grpc.status_code`.
+groups:
+  - id: registry.vendor.grpc_net_client
+    type: attribute_group
+    display_name: "Grpc.Net.Client Vendor Attributes"
+    brief: "Attributes Grpc.Net.Client 2.83.0 puts on the spans of its own \"Grpc.Net.Client\" ActivitySource and that upstream semantic conventions 1.44.0 does not define."
+    attributes:
+      - id: grpc.method
+        type: string
+        stability: development
+        brief: "Full method path of the gRPC call, as `/package.Service/Method`."
+        note: "Span tag on the \"Grpc.Net.Client\" ActivitySource. The key is the constant `GrpcDiagnostics.GrpcMethodTagName` at src/Grpc.Net.Client/Internal/GrpcDiagnostics.cs:34; the value is `Method.FullName`, added to the activity at src/Grpc.Net.Client/Internal/GrpcCall.cs:833."
+      - id: grpc.status_code
+        type: string
+        stability: development
+        brief: "gRPC status code the call finished with, as its decimal number in a string."
+        note: "Span tag on the \"Grpc.Net.Client\" ActivitySource. The key is the constant `GrpcDiagnostics.GrpcStatusCodeTagName` at src/Grpc.Net.Client/Internal/GrpcDiagnostics.cs:35; the value is `status.StatusCode.ToString(\"D\")` at src/Grpc.Net.Client/Internal/GrpcCall.cs:894 — the decimal number of the `Grpc.Core.StatusCode` enum member, not its name — added to the activity at src/Grpc.Net.Client/Internal/GrpcCall.cs:897."
+  - id: vendor.grpc_net_client
+    type: attribute_group
+    display_name: "Grpc.Net.Client Vendor Metadata"
+    brief: "The pinned Grpc.Net.Client release qyl read its ActivitySource and attribute findings at."
+    annotations:
+      qyl:
+        vendor:
+          library: "Grpc.Net.Client"
+          version: "2.83.0"
+          repository: "https://github.com/grpc/grpc-dotnet"
+          ref: "v2.83.0"
+          license: "Apache-2.0"
+          activity_sources:
+            - name: "Grpc.Net.Client"
+              note: "The ActivitySource is constructed with the literal at src/Grpc.Net.Client/Internal/GrpcDiagnostics.cs:27, next to the DiagnosticListener of the same name at src/Grpc.Net.Client/Internal/GrpcDiagnostics.cs:26. It emits one client span per call, named `Grpc.Net.Client.GrpcOut` — the constant `GrpcDiagnostics.ActivityName` at src/Grpc.Net.Client/Internal/GrpcDiagnostics.cs:29 — created at src/Grpc.Net.Client/Internal/GrpcCall.cs:827."
+    attributes:
+      - ref: qyl.instrumentation.domain

@@ -129,7 +129,7 @@ public sealed class Qyl0200TelemetryNameAnalyzerTests
             ActivitySink(
                 """
                 activity?.AddEvent(new ActivityEvent("exception"));
-                activity?.AddEvent(new ActivityEvent("qyl.http.client"));
+                activity?.AddEvent(new ActivityEvent("qyl.rpc.grpc"));
                 """));
         clean.Should().BeEmpty();
 

@@ -86,8 +86,8 @@ upstream pins. It names two dependencies:
 - **genai** — `open-telemetry/semantic-conventions-genai`, a git URL pinned to a commit.
 
 qyl's own YAML sits next to them under [`registry/`](registry). [`registry/qyl`](registry/qyl)
-carries the 16 `qyl.*` attributes, the two qyl-owned instruments, the two qyl-owned event
-names and the six scope names. [`registry/vendor`](registry/vendor) carries one file per
+carries the 16 `qyl.*` attributes, the two qyl-owned instruments, the one qyl-owned event
+name and the six scope names. [`registry/vendor`](registry/vendor) carries one file per
 pinned third-party library: the keys that library puts on its own `ActivitySource` or `Meter`
 and that upstream semantic conventions do not define. Weaver resolves all three layers
 itself; there is no merge step.
@@ -246,7 +246,7 @@ Four singletons round the surface out.
   `ActivitySource` and `Meter` from it and may not read the incubating tier. `Scopes` is the
   six scope names qyl constructs; `VendorActivitySources` is the source names of the pinned
   third-party libraries, so `AddSource` and a span processor's source match need no literal,
-  and they join QYL0200's allowlist; `Events` is the two qyl-owned event names.
+  and they join QYL0200's allowlist; `Events` is the one qyl-owned event name.
 - `Incubating.Attributes.{Root}.{Root}MetricAttributes` — the qyl-owned instrument names and
   their units, for the roots that declare one.
 - `Incubating.Mapping.AttributeMapping` — the collector's normalize table, four switch
