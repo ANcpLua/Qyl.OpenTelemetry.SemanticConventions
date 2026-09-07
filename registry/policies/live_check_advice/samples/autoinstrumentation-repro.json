@@ -1,0 +1,22 @@
+[
+  {
+    "span": {
+      "name": "qyl.live_check.autoinstrumentation_repro",
+      "kind": "client",
+      "attributes": [
+        {
+          "name": "az.namespace",
+          "value": "Microsoft.Storage"
+        },
+        {
+          "name": "error.type",
+          "value": "Azure.RequestFailedException"
+        },
+        {
+          "name": "messaging.message.body.size",
+          "value": "12"
+        }
+      ]
+    }
+  }
+]

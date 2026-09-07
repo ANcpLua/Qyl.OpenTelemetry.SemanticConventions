@@ -1,0 +1,17 @@
+# The other half of the qyl live-check advice policy set. `--advice-policies` replaces only
+# the *rego* advisors; Weaver's deprecated, stability, type and enum advisors are compiled
+# into the binary, always run, and emit at a level no policy can change. So the three
+# findings registry/policies/live_check_advice/qyl_advice.rego re-issues are dropped here
+# first, by finding id -- never by attribute name, so nothing here is a key allowlist.
+#
+# Run the two together:
+#
+#   weaver registry live-check -r registry --include-unreferenced \
+#     --config registry/.weaver.toml \
+#     --advice-policies registry/policies/live_check_advice
+#
+# Without --config the built-in findings and the qyl ones are both reported, and every
+# renamed key a library emits is a violation again. scripts/check-live-check-policies.sh
+# proves both halves.
+[["live-check".finding_filters]]
+exclude = ["deprecated", "type_mismatch", "undefined_enum_variant"]

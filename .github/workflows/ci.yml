@@ -33,6 +33,12 @@ jobs:
       - name: Check generated code is in sync with the registry
         run: ./scripts/check-generated.sh
 
+      # The advice policy set decides what level a finding on ingested telemetry is reported
+      # at, and AutoInstrumentation and the collector both run live-check with it. This pins
+      # the exact findings it produces, id and level, on a sample covering every rule.
+      - name: Check live-check advice policies
+        run: ./scripts/check-live-check-policies.sh
+
       - name: Setup .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
         with:

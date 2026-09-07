@@ -1,0 +1,158 @@
+[
+  {
+    "span": {
+      "name": "qyl.live_check.open_enum",
+      "kind": "client",
+      "attributes": [
+        {
+          "name": "error.type",
+          "value": "System.InvalidOperationException"
+        },
+        {
+          "name": "error.type",
+          "value": "500"
+        }
+      ]
+    }
+  },
+  {
+    "span": {
+      "name": "qyl.live_check.closed_enum",
+      "kind": "client",
+      "attributes": [
+        {
+          "name": "network.transport",
+          "value": "carrier_pigeon"
+        }
+      ]
+    }
+  },
+  {
+    "span": {
+      "name": "qyl.live_check.documented_enum",
+      "kind": "client",
+      "attributes": [
+        {
+          "name": "network.transport",
+          "value": "tcp"
+        }
+      ]
+    }
+  },
+  {
+    "span": {
+      "name": "qyl.live_check.deprecated_renamed",
+      "kind": "server",
+      "attributes": [
+        {
+          "name": "rpc.system",
+          "value": "dotnet_wcf"
+        },
+        {
+          "name": "az.namespace",
+          "value": "Microsoft.Storage"
+        },
+        {
+          "name": "db.system",
+          "value": "elasticsearch"
+        },
+        {
+          "name": "db.operation",
+          "value": "search"
+        },
+        {
+          "name": "messaging.operation",
+          "value": "publish"
+        }
+      ]
+    }
+  },
+  {
+    "span": {
+      "name": "qyl.live_check.deprecated_obsoleted",
+      "kind": "consumer",
+      "attributes": [
+        {
+          "name": "exception.escaped",
+          "value": true
+        }
+      ]
+    }
+  },
+  {
+    "span": {
+      "name": "qyl.live_check.type_coercible",
+      "kind": "producer",
+      "attributes": [
+        {
+          "name": "messaging.message.body.size",
+          "value": "123"
+        },
+        {
+          "name": "http.response.status_code",
+          "value": "404"
+        }
+      ]
+    }
+  },
+  {
+    "span": {
+      "name": "qyl.live_check.type_not_coercible",
+      "kind": "producer",
+      "attributes": [
+        {
+          "name": "messaging.message.body.size",
+          "value": "not-a-number"
+        }
+      ]
+    }
+  },
+  {
+    "span": {
+      "name": "qyl.live_check.vendor_keys",
+      "kind": "server",
+      "attributes": [
+        {
+          "name": "soap.message_version",
+          "value": "Soap12 (http://www.w3.org/2003/05/soap-envelope) Addressing10 (http://www.w3.org/2005/08/addressing)"
+        },
+        {
+          "name": "soap.reply_action",
+          "value": "http://tempuri.org/IEchoService/EchoResponse"
+        },
+        {
+          "name": "wcf.channel.path",
+          "value": "/echo"
+        },
+        {
+          "name": "wcf.channel.scheme",
+          "value": "http"
+        },
+        {
+          "name": "az.schema_url",
+          "value": "https://opentelemetry.io/schemas/1.23.0"
+        },
+        {
+          "name": "az.client_request_id",
+          "value": "3f1a2b4c-5d6e-4f70-8a91-0b2c3d4e5f60"
+        },
+        {
+          "name": "db.elasticsearch.schema_url",
+          "value": "https://opentelemetry.io/schemas/1.21.0"
+        }
+      ]
+    }
+  },
+  {
+    "span": {
+      "name": "qyl.live_check.name_rules",
+      "kind": "internal",
+      "attributes": [
+        {
+          "name": "NotANamespacedKey",
+          "value": "x"
+        }
+      ]
+    }
+  }
+]
