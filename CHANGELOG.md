@@ -103,6 +103,12 @@ diffed in CI. Breaking, one wave: nothing from the old pipeline is kept alive.
   is what lets an application `using` a stable and an incubating namespace of the same root
   at once; the earlier shape put an identically named extension method in both and made the
   call ambiguous (CS0121).
+- **No generation parameter has a default.** The three schema URLs are read off the
+  materialized registry by the template filters; the Weaver version, the core tag, the core
+  commit and the genai commit are passed by `scripts/generate.sh` out of `Version.props` and
+  `registry/manifest.yaml`. An unset one renders `error: missing param <name>` into the file,
+  so a bare `weaver registry generate` cannot produce output that passes for current, and a
+  pin cannot be restated in `templates/registry/csharp/weaver.yaml`.
 - **The registry pins do not move.** Core stays `v1.44.0` (`e10a930`), genai stays `fee465db`,
   Weaver stays `0.26.1`. No attribute, metric, span, event or entity changes meaning in this
   release; what changes is who generates the code and when.

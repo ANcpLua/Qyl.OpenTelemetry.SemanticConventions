@@ -77,6 +77,13 @@ annotations — the scope names qyl constructs and the vendor `ActivitySource` n
 the same YAML and hands them to the templates as parameters. `registry/` stays the only
 source.
 
+No template parameter has a default. The three schema URLs are registry facts the filters
+read off the materialized registry itself; the Weaver version, the core tag, the core commit
+and the genai commit reach the templates only from `Version.props` and
+`registry/manifest.yaml`, through `scripts/generate.sh`. A bare `weaver registry generate`
+therefore writes `error: missing param <name>` into the header instead of a stale pin, and
+`scripts/check-generated.sh` fails on it.
+
 ### Registry policies
 
 The guards the Python merge used to carry are Rego. [`registry/policies`](registry/policies)

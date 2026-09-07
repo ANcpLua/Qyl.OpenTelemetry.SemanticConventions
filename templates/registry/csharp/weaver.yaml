@@ -10,16 +10,13 @@ comment_formats:
     trim: true
 default_comment_format: csharp
 
-# Defaults for a bare `weaver registry generate`; scripts/generate.sh overrides every one of
-# them with -D from registry/manifest.yaml, so the pins live in exactly one place.
+# No pin has a default here. The three schema URLs are registry facts and reach the templates
+# through the filters below ($schema_urls); the Weaver version, the core tag, the core commit
+# and the genai commit reach them as -D parameters that scripts/generate.sh reads out of
+# Version.props and registry/manifest.yaml. A bare `weaver registry generate` therefore leaves
+# them unset, `lib.param` writes `error: missing param <name>` into the header instead of a
+# stale value, and scripts/check-generated.sh fails on the diff.
 params:
-  weaver_version: "0.26.1"
-  qyl_schema_url: "https://qyl.at/schemas/9.0.0"
-  core_ref: "v1.44.0"
-  core_commit: ""
-  core_schema_url: "https://opentelemetry.io/schemas/1.44.0"
-  genai_commit: "fee465db333bdd6a7d2faa320edab5cf3101a4f4"
-  genai_schema_url: "https://opentelemetry.io/schemas/gen-ai-dev/1.42.0-dev"
   scope_names: ""
   vendor_activity_sources: ""
 
@@ -29,7 +26,14 @@ templates:
   # `dependencies[...]` are folded in first (top-level wins).
   - template: attributes.cs.j2
     filter: >
-      ([.registry.attributes[]]) as $top
+      . as $registry
+      | ($registry.schema_url) as $qyl
+      | ([($registry.dependencies | keys)[]
+           | select((($registry.dependency_graph[.]) | length) == 0)] | first) as $core
+      | ([($registry.dependencies | keys)[] | select(. != $core)] | first) as $genai
+      | {qyl_schema_url: $qyl, core_schema_url: $core, genai_schema_url: $genai} as $schema_urls
+      | $registry
+      | ([.registry.attributes[]]) as $top
       | ($top | map({key: .key, value: true}) | from_entries) as $seen
       | ([.dependencies[].registry.attributes[]] | map(select($seen[.key] | not))) as $extra
       | (($top + $extra) | sort_by(.key)) as $all
@@ -51,12 +55,21 @@ templates:
                class_suffix: "",
                namespace: ("Qyl.Telemetry.SemanticConventions.Attributes." + $p),
                out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
+      | map(. + $schema_urls)
     application_mode: each
     file_name: "{{ ctx.out_dir }}/Attributes/{{ ctx.pascal_root }}Attributes.g.cs"
 
   # The pinned core schema URL, in the stable package only.
   - template: schema_url.cs.j2
-    filter: "."
+    filter: >
+      . as $registry
+      | ($registry.schema_url) as $qyl
+      | ([($registry.dependencies | keys)[]
+           | select((($registry.dependency_graph[.]) | length) == 0)] | first) as $core
+      | ([($registry.dependencies | keys)[] | select(. != $core)] | first) as $genai
+      | {qyl_schema_url: $qyl, core_schema_url: $core, genai_schema_url: $genai} as $schema_urls
+      | $registry
+      | $schema_urls
     application_mode: single
     file_name: "src/Qyl.Telemetry.SemanticConventions/Generated/SchemaUrl.g.cs"
 
@@ -64,16 +77,31 @@ templates:
   # their ActivitySource and Meter from these and may not read the incubating tier.
   - template: names.cs.j2
     filter: >
-      {events: [.registry.events[]
+      . as $registry
+      | ($registry.schema_url) as $qyl
+      | ([($registry.dependencies | keys)[]
+           | select((($registry.dependency_graph[.]) | length) == 0)] | first) as $core
+      | ([($registry.dependencies | keys)[] | select(. != $core)] | first) as $genai
+      | {qyl_schema_url: $qyl, core_schema_url: $core, genai_schema_url: $genai} as $schema_urls
+      | $registry
+      | {events: [.registry.events[]
                  | select(.provenance.path != null and (.provenance.path | startswith("registry/qyl/")))
                  | .name]}
+      | . + $schema_urls
     application_mode: single
     file_name: "src/Qyl.Telemetry.SemanticConventions/Generated/Names/QylTelemetryNames.g.cs"
 
   # The qyl-owned instruments, in the incubating tier.
   - template: metric_attributes.cs.j2
     filter: >
-      def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
+      . as $registry
+      | ($registry.schema_url) as $qyl
+      | ([($registry.dependencies | keys)[]
+           | select((($registry.dependency_graph[.]) | length) == 0)] | first) as $core
+      | ([($registry.dependencies | keys)[] | select(. != $core)] | first) as $genai
+      | {qyl_schema_url: $qyl, core_schema_url: $core, genai_schema_url: $genai} as $schema_urls
+      | $registry
+      | def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
                      | map(select(length > 0) | (.[0:1] | ascii_upcase) + .[1:]) | join("");
       def dedupe(f): group_by(f) | map(sort_by([(if .deprecated then 1 else 0 end), f]) | .[0]);
       [ .registry.metrics
@@ -84,6 +112,7 @@ templates:
         | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
         | {root: $root, pascal_root: $p, metrics: (. | dedupe(pascal(.name)) | sort_by(.name)),
            namespace: ("Qyl.Telemetry.SemanticConventions.Incubating.Attributes." + $p)} ]
+      | map(. + $schema_urls)
     application_mode: each
     file_name: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated/Attributes/{{ ctx.pascal_root }}MetricAttributes.g.cs"
 
@@ -93,7 +122,14 @@ templates:
   # namespaces without an ambiguous-call error.
   - template: activities.cs.j2
     filter: >
-      def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
+      . as $registry
+      | ($registry.schema_url) as $qyl
+      | ([($registry.dependencies | keys)[]
+           | select((($registry.dependency_graph[.]) | length) == 0)] | first) as $core
+      | ([($registry.dependencies | keys)[] | select(. != $core)] | first) as $genai
+      | {qyl_schema_url: $qyl, core_schema_url: $core, genai_schema_url: $genai} as $schema_urls
+      | $registry
+      | def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
                      | map(select(length > 0) | (.[0:1] | ascii_upcase) + .[1:]) | join("");
       def dedupe(f): group_by(f) | map(sort_by([(if .deprecated then 1 else 0 end), f]) | .[0]);
       ([.registry.attributes[]]) as $top
@@ -118,13 +154,21 @@ templates:
                attributes: (. | dedupe(pascal(.key)) | sort_by(.key)),
                namespace: ("Qyl.Telemetry.SemanticConventions.Activities"),
                out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
+      | map(. + $schema_urls)
     application_mode: each
     file_name: "{{ ctx.out_dir }}/Activities/{{ ctx.type_root }}Activities.g.cs"
 
   # MetricDefinition<TInstrument> rows, per stability tier; disjoint the same way.
   - template: metrics.cs.j2
     filter: >
-      def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
+      . as $registry
+      | ($registry.schema_url) as $qyl
+      | ([($registry.dependencies | keys)[]
+           | select((($registry.dependency_graph[.]) | length) == 0)] | first) as $core
+      | ([($registry.dependencies | keys)[] | select(. != $core)] | first) as $genai
+      | {qyl_schema_url: $qyl, core_schema_url: $core, genai_schema_url: $genai} as $schema_urls
+      | $registry
+      | def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
                      | map(select(length > 0) | (.[0:1] | ascii_upcase) + .[1:]) | join("");
       def dedupe(f): group_by(f) | map(sort_by([(if .deprecated then 1 else 0 end), f]) | .[0]);
       ([.registry.metrics[]]) as $top
@@ -149,13 +193,21 @@ templates:
                metrics: (. | dedupe(pascal(.name)) | sort_by(.name)),
                namespace: "Qyl.Telemetry.SemanticConventions.Metrics",
                out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
+      | map(. + $schema_urls)
     application_mode: each
     file_name: "{{ ctx.out_dir }}/Metrics/{{ ctx.type_root }}Metrics.g.cs"
 
   # SpanDefinition<TKind> rows, per stability tier; disjoint the same way.
   - template: spans.cs.j2
     filter: >
-      def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
+      . as $registry
+      | ($registry.schema_url) as $qyl
+      | ([($registry.dependencies | keys)[]
+           | select((($registry.dependency_graph[.]) | length) == 0)] | first) as $core
+      | ([($registry.dependencies | keys)[] | select(. != $core)] | first) as $genai
+      | {qyl_schema_url: $qyl, core_schema_url: $core, genai_schema_url: $genai} as $schema_urls
+      | $registry
+      | def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
                      | map(select(length > 0) | (.[0:1] | ascii_upcase) + .[1:]) | join("");
       def dedupe(f): group_by(f) | map(sort_by([(if .deprecated then 1 else 0 end), f]) | .[0]);
       ([.registry.spans[]]) as $top
@@ -180,13 +232,21 @@ templates:
                spans: (. | dedupe(pascal(.type)) | sort_by(.type)),
                namespace: "Qyl.Telemetry.SemanticConventions.Spans",
                out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
+      | map(. + $schema_urls)
     application_mode: each
     file_name: "{{ ctx.out_dir }}/Spans/{{ ctx.type_root }}Spans.g.cs"
 
   # EventDefinition rows, per stability tier; disjoint the same way.
   - template: events.cs.j2
     filter: >
-      def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
+      . as $registry
+      | ($registry.schema_url) as $qyl
+      | ([($registry.dependencies | keys)[]
+           | select((($registry.dependency_graph[.]) | length) == 0)] | first) as $core
+      | ([($registry.dependencies | keys)[] | select(. != $core)] | first) as $genai
+      | {qyl_schema_url: $qyl, core_schema_url: $core, genai_schema_url: $genai} as $schema_urls
+      | $registry
+      | def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
                      | map(select(length > 0) | (.[0:1] | ascii_upcase) + .[1:]) | join("");
       def dedupe(f): group_by(f) | map(sort_by([(if .deprecated then 1 else 0 end), f]) | .[0]);
       ([.registry.events[]]) as $top
@@ -211,13 +271,21 @@ templates:
                events: (. | dedupe(pascal(.name)) | sort_by(.name)),
                namespace: "Qyl.Telemetry.SemanticConventions.Events",
                out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
+      | map(. + $schema_urls)
     application_mode: each
     file_name: "{{ ctx.out_dir }}/Events/{{ ctx.type_root }}Events.g.cs"
 
   # EntityDefinition rows, per stability tier; disjoint the same way.
   - template: entities.cs.j2
     filter: >
-      def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
+      . as $registry
+      | ($registry.schema_url) as $qyl
+      | ([($registry.dependencies | keys)[]
+           | select((($registry.dependency_graph[.]) | length) == 0)] | first) as $core
+      | ([($registry.dependencies | keys)[] | select(. != $core)] | first) as $genai
+      | {qyl_schema_url: $qyl, core_schema_url: $core, genai_schema_url: $genai} as $schema_urls
+      | $registry
+      | def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
                      | map(select(length > 0) | (.[0:1] | ascii_upcase) + .[1:]) | join("");
       def dedupe(f): group_by(f) | map(sort_by([(if .deprecated then 1 else 0 end), f]) | .[0]);
       ([.registry.entities[]]) as $top
@@ -242,6 +310,7 @@ templates:
                entities: (. | dedupe(pascal(.type)) | sort_by(.type)),
                namespace: "Qyl.Telemetry.SemanticConventions.Entities",
                out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
+      | map(. + $schema_urls)
     application_mode: each
     file_name: "{{ ctx.out_dir }}/Entities/{{ ctx.type_root }}Entities.g.cs"
 
@@ -257,7 +326,14 @@ templates:
   # discriminator.
   - template: analyzer_facts.cs.j2
     filter: >
-      def genai: (.provenance.source // "") | startswith("https://opentelemetry.io/schemas/gen-ai-dev/");
+      . as $registry
+      | ($registry.schema_url) as $qyl
+      | ([($registry.dependencies | keys)[]
+           | select((($registry.dependency_graph[.]) | length) == 0)] | first) as $core
+      | ([($registry.dependencies | keys)[] | select(. != $core)] | first) as $genai
+      | {qyl_schema_url: $qyl, core_schema_url: $core, genai_schema_url: $genai} as $schema_urls
+      | $registry
+      | def genai: (.provenance.source // "") | startswith("https://opentelemetry.io/schemas/gen-ai-dev/");
       def enumvals: if ((.type | type) == "object") and (.type | has("members"))
                     then [.type.members[].value | tostring] | unique else [] end;
       def segment($id): ($id | split(".")) as $p
@@ -333,6 +409,7 @@ templates:
          event_names: $events,
          span_rules: $rules,
          genai_discriminators: ([$rules[] | .discriminator_key | select(startswith("gen_ai."))] | unique)}
+      | . + $schema_urls
     application_mode: single
     file_name: "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvRegistryFacts.g.cs"
 
@@ -341,7 +418,14 @@ templates:
   # shipping a table that points at nothing.
   - template: attribute_mapping.cs.j2
     filter: >
-      ([.registry.attributes[]]) as $top
+      . as $registry
+      | ($registry.schema_url) as $qyl
+      | ([($registry.dependencies | keys)[]
+           | select((($registry.dependency_graph[.]) | length) == 0)] | first) as $core
+      | ([($registry.dependencies | keys)[] | select(. != $core)] | first) as $genai
+      | {qyl_schema_url: $qyl, core_schema_url: $core, genai_schema_url: $genai} as $schema_urls
+      | $registry
+      | ([.registry.attributes[]]) as $top
       | ($top | map({key: .key, value: true}) | from_entries) as $seen
       | ([.dependencies[].registry.attributes[]] | map(select($seen[.key] | not))) as $extra
       | (($top + $extra) | sort_by(.key)) as $all
@@ -362,13 +446,22 @@ templates:
       | {renames: ($renames | sort_by(.key)),
          vendor_keys: [$all[] | select((.provenance.path // "") | startswith("registry/vendor/")) | .key],
          namespaces: (([$all[] | .key | split(".")[0]] + ["other"]) | unique)}
+      | . + $schema_urls
     application_mode: single
     file_name: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated/Mapping/AttributeMapping.g.cs"
 
   # The pins, for MSBuild: registry/manifest.yaml is where they are declared, this is how the
   # build reads them. Directory.Build.props imports it.
   - template: pins.props.j2
-    filter: "."
+    filter: >
+      . as $registry
+      | ($registry.schema_url) as $qyl
+      | ([($registry.dependencies | keys)[]
+           | select((($registry.dependency_graph[.]) | length) == 0)] | first) as $core
+      | ([($registry.dependencies | keys)[] | select(. != $core)] | first) as $genai
+      | {qyl_schema_url: $qyl, core_schema_url: $core, genai_schema_url: $genai} as $schema_urls
+      | $registry
+      | $schema_urls
     application_mode: single
     file_name: "generated/pins.props"
 
@@ -376,7 +469,14 @@ templates:
   # OpenTelemetryDeprecatedSemconvCatalog.cs against it; this replaces verify_deprecated_catalog.py.
   - template: deprecations.cs.j2
     filter: >
-      ([.registry.attributes[]]) as $top
+      . as $registry
+      | ($registry.schema_url) as $qyl
+      | ([($registry.dependencies | keys)[]
+           | select((($registry.dependency_graph[.]) | length) == 0)] | first) as $core
+      | ([($registry.dependencies | keys)[] | select(. != $core)] | first) as $genai
+      | {qyl_schema_url: $qyl, core_schema_url: $core, genai_schema_url: $genai} as $schema_urls
+      | $registry
+      | ([.registry.attributes[]]) as $top
       | ($top | map({key: .key, value: true}) | from_entries) as $seen
       | ([.dependencies[].registry.attributes[]] | map(select($seen[.key] | not))) as $extra
       | (($top + $extra) | sort_by(.key)) as $all
@@ -388,5 +488,6 @@ templates:
            | select((($a.type | type) == "object") and ($a.type | has("members")))
            | $a.type.members[] | select(.deprecated != null)
            | {key: $a.key, value: .value}]}
+      | . + $schema_urls
     application_mode: single
     file_name: "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvDeprecations.g.cs"

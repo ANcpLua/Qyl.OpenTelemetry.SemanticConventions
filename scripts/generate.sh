@@ -38,23 +38,23 @@ fi
 core_ref="$(cat .build/core-ref.txt)"
 core_commit="$(cat .build/core-commit.txt)"
 
-# Weaver's materialized v2 registry flattens `registry.*` groups into the catalog and drops
-# their group annotations, so the two lists the templates need — the scope names qyl
-# constructs and the ActivitySource names of the pinned vendor libraries — are read out of the
-# same YAML here and handed to the templates as parameters. registry/ stays the only source.
-read -r core_schema_url genai_commit genai_schema_url qyl_schema_url <<< "$(python3 - registry/manifest.yaml <<'PY'
+# The three schema URLs are registry facts: Weaver's materialized v2 registry carries them and
+# the template filters read them off it. The git ref the genai dependency is pinned to is not
+# part of that registry, so it is read out of the manifest here and handed over as a parameter.
+genai_commit="$(python3 - registry/manifest.yaml <<'PY'
 import sys
 import yaml
 
 manifest = yaml.safe_load(open(sys.argv[1])) or {}
 by_name = {d["name"]: d for d in manifest.get("dependencies") or []}
-core = by_name["core"]
-genai = by_name["genai"]
-commit = genai["registry_path"].split("@", 1)[1].split("[", 1)[0]
-print(core["schema_url"], commit, genai["schema_url"], manifest["schema_url"])
+print(by_name["genai"]["registry_path"].split("@", 1)[1].split("[", 1)[0])
 PY
 )"
 
+# Weaver's materialized v2 registry flattens `registry.*` groups into the catalog and drops
+# their group annotations, so the two lists the templates need — the scope names qyl
+# constructs and the ActivitySource names of the pinned vendor libraries — are read out of the
+# same YAML here and handed to the templates as parameters. registry/ stays the only source.
 scope_names="$(python3 - registry/qyl/names.yaml <<'PY'
 import sys
 import yaml
@@ -96,12 +96,9 @@ PY
   --include-unreferenced \
   -t templates \
   -D "weaver_version=${actual_weaver_version}" \
-  -D "qyl_schema_url=${qyl_schema_url}" \
   -D "core_ref=${core_ref}" \
   -D "core_commit=${core_commit}" \
-  -D "core_schema_url=${core_schema_url}" \
   -D "genai_commit=${genai_commit}" \
-  -D "genai_schema_url=${genai_schema_url}" \
   -D "scope_names=${scope_names}" \
   -D "vendor_activity_sources=${vendor_activity_sources}" \
   csharp \
@@ -110,4 +107,3 @@ PY
 echo "Regenerated from registry/ with Weaver ${actual_weaver_version}"
 echo "  core:  ${core_ref} (${core_commit})"
 echo "  genai: ${genai_commit}"
-echo "  qyl:   ${qyl_schema_url}"
