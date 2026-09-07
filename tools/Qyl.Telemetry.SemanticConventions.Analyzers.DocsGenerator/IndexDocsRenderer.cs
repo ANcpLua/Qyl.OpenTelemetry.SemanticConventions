@@ -55,7 +55,7 @@ internal static class IndexDocsRenderer
         sb.AppendLine();
         sb.AppendLine("## Package family");
         sb.AppendLine();
-        sb.AppendLine("- **[Qyl OTel-conventions repo](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions)** — this analyzer (`QYL00xx` rules), the stable + incubating attribute-key packages, and the source generator that emits typed `Activity`/`Event`/`Meter`/`Metric` projections.");
+        sb.AppendLine("- **[Qyl OTel-conventions repo](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions)** — this analyzer (`QYL00xx` rules) and the stable + incubating packages, whose attribute constants, `Activity` setter extensions and metric/span/event/entity definitions Weaver generates from one semantic-convention registry.");
         sb.AppendLine("- **[ANcpLua framework](https://www.nuget.org/profiles/ANcpLua)** — upstream Roslyn infrastructure consumed by this package: `ANcpLua.Roslyn.Utilities` (shared helpers + `Guard.*` API), `ANcpLua.Analyzers` (general-purpose `AL00xx` band), `ANcpLua.NET.Sdk` (MSBuild SDK that auto-injects the framework's analyzers + `.editorconfig` defaults), `ANcpLua.Agents` (Microsoft Agent Framework toolkit). `QYL00xx` rules are scoped to OTel-conventions consumers; framework rules live in `ANcpLua.Analyzers`.");
     }
 
@@ -87,7 +87,7 @@ internal static class IndexDocsRenderer
         sb.AppendLine();
         sb.AppendLine("| Option | Values | Behavior |");
         sb.AppendLine("| -- | -- | -- |");
-        sb.AppendLine("| `build_property.OtelSemConvNonAttributesTiers` | `false` (default), `true` | When `true`, extends `QYL0003` beyond `*Attributes` classes to also scan the three other Weaver source-generation tiers (`*Metrics`, `*Meters`, `*Activities`) under the SemConv namespace. Default `false` scans only `*Attributes` classes. |");
+        sb.AppendLine("| `build_property.OtelSemConvNonAttributesTiers` | `false` (default), `true` | When `true`, extends `QYL0003` beyond `*Attributes` classes to also scan the three other generated tiers (`*Metrics`, `*Meters`, `*Activities`) under the SemConv namespace. Default `false` scans only `*Attributes` classes. |");
     }
 
     private static void WritePrecedenceAndSuppression(StringBuilder sb)

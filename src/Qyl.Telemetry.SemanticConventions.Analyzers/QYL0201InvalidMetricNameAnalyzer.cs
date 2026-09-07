@@ -10,8 +10,8 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 ///         Metric names declared on Counter/Histogram descriptor attributes must follow OpenTelemetry
 ///         naming conventions (dot-separated namespaces, snake_case words) and be members of the
 ///         generated registry catalog (<see cref="SemconvRegistryFacts"/>), so the collector recognizes
-///         every metric qyl emits (qyl architecture, loop 1). qyl-owned metrics enter the catalog through
-///         qyl-registry.json, never through a hardcoded list here.
+///         every metric qyl emits. qyl-owned metrics enter the catalog through
+///         registry/qyl/metrics.yaml, never through a hardcoded list here.
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]

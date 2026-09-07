@@ -12,7 +12,7 @@
 
 ## Description
 
-Metric names declared on Counter/Histogram descriptor attributes must follow OpenTelemetry naming conventions and be members of the generated registry catalog, so the collector recognizes every metric qyl emits. Add qyl-owned metrics to qyl-registry.json and regenerate.
+Metric names declared on Counter/Histogram descriptor attributes must follow OpenTelemetry naming conventions and be members of the generated registry catalog, so the collector recognizes every metric qyl emits. Add qyl-owned metrics to registry/qyl/metrics.yaml and run scripts/generate.sh.
 
 ## See also
 

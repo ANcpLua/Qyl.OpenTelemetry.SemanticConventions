@@ -406,7 +406,7 @@
                 "text": "Telemetry name must come from the generated registry catalog"
               },
               "fullDescription": {
-                "text": "The producer constants and the collector ingest catalog are generated from one registry, so a name the catalog does not know is a name the platform cannot recognize on the wire. Add the name to the registry (qyl-owned names go in qyl-registry.json) and regenerate, or use the generated constant for an existing name."
+                "text": "The producer constants and the collector ingest catalog are generated from one registry, so a name the catalog does not know is a name the platform cannot recognize on the wire. Add the name to the registry (qyl-owned names go in registry/qyl/names.yaml) and run scripts/generate.sh, or use the generated constant for an existing name."
               },
               "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0200_TelemetryName.md",
               "defaultConfiguration": {
@@ -423,7 +423,7 @@
                 "text": "Metric descriptor name must be a well-formed catalog member"
               },
               "fullDescription": {
-                "text": "Metric names declared on Counter/Histogram descriptor attributes must follow OpenTelemetry naming conventions and be members of the generated registry catalog, so the collector recognizes every metric qyl emits. Add qyl-owned metrics to qyl-registry.json and regenerate."
+                "text": "Metric names declared on Counter/Histogram descriptor attributes must follow OpenTelemetry naming conventions and be members of the generated registry catalog, so the collector recognizes every metric qyl emits. Add qyl-owned metrics to registry/qyl/metrics.yaml and run scripts/generate.sh."
               },
               "helpUri": "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/rules/QYL0201_InvalidMetricName.md",
               "defaultConfiguration": {

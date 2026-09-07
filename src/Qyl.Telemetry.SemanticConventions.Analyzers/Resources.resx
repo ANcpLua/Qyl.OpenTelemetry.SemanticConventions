@@ -132,7 +132,7 @@
         <value>Telemetry name '{0}' in a {1} position is not in the generated registry catalog</value>
     </data>
     <data name="QYL0200AnalyzerDescription" xml:space="preserve">
-        <value>The producer constants and the collector ingest catalog are generated from one registry, so a name the catalog does not know is a name the platform cannot recognize on the wire. Add the name to the registry (qyl-owned names go in qyl-registry.json) and regenerate, or use the generated constant for an existing name.</value>
+        <value>The producer constants and the collector ingest catalog are generated from one registry, so a name the catalog does not know is a name the platform cannot recognize on the wire. Add the name to the registry (qyl-owned names go in registry/qyl/names.yaml) and run scripts/generate.sh, or use the generated constant for an existing name.</value>
     </data>
     <!-- QYL0201: Invalid or uncataloged metric descriptor name -->
     <data name="QYL0201AnalyzerTitle" xml:space="preserve">
@@ -142,7 +142,7 @@
         <value>Metric descriptor name '{0}' is not a well-formed name from the generated registry catalog</value>
     </data>
     <data name="QYL0201AnalyzerDescription" xml:space="preserve">
-        <value>Metric names declared on Counter/Histogram descriptor attributes must follow OpenTelemetry naming conventions and be members of the generated registry catalog, so the collector recognizes every metric qyl emits. Add qyl-owned metrics to qyl-registry.json and regenerate.</value>
+        <value>Metric names declared on Counter/Histogram descriptor attributes must follow OpenTelemetry naming conventions and be members of the generated registry catalog, so the collector recognizes every metric qyl emits. Add qyl-owned metrics to registry/qyl/metrics.yaml and run scripts/generate.sh.</value>
     </data>
     <!-- AL0069: Incomplete ServiceDefaults -->
     <data name="QYL0300AnalyzerTitle" xml:space="preserve">

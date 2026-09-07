@@ -12,7 +12,7 @@
 
 ## Description
 
-The producer constants and the collector ingest catalog are generated from one registry, so a name the catalog does not know is a name the platform cannot recognize on the wire. Add the name to the registry (qyl-owned names go in qyl-registry.json) and regenerate, or use the generated constant for an existing name.
+The producer constants and the collector ingest catalog are generated from one registry, so a name the catalog does not know is a name the platform cannot recognize on the wire. Add the name to the registry (qyl-owned names go in registry/qyl/names.yaml) and run scripts/generate.sh, or use the generated constant for an existing name.
 
 ## See also
 
