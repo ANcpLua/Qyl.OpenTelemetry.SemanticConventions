@@ -251,8 +251,8 @@ def main() -> int:
     report.append("")
     report.append(
         "One or more pins are behind upstream. Bumping is a deliberate change: re-run "
-        "`scripts/generate.sh`, review the regenerated registry, and record the delta in "
-        "`qyl-references/REFERENCE-STATUS.md`."
+        "`scripts/generate.sh`, review the regenerated surface, and record the delta in "
+        "`CHANGELOG.md`."
         if stale
         else "Every pin matches upstream."
     )
