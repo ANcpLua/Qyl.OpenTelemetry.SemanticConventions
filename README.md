@@ -13,10 +13,6 @@ cannot emit an attribute name its own collector does not know.
 | `Qyl.Telemetry.SemanticConventions.Incubating` | Attribute-key constants at every stability tier, the rows the stable tier does not carry for the other five kinds, the qyl-owned instrument names, and `Mapping.AttributeMapping` — the collector's normalize table |
 | `Qyl.Telemetry.SemanticConventions.Analyzers` | Roslyn diagnostics and code fixes for semantic-convention consumers, with a [generated rule catalog](docs/Qyl.Telemetry.SemanticConventions.Analyzers.md), a [migration catalog](docs/migration-catalog.md), and [editorconfig severity profiles](docs/editorconfig/) |
 
-```bash
-dotnet add package Qyl.Telemetry.SemanticConventions
-```
-
 Three packages ship; `Qyl.Telemetry.SemanticConventions.SourceGeneration` is retired at its
 last version `8.1.0`, as [CHANGELOG 9.0.0](CHANGELOG.md#900---2026-09-07) records.
 
@@ -24,6 +20,57 @@ All three are published on [nuget.org](https://www.nuget.org/profiles/ANcpLua);
 `VersionPrefix` in [`Directory.Build.props`](Directory.Build.props) names the current release
 line. Incubating APIs track unstable upstream conventions and may change between minor
 releases.
+
+## First consumer
+
+All three packages, at the current release line:
+
+```bash
+dotnet add package Qyl.Telemetry.SemanticConventions --version 9.1.0
+dotnet add package Qyl.Telemetry.SemanticConventions.Incubating --version 9.1.0
+dotnet add package Qyl.Telemetry.SemanticConventions.Analyzers --version 9.1.0
+```
+
+The Analyzers package is a development dependency, so the third command writes its
+`PrivateAssets="all"` itself. This `Program.cs` then compiles unchanged on `net10.0` and
+touches each surface once:
+
+```csharp
+using System.Diagnostics;
+using Qyl.Telemetry.SemanticConventions;
+using Qyl.Telemetry.SemanticConventions.Activities;
+using Qyl.Telemetry.SemanticConventions.Attributes.Http;
+using Qyl.Telemetry.SemanticConventions.Metrics;
+using Qyl.Telemetry.SemanticConventions.Names;
+using Qyl.Telemetry.SemanticConventions.Incubating.Activities;
+using Qyl.Telemetry.SemanticConventions.Incubating.Mapping;
+
+// Attribute keys, the pinned schema URL, and the qyl-owned names.
+Console.WriteLine(HttpAttributes.RequestMethod);           // http.request.method
+Console.WriteLine(SchemaUrl.Current);                      // https://opentelemetry.io/schemas/1.44.0
+Console.WriteLine(QylTelemetryNames.Scopes.QylCollector);  // Qyl.Collector
+
+// A metric is an object, not a name constant.
+var duration = HttpMetricDefinitions.HttpClientRequestDuration;
+Console.WriteLine($"{duration.Name} {duration.Instrument} {duration.Unit}");
+// http.client.request.duration histogram s
+
+// The stable setter extension and its incubating sibling, on one Activity.
+using var activity = new Activity("GET").Start();
+activity.SetHttpRequestMethod("GET");
+activity.SetHttpRequestBodySize(1234);
+
+// The collector's normalize table.
+Console.WriteLine(AttributeMapping.TryGetRename("http.method", out var live) ? live : "(none)");
+Console.WriteLine(AttributeMapping.IsObsoleted("db.connection_string"));  // True
+Console.WriteLine(AttributeMapping.NamespaceOf("qyl.session.id"));        // qyl
+```
+
+Both namespaces are in scope at once and no call is ambiguous, because the two packages are
+disjoint for every kind but attributes. The program also publishes NativeAOT clean —
+`dotnet publish -c Release -r <rid> -p:PublishAot=true` emits no trim or AOT warning, because
+nothing here reflects: the keys are `const string`, the definitions are constructed objects,
+and `AttributeMapping` is switch statements over string literals.
 
 ## The registry
 
@@ -239,6 +286,11 @@ weaver registry live-check \
   --advice-policies registry/policies/live_check_advice \
   --input-source ../spans.json --fail-on violation
 ```
+
+Weaver 0.26.1 answers that `--include-unreferenced` with `⚠ The flag include_unreferenced is
+deprecated. Please prefer manually adding the required imports`; the warning is expected and the
+flag stays, because a registry's `imports` block declares metrics, events and entities only and
+this registry generates every attribute key its dependencies carry.
 
 `git clone --depth 1 --branch v9.1.0` followed by `./scripts/fetch-core.sh` is equivalent and
 is what `Qyl.OpenTelemetry.AutoInstrumentation`'s live-check workflow does, with

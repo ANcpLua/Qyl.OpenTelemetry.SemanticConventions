@@ -7,6 +7,20 @@ gate: CI packs the solution, publishes through NuGet trusted publishing, and
 [`eng/release/verify-packages.sh`](eng/release/verify-packages.sh) proves the indexed packages in a
 clean `net10.0` consumer.
 
+## Unreleased
+
+### Upstream watch
+
+- **`--include-unreferenced` is deprecated in Weaver 0.26.1.** Every `weaver registry generate`
+  and `weaver registry live-check` run against this registry prints `⚠ The flag
+  include_unreferenced is deprecated. Please prefer manually adding the required imports to your
+  schema files in the future.` The replacement Weaver points at is the `imports` block in a
+  semconv file, and [`schemas/semconv.schema.json`](https://github.com/open-telemetry/weaver/blob/main/schemas/semconv.schema.json)
+  gives it exactly three keys — `metrics`, `events`, `entities` — with `additionalProperties:
+  false`. Attributes and spans cannot be imported, and this registry generates every attribute
+  key its core and genai dependencies carry, so the flag has no replacement yet. The registry is
+  unchanged; revisit when `imports` gains attributes or when Weaver removes the flag.
+
 ## [9.1.0] - 2026-09-07
 
 The first live-check run of `Qyl.OpenTelemetry.AutoInstrumentation` 14.0.0 against the 9.0.0
