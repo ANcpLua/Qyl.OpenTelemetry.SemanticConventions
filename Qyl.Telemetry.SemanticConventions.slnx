@@ -2,12 +2,10 @@
   <Folder Name="/src/">
     <Project Path="src/Qyl.Telemetry.SemanticConventions/Qyl.Telemetry.SemanticConventions.csproj" />
     <Project Path="src/Qyl.Telemetry.SemanticConventions.Incubating/Qyl.Telemetry.SemanticConventions.Incubating.csproj" />
-    <Project Path="src/Qyl.Telemetry.SemanticConventions.SourceGeneration/Qyl.Telemetry.SemanticConventions.SourceGeneration.csproj" />
     <Project Path="src/Qyl.Telemetry.SemanticConventions.Analyzers/Qyl.Telemetry.SemanticConventions.Analyzers.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Qyl.Telemetry.SemanticConventions.Pipeline.Tests/Qyl.Telemetry.SemanticConventions.Pipeline.Tests.csproj" />
-    <Project Path="tests/Qyl.Telemetry.SemanticConventions.SourceGeneration.Tests/Qyl.Telemetry.SemanticConventions.SourceGeneration.Tests.csproj" />
   </Folder>
 
   <Folder Name="/eng/">

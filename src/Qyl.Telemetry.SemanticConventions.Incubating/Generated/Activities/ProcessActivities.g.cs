@@ -61,15 +61,6 @@ public static class ProcessActivityExtensions
         => activity.SetTag("process.context_switch.type", value);
 
     /// <summary>
-    /// "Deprecated, use <c>process.context_switch.type</c> instead."
-    /// </summary>
-    [global::System.Obsolete("Replaced by process.context_switch.type.", false)]
-    public static global::System.Diagnostics.Activity SetProcessContextSwitchType(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("process.context_switch_type", value);
-
-    /// <summary>
     /// Deprecated, use <c>cpu.mode</c> instead.
     /// </summary>
     [global::System.Obsolete("Replaced by cpu.mode.", false)]
@@ -365,27 +356,6 @@ public static class ProcessActivityExtensions
 
     /// <summary>
     /// Specifies whether the context switches for this data point were voluntary or involuntary.
-    /// </summary>
-    public static class ProcessContextSwitchTypeValues
-    {
-        /// <summary>
-        /// voluntary.
-        /// </summary>
-        public const string Voluntary = "voluntary";
-
-        /// <summary>
-        /// involuntary.
-        /// </summary>
-        public const string Involuntary = "involuntary";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "voluntary", "involuntary" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
-
-    /// <summary>
-    /// "Deprecated, use <c>process.context_switch.type</c> instead."
     /// </summary>
     public static class ProcessContextSwitchTypeValues
     {

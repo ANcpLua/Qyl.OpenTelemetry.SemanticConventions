@@ -1,6 +1,7 @@
 name: pin-freshness
 
-# Reports when an upstream ref pinned in Version.props has fallen behind upstream.
+# Reports when an upstream ref this repository pins has fallen behind upstream. The registry
+# pins live in registry/manifest.yaml, the Weaver version in Version.props.
 #
 # Deliberately not a step in ci.yml: upstream movement is news, not a defect in the
 # current commit. It runs weekly and keeps one issue in step with reality: opened
@@ -37,7 +38,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -uo pipefail
-          script=src/Qyl.Telemetry.SemanticConventions.SourceGeneration/scripts/check_pin_freshness.py
+          script=scripts/check-pin-freshness.py
           # A non-zero exit is the signal here, not a step failure; the runner's
           # default `set -e` would abandon the report before it is published.
           status=0

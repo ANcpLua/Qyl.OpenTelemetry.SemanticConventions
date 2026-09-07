@@ -37,15 +37,6 @@ public static class MessagingActivityExtensions
         => activity.SetTag("messaging.client.id", value);
 
     /// <summary>
-    /// Deprecated, use <c>messaging.client.id</c> instead.
-    /// </summary>
-    [global::System.Obsolete("Replaced by messaging.client.id.", false)]
-    public static global::System.Diagnostics.Activity SetMessagingClientId(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("messaging.client_id", value);
-
-    /// <summary>
     /// The name of the consumer group with which a consumer is associated.
     /// </summary>
     /// <remarks>

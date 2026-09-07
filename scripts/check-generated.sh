@@ -13,7 +13,8 @@ generated_paths=(
   "src/Qyl.Telemetry.SemanticConventions/Generated"
   "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"
   "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvRegistryFacts.g.cs"
-  "generated/typespec"
+  "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvDeprecations.g.cs"
+  "generated"
 )
 
 if ! git diff --exit-code -- "${generated_paths[@]}"; then

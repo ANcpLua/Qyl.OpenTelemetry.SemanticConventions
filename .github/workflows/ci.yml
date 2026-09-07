@@ -21,6 +21,15 @@ jobs:
       - name: Test pin freshness checker
         run: python3 -m unittest discover --start-directory tests/scripts --pattern 'test_*.py'
 
+      - name: Setup Weaver
+        uses: open-telemetry/weaver/.github/actions/setup-weaver@38befce4bc68fe320d20f189465c93835ac20c12 # v0.26.1
+
+      # Regenerates everything from registry/ and fails on drift, the same shape as the
+      # check-generated target in opentelemetry-weaver-examples/basic/Makefile. This is the
+      # gate that keeps the committed output honest; the Pipeline test only pins its hashes.
+      - name: Check generated code is in sync with the registry
+        run: ./scripts/check-generated.sh
+
       - name: Setup .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
         with:
@@ -32,17 +41,8 @@ jobs:
       - name: Build
         run: dotnet build Qyl.Telemetry.SemanticConventions.slnx --no-restore --configuration Release
 
-      # The analyzer deprecation catalog is hand-curated (since-versions, guidance
-      # prose, deleted-upstream keys) but must never contradict the registry on
-      # what the registry DOES know — renames, deprecations, enum-member removals.
-      - name: Verify deprecated-semconv catalog against resolved registry
-        run: python3 src/Qyl.Telemetry.SemanticConventions.SourceGeneration/scripts/verify_deprecated_catalog.py
-
       - name: Test analyzer pipeline
         run: dotnet run --project tests/Qyl.Telemetry.SemanticConventions.Pipeline.Tests/ --configuration Release --no-build
-
-      - name: Test source generation
-        run: dotnet run --project tests/Qyl.Telemetry.SemanticConventions.SourceGeneration.Tests/ --configuration Release --no-build
 
       - name: Pack
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

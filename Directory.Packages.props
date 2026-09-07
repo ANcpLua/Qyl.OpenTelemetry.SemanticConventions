@@ -14,6 +14,10 @@
     <PackageVersion Include="ANcpLua.Roslyn.Utilities.Testing" Version="$(ANcpLuaRoslynUtilitiesVersion)"/>
   </ItemGroup>
 
+  <ItemGroup Label="Shipped packages">
+    <PackageVersion Include="System.Diagnostics.DiagnosticSource" Version="$(SystemDiagnosticsDiagnosticSourceVersion)"/>
+  </ItemGroup>
+
   <ItemGroup Label="Repository build host">
     <PackageVersion Include="Nuke.Common" Version="$(NukeVersion)"/>
   </ItemGroup>

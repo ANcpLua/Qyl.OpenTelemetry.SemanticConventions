@@ -91,20 +91,6 @@ public static class K8sMetricDefinitions
             attributes: global::System.Array.Empty<global::Qyl.Telemetry.SemanticConventions.AttributeRef>());
 
     /// <summary>
-    /// Deprecated, use <c>k8s.container.cpu.limit.utilization</c> instead.
-    /// </summary>
-    [global::System.Obsolete("Replaced by k8s.container.cpu.limit.utilization.", false)]
-    public static readonly global::Qyl.Telemetry.SemanticConventions.MetricDefinition<global::Qyl.Telemetry.SemanticConventions.Gauge> K8sContainerCpuLimitUtilization =
-        new(
-            name: "k8s.container.cpu.limit_utilization",
-            unit: "1",
-            brief: "Deprecated, use `k8s.container.cpu.limit.utilization` instead.",
-            stability: global::Qyl.Telemetry.SemanticConventions.Stability.Development,
-            deprecation: global::Qyl.Telemetry.SemanticConventions.Deprecation.Renamed("k8s.container.cpu.limit.utilization"),
-            entities: new global::Qyl.Telemetry.SemanticConventions.EntityRef[] { new("{\"type\": \"k8s.container\"}") },
-            attributes: global::System.Array.Empty<global::Qyl.Telemetry.SemanticConventions.AttributeRef>());
-
-    /// <summary>
     /// Deprecated, use <c>k8s.container.cpu.request.desired</c> and <c>k8s.container.cpu.request.current</c> instead.
     /// </summary>
     [global::System.Obsolete("Replaced by k8s.container.cpu.request.desired.", false)]
@@ -174,20 +160,6 @@ public static class K8sMetricDefinitions
             brief: "The ratio of container CPU usage to its current CPU request.",
             stability: global::Qyl.Telemetry.SemanticConventions.Stability.Development,
             deprecation: global::Qyl.Telemetry.SemanticConventions.Deprecation.None,
-            entities: new global::Qyl.Telemetry.SemanticConventions.EntityRef[] { new("{\"type\": \"k8s.container\"}") },
-            attributes: global::System.Array.Empty<global::Qyl.Telemetry.SemanticConventions.AttributeRef>());
-
-    /// <summary>
-    /// Deprecated, use <c>k8s.container.cpu.request.utilization</c> instead.
-    /// </summary>
-    [global::System.Obsolete("Replaced by k8s.container.cpu.request.utilization.", false)]
-    public static readonly global::Qyl.Telemetry.SemanticConventions.MetricDefinition<global::Qyl.Telemetry.SemanticConventions.Gauge> K8sContainerCpuRequestUtilization =
-        new(
-            name: "k8s.container.cpu.request_utilization",
-            unit: "1",
-            brief: "Deprecated, use `k8s.container.cpu.request.utilization` instead.",
-            stability: global::Qyl.Telemetry.SemanticConventions.Stability.Development,
-            deprecation: global::Qyl.Telemetry.SemanticConventions.Deprecation.Renamed("k8s.container.cpu.request.utilization"),
             entities: new global::Qyl.Telemetry.SemanticConventions.EntityRef[] { new("{\"type\": \"k8s.container\"}") },
             attributes: global::System.Array.Empty<global::Qyl.Telemetry.SemanticConventions.AttributeRef>());
 

@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Report when an upstream ref pinned in Version.props differs from upstream.
+"""Report when an upstream ref this repository pins differs from upstream.
 
 The registry pins are exact by design: moving inputs must not change generated
 constants without a commit here. This scheduled check reports upstream movement;
 it does not decide whether or when to regenerate.
 
-Three pins, two shapes:
+Three pins, two shapes. The registry pins live in registry/manifest.yaml, the Weaver
+version in Version.props:
 
   SemConvSchemaVersion  release tag   v{version} vs the latest release
   WeaverVersion         release tag   v{version} vs the latest release
@@ -27,9 +28,12 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+import yaml
+
 GITHUB_API = os.environ.get("GITHUB_API_URL", "https://api.github.com")
-REPO_ROOT = Path(__file__).resolve().parents[3]
+REPO_ROOT = Path(__file__).resolve().parents[1]
 VERSION_PROPS = REPO_ROOT / "Version.props"
+MANIFEST = REPO_ROOT / "registry" / "manifest.yaml"
 
 CORE_REPO = os.environ.get("SEMCONV_CORE_UPSTREAM", "open-telemetry/semantic-conventions")
 GENAI_REPO = os.environ.get("SEMCONV_GENAI_UPSTREAM", "open-telemetry/semantic-conventions-genai")
@@ -46,8 +50,8 @@ class FreshnessUnknown(Exception):
     """The checker could not prove whether every pin matches upstream."""
 
 
-def read_version_property(name: str) -> str:
-    """Read a pin from Version.props, honouring the same overrides as generate.sh."""
+def read_pin(name: str) -> str:
+    """Read a pin, honouring the same environment overrides generate.sh honours."""
     override = {
         "SemConvSchemaVersion": "SEMCONV_SCHEMA_VERSION",
         "SemConvGenAiRef": "SEMCONV_GENAI_REF",
@@ -56,13 +60,39 @@ def read_version_property(name: str) -> str:
     if override and os.environ.get(override):
         return os.environ[override].strip()
 
+    if name == "WeaverVersion":
+        try:
+            value = ET.parse(VERSION_PROPS).getroot().findtext(".//WeaverVersion")
+        except (OSError, ET.ParseError) as error:
+            raise FreshnessUnknown(f"could not read {VERSION_PROPS}: {error}") from error
+        if value is None or not value.strip():
+            raise FreshnessUnknown(f"{VERSION_PROPS} does not define WeaverVersion")
+        return value.strip()
+
     try:
-        value = ET.parse(VERSION_PROPS).getroot().findtext(f".//{name}")
-    except (OSError, ET.ParseError) as error:
-        raise FreshnessUnknown(f"could not read {VERSION_PROPS}: {error}") from error
-    if value is None or not value.strip():
-        raise FreshnessUnknown(f"{VERSION_PROPS} does not define {name}")
-    return value.strip()
+        manifest = yaml.safe_load(MANIFEST.read_text()) or {}
+    except (OSError, yaml.YAMLError) as error:
+        raise FreshnessUnknown(f"could not read {MANIFEST}: {error}") from error
+
+    dependencies = {d.get("name"): d for d in manifest.get("dependencies") or []}
+
+    if name == "SemConvSchemaVersion":
+        core = dependencies.get("core")
+        if not core:
+            raise FreshnessUnknown(f"{MANIFEST} has no 'core' dependency")
+        schema_url = core.get("schema_url", "")
+        prefix = "https://opentelemetry.io/schemas/"
+        if not schema_url.startswith(prefix):
+            raise FreshnessUnknown(f"{MANIFEST}: core schema_url has unexpected shape: {schema_url!r}")
+        return schema_url[len(prefix):]
+
+    genai = dependencies.get("genai")
+    if not genai:
+        raise FreshnessUnknown(f"{MANIFEST} has no 'genai' dependency")
+    registry_path = genai.get("registry_path", "")
+    if "@" not in registry_path or "[" not in registry_path:
+        raise FreshnessUnknown(f"{MANIFEST}: genai registry_path has unexpected shape: {registry_path!r}")
+    return registry_path.split("@", 1)[1].split("[", 1)[0]
 
 
 def github_json(path: str) -> dict:
@@ -200,9 +230,9 @@ def main() -> int:
 
     try:
         pins = {
-            "SemConvSchemaVersion": read_version_property("SemConvSchemaVersion"),
-            "SemConvGenAiRef": read_version_property("SemConvGenAiRef"),
-            "WeaverVersion": read_version_property("WeaverVersion"),
+            "SemConvSchemaVersion": read_pin("SemConvSchemaVersion"),
+            "SemConvGenAiRef": read_pin("SemConvGenAiRef"),
+            "WeaverVersion": read_pin("WeaverVersion"),
         }
         checks = (
             (check_release_pin, ("SemConvSchemaVersion", CORE_REPO, pins["SemConvSchemaVersion"])),
