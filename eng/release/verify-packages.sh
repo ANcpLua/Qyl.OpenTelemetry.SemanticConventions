@@ -109,6 +109,7 @@ using Qyl.Telemetry.SemanticConventions.Activities;
 using Qyl.Telemetry.SemanticConventions.Attributes.Http;
 using Qyl.Telemetry.SemanticConventions.Metrics;
 using Qyl.Telemetry.SemanticConventions.Names;
+using Qyl.Telemetry.SemanticConventions.Incubating.Activities;
 using Qyl.Telemetry.SemanticConventions.Incubating.Attributes.GenAi;
 using Qyl.Telemetry.SemanticConventions.Incubating.Mapping;
 
@@ -129,7 +130,8 @@ internal static class Program
             QylTelemetryNames.Scopes.QylTelemetryAutoInstrumentation,
             QylTelemetryNames.Scopes.QylTelemetryAutoInstrumentationDatabase,
             QylTelemetryNames.Scopes.QylTelemetryAutoInstrumentationNServiceBus,
-            HttpServerMetricDefinitions.HttpServerRequestDuration.Name,
+            HttpMetricDefinitions.HttpServerRequestDuration.Name,
+            HttpMetricDefinitions.HttpServerRequestDuration.Unit,
         ];
         string[] expected =
         [
@@ -140,6 +142,7 @@ internal static class Program
             "Qyl.Telemetry.AutoInstrumentation.Database",
             "Qyl.Telemetry.AutoInstrumentation.NServiceBus",
             "http.server.request.duration",
+            "s",
         ];
 
         if (!actual.SequenceEqual(expected, StringComparer.Ordinal))
@@ -152,21 +155,31 @@ internal static class Program
             return 2;
         }
 
-        // The pre-generated setter extensions: the only marker consumer used to declare a
-        // partial class and have them generated at compile time.
-        using var source = new ActivitySource("ReleaseSmoke");
-        using var activity = source.StartActivity("smoke");
-        activity?.SetHttpRequestMethod(HttpRequestMethodValues.Get);
+        // The pre-generated setter extensions of both packages, which the marker consumer
+        // used to declare a partial class for and have generated at compile time. The two
+        // tiers are disjoint since 9.0.0, so a stable and an incubating Activities namespace
+        // can be imported together: the stable http setter and the incubating gen_ai one
+        // resolve without an ambiguous call. A bare Activity exercises them and needs no
+        // ActivitySource, so nothing here has to be registered or suppressed.
+        using var activity = new Activity("release-smoke").Start();
+        activity.SetHttpRequestMethod(HttpAttributes.RequestMethodValues.Get);
+        activity.SetGenAiOperationName(GenAiAttributes.OperationNameValues.Chat);
+
+        if (activity.GetTagItem("http.request.method") is not "GET"
+            || activity.GetTagItem("gen_ai.operation.name") is not "chat")
+        {
+            return 3;
+        }
 
         if (!AttributeMapping.TryGetRename("http.method", out var renamed) || renamed != "http.request.method")
         {
-            return 3;
+            return 4;
         }
 
         if (AttributeMapping.NamespaceOf("definitely.not.a.namespace") != "other"
             || AttributeMapping.NamespaceOf("http.request.method") != "http")
         {
-            return 4;
+            return 5;
         }
 
         Console.WriteLine("semantic-conventions release smoke passed");
