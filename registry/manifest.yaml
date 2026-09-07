@@ -1,0 +1,22 @@
+# The one place the upstream pins live. renovate.json watches this file.
+#
+# core is a *local filtered copy*: scripts/fetch-core.sh archives
+# open-telemetry/semantic-conventions at the tag below into .build/core-filtered/model and
+# removes gen-ai/, mcp/, openai/ and the `registry.aws.bedrock` group. Upstream
+# semantic-conventions-genai filters the same way in its own Makefile. Without the filter a
+# direct unfiltered core dependency collides with genai:
+#   Ambiguous reference 'gen_ai.agent.description' ... gen-ai-dev/1.42.0-dev and .../1.44.0
+# genai's own transitive (unfiltered) core dependency is fine.
+name: qyl
+description: qyl vocabulary layered on the core and genai OpenTelemetry semantic conventions.
+schema_url: https://qyl.at/schemas/9.0.0
+stability: development
+dependencies:
+  # renovate: datasource=github-tags depName=open-telemetry/semantic-conventions
+  - name: core
+    schema_url: https://opentelemetry.io/schemas/1.44.0
+    registry_path: .build/core-filtered/model
+  # renovate: datasource=git-refs depName=open-telemetry/semantic-conventions-genai
+  - name: genai
+    schema_url: https://opentelemetry.io/schemas/gen-ai-dev/1.42.0-dev
+    registry_path: https://github.com/open-telemetry/semantic-conventions-genai.git@fee465db333bdd6a7d2faa320edab5cf3101a4f4[model]

@@ -1,0 +1,376 @@
+whitespace_control:
+  trim_blocks: true
+  lstrip_blocks: true
+  keep_trailing_newline: true
+
+comment_formats:
+  csharp:
+    format: markdown
+    prefix: "/// "
+    trim: true
+default_comment_format: csharp
+
+# Defaults for a bare `weaver registry generate`; scripts/generate.sh overrides every one of
+# them with -D from registry/manifest.yaml, so the pins live in exactly one place.
+params:
+  weaver_version: "0.26.1"
+  qyl_schema_url: "https://qyl.at/schemas/9.0.0"
+  core_ref: "v1.44.0"
+  core_commit: ""
+  core_schema_url: "https://opentelemetry.io/schemas/1.44.0"
+  genai_commit: "fee465db333bdd6a7d2faa320edab5cf3101a4f4"
+  genai_schema_url: "https://opentelemetry.io/schemas/gen-ai-dev/1.42.0-dev"
+  scope_names: ""
+  vendor_activity_sources: ""
+
+templates:
+  # One {Root}Attributes class per registry root, per stability tier. The 25 core attributes
+  # that are absent from the top-level `registry.attributes` but present under
+  # `dependencies[...]` are folded in first (top-level wins).
+  - template: attributes.cs.j2
+    filter: >
+      ([.registry.attributes[]]) as $top
+      | ($top | map({key: .key, value: true}) | from_entries) as $seen
+      | ([.dependencies[].registry.attributes[]] | map(select($seen[.key] | not))) as $extra
+      | (($top + $extra) | sort_by(.key)) as $all
+      | (def pascal($s): $s | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join(""); .) as $_
+      | [ ($all
+            | group_by(.key | split(".")[0]) | .[]
+            | (.[0].key | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "incubating", root: $root, pascal_root: $p, attributes: .,
+               class_suffix: " (incubating)",
+               namespace: ("Qyl.Telemetry.SemanticConventions.Incubating.Attributes." + $p),
+               out_dir: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"}),
+          ($all
+            | map(select(.stability == "stable" or (.deprecated != null)))
+            | group_by(.key | split(".")[0]) | .[]
+            | (.[0].key | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "stable", root: $root, pascal_root: $p, attributes: .,
+               class_suffix: "",
+               namespace: ("Qyl.Telemetry.SemanticConventions.Attributes." + $p),
+               out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
+    application_mode: each
+    file_name: "{{ ctx.out_dir }}/Attributes/{{ ctx.pascal_root }}Attributes.g.cs"
+
+  # The pinned core schema URL, in the stable package only.
+  - template: schema_url.cs.j2
+    filter: "."
+    application_mode: single
+    file_name: "src/Qyl.Telemetry.SemanticConventions/Generated/SchemaUrl.g.cs"
+
+  # The qyl-owned telemetry names, in the stable package only: the producer packages build
+  # their ActivitySource and Meter from these and may not read the incubating tier.
+  - template: names.cs.j2
+    filter: >
+      {events: [.registry.events[]
+                 | select(.provenance.path != null and (.provenance.path | startswith("registry/qyl/")))
+                 | .name]}
+    application_mode: single
+    file_name: "src/Qyl.Telemetry.SemanticConventions/Generated/Names/QylTelemetryNames.g.cs"
+
+  # The qyl-owned instruments, in the incubating tier.
+  - template: metric_attributes.cs.j2
+    filter: >
+      def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
+                     | map(select(length > 0) | (.[0:1] | ascii_upcase) + .[1:]) | join("");
+      def dedupe(f): group_by(f) | map(sort_by([(if .deprecated then 1 else 0 end), f]) | .[0]);
+      [ .registry.metrics
+        | map(select(.provenance.path != null and (.provenance.path | startswith("registry/qyl/"))))
+        | sort_by(.name)
+        | group_by(.name | split(".")[0]) | .[]
+        | (.[0].name | split(".")[0]) as $root
+        | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+        | {root: $root, pascal_root: $p, metrics: (. | dedupe(pascal(.name)) | sort_by(.name)),
+           namespace: ("Qyl.Telemetry.SemanticConventions.Incubating.Attributes." + $p)} ]
+    application_mode: each
+    file_name: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated/Attributes/{{ ctx.pascal_root }}MetricAttributes.g.cs"
+
+  # Typed Activity setter extensions, per stability tier.
+  - template: activities.cs.j2
+    filter: >
+      def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
+                     | map(select(length > 0) | (.[0:1] | ascii_upcase) + .[1:]) | join("");
+      def dedupe(f): group_by(f) | map(sort_by([(if .deprecated then 1 else 0 end), f]) | .[0]);
+      ([.registry.attributes[]]) as $top
+      | ($top | map({key: .key, value: true}) | from_entries) as $seen
+      | ([.dependencies[].registry.attributes[]] | map(select($seen[.key] | not))) as $extra
+      | (($top + $extra) | sort_by(.key)) as $all
+      | [ ($all
+            | group_by(.key | split(".")[0]) | .[]
+            | (.[0].key | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "incubating", root: $root, pascal_root: $p,
+               attributes: (. | dedupe(pascal(.key)) | sort_by(.key)),
+               namespace: ("Qyl.Telemetry.SemanticConventions.Incubating.Activities"),
+               out_dir: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"}),
+          ($all
+            | map(select(.stability == "stable" or (.deprecated != null)))
+            | group_by(.key | split(".")[0]) | .[]
+            | (.[0].key | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "stable", root: $root, pascal_root: $p,
+               attributes: (. | dedupe(pascal(.key)) | sort_by(.key)),
+               namespace: ("Qyl.Telemetry.SemanticConventions.Activities"),
+               out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
+    application_mode: each
+    file_name: "{{ ctx.out_dir }}/Activities/{{ ctx.pascal_root }}Activities.g.cs"
+
+  # MetricDefinition<TInstrument> rows, per stability tier.
+  - template: metrics.cs.j2
+    filter: >
+      def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
+                     | map(select(length > 0) | (.[0:1] | ascii_upcase) + .[1:]) | join("");
+      def dedupe(f): group_by(f) | map(sort_by([(if .deprecated then 1 else 0 end), f]) | .[0]);
+      ([.registry.metrics[]]) as $top
+      | ($top | map({key: .name, value: true}) | from_entries) as $seen
+      | ([.dependencies[].registry.metrics[]] | map(select($seen[.name] | not))) as $extra
+      | (($top + $extra) | sort_by(.name)) as $all
+      | [ ($all
+            | group_by(.name | split(".")[0]) | .[]
+            | (.[0].name | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "incubating", root: $root, pascal_root: $p, metrics: (. | dedupe(pascal(.name)) | sort_by(.name)),
+               namespace: "Qyl.Telemetry.SemanticConventions.Incubating.Metrics",
+               out_dir: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"}),
+          ($all
+            | map(select(.stability == "stable" or (.deprecated != null)))
+            | group_by(.name | split(".")[0]) | .[]
+            | (.[0].name | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "stable", root: $root, pascal_root: $p, metrics: (. | dedupe(pascal(.name)) | sort_by(.name)),
+               namespace: "Qyl.Telemetry.SemanticConventions.Metrics",
+               out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
+    application_mode: each
+    file_name: "{{ ctx.out_dir }}/Metrics/{{ ctx.pascal_root }}Metrics.g.cs"
+
+  # SpanDefinition<TKind> rows, per stability tier.
+  - template: spans.cs.j2
+    filter: >
+      def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
+                     | map(select(length > 0) | (.[0:1] | ascii_upcase) + .[1:]) | join("");
+      def dedupe(f): group_by(f) | map(sort_by([(if .deprecated then 1 else 0 end), f]) | .[0]);
+      ([.registry.spans[]]) as $top
+      | ($top | map({key: .type, value: true}) | from_entries) as $seen
+      | ([.dependencies[].registry.spans[]] | map(select($seen[.type] | not))) as $extra
+      | (($top + $extra) | sort_by(.type)) as $all
+      | [ ($all
+            | group_by(.type | split(".")[0]) | .[]
+            | (.[0].type | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "incubating", root: $root, pascal_root: $p, spans: (. | dedupe(pascal(.type)) | sort_by(.type)),
+               namespace: "Qyl.Telemetry.SemanticConventions.Incubating.Spans",
+               out_dir: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"}),
+          ($all
+            | map(select(.stability == "stable" or (.deprecated != null)))
+            | group_by(.type | split(".")[0]) | .[]
+            | (.[0].type | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "stable", root: $root, pascal_root: $p, spans: (. | dedupe(pascal(.type)) | sort_by(.type)),
+               namespace: "Qyl.Telemetry.SemanticConventions.Spans",
+               out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
+    application_mode: each
+    file_name: "{{ ctx.out_dir }}/Spans/{{ ctx.pascal_root }}Spans.g.cs"
+
+  # EventDefinition rows, per stability tier.
+  - template: events.cs.j2
+    filter: >
+      def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
+                     | map(select(length > 0) | (.[0:1] | ascii_upcase) + .[1:]) | join("");
+      def dedupe(f): group_by(f) | map(sort_by([(if .deprecated then 1 else 0 end), f]) | .[0]);
+      ([.registry.events[]]) as $top
+      | ($top | map({key: .name, value: true}) | from_entries) as $seen
+      | ([.dependencies[].registry.events[]] | map(select($seen[.name] | not))) as $extra
+      | (($top + $extra) | sort_by(.name)) as $all
+      | [ ($all
+            | group_by(.name | split(".")[0]) | .[]
+            | (.[0].name | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "incubating", root: $root, pascal_root: $p, events: (. | dedupe(pascal(.name)) | sort_by(.name)),
+               namespace: "Qyl.Telemetry.SemanticConventions.Incubating.Events",
+               out_dir: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"}),
+          ($all
+            | map(select(.stability == "stable" or (.deprecated != null)))
+            | group_by(.name | split(".")[0]) | .[]
+            | (.[0].name | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "stable", root: $root, pascal_root: $p, events: (. | dedupe(pascal(.name)) | sort_by(.name)),
+               namespace: "Qyl.Telemetry.SemanticConventions.Events",
+               out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
+    application_mode: each
+    file_name: "{{ ctx.out_dir }}/Events/{{ ctx.pascal_root }}Events.g.cs"
+
+  # EntityDefinition rows, per stability tier.
+  - template: entities.cs.j2
+    filter: >
+      def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
+                     | map(select(length > 0) | (.[0:1] | ascii_upcase) + .[1:]) | join("");
+      def dedupe(f): group_by(f) | map(sort_by([(if .deprecated then 1 else 0 end), f]) | .[0]);
+      ([.registry.entities[]]) as $top
+      | ($top | map({key: .type, value: true}) | from_entries) as $seen
+      | ([.dependencies[].registry.entities[]] | map(select($seen[.type] | not))) as $extra
+      | (($top + $extra) | sort_by(.type)) as $all
+      | [ ($all
+            | group_by(.type | split(".")[0]) | .[]
+            | (.[0].type | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "incubating", root: $root, pascal_root: $p, entities: (. | dedupe(pascal(.type)) | sort_by(.type)),
+               namespace: "Qyl.Telemetry.SemanticConventions.Incubating.Entities",
+               out_dir: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"}),
+          ($all
+            | map(select(.stability == "stable" or (.deprecated != null)))
+            | group_by(.type | split(".")[0]) | .[]
+            | (.[0].type | split(".")[0]) as $root
+            | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
+            | {tier: "stable", root: $root, pascal_root: $p, entities: (. | dedupe(pascal(.type)) | sort_by(.type)),
+               namespace: "Qyl.Telemetry.SemanticConventions.Entities",
+               out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
+    application_mode: each
+    file_name: "{{ ctx.out_dir }}/Entities/{{ ctx.pascal_root }}Entities.g.cs"
+
+  # The registry-derived analyzer facts. Everything the analyzers need to decide whether a key,
+  # metric, scope, event or GenAI span is one the pinned registry knows — derived here rather
+  # than in Python, and committed like every other generated file.
+  #
+  # The GenAI span rules are the involved part: a base span group carries a required enum
+  # discriminator (`*.operation.name` or `*.method.name`), the operation values are handed to
+  # the group whose id segment matches, and whatever is left over goes to the single group that
+  # matched nothing. A span refinement adds a constraint read out of its note
+  # ("`gen_ai.provider.name` MUST be set to `\"anthropic\"`") and inherits its base's
+  # discriminator.
+  - template: analyzer_facts.cs.j2
+    filter: >
+      def genai: (.provenance.source // "") | startswith("https://opentelemetry.io/schemas/gen-ai-dev/");
+      def enumvals: if ((.type | type) == "object") and (.type | has("members"))
+                    then [.type.members[].value | tostring] | unique else [] end;
+      def segment($id): ($id | split(".")) as $p
+                        | if ($p | length) >= 2 then $p[($p | length) - 2] else $id end;
+      def kindof($t):
+        if ($t | type) == "object" then {kind: "String", template: false}
+        elif ($t | type) != "string" then {kind: "Unknown", template: false}
+        else (if ($t | startswith("template[")) then {p: $t[9:-1], template: true}
+              else {p: $t, template: false} end)
+             | {kind: ({"string": "String", "int": "Integer", "double": "Double",
+                        "boolean": "Boolean", "string[]": "StringArray", "int[]": "IntegerArray",
+                        "double[]": "DoubleArray", "boolean[]": "BooleanArray",
+                        "any": "Any"}[.p] // "Unknown"), template: .template}
+        end;
+      def required($g): [$g.attributes[] | select(.requirement_level == "required") | .key] | unique;
+      def disc($g): [$g.attributes[]
+                     | select(((.key | endswith(".operation.name")) or (.key | endswith(".method.name")))
+                              and .requirement_level == "required"
+                              and ((enumvals | length) > 0))] | first;
+      ([.registry.attributes[]]) as $top
+      | ($top | map({key: .key, value: true}) | from_entries) as $seen
+      | ([.dependencies[].registry.attributes[]] | map(select($seen[.key] | not))) as $extra
+      | (($top + $extra) | sort_by(.key)) as $all
+      | ([.registry.metrics[]]) as $mtop
+      | ($mtop | map({key: .name, value: true}) | from_entries) as $mseen
+      | ([.dependencies[].registry.metrics[]] | map(select($mseen[.name] | not))) as $mextra
+      | ($mtop + $mextra) as $allm
+      | ([.registry.events[].name] + [.dependencies[].registry.events[].name] | unique) as $events
+      | ([.registry.spans[] | select(genai)]) as $bases
+      | ([$bases[] | select(disc(.) != null)
+           | {id: .type, kind: .kind, d: disc(.), req: required(.)}]) as $withdisc
+      | ([$withdisc[] | .d.key] | unique) as $dkeys
+      | ([ $dkeys[] as $dk
+           | ([$withdisc[] | select(.d.key == $dk)]) as $entries
+           | ([$entries[] | .d | enumvals] | add | unique) as $vals
+           | (if ($dk | endswith(".method.name"))
+              then [$entries[] | {id: .id, values: $vals}]
+              else
+                ([$entries[] | . as $e | {id: $e.id,
+                    values: [$vals[] | select(. == segment($e.id) or (. | split("_") | index(segment($e.id)) != null))]}]) as $m
+                | ([$m[] | select((.values | length) > 0)]) as $matched
+                | ([$m[] | select((.values | length) == 0) | .id]) as $unmatched
+                | ($vals - ([$matched[] | .values] | add // [])) as $rest
+                | ($matched + (if ($rest | length) > 0 and ($unmatched | length) == 1
+                               then [{id: $unmatched[0], values: $rest}] else [] end))
+              end)
+           | .[] ] ) as $assign
+      | ($assign | map({key: .id, value: .values}) | from_entries) as $assigned
+      | ([$withdisc[] | select($assigned[.id] != null)
+           | {id: .id, kind: .kind, discriminator_key: .d.key,
+              discriminator_values: $assigned[.id],
+              constraint_key: null, constraint_value: null, required_attributes: .req}]) as $baserules
+      | ($baserules | map(select(.discriminator_key | endswith(".operation.name")))
+                    | map({key: (segment(.id) + " " + .kind), value: .}) | from_entries) as $bysuffix
+      | ([$bases[] | .type] | unique) as $baseids
+      | ([.refinements.spans[]
+           | select(genai)
+           | . as $r
+           | select(($baseids | index($r.id)) == null)
+           | select((.note // "") | test("`[^`]+`\\s+MUST be set to\\s+`\\\\?\"[^\"`]+"))
+           | ((.note) | capture("`(?<k>[^`]+)`\\s+MUST be set to\\s+`\\\\?\"(?<v>[^\"`]+)")) as $c
+           | ($bysuffix[segment($r.id) + " " + $r.kind]) as $base
+           | select($base != null)
+           | {id: $r.id, kind: $base.kind, discriminator_key: $base.discriminator_key,
+              discriminator_values: $base.discriminator_values,
+              constraint_key: $c.k, constraint_value: $c.v,
+              required_attributes: required($r)}]) as $refrules
+      | (($baserules + $refrules)
+          | sort_by([(if .constraint_key == null then 1 else 0 end), .id])) as $rules
+      | {attributes: [$all[] | {key: .key} + kindof(.type) + {values: enumvals}],
+         metric_names: ([$allm[] | .name] | unique),
+         genai_metrics: ([$allm[] | select(genai) | .name] | unique),
+         event_names: $events,
+         span_rules: $rules,
+         genai_discriminators: ([$rules[] | .discriminator_key | select(startswith("gen_ai."))] | unique)}
+    application_mode: single
+    file_name: "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvRegistryFacts.g.cs"
+
+  # The collector's normalize table. Renames resolve transitively to the final live key; a
+  # cycle, or a rename target the registry does not know, fails generation here rather than
+  # shipping a table that points at nothing.
+  - template: attribute_mapping.cs.j2
+    filter: >
+      ([.registry.attributes[]]) as $top
+      | ($top | map({key: .key, value: true}) | from_entries) as $seen
+      | ([.dependencies[].registry.attributes[]] | map(select($seen[.key] | not))) as $extra
+      | (($top + $extra) | sort_by(.key)) as $all
+      | ($all | map({key: .key, value: true}) | from_entries) as $known
+      | ($all | map(select(.deprecated.reason == "renamed") | {key: .key, value: .deprecated.renamed_to})
+              | from_entries) as $direct
+      | [ $direct | keys[] as $k
+          | ([$k] | until((($direct[.[-1]] // null) == null) or ((. | length) > 32);
+                          . + [$direct[.[-1]]])) as $chain
+          | if ($chain | unique | length) != ($chain | length)
+            then error("rename cycle for attribute " + $k + ": " + ($chain | join(" -> ")))
+            else . end
+          | ($chain[-1]) as $target
+          | if ($known[$target] | not)
+            then error("attribute " + $k + " is renamed to " + $target + ", which the registry does not define")
+            else . end
+          | {key: $k, target: $target} ] as $renames
+      | {renames: ($renames | sort_by(.key)),
+         vendor_keys: [$all[] | select((.provenance.path // "") | startswith("registry/vendor/")) | .key],
+         namespaces: (([$all[] | .key | split(".")[0]] + ["other"]) | unique)}
+    application_mode: single
+    file_name: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated/Mapping/AttributeMapping.g.cs"
+
+  # The pins, for MSBuild: registry/manifest.yaml is where they are declared, this is how the
+  # build reads them. Directory.Build.props imports it.
+  - template: pins.props.j2
+    filter: "."
+    application_mode: single
+    file_name: "generated/pins.props"
+
+  # Every deprecation the registry declares. A Pipeline test cross-checks the hand-curated
+  # OpenTelemetryDeprecatedSemconvCatalog.cs against it; this replaces verify_deprecated_catalog.py.
+  - template: deprecations.cs.j2
+    filter: >
+      ([.registry.attributes[]]) as $top
+      | ($top | map({key: .key, value: true}) | from_entries) as $seen
+      | ([.dependencies[].registry.attributes[]] | map(select($seen[.key] | not))) as $extra
+      | (($top + $extra) | sort_by(.key)) as $all
+      | {renamed: [$all[] | select(.deprecated.reason == "renamed")
+                   | {key: .key, renamed_to: .deprecated.renamed_to}],
+         without_replacement: [$all[] | select(.deprecated != null and .deprecated.reason != "renamed") | .key],
+         deprecated_values: [$all[]
+           | . as $a
+           | select((($a.type | type) == "object") and ($a.type | has("members")))
+           | $a.type.members[] | select(.deprecated != null)
+           | {key: $a.key, value: .value}]}
+    application_mode: single
+    file_name: "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvDeprecations.g.cs"

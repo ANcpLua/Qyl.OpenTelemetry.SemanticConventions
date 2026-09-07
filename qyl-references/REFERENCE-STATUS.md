@@ -1,12 +1,14 @@
 # Reference status
 
-The upstream registry pins in [`Version.props`](../Version.props) are exact by design: a moving
-input must not change generated constants without a commit in this repository. The scheduled
-[`check_pin_freshness.py`](../src/Qyl.Telemetry.SemanticConventions.SourceGeneration/scripts/check_pin_freshness.py)
+The upstream registry pins in [`registry/manifest.yaml`](../registry/manifest.yaml) are exact by
+design: a moving input must not change generated constants without a commit in this repository. The
+scheduled [`check-pin-freshness.py`](../scripts/check-pin-freshness.py)
 reports when a pin falls behind upstream; it does not decide whether to move one. Moving a pin is a
-deliberate change: re-run
-[`scripts/generate.sh`](../src/Qyl.Telemetry.SemanticConventions.SourceGeneration/scripts/generate.sh),
-review the regenerated registry, and record the delta here.
+deliberate change: re-run [`scripts/generate.sh`](../scripts/generate.sh),
+review the regenerated surface, and record the delta here.
+
+Entries before 9.0.0 refer to `Version.props` and `resolved-registry.json`, which is where the pins
+and the merged model lived until Weaver became the only generator.
 
 Each entry names the pins before and after, the upstream commits the move absorbed, and what
 changed in the generated surface — added, removed, renamed, or deprecated attributes, metrics,

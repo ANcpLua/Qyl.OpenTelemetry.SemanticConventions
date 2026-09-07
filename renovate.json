@@ -4,10 +4,10 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Track the OpenTelemetry semantic-conventions release pinned in Version.props",
-      "managerFilePatterns": ["/(^|/)Version\\.props$/"],
+      "description": "Track the OpenTelemetry semantic-conventions release pinned in registry/manifest.yaml",
+      "managerFilePatterns": ["/(^|/)registry/manifest\\.yaml$/"],
       "matchStrings": [
-        "<SemConvSchemaVersion>(?<currentValue>[^<]+)</SemConvSchemaVersion>"
+        "schema_url: https://opentelemetry\\.io/schemas/(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s"
       ],
       "depNameTemplate": "open-telemetry/semantic-conventions",
       "packageNameTemplate": "open-telemetry/semantic-conventions",
@@ -17,10 +17,10 @@
     },
     {
       "customType": "regex",
-      "description": "Track the semantic-conventions-genai main-branch commit pinned in Version.props",
-      "managerFilePatterns": ["/(^|/)Version\\.props$/"],
+      "description": "Track the semantic-conventions-genai main-branch commit pinned in registry/manifest.yaml",
+      "managerFilePatterns": ["/(^|/)registry/manifest\\.yaml$/"],
       "matchStrings": [
-        "<SemConvGenAiRef>(?<currentDigest>[0-9a-f]{40})</SemConvGenAiRef>"
+        "semantic-conventions-genai\\.git@(?<currentDigest>[0-9a-f]{40})\\[model\\]"
       ],
       "currentValueTemplate": "main",
       "depNameTemplate": "open-telemetry/semantic-conventions-genai",
@@ -44,7 +44,7 @@
   "packageRules": [
     {
       "description": "Review and regenerate all semantic-conventions toolchain pin updates together",
-      "matchFileNames": ["Version.props"],
+      "matchFileNames": ["registry/manifest.yaml", "Version.props"],
       "matchManagers": ["custom.regex"],
       "groupName": "semantic-conventions toolchain",
       "automerge": false

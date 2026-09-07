@@ -1,0 +1,28 @@
+# qyl-owned metrics.
+groups:
+  - id: metric.qyl.nservicebus_messaging_operation_duration
+    type: metric
+    metric_name: nservicebus.messaging.operation.duration
+    instrument: histogram
+    unit: "s"
+    stability: development
+    brief: "Duration of an NServiceBus send or publish operation."
+    attributes:
+      - ref: messaging.system
+        requirement_level: required
+      - ref: messaging.operation.type
+        requirement_level:
+          conditionally_required: "If applicable."
+      - ref: messaging.operation.name
+        requirement_level: required
+  - id: metric.qyl.qyl_collector_attributes_dropped
+    type: metric
+    metric_name: qyl.collector.attributes.dropped
+    instrument: counter
+    unit: "{attribute}"
+    stability: development
+    brief: "Attributes the collector dropped at ingest because their key is not in the pinned registry."
+    note: "The collector's attribute allowlist is generated from the pinned registry plus the qyl-owned and vendor rows; a key outside it is dropped rather than forwarded. Counting the drops by namespace is how an undeclared key is noticed at all."
+    attributes:
+      - ref: qyl.attribute.namespace
+        requirement_level: required

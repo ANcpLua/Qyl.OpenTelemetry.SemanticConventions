@@ -1,0 +1,65 @@
+# Elastic.Transport 1.0.0 — the attributes the library puts on the spans of its own
+# ActivitySource and that upstream semantic conventions do not define. Vendor keys are
+# tags: the collector passes them through, the application never renames them.
+#
+# Two groups: `registry.vendor.*` carries the attributes into the resolved catalog (which
+# drops group annotations), `vendor.*` carries the library metadata, which survives as a
+# plain attribute group.
+groups:
+  - id: registry.vendor.elastic_transport
+    type: attribute_group
+    display_name: "Elastic.Transport Vendor Attributes"
+    brief: "Attributes Elastic.Transport 1.0.0 puts on the spans of its own \"Elastic.Transport\" ActivitySource and that upstream semantic conventions 1.44.0 does not define."
+    attributes:
+      - id: elastic.transport.product.name
+        type: string
+        stability: development
+        brief: "Name of the product library consuming Elastic.Transport."
+        note: "Span tag on the \"Elastic.Transport\" ActivitySource. Declared at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetryAttributes.cs:15; set at src/Elastic.Transport/DistributedTransport.cs:128."
+      - id: elastic.transport.product.version
+        type: string
+        stability: development
+        brief: "Informational version of the product library consuming Elastic.Transport."
+        note: "Span tag on the \"Elastic.Transport\" ActivitySource. Declared at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetryAttributes.cs:20; set at src/Elastic.Transport/DistributedTransport.cs:129."
+      - id: elastic.transport.version
+        type: string
+        stability: development
+        brief: "Informational version of the Elastic.Transport library."
+        note: "Span tag on the \"Elastic.Transport\" ActivitySource. Declared at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetryAttributes.cs:25; set at src/Elastic.Transport/DistributedTransport.cs:130."
+      - id: elastic.transport.schema_url
+        type: string
+        stability: development
+        brief: "Semantic-convention schema URL the transport layer's own attributes conform to."
+        note: "Span tag on the \"Elastic.Transport\" ActivitySource. Declared at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetryAttributes.cs:30; set at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetry.cs:67."
+      - id: elastic.transport.attempted_nodes
+        type: int
+        stability: development
+        brief: "Number of nodes attempted during one logical operation."
+        note: "Span tag on the \"Elastic.Transport\" ActivitySource. Declared at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetryAttributes.cs:40; set at src/Elastic.Transport/DistributedTransport.cs:278."
+      - id: elastic.transport.prepare_request_ms
+        type: int
+        stability: development
+        brief: "Milliseconds spent preparing the HTTP request, recorded only above the transport's 20 ms threshold."
+        note: "Span tag on the \"Elastic.Transport\" ActivitySource. Declared at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetryAttributes.cs:45; set at src/Elastic.Transport/Components/TransportClient/HttpRequestInvoker.cs:128 and src/Elastic.Transport/Components/TransportClient/HttpWebRequestInvoker.cs:129."
+      - id: elastic.transport.deserialize_response_ms
+        type: int
+        stability: development
+        brief: "Milliseconds spent deserializing the HTTP response, recorded only above the transport's 20 ms threshold."
+        note: "Span tag on the \"Elastic.Transport\" ActivitySource. Declared at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetryAttributes.cs:50; set at src/Elastic.Transport/Components/Pipeline/DefaultResponseBuilder.cs:57 and src/Elastic.Transport/Products/Elasticsearch/Responses/ElasticsearchResponseBuilder.cs:61."
+  - id: vendor.elastic_transport
+    type: attribute_group
+    display_name: "Elastic.Transport Vendor Metadata"
+    brief: "The pinned Elastic.Transport release qyl read its ActivitySource and attribute findings at."
+    annotations:
+      qyl:
+        vendor:
+          library: "Elastic.Transport"
+          version: "1.0.0"
+          repository: "https://github.com/elastic/elastic-transport-net"
+          ref: "1.0.0"
+          license: "Apache-2.0"
+          activity_sources:
+            - name: "Elastic.Transport"
+              note: "OpenTelemetry.ElasticTransportActivitySourceName at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetry.cs:26; the ActivitySource is constructed with it at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetry.cs:28."
+    attributes:
+      - ref: qyl.instrumentation.domain

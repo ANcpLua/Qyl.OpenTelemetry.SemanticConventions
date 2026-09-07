@@ -1,0 +1,50 @@
+# Npgsql 10.0.3 — the attributes the library puts on the spans of its own
+# ActivitySource and that upstream semantic conventions do not define. Vendor keys are
+# tags: the collector passes them through, the application never renames them.
+#
+# Two groups: `registry.vendor.*` carries the attributes into the resolved catalog (which
+# drops group annotations), `vendor.*` carries the library metadata, which survives as a
+# plain attribute group.
+groups:
+  - id: registry.vendor.npgsql
+    type: attribute_group
+    display_name: "Npgsql Vendor Attributes"
+    brief: "Attributes Npgsql 10.0.3 puts on the spans of its own \"Npgsql\" ActivitySource and that upstream semantic conventions 1.44.0 does not define."
+    attributes:
+      - id: db.npgsql.connection_id
+        type: int
+        stability: development
+        brief: "Npgsql connector id the command ran on."
+        note: "Span tag on the \"Npgsql\" ActivitySource. Set as a literal at src/Npgsql/NpgsqlActivitySource.cs:122."
+      - id: db.npgsql.data_source
+        type: string
+        stability: development
+        brief: "Name of the Npgsql data source the command ran on."
+        note: "Span tag on the \"Npgsql\" ActivitySource. Set as a literal at src/Npgsql/NpgsqlActivitySource.cs:86,121."
+      - id: db.npgsql.prepared
+        type: boolean
+        stability: development
+        brief: "Whether the command was executed as a prepared statement."
+        note: "Span tag on the \"Npgsql\" ActivitySource. Set as a literal at src/Npgsql/NpgsqlActivitySource.cs:53."
+      - id: db.npgsql.rows
+        type: int
+        stability: development
+        brief: "Number of rows the command returned or affected."
+        note: "Span tag on the \"Npgsql\" ActivitySource. Set as a literal at src/Npgsql/NpgsqlActivitySource.cs:180."
+  - id: vendor.npgsql
+    type: attribute_group
+    display_name: "Npgsql Vendor Metadata"
+    brief: "The pinned Npgsql release qyl read its ActivitySource and attribute findings at."
+    annotations:
+      qyl:
+        vendor:
+          library: "Npgsql"
+          version: "10.0.3"
+          repository: "https://github.com/npgsql/npgsql"
+          ref: "v10.0.3"
+          license: "PostgreSQL"
+          activity_sources:
+            - name: "Npgsql"
+              note: "The ActivitySource is constructed with the literal at src/Npgsql/NpgsqlActivitySource.cs:15."
+    attributes:
+      - ref: qyl.instrumentation.domain

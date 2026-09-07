@@ -1,0 +1,255 @@
+# NServiceBus 10.2.9 — the attributes the library puts on the spans of its own
+# ActivitySource and that upstream semantic conventions do not define. Vendor keys are
+# tags: the collector passes them through, the application never renames them.
+#
+# Two groups: `registry.vendor.*` carries the attributes into the resolved catalog (which
+# drops group annotations), `vendor.*` carries the library metadata, which survives as a
+# plain attribute group.
+groups:
+  - id: registry.vendor.nservicebus
+    type: attribute_group
+    display_name: "NServiceBus Vendor Attributes"
+    brief: "Attributes NServiceBus 10.2.9 puts on the spans of its own \"NServiceBus.Core\" ActivitySource and on the instruments of its \"NServiceBus.Core.Pipeline.Incoming\" Meter, and that upstream semantic conventions 1.44.0 does not define. The header-promoted tags are written by ActivityDecorator.PromoteHeadersToTags, which maps one NServiceBus message header to one tag."
+    attributes:
+      - id: nservicebus.saga.saga_id
+        type: string
+        stability: development
+        brief: "Id of the saga instance the message belongs to."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:7; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.message_id
+        type: string
+        stability: development
+        brief: "NServiceBus message id."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:8; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.correlation_id
+        type: string
+        stability: development
+        brief: "Correlation id of the message."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:9; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.reply_to_address
+        type: string
+        stability: development
+        brief: "Address replies to the message are sent to."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:10; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.version
+        type: string
+        stability: development
+        brief: "NServiceBus version that sent the message."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:11; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.control_message
+        type: string
+        stability: development
+        brief: "Marks the message as an NServiceBus control message."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:12; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.saga.saga_type
+        type: string
+        stability: development
+        brief: "Type name of the saga the message belongs to."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:13; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.originating_saga_id
+        type: string
+        stability: development
+        brief: "Id of the saga that sent the message."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:14; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.originating_saga_type
+        type: string
+        stability: development
+        brief: "Type name of the saga that sent the message."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:15; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.delayed_retries
+        type: string
+        stability: development
+        brief: "Number of delayed retries the message has been through."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:16; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.delayed_retries_timestamp
+        type: string
+        stability: development
+        brief: "Timestamp of the last delayed retry of the message."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:17; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.deliver_at
+        type: string
+        stability: development
+        brief: "Time the message is to be delivered at."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:18; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.related_to
+        type: string
+        stability: development
+        brief: "Id of the message this message relates to."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:19; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.enclosed_message_types
+        type: string
+        stability: development
+        brief: "Message types enclosed in the message body."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:20; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.content_type
+        type: string
+        stability: development
+        brief: "Content type of the message body."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:21; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.saga.is_timeout
+        type: string
+        stability: development
+        brief: "Marks the message as a saga timeout."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:22; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.is_deferred
+        type: string
+        stability: development
+        brief: "Marks the message as deferred."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:23; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.originating_endpoint
+        type: string
+        stability: development
+        brief: "Endpoint that sent the message."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:24; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.originating_machine
+        type: string
+        stability: development
+        brief: "Machine that sent the message."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:25; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.originating_host_id
+        type: string
+        stability: development
+        brief: "Host id that sent the message."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:26; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.processing_endpoint
+        type: string
+        stability: development
+        brief: "Endpoint processing the message."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:27; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.processing_machine
+        type: string
+        stability: development
+        brief: "Machine processing the message."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:28; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.host.display_name
+        type: string
+        stability: development
+        brief: "Display name of the host."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:29; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.host.host_id
+        type: string
+        stability: development
+        brief: "Id of the host."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:30; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.has_license_expired
+        type: string
+        stability: development
+        brief: "Whether the license of the endpoint that sent the message had expired."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:31; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.originating_address
+        type: string
+        stability: development
+        brief: "Address the message originated from."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:32; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.conversation_id
+        type: string
+        stability: development
+        brief: "Conversation id of the message."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:33; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.previous_conversation_id
+        type: string
+        stability: development
+        brief: "Conversation id the message's conversation was started from."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:34; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.message_intent
+        type: string
+        stability: development
+        brief: "Intent of the message (send, publish, subscribe, reply)."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:35; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.time_to_be_received
+        type: string
+        stability: development
+        brief: "Time-to-be-received of the message."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:36; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.databus.content_type
+        type: string
+        stability: development
+        brief: "Content type of the claim-check (data bus) payload."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:37; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.non_durable
+        type: string
+        stability: development
+        brief: "Marks the message as non-durable."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:38; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+      - id: nservicebus.native_message_id
+        type: string
+        stability: development
+        brief: "Transport-native id of the received message."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:39; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityFactory.cs:71."
+      - id: nservicebus.handler.handler_type
+        type: string
+        stability: development
+        brief: "Type name of the handler invoked for the message."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:40; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityFactory.cs:113."
+      - id: nservicebus.handler.saga_id
+        type: string
+        stability: development
+        brief: "Id of the saga instance the invoked handler is operating on."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:41; set at src/NServiceBus.Core/Sagas/SagaPersistenceBehavior.cs:93."
+      - id: nservicebus.event_types
+        type: string
+        stability: development
+        brief: "Event types being subscribed to or unsubscribed from."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:42; set at src/NServiceBus.Core/OpenTelemetry/Tracing/SubscribeDiagnosticsBehavior.cs:15 and src/NServiceBus.Core/OpenTelemetry/Tracing/UnsubscribeDiagnosticsBehavior.cs:15."
+      - id: nservicebus.cancelled
+        type: boolean
+        stability: development
+        brief: "Set when the operation ended because it was cancelled."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:43; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityExtensions.cs:54."
+      - id: nservicebus.outbox.deduplicate-message
+        type: boolean
+        stability: development
+        brief: "Set when the outbox deduplicated an incoming message instead of processing it again."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Written as a literal at src/NServiceBus.Core/Pipeline/Incoming/TransportReceiveToPhysicalMessageConnector.cs:60; the hyphen is the spelling NServiceBus 10.2.9 emits."
+      - id: nservicebus.discriminator
+        type: string
+        stability: development
+        brief: "Discriminator of the endpoint instance the measurement was taken on."
+        note: "Metric tag on the \"NServiceBus.Core.Pipeline.Incoming\" Meter. Declared at src/NServiceBus.Core/OpenTelemetry/Metrics/MeterTags.cs:7; set at src/NServiceBus.Core/Pipeline/Incoming/IncomingPipelineMetrics.cs:56."
+      - id: nservicebus.queue
+        type: string
+        stability: development
+        brief: "Queue the measured message was received from."
+        note: "Metric tag on the \"NServiceBus.Core.Pipeline.Incoming\" Meter. Declared at src/NServiceBus.Core/OpenTelemetry/Metrics/MeterTags.cs:8; set at src/NServiceBus.Core/Pipeline/Incoming/IncomingPipelineMetrics.cs:55."
+      - id: nservicebus.message_type
+        type: string
+        stability: development
+        brief: "Type of the measured message."
+        note: "Metric tag on the \"NServiceBus.Core.Pipeline.Incoming\" Meter. Declared at src/NServiceBus.Core/OpenTelemetry/Metrics/MeterTags.cs:9; set at src/NServiceBus.Core/Pipeline/Incoming/DeserializeMessageConnector.cs:35."
+      - id: nservicebus.message_handler_types
+        type: string
+        stability: development
+        brief: "Semicolon-separated handler types invoked for the measured message."
+        note: "Metric tag on the \"NServiceBus.Core.Pipeline.Incoming\" Meter. Declared at src/NServiceBus.Core/OpenTelemetry/Metrics/MeterTags.cs:10; set at src/NServiceBus.Core/Pipeline/Incoming/LoadHandlersConnector.cs:47."
+      - id: nservicebus.message_handler_type
+        type: string
+        stability: development
+        brief: "Handler type the measurement is about."
+        note: "Metric tag on the \"NServiceBus.Core.Pipeline.Incoming\" Meter. Declared at src/NServiceBus.Core/OpenTelemetry/Metrics/MeterTags.cs:11; set at src/NServiceBus.Core/Pipeline/Incoming/IncomingPipelineMetrics.cs:163,183."
+      - id: nservicebus.envelope.unwrapper_type
+        type: string
+        stability: development
+        brief: "Type of the envelope unwrapper the measurement is about."
+        note: "Metric tag on the \"NServiceBus.Core.Pipeline.Incoming\" Meter. Declared at src/NServiceBus.Core/OpenTelemetry/Metrics/MeterTags.cs:14; set at src/NServiceBus.Core/Pipeline/Incoming/IncomingPipelineMetrics.cs:260."
+      - id: execution.result
+        type: string
+        stability: development
+        brief: "Result of the measured execution, reported by NServiceBus as \"success\" or \"failure\"."
+        note: "Metric tag on the \"NServiceBus.Core.Pipeline.Incoming\" Meter. Declared at src/NServiceBus.Core/OpenTelemetry/Metrics/MeterTags.cs:12; set at src/NServiceBus.Core/Pipeline/Incoming/IncomingPipelineMetrics.cs:69,89,121,164,184."
+  - id: vendor.nservicebus
+    type: attribute_group
+    display_name: "NServiceBus Vendor Metadata"
+    brief: "The pinned NServiceBus release qyl read its ActivitySource and attribute findings at."
+    annotations:
+      qyl:
+        vendor:
+          library: "NServiceBus"
+          version: "10.2.9"
+          repository: "https://github.com/Particular/NServiceBus"
+          ref: "10.2.9"
+          license: "RPL-1.5"
+          activity_sources:
+            - name: "NServiceBus.Core"
+              note: "ActivitySources.Main at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivitySources.cs:10. The endpoint's instruments live on a differently named Meter, \"NServiceBus.Core.Pipeline.Incoming\", created at src/NServiceBus.Core/Pipeline/Incoming/IncomingPipelineMetrics.cs:27."
+    attributes:
+      - ref: qyl.instrumentation.domain

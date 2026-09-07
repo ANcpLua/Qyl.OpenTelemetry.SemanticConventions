@@ -1,0 +1,37 @@
+# RabbitMQ.Client 7.2.2 — the attributes the library puts on the spans of its own
+# ActivitySource and that upstream semantic conventions do not define. Vendor keys are
+# tags: the collector passes them through, the application never renames them.
+#
+# Two groups: `registry.vendor.*` carries the attributes into the resolved catalog (which
+# drops group annotations), `vendor.*` carries the library metadata, which survives as a
+# plain attribute group.
+groups:
+  - id: registry.vendor.rabbitmq_client
+    type: attribute_group
+    display_name: "RabbitMQ.Client Vendor Attributes"
+    brief: "Attributes RabbitMQ.Client 7.2.2 puts on the spans of its own \"RabbitMQ.Client.Publisher\" and \"RabbitMQ.Client.Subscriber\" ActivitySources and that upstream semantic conventions 1.44.0 does not define."
+    attributes:
+      - id: messaging.rabbitmq.delivery_tag
+        type: int
+        stability: development
+        brief: "Delivery tag of the message, as RabbitMQ.Client 7.2.2 spells it."
+        note: "Span tag on the \"RabbitMQ.Client.Publisher\" and \"RabbitMQ.Client.Subscriber\" ActivitySources. Declared at projects/RabbitMQ.Client/Impl/RabbitMQActivitySource.cs:34; set at projects/RabbitMQ.Client/Impl/RabbitMQActivitySource.cs:213 (PopulateMessagingTags). Upstream 1.44.0 spells the same fact messaging.rabbitmq.message.delivery_tag; this client does not emit that key."
+  - id: vendor.rabbitmq_client
+    type: attribute_group
+    display_name: "RabbitMQ.Client Vendor Metadata"
+    brief: "The pinned RabbitMQ.Client release qyl read its ActivitySource and attribute findings at."
+    annotations:
+      qyl:
+        vendor:
+          library: "RabbitMQ.Client"
+          version: "7.2.2"
+          repository: "https://github.com/rabbitmq/rabbitmq-dotnet-client"
+          ref: "v7.2.2"
+          license: "Apache-2.0"
+          activity_sources:
+            - name: "RabbitMQ.Client.Publisher"
+              note: "RabbitMQActivitySource.PublisherSourceName at projects/RabbitMQ.Client/Impl/RabbitMQActivitySource.cs:46; the ActivitySource is constructed with it at projects/RabbitMQ.Client/Impl/RabbitMQActivitySource.cs:41."
+            - name: "RabbitMQ.Client.Subscriber"
+              note: "RabbitMQActivitySource.SubscriberSourceName at projects/RabbitMQ.Client/Impl/RabbitMQActivitySource.cs:47; the ActivitySource is constructed with it at projects/RabbitMQ.Client/Impl/RabbitMQActivitySource.cs:44."
+    attributes:
+      - ref: qyl.instrumentation.domain

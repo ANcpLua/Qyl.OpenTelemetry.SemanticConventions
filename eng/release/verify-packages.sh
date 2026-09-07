@@ -11,9 +11,8 @@ package_source="$2"
 package_directory="${3:-}"
 stable_id="Qyl.Telemetry.SemanticConventions"
 incubating_id="${stable_id}.Incubating"
-source_generation_id="${stable_id}.SourceGeneration"
 analyzers_id="${stable_id}.Analyzers"
-package_ids=("${stable_id}" "${incubating_id}" "${source_generation_id}" "${analyzers_id}")
+package_ids=("${stable_id}" "${incubating_id}" "${analyzers_id}")
 
 require_archive_entry() {
   local package="$1"
@@ -42,10 +41,9 @@ if [[ -n "${package_directory}" ]]; then
 
   stable_package="${package_directory}/${stable_id}.${version}.nupkg"
   incubating_package="${package_directory}/${incubating_id}.${version}.nupkg"
-  source_generation_package="${package_directory}/${source_generation_id}.${version}.nupkg"
   analyzers_package="${package_directory}/${analyzers_id}.${version}.nupkg"
 
-  for package in "${stable_package}" "${incubating_package}" "${source_generation_package}" "${analyzers_package}"; do
+  for package in "${stable_package}" "${incubating_package}" "${analyzers_package}"; do
     if [[ ! -f "${package}" ]]; then
       echo "error: expected package was not produced: ${package}" >&2
       exit 1
@@ -56,24 +54,6 @@ if [[ -n "${package_directory}" ]]; then
   require_archive_entry "${stable_package}" "lib/netstandard2.0/${stable_id}.dll"
   require_archive_entry "${incubating_package}" "lib/net10.0/${incubating_id}.dll"
   require_archive_entry "${incubating_package}" "lib/netstandard2.0/${incubating_id}.dll"
-  require_archive_entry "${incubating_package}" "registry/resolved-registry.json"
-  for schema in \
-    gen-ai-input-messages.json \
-    gen-ai-memory-records.json \
-    gen-ai-output-messages.json \
-    gen-ai-retrieval-documents.json \
-    gen-ai-system-instructions.json \
-    gen-ai-tool-call-arguments.json \
-    gen-ai-tool-call-result.json \
-    gen-ai-tool-definitions.json; do
-    require_archive_entry "${incubating_package}" "registry/schemas/gen-ai/${schema}"
-  done
-  require_archive_entry \
-    "${source_generation_package}" \
-    "analyzers/dotnet/cs/${source_generation_id}.Generator.dll"
-  require_archive_entry \
-    "${source_generation_package}" \
-    "build/${source_generation_id}.props"
   require_archive_entry "${analyzers_package}" "analyzers/dotnet/cs/${analyzers_id}.dll"
   require_archive_entry "${analyzers_package}" "buildTransitive/${analyzers_id}.props"
   for profile in Default AllRulesAsErrors AllRulesDisabled; do
@@ -117,25 +97,22 @@ cat > "${consumer_directory}/ReleaseSmoke.csproj" <<EOF
   <ItemGroup>
     <PackageReference Include="${stable_id}" Version="${version}" />
     <PackageReference Include="${incubating_id}" Version="${version}" />
-    <PackageReference Include="${source_generation_id}" Version="${version}"
-                      OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <PackageReference Include="${analyzers_id}" Version="${version}" />
   </ItemGroup>
 </Project>
 EOF
 
 cat > "${consumer_directory}/Program.cs" <<'EOF'
+using System.Diagnostics;
+using Qyl.Telemetry.SemanticConventions;
+using Qyl.Telemetry.SemanticConventions.Activities;
 using Qyl.Telemetry.SemanticConventions.Attributes.Http;
+using Qyl.Telemetry.SemanticConventions.Metrics;
 using Qyl.Telemetry.SemanticConventions.Names;
 using Qyl.Telemetry.SemanticConventions.Incubating.Attributes.GenAi;
-using Qyl.Telemetry.SemanticConventions.Incubating.Registry;
-using Qyl.Telemetry.SemanticConventions.SourceGeneration;
-using System.Text.Json;
+using Qyl.Telemetry.SemanticConventions.Incubating.Mapping;
 
 namespace ReleaseSmoke;
-
-[SemanticConventionAttributes("http")]
-internal static partial class GeneratedHttp;
 
 internal static class Program
 {
@@ -148,19 +125,21 @@ internal static class Program
         [
             HttpAttributes.RequestMethod,
             GenAiAttributes.OperationName,
-            GeneratedHttp.AttributeHttpRequestMethod,
+            SchemaUrl.Current,
             QylTelemetryNames.Scopes.QylTelemetryAutoInstrumentation,
             QylTelemetryNames.Scopes.QylTelemetryAutoInstrumentationDatabase,
             QylTelemetryNames.Scopes.QylTelemetryAutoInstrumentationNServiceBus,
+            HttpServerMetricDefinitions.HttpServerRequestDuration.Name,
         ];
         string[] expected =
         [
             "http.request.method",
             "gen_ai.operation.name",
-            "http.request.method",
+            AttributeMapping.CoreSchemaUrl,
             "Qyl.Telemetry.AutoInstrumentation",
             "Qyl.Telemetry.AutoInstrumentation.Database",
             "Qyl.Telemetry.AutoInstrumentation.NServiceBus",
+            "http.server.request.duration",
         ];
 
         if (!actual.SequenceEqual(expected, StringComparer.Ordinal))
@@ -168,27 +147,26 @@ internal static class Program
             return 1;
         }
 
-        using var registryStream = SemanticConventionRegistry.OpenResolvedRegistry();
-        using var registry = JsonDocument.Parse(registryStream);
-        if (registry.RootElement.GetProperty("sources").GetArrayLength() != 3
-            || registry.RootElement.GetProperty("json_schemas").GetArrayLength() != 8)
+        if (!HttpAttributes.RequestMethodValues.Contains("POST"))
         {
             return 2;
         }
 
-        if (!SemanticConventionRegistry.TryOpenPayloadSchema("gen_ai.input.messages", out var schemaStream)
-            || schemaStream is null)
+        // The pre-generated setter extensions: the only marker consumer used to declare a
+        // partial class and have them generated at compile time.
+        using var source = new ActivitySource("ReleaseSmoke");
+        using var activity = source.StartActivity("smoke");
+        activity?.SetHttpRequestMethod(HttpRequestMethodValues.Get);
+
+        if (!AttributeMapping.TryGetRename("http.method", out var renamed) || renamed != "http.request.method")
         {
             return 3;
         }
 
-        using (schemaStream)
-        using (var schema = JsonDocument.Parse(schemaStream))
+        if (AttributeMapping.NamespaceOf("definitely.not.a.namespace") != "other"
+            || AttributeMapping.NamespaceOf("http.request.method") != "http")
         {
-            if (schema.RootElement.ValueKind != JsonValueKind.Object)
-            {
-                return 4;
-            }
+            return 4;
         }
 
         Console.WriteLine("semantic-conventions release smoke passed");

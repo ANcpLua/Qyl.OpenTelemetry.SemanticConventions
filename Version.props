@@ -1,8 +1,8 @@
 <Project>
   <PropertyGroup Label="Central Versions">
-    <SemConvSchemaVersion>1.44.0</SemConvSchemaVersion>
-    <!-- open-telemetry/semantic-conventions-genai commit; its manifest must depend on core@SemConvSchemaVersion (generate.sh enforces this) -->
-    <SemConvGenAiRef>fee465db333bdd6a7d2faa320edab5cf3101a4f4</SemConvGenAiRef>
+    <!-- The registry pins live in registry/manifest.yaml and reach the build through the
+         generated generated/pins.props. WeaverVersion is the one pin MSBuild owns: CI's
+         setup-weaver and scripts/generate.sh both read it. -->
     <WeaverVersion>0.26.1</WeaverVersion>
 
     <ANcpLuaRoslynUtilitiesVersion>2.2.46</ANcpLuaRoslynUtilitiesVersion>
@@ -15,5 +15,6 @@
 
     <NuGetPackagingVersion>7.9.0</NuGetPackagingVersion>
     <SystemSecurityCryptographyXmlVersion>10.0.11</SystemSecurityCryptographyXmlVersion>
+    <SystemDiagnosticsDiagnosticSourceVersion>10.0.11</SystemDiagnosticsDiagnosticSourceVersion>
   </PropertyGroup>
 </Project>

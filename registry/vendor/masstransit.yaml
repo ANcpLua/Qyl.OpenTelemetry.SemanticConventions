@@ -1,0 +1,100 @@
+# MassTransit 8.5.10 — the attributes the library puts on the spans of its own
+# ActivitySource and that upstream semantic conventions do not define. Vendor keys are
+# tags: the collector passes them through, the application never renames them.
+#
+# Two groups: `registry.vendor.*` carries the attributes into the resolved catalog (which
+# drops group annotations), `vendor.*` carries the library metadata, which survives as a
+# plain attribute group.
+groups:
+  - id: registry.vendor.masstransit
+    type: attribute_group
+    display_name: "MassTransit Vendor Attributes"
+    brief: "Attributes MassTransit 8.5.10 puts on the spans of its own \"MassTransit\" ActivitySource and that upstream semantic conventions 1.44.0 does not define."
+    attributes:
+      - id: messaging.masstransit.message_id
+        type: string
+        stability: development
+        brief: "MassTransit message id of the message being sent or consumed."
+        note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:13; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:195,282."
+      - id: messaging.masstransit.correlation_id
+        type: string
+        stability: development
+        brief: "MassTransit correlation id of the message."
+        note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:14; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:199,286."
+      - id: messaging.masstransit.initiator_id
+        type: string
+        stability: development
+        brief: "Id of the message that initiated the conversation this message belongs to."
+        note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:15; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:203,290."
+      - id: messaging.masstransit.request_id
+        type: string
+        stability: development
+        brief: "Request id of the message, when it is part of a request/response exchange."
+        note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:16; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:201,288."
+      - id: messaging.masstransit.source_address
+        type: string
+        stability: development
+        brief: "Endpoint address the message was sent from."
+        note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:17; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:205,292."
+      - id: messaging.masstransit.destination_address
+        type: string
+        stability: development
+        brief: "Endpoint address the message was sent to."
+        note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:18; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:207,294."
+      - id: messaging.masstransit.input_address
+        type: string
+        stability: development
+        brief: "Input address of the receive endpoint that consumed the message."
+        note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:19; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:90."
+      - id: messaging.masstransit.tracking_number
+        type: string
+        stability: development
+        brief: "Tracking number of the Courier routing slip an activity is executing or compensating."
+        note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:20; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:153,165."
+      - id: messaging.masstransit.message_types
+        type: string
+        stability: development
+        brief: "Comma-separated list of the message types supported by the message."
+        note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:22; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:209,296 and src/MassTransit/Logging/Diagnostics/DiagnosticActivityExtensions.cs:38."
+      - id: messaging.masstransit.consumer_type
+        type: string
+        stability: development
+        brief: "Short type name of the consumer, handler, saga, state machine or Courier activity processing the message."
+        note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:24; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:108,118,130,142,154,166."
+      - id: messaging.masstransit.saga_id
+        type: string
+        stability: development
+        brief: "Correlation id of the saga instance handling the message."
+        note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:30; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:129,141."
+      - id: messaging.masstransit.begin_state
+        type: string
+        stability: development
+        brief: "Name of the state machine state the instance was in before the event was raised."
+        note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:28; set at src/MassTransit/Middleware/StateMachineSagaMessageFilter.cs:63."
+      - id: messaging.masstransit.end_state
+        type: string
+        stability: development
+        brief: "Name of the state machine state the instance is in after the event was raised."
+        note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:29; set at src/MassTransit/Middleware/StateMachineSagaMessageFilter.cs:98."
+      - id: peer.address
+        type: string
+        stability: development
+        brief: "MassTransit diagnostic address of the message type being consumed."
+        note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:26; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:109,119,131,143,155,167."
+  - id: vendor.masstransit
+    type: attribute_group
+    display_name: "MassTransit Vendor Metadata"
+    brief: "The pinned MassTransit release qyl read its ActivitySource and attribute findings at."
+    annotations:
+      qyl:
+        vendor:
+          library: "MassTransit"
+          version: "8.5.10"
+          repository: "https://github.com/MassTransit/MassTransit"
+          ref: "v8.5.10"
+          license: "Apache-2.0"
+          activity_sources:
+            - name: "MassTransit"
+              note: "DiagnosticHeaders.DefaultListenerName at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:6; the ActivitySource is constructed with it at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:310."
+    attributes:
+      - ref: qyl.instrumentation.domain

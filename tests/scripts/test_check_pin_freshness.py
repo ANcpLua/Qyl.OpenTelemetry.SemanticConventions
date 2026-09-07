@@ -11,13 +11,7 @@ from unittest import mock
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SCRIPT = (
-    REPO_ROOT
-    / "src"
-    / "Qyl.Telemetry.SemanticConventions.SourceGeneration"
-    / "scripts"
-    / "check_pin_freshness.py"
-)
+SCRIPT = REPO_ROOT / "scripts" / "check-pin-freshness.py"
 SPEC = importlib.util.spec_from_file_location("check_pin_freshness", SCRIPT)
 if SPEC is None or SPEC.loader is None:
     raise RuntimeError(f"could not load {SCRIPT}")
@@ -134,7 +128,7 @@ class TransportFailureTests(unittest.TestCase):
         for failure in failures:
             with (
                 self.subTest(failure=type(failure).__name__),
-                mock.patch.object(CHECKER, "read_version_property", return_value="pin"),
+                mock.patch.object(CHECKER, "read_pin", return_value="pin"),
                 mock.patch.object(CHECKER.urllib.request, "urlopen", side_effect=failure),
                 contextlib.redirect_stdout(io.StringIO()),
                 contextlib.redirect_stderr(io.StringIO()),
@@ -152,7 +146,7 @@ class MainTests(unittest.TestCase):
         stdout = io.StringIO()
         stderr = io.StringIO()
         with (
-            mock.patch.object(CHECKER, "read_version_property", side_effect=self.version),
+            mock.patch.object(CHECKER, "read_pin", side_effect=self.version),
             mock.patch.object(CHECKER, "check_release_pin", return_value=current_release),
             mock.patch.object(CHECKER, "check_branch_pin", return_value=branch_result),
             contextlib.redirect_stdout(stdout),
@@ -181,7 +175,7 @@ class MainTests(unittest.TestCase):
         stderr = io.StringIO()
         with (
             mock.patch.object(
-                CHECKER, "read_version_property", side_effect=CHECKER.FreshnessUnknown("broken input")
+                CHECKER, "read_pin", side_effect=CHECKER.FreshnessUnknown("broken input")
             ),
             contextlib.redirect_stdout(stdout),
             contextlib.redirect_stderr(stderr),
@@ -202,7 +196,7 @@ class MainTests(unittest.TestCase):
         stdout = io.StringIO()
         stderr = io.StringIO()
         with (
-            mock.patch.object(CHECKER, "read_version_property", return_value="pin"),
+            mock.patch.object(CHECKER, "read_pin", return_value="pin"),
             mock.patch.object(CHECKER, "check_release_pin", return_value=(True, ["- release current"])),
             mock.patch.object(CHECKER, "github_json", return_value=comparison),
             contextlib.redirect_stdout(stdout),

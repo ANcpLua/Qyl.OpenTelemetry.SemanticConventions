@@ -1,0 +1,25 @@
+# GraphQL.NET 8.8.5 — the attributes the library puts on the spans of its own
+# ActivitySource and that upstream semantic conventions do not define. Vendor keys are
+# tags: the collector passes them through, the application never renames them.
+#
+# Two groups: `registry.vendor.*` carries the attributes into the resolved catalog (which
+# drops group annotations), `vendor.*` carries the library metadata, which survives as a
+# plain attribute group.
+groups:
+  - id: vendor.graphql_net
+    type: attribute_group
+    display_name: "GraphQL.NET Vendor Metadata"
+    brief: "The pinned GraphQL.NET release qyl read its ActivitySource and attribute findings at."
+    annotations:
+      qyl:
+        vendor:
+          library: "GraphQL.NET"
+          version: "8.8.5"
+          repository: "https://github.com/graphql-dotnet/graphql-dotnet"
+          ref: "8.8.5"
+          license: "MIT"
+          activity_sources:
+            - name: "GraphQL"
+              note: "GraphQLTelemetryProvider.SourceName at src/GraphQL/Telemetry/GraphQLTelemetryProvider.cs:33; the ActivitySource is constructed with it at src/GraphQL/Telemetry/GraphQLTelemetryProvider.cs:37. The telemetry is opt-in through UseTelemetry()."
+    attributes:
+      - ref: qyl.instrumentation.domain

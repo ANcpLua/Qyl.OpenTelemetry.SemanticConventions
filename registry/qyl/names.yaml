@@ -1,0 +1,20 @@
+# Telemetry names qyl owns or subscribes to. Scope names and vendor ActivitySource names
+# are not Weaver concepts, so they ride as annotations on a non-registry attribute group:
+# `registry.*` groups are flattened into the resolved catalog and lose their annotations,
+# a plain attribute group keeps them and stays out of the vocabulary.
+groups:
+  - id: qyl.names
+    type: attribute_group
+    display_name: qyl Telemetry Names
+    brief: The ActivitySource and Meter scope names qyl constructs.
+    annotations:
+      qyl:
+        scope_names:
+          - "Qyl.Collector"
+          - "Qyl.Instrumentation.ErrorCapture"
+          - "Qyl.Telemetry.AutoInstrumentation"
+          - "Qyl.Telemetry.AutoInstrumentation.Database"
+          - "Qyl.Telemetry.AutoInstrumentation.NServiceBus"
+          - "System.Runtime"
+    attributes:
+      - ref: qyl.instrumentation.domain
