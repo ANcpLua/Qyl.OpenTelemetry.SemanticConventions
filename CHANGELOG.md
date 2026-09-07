@@ -53,7 +53,11 @@ diffed in CI. Breaking, one wave: nothing from the old pipeline is kept alive.
 - **Pre-generated definitions and setter extensions in both packages.** Each package's
   `Generated/` directory holds one file per registry root for six kinds — `Attributes`,
   `Activities`, `Metrics`, `Spans`, `Events`, `Entities` — where 8.1.0 emitted the last five
-  into the consuming assembly at compile time.
+  into the consuming assembly at compile time. For those five the packages are disjoint: the
+  stable package carries the stable and deprecated rows, the incubating package only the rows
+  the stable package does not carry, and a registry root with no non-stable rows gets no
+  incubating type. `Attributes` is unchanged — both packages carry it in full, because the
+  collector reads those classes by reflection.
 - **`Incubating.Mapping.AttributeMapping`**, the collector's normalize table: `TryGetRename`
   (every renamed key resolved transitively to its final live replacement), `IsVendorPassThrough`
   (every vendor key), `Namespaces` / `NamespaceOf` (the closed value set of
@@ -82,11 +86,20 @@ diffed in CI. Breaking, one wave: nothing from the old pipeline is kept alive.
   `Incubating.Attributes.Rpc.RpcAttributes`. `SemconvRegistryFacts.g.cs` matches on the same
   terms.
 - **The Activity setter extensions ship as `{Root}ActivityExtensions`** under
-  `Qyl.Telemetry.SemanticConventions.Activities` (and `.Incubating.Activities`), with the same
+  `Qyl.Telemetry.SemanticConventions.Activities`, with the same
   `Set{Key}(this Activity, value)` methods and nested `{Key}Values` classes the marker used to
   generate into the consuming assembly. Both packages therefore take
   `System.Diagnostics.DiagnosticSource` on `netstandard2.0`, and `.Incubating` now references
   the stable package for the definition types.
+- **The incubating types of the five pre-generated tiers are named `{Root}Incubating…`** —
+  `HttpIncubatingActivityExtensions`, `GenAiIncubatingActivityExtensions`,
+  `QylIncubatingMetricDefinitions`, `{Root}IncubatingSpanDefinitions`,
+  `{Root}IncubatingEventDefinitions`, `{Root}IncubatingEntityDefinitions`, each in the
+  `Qyl.Telemetry.SemanticConventions.Incubating.*` namespace it always had, with the nested
+  `{Key}Values` classes following their attribute. Together with the disjoint row split this
+  is what lets an application `using` a stable and an incubating namespace of the same root
+  at once; the earlier shape put an identically named extension method in both and made the
+  call ambiguous (CS0121).
 - **`generated/typespec/otel-keys.gen.tsp`** is byte-identical in body to what
   `emit_typespec_keys.py` produced; only its header changes.
 - **The registry pins do not move.** Core stays `v1.44.0` (`e10a930`), genai stays `fee465db`,

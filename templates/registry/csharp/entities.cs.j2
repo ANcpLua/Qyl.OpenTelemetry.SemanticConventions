@@ -17,7 +17,7 @@ namespace {{ ctx.namespace }};
 /// typed object carrying the entity name, stability, structured deprecation, and the
 /// describing attribute references from the pinned registry.
 /// </summary>
-public static class {{ ctx.pascal_root }}EntityDefinitions
+public static class {{ ctx.type_root }}EntityDefinitions
 {
 {% for e in ctx.entities %}
 {% if not loop.first %}

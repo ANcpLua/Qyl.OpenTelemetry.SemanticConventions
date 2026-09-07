@@ -17,7 +17,7 @@ namespace {{ ctx.namespace }};
 /// typed object carrying the event name, stability, structured deprecation, and
 /// attribute references from the pinned registry.
 /// </summary>
-public static class {{ ctx.pascal_root }}EventDefinitions
+public static class {{ ctx.type_root }}EventDefinitions
 {
 {% for e in ctx.events %}
 {% if not loop.first %}

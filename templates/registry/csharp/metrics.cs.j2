@@ -22,7 +22,7 @@ namespace {{ ctx.namespace }};
 /// typed object carrying the canonical name, instrument, unit, stability, entity
 /// associations, and structured deprecation from the pinned registry.
 /// </summary>
-public static class {{ ctx.pascal_root }}MetricDefinitions
+public static class {{ ctx.type_root }}MetricDefinitions
 {
 {% for m in ctx.metrics %}
 {% if not loop.first %}

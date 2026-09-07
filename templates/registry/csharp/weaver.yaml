@@ -87,7 +87,10 @@ templates:
     application_mode: each
     file_name: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated/Attributes/{{ ctx.pascal_root }}MetricAttributes.g.cs"
 
-  # Typed Activity setter extensions, per stability tier.
+  # Typed Activity setter extensions, per stability tier. The two packages are disjoint:
+  # the stable one carries the stable and deprecated rows, the incubating one carries only
+  # what is left, under {Root}Incubating* type names, so a consumer may import both
+  # namespaces without an ambiguous-call error.
   - template: activities.cs.j2
     filter: >
       def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
@@ -98,10 +101,11 @@ templates:
       | ([.dependencies[].registry.attributes[]] | map(select($seen[.key] | not))) as $extra
       | (($top + $extra) | sort_by(.key)) as $all
       | [ ($all
+            | map(select((.stability == "stable" or (.deprecated != null)) | not))
             | group_by(.key | split(".")[0]) | .[]
             | (.[0].key | split(".")[0]) as $root
             | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
-            | {tier: "incubating", root: $root, pascal_root: $p,
+            | {tier: "incubating", root: $root, pascal_root: $p, type_root: ($p + "Incubating"),
                attributes: (. | dedupe(pascal(.key)) | sort_by(.key)),
                namespace: ("Qyl.Telemetry.SemanticConventions.Incubating.Activities"),
                out_dir: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"}),
@@ -110,14 +114,14 @@ templates:
             | group_by(.key | split(".")[0]) | .[]
             | (.[0].key | split(".")[0]) as $root
             | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
-            | {tier: "stable", root: $root, pascal_root: $p,
+            | {tier: "stable", root: $root, pascal_root: $p, type_root: $p,
                attributes: (. | dedupe(pascal(.key)) | sort_by(.key)),
                namespace: ("Qyl.Telemetry.SemanticConventions.Activities"),
                out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
     application_mode: each
-    file_name: "{{ ctx.out_dir }}/Activities/{{ ctx.pascal_root }}Activities.g.cs"
+    file_name: "{{ ctx.out_dir }}/Activities/{{ ctx.type_root }}Activities.g.cs"
 
-  # MetricDefinition<TInstrument> rows, per stability tier.
+  # MetricDefinition<TInstrument> rows, per stability tier; disjoint the same way.
   - template: metrics.cs.j2
     filter: >
       def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
@@ -128,10 +132,12 @@ templates:
       | ([.dependencies[].registry.metrics[]] | map(select($seen[.name] | not))) as $extra
       | (($top + $extra) | sort_by(.name)) as $all
       | [ ($all
+            | map(select((.stability == "stable" or (.deprecated != null)) | not))
             | group_by(.name | split(".")[0]) | .[]
             | (.[0].name | split(".")[0]) as $root
             | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
-            | {tier: "incubating", root: $root, pascal_root: $p, metrics: (. | dedupe(pascal(.name)) | sort_by(.name)),
+            | {tier: "incubating", root: $root, pascal_root: $p, type_root: ($p + "Incubating"),
+               metrics: (. | dedupe(pascal(.name)) | sort_by(.name)),
                namespace: "Qyl.Telemetry.SemanticConventions.Incubating.Metrics",
                out_dir: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"}),
           ($all
@@ -139,13 +145,14 @@ templates:
             | group_by(.name | split(".")[0]) | .[]
             | (.[0].name | split(".")[0]) as $root
             | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
-            | {tier: "stable", root: $root, pascal_root: $p, metrics: (. | dedupe(pascal(.name)) | sort_by(.name)),
+            | {tier: "stable", root: $root, pascal_root: $p, type_root: $p,
+               metrics: (. | dedupe(pascal(.name)) | sort_by(.name)),
                namespace: "Qyl.Telemetry.SemanticConventions.Metrics",
                out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
     application_mode: each
-    file_name: "{{ ctx.out_dir }}/Metrics/{{ ctx.pascal_root }}Metrics.g.cs"
+    file_name: "{{ ctx.out_dir }}/Metrics/{{ ctx.type_root }}Metrics.g.cs"
 
-  # SpanDefinition<TKind> rows, per stability tier.
+  # SpanDefinition<TKind> rows, per stability tier; disjoint the same way.
   - template: spans.cs.j2
     filter: >
       def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
@@ -156,10 +163,12 @@ templates:
       | ([.dependencies[].registry.spans[]] | map(select($seen[.type] | not))) as $extra
       | (($top + $extra) | sort_by(.type)) as $all
       | [ ($all
+            | map(select((.stability == "stable" or (.deprecated != null)) | not))
             | group_by(.type | split(".")[0]) | .[]
             | (.[0].type | split(".")[0]) as $root
             | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
-            | {tier: "incubating", root: $root, pascal_root: $p, spans: (. | dedupe(pascal(.type)) | sort_by(.type)),
+            | {tier: "incubating", root: $root, pascal_root: $p, type_root: ($p + "Incubating"),
+               spans: (. | dedupe(pascal(.type)) | sort_by(.type)),
                namespace: "Qyl.Telemetry.SemanticConventions.Incubating.Spans",
                out_dir: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"}),
           ($all
@@ -167,13 +176,14 @@ templates:
             | group_by(.type | split(".")[0]) | .[]
             | (.[0].type | split(".")[0]) as $root
             | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
-            | {tier: "stable", root: $root, pascal_root: $p, spans: (. | dedupe(pascal(.type)) | sort_by(.type)),
+            | {tier: "stable", root: $root, pascal_root: $p, type_root: $p,
+               spans: (. | dedupe(pascal(.type)) | sort_by(.type)),
                namespace: "Qyl.Telemetry.SemanticConventions.Spans",
                out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
     application_mode: each
-    file_name: "{{ ctx.out_dir }}/Spans/{{ ctx.pascal_root }}Spans.g.cs"
+    file_name: "{{ ctx.out_dir }}/Spans/{{ ctx.type_root }}Spans.g.cs"
 
-  # EventDefinition rows, per stability tier.
+  # EventDefinition rows, per stability tier; disjoint the same way.
   - template: events.cs.j2
     filter: >
       def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
@@ -184,10 +194,12 @@ templates:
       | ([.dependencies[].registry.events[]] | map(select($seen[.name] | not))) as $extra
       | (($top + $extra) | sort_by(.name)) as $all
       | [ ($all
+            | map(select((.stability == "stable" or (.deprecated != null)) | not))
             | group_by(.name | split(".")[0]) | .[]
             | (.[0].name | split(".")[0]) as $root
             | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
-            | {tier: "incubating", root: $root, pascal_root: $p, events: (. | dedupe(pascal(.name)) | sort_by(.name)),
+            | {tier: "incubating", root: $root, pascal_root: $p, type_root: ($p + "Incubating"),
+               events: (. | dedupe(pascal(.name)) | sort_by(.name)),
                namespace: "Qyl.Telemetry.SemanticConventions.Incubating.Events",
                out_dir: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"}),
           ($all
@@ -195,13 +207,14 @@ templates:
             | group_by(.name | split(".")[0]) | .[]
             | (.[0].name | split(".")[0]) as $root
             | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
-            | {tier: "stable", root: $root, pascal_root: $p, events: (. | dedupe(pascal(.name)) | sort_by(.name)),
+            | {tier: "stable", root: $root, pascal_root: $p, type_root: $p,
+               events: (. | dedupe(pascal(.name)) | sort_by(.name)),
                namespace: "Qyl.Telemetry.SemanticConventions.Events",
                out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
     application_mode: each
-    file_name: "{{ ctx.out_dir }}/Events/{{ ctx.pascal_root }}Events.g.cs"
+    file_name: "{{ ctx.out_dir }}/Events/{{ ctx.type_root }}Events.g.cs"
 
-  # EntityDefinition rows, per stability tier.
+  # EntityDefinition rows, per stability tier; disjoint the same way.
   - template: entities.cs.j2
     filter: >
       def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
@@ -212,10 +225,12 @@ templates:
       | ([.dependencies[].registry.entities[]] | map(select($seen[.type] | not))) as $extra
       | (($top + $extra) | sort_by(.type)) as $all
       | [ ($all
+            | map(select((.stability == "stable" or (.deprecated != null)) | not))
             | group_by(.type | split(".")[0]) | .[]
             | (.[0].type | split(".")[0]) as $root
             | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
-            | {tier: "incubating", root: $root, pascal_root: $p, entities: (. | dedupe(pascal(.type)) | sort_by(.type)),
+            | {tier: "incubating", root: $root, pascal_root: $p, type_root: ($p + "Incubating"),
+               entities: (. | dedupe(pascal(.type)) | sort_by(.type)),
                namespace: "Qyl.Telemetry.SemanticConventions.Incubating.Entities",
                out_dir: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"}),
           ($all
@@ -223,11 +238,12 @@ templates:
             | group_by(.type | split(".")[0]) | .[]
             | (.[0].type | split(".")[0]) as $root
             | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
-            | {tier: "stable", root: $root, pascal_root: $p, entities: (. | dedupe(pascal(.type)) | sort_by(.type)),
+            | {tier: "stable", root: $root, pascal_root: $p, type_root: $p,
+               entities: (. | dedupe(pascal(.type)) | sort_by(.type)),
                namespace: "Qyl.Telemetry.SemanticConventions.Entities",
                out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
     application_mode: each
-    file_name: "{{ ctx.out_dir }}/Entities/{{ ctx.pascal_root }}Entities.g.cs"
+    file_name: "{{ ctx.out_dir }}/Entities/{{ ctx.type_root }}Entities.g.cs"
 
   # The registry-derived analyzer facts. Everything the analyzers need to decide whether a key,
   # metric, scope, event or GenAI span is one the pinned registry knows — derived here rather

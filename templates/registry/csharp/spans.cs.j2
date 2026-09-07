@@ -21,7 +21,7 @@ namespace {{ ctx.namespace }};
 /// typed object carrying the span id, span kind, stability, structured deprecation,
 /// and attribute references from the pinned registry.
 /// </summary>
-public static class {{ ctx.pascal_root }}SpanDefinitions
+public static class {{ ctx.type_root }}SpanDefinitions
 {
 {% for s in ctx.spans %}
 {% if not loop.first %}

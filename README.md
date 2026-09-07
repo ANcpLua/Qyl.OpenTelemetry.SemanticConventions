@@ -15,7 +15,7 @@ emit an attribute name its own collector does not know.
 | Package | Contents |
 | --- | --- |
 | `Qyl.Telemetry.SemanticConventions` | The stable tier, pre-generated: attribute-key constants (every enum-value class carries `AllValues` and `Contains`), `SchemaUrl`, the qyl-owned telemetry names, typed `Activity` setter extensions, and the metric/span/event/entity definitions — plus the definition types themselves (`MetricDefinition<TInstrument>`, `SpanDefinition<TKind>`, `EventDefinition`, `EntityDefinition`, and their `Stability`/`Deprecation`/`RequirementLevel`/`AttributeRef`/`EntityRef` companions) |
-| `.Incubating` | The same six kinds at every stability tier, the qyl-owned instrument names, and `Mapping.AttributeMapping` — the collector's normalize table |
+| `.Incubating` | `Attributes` at every stability tier; `Activities`, `Metrics`, `Spans`, `Events` and `Entities` for the rows the stable package does not carry, under `{Root}Incubating…` type names; the qyl-owned instrument names; and `Mapping.AttributeMapping` — the collector's normalize table |
 | `.Analyzers` | Roslyn diagnostics and code fixes for semantic-convention consumers, with a generated rule catalog and severity profiles |
 
 ```bash
@@ -47,7 +47,7 @@ registry/  (manifest.yaml: core + genai dependencies; qyl/ and vendor/ next to t
 scripts/generate.sh -> weaver registry generate --v2 --include-unreferenced
         |
         +----> src/Qyl.Telemetry.SemanticConventions/Generated/            (stable tier)
-        +----> src/Qyl.Telemetry.SemanticConventions.Incubating/Generated/ (every tier)
+        +----> src/Qyl.Telemetry.SemanticConventions.Incubating/Generated/ (the other tiers)
         +----> src/…Analyzers/SemconvRegistryFacts.g.cs, SemconvDeprecations.g.cs
         +----> generated/typespec/otel-keys.gen.tsp   (qyl-api-schema key projection)
         +----> generated/pins.props                   (the pins, for MSBuild)
@@ -55,10 +55,17 @@ scripts/generate.sh -> weaver registry generate --v2 --include-unreferenced
 ```
 
 Each package's `Generated/` directory holds one file per registry root for six kinds:
-`Attributes`, `Activities`, `Metrics`, `Spans`, `Events` and `Entities`. The stable package
-carries stable rows plus deprecated migration symbols; the incubating package carries every
-stability tier. A definition generated in either package is an instance of the same public
-type, so it can be handed between libraries and applications.
+`Attributes`, `Activities`, `Metrics`, `Spans`, `Events` and `Entities`. `Attributes` is the
+one kind both packages carry in full: the stable package the stable rows plus the deprecated
+migration symbols, the incubating package every key, at the byte-identical shape the
+collector reads by reflection. For the other five the two packages are disjoint. The stable
+package carries the stable and deprecated rows as `{Root}ActivityExtensions`,
+`{Root}MetricDefinitions` and siblings; the incubating package carries only the rows the
+stable package does not, as `{Root}IncubatingActivityExtensions`,
+`{Root}IncubatingMetricDefinitions` and siblings, so a consumer may `using` both namespaces
+without an ambiguous-call error. A registry root with no non-stable rows gets no incubating
+type at all. A definition generated in either package is an instance of the same public type,
+so it can be handed between libraries and applications.
 
 Two gates keep the committed output honest. `scripts/check-generated.sh` regenerates
 everything with the pinned Weaver and fails on `git diff`; CI runs it before the build.
