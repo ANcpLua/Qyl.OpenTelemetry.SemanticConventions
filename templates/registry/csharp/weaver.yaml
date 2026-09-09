@@ -37,7 +37,6 @@ templates:
       | ($top | map({key: .key, value: true}) | from_entries) as $seen
       | ([.dependencies[].registry.attributes[]] | map(select($seen[.key] | not))) as $extra
       | (($top + $extra) | sort_by(.key)) as $all
-      | (def pascal($s): $s | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join(""); .) as $_
       | [ ($all
             | group_by(.key | split(".")[0]) | .[]
             | (.[0].key | split(".")[0]) as $root
