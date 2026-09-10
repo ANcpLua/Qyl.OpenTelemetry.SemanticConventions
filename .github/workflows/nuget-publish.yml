@@ -139,3 +139,47 @@ jobs:
             --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
             --api-key ${{ secrets.GITHUB_TOKEN }} \
             --skip-duplicate
+  # Every v* tag published a package and left no release entry, so the eight tags
+  # this repository carries had zero releases between them while the sibling
+  # repositories had one per tag. This is that missing step, copied from
+  # Qyl.OpenTelemetry.AutoInstrumentation so the fleet publishes the same way.
+  release:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+      # github.token cannot create a release in this fleet — AutoInstrumentation's
+      # v15.0.0 got HTTP 403 "Resource not accessible by integration" from it with
+      # contents: write already declared and the repository default set to write.
+      # The restriction is on the Actions token itself, so the release needs a token
+      # supplied explicitly. Without RELEASE_TOKEN the step says so and fails rather
+      # than retrying the token that is known not to work; the packages are already
+      # on nuget.org by then, so this failure means "no release entry", not "no
+      # release".
+      - name: Create the GitHub release for the tag that triggered this run
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" != "push" ]; then
+            echo "not a tag push; nothing to release"
+            exit 0
+          fi
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "RELEASE_TOKEN is not set; github.token cannot create releases in this repository" >&2
+            exit 1
+          fi
+          tag="${GITHUB_REF_NAME}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "release $tag already exists"
+          else
+            # --verify-tag: the tag is created by the push that triggered this run, never invented here.
+            gh release create "$tag" \
+              --verify-tag \
+              --generate-notes \
+              --title "$tag"
+          fi
