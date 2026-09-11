@@ -23,12 +23,12 @@ releases.
 
 ## First consumer
 
-All three packages, at the current release line:
+All three packages, at whatever line nuget.org holds today (pin `--version` when you need one):
 
 ```bash
-dotnet add package Qyl.Telemetry.SemanticConventions --version 9.3.0
-dotnet add package Qyl.Telemetry.SemanticConventions.Incubating --version 9.3.0
-dotnet add package Qyl.Telemetry.SemanticConventions.Analyzers --version 9.3.0
+dotnet add package Qyl.Telemetry.SemanticConventions
+dotnet add package Qyl.Telemetry.SemanticConventions.Incubating
+dotnet add package Qyl.Telemetry.SemanticConventions.Analyzers
 ```
 
 The Analyzers package is a development dependency, so the third command writes its
@@ -275,10 +275,11 @@ registry that suddenly disagrees with itself.
 Fetch the tag and materialise the core copy once:
 
 ```bash
+tag="$(gh release view --repo ANcpLua/Qyl.OpenTelemetry.SemanticConventions --json tagName -q .tagName)"
 curl -sSLo semconv.zip \
-  https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/archive/refs/tags/v9.3.0.zip
-unzip -q semconv.zip                       # -> Qyl.OpenTelemetry.SemanticConventions-9.3.0/
-cd Qyl.OpenTelemetry.SemanticConventions-9.3.0
+  "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/archive/refs/tags/${tag}.zip"
+unzip -q semconv.zip                       # -> Qyl.OpenTelemetry.SemanticConventions-<version>/
+cd Qyl.OpenTelemetry.SemanticConventions-"${tag#v}"
 ./scripts/fetch-core.sh                    # writes .build/core-filtered/model
 weaver registry live-check \
   -r registry --include-unreferenced \

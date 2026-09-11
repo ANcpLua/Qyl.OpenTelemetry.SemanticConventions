@@ -9,7 +9,7 @@
 # genai's own transitive (unfiltered) core dependency is fine.
 name: qyl
 description: qyl vocabulary layered on the core and genai OpenTelemetry semantic conventions.
-schema_url: https://qyl.at/schemas/9.3.0
+schema_url: https://qyl.at/schemas/9.4.0
 stability: development
 dependencies:
   # renovate: datasource=github-tags depName=open-telemetry/semantic-conventions

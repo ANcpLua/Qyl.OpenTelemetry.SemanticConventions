@@ -37,6 +37,20 @@ consumer.
   dependencies carry, so the flag has no replacement yet. The registry is unchanged; revisit when `imports` gains
   attributes or when Weaver removes the flag.
 
+## [9.4.0] - 2026-09-11
+
+### Changed
+
+- **The registry's schema URL is versioned with the package, and it resolves.**
+  `registry/manifest.yaml` named `https://qyl.at/schemas/9.3.0` by hand; the constant
+  `AttributeMapping.QylSchemaUrl` and every generated file header carried it, and qyl.at answered
+  404. The manifest now names `https://qyl.at/schemas/9.4.0`, `scripts/generate.sh` refuses to
+  generate when the URL and `VersionPrefix` disagree, and qyl.at serves an OpenTelemetry schema
+  file at every version it ever named (9.3.0, 9.3.1, 9.4.0). Generated code is regenerated from
+  the same registry; no attribute, metric, span, event or entity changed.
+- The README's install lines no longer pin a version, and the live-check walkthrough reads the
+  tag from GitHub instead of naming one.
+
 ## [9.3.1] - 2026-09-11
 
 ### Changed

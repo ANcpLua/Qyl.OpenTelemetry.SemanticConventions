@@ -33,6 +33,29 @@ if [[ "${actual_weaver_version}" != "${expected_weaver_version}" ]]; then
   exit 1
 fi
 
+# The registry's schema URL carries the package version: https://qyl.at/schemas/<VersionPrefix>.
+# It is a constant in the generated code and the URL every consumer's telemetry names, so a
+# release whose manifest still says the previous version ships a lie. Refuse to generate one.
+version_prefix="$(python3 - Directory.Build.props <<'PYVP'
+import sys
+import xml.etree.ElementTree as ET
+value = ET.parse(sys.argv[1]).getroot().findtext(".//VersionPrefix")
+if not value or not value.strip():
+    raise SystemExit("error: Directory.Build.props does not define VersionPrefix")
+print(value.strip())
+PYVP
+)"
+manifest_schema_url="$(python3 - registry/manifest.yaml <<'PYSU'
+import sys
+import yaml
+print((yaml.safe_load(open(sys.argv[1])) or {}).get("schema_url", ""))
+PYSU
+)"
+if [[ "${manifest_schema_url}" != "https://qyl.at/schemas/${version_prefix}" ]]; then
+  echo "error: registry/manifest.yaml schema_url is '${manifest_schema_url}', but VersionPrefix is ${version_prefix};" >&2
+  echo "       expected https://qyl.at/schemas/${version_prefix} (the URL is versioned with the package)" >&2
+  exit 1
+fi
 "${script_dir}/fetch-core.sh"
 
 core_ref="$(cat .build/core-ref.txt)"
