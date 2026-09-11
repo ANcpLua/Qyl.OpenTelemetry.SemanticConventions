@@ -37,6 +37,16 @@ consumer.
   dependencies carry, so the flag has no replacement yet. The registry is unchanged; revisit when `imports` gains
   attributes or when Weaver removes the flag.
 
+## [9.3.1] - 2026-09-11
+
+### Changed
+
+- **Each package ships its own README.** All three packages carried the whole repository README,
+  350 lines of registry, policy, generation and release detail, as their nuget.org readme. Each
+  packable project now has a consumer README beside its csproj: what the package is, how to add
+  it, the surfaces it exposes, and absolute links into the repository for the rest. The registry
+  and the generated code are unchanged.
+
 ## [9.3.0] - 2026-09-07
 
 Two findings from the `Qyl.OpenTelemetry.AutoInstrumentation` 15.0.0 work, which runs the instrumentation against real
