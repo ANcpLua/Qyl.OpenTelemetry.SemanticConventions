@@ -3,3 +3,14 @@
 [tools]
 "dotnet" = "10.0.401"
 "ubi:open-telemetry/weaver" = "0.26.1"
+
+[tasks.check]
+description = "The gate: what CI runs, in order"
+run = [
+  "python3 -m unittest discover --start-directory tests/scripts --pattern 'test_*.py'",
+  "./scripts/check-generated.sh",
+  "./scripts/check-live-check-policies.sh",
+  "dotnet restore Qyl.Telemetry.SemanticConventions.slnx",
+  "dotnet build Qyl.Telemetry.SemanticConventions.slnx --no-restore --configuration Release",
+  "dotnet run --project tests/Qyl.Telemetry.SemanticConventions.Pipeline.Tests/ --configuration Release --no-build",
+]
