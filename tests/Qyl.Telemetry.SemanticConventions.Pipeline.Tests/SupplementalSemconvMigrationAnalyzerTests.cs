@@ -78,6 +78,11 @@ public sealed class SupplementalSemconvMigrationAnalyzerTests
             1
         },
         {
+            "var tags = new[] { new KeyValuePair<string, object?>(\"gen_ai.system\", \"openai\") }; source.StartActivity(\"operation\", tags: tags);",
+            "QYL0009",
+            1
+        },
+        {
             "resourceBuilder.AddAttributes(new[] { new KeyValuePair<string, object?>(\"gen_ai.system\", \"openai\") });",
             "QYL0009",
             1
@@ -110,6 +115,25 @@ public sealed class SupplementalSemconvMigrationAnalyzerTests
             Fixture(statement));
 
         diagnostics.Should().ContainSingle(diagnostic => diagnostic.Id == expectedId);
+    }
+
+    [Fact]
+    public async Task Two_dictionaries_in_one_method_are_classified_by_which_one_reaches_telemetry()
+    {
+        var diagnostics = await AnalyzerHarness.RunAsync(
+            [new SupplementalSemconvMigrationAnalyzer()],
+            Fixture(
+                """
+                var tags = new Dictionary<string, object?>();
+                tags.Add("gen_ai.system", "openai");
+                var values = new Dictionary<string, object?>();
+                values.Add("gen_ai.system", "openai");
+                source.StartActivity("operation", tags: tags);
+                """));
+
+        diagnostics.Should().HaveCount(2);
+        diagnostics.Should().ContainSingle(diagnostic => diagnostic.Id == "QYL0009");
+        diagnostics.Should().ContainSingle(diagnostic => diagnostic.Id == "QYL0010");
     }
 
     [Fact]

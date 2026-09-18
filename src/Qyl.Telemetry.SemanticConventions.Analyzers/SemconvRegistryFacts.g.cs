@@ -1510,6 +1510,12 @@ internal static class SemconvRegistryFacts
 
     internal static bool IsKnownAttributeKey(string key) => TryGetAttributeType(key, out _);
 
+    /// <summary>
+    /// True only for a key the registry defines outright; a key that merely extends a
+    /// template such as <c>http.request.header.</c> is not one.
+    /// </summary>
+    internal static bool IsRegistryAttributeKey(string key) => AttributeTypes.ContainsKey(key);
+
     internal static bool IsKnownMetricName(string name) => KnownMetricNames.Contains(name);
 
     internal static bool IsKnownScopeName(string name) => KnownScopeNames.Contains(name);

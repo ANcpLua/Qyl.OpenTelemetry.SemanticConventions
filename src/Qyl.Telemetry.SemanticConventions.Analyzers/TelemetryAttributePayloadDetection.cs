@@ -1,7 +1,87 @@
 // Copyright The OpenTelemetry Authors
 // SPDX-License-Identifier: Apache-2.0
 
+using MsOperationExtensions = Microsoft.CodeAnalysis.Operations.OperationExtensions;
+
 namespace Qyl.Telemetry.SemanticConventions.Analyzers;
+
+/// <summary>The telemetry surface a detected attribute payload reaches.</summary>
+internal enum TelemetryPayloadSink
+{
+    /// <summary>A key/value pair or dictionary entry that never provably reaches telemetry.</summary>
+    None,
+
+    /// <summary>
+    /// <c>SetTag</c>/<c>AddTag</c>/<c>SetAttribute</c>/<c>AddAttribute</c>, or a
+    /// <c>TagList</c> / <c>ActivityTagsCollection</c> entry that does not flow anywhere more specific.
+    /// </summary>
+    TagSetter,
+
+    /// <summary><c>SetBaggage</c>/<c>AddBaggage</c>.</summary>
+    Baggage,
+
+    /// <summary><c>Counter.Add</c>, <c>Histogram.Record</c>, <c>UpDownCounter.Add</c> tags, or a <c>Measurement</c>.</summary>
+    MetricMeasurement,
+
+    /// <summary><c>ActivitySource.StartActivity(tags:)</c>.</summary>
+    ActivityTags,
+
+    /// <summary><c>ILogger.BeginScope</c> state or <c>ILogger.Log</c> state.</summary>
+    LoggerState,
+
+    /// <summary><c>ResourceBuilder.AddAttributes</c>.</summary>
+    ResourceAttributes,
+
+    /// <summary><c>ActivityEvent</c> tags.</summary>
+    ActivityEvent,
+
+    /// <summary><c>ActivityLink</c> tags.</summary>
+    ActivityLink,
+}
+
+/// <summary>
+/// The locals of one operation block that are passed to a known telemetry sink, computed once
+/// per block on first use. Every payload literal in the block then answers "does this dictionary
+/// or tag collection reach telemetry, and where?" with a lookup instead of a walk over the whole
+/// block, which is what the previous per-literal <c>DescendantsAndSelf</c> scan cost.
+/// </summary>
+internal sealed class TelemetryPayloadFlowScope
+{
+    private readonly Lazy<ImmutableDictionary<ILocalSymbol, TelemetryPayloadSink>> _sinkByLocal;
+
+    public TelemetryPayloadFlowScope(ImmutableArray<IOperation> operationBlocks)
+    {
+        _sinkByLocal = new Lazy<ImmutableDictionary<ILocalSymbol, TelemetryPayloadSink>>(
+            () => Build(operationBlocks),
+            LazyThreadSafetyMode.ExecutionAndPublication);
+    }
+
+    public bool TryGetSink(ILocalSymbol local, out TelemetryPayloadSink sink) =>
+        _sinkByLocal.Value.TryGetValue(local, out sink);
+
+    private static ImmutableDictionary<ILocalSymbol, TelemetryPayloadSink> Build(
+        ImmutableArray<IOperation> operationBlocks)
+    {
+        var builder = ImmutableDictionary.CreateBuilder<ILocalSymbol, TelemetryPayloadSink>(
+            SymbolEqualityComparer.Default);
+
+        foreach (var block in operationBlocks)
+        {
+            foreach (var descendant in MsOperationExtensions.DescendantsAndSelf(block))
+            {
+                if (descendant is IArgumentOperation argument
+                    && TelemetryAttributePayloadDetection.TryGetLocalReference(argument.Value, out var local)
+                    && TelemetryAttributePayloadDetection.TryGetSinkForArgument(argument, out var sink)
+                    && !builder.ContainsKey(local))
+                {
+                    builder.Add(local, sink);
+                }
+            }
+        }
+
+        return builder.ToImmutable();
+    }
+}
 
 internal static class TelemetryAttributePayloadDetection
 {
@@ -10,35 +90,54 @@ internal static class TelemetryAttributePayloadDetection
         "AddBaggage");
 
     /// <summary>
-    /// Registers the four payload-producing operation actions (invocation, object
-    /// creation, collection expression, indexer assignment) and routes every detected
-    /// literal payload to <paramref name="onPayload"/>.
+    /// Registers the four payload-producing operation actions (invocation, object creation,
+    /// local declarator, indexer assignment) per operation block and routes every detected
+    /// literal payload to <paramref name="onPayload"/>. The block-level registration is what
+    /// lets the local-flow set be built once per block.
     /// </summary>
     public static void RegisterPayloadAnalysis(
         CompilationStartAnalysisContext context,
         Action<OperationAnalysisContext, TelemetryAttributePayloadLiteral> onPayload)
     {
-        context.RegisterOperationAction(
-            ctx => AnalyzeInvocation((IInvocationOperation)ctx.Operation, payload => onPayload(ctx, payload)),
-            OperationKind.Invocation);
-        context.RegisterOperationAction(
-            ctx => AnalyzeObjectCreation((IObjectCreationOperation)ctx.Operation, payload => onPayload(ctx, payload)),
-            OperationKind.ObjectCreation);
-        context.RegisterOperationAction(
-            ctx => AnalyzeCollectionExpression((ICollectionExpressionOperation)ctx.Operation, payload => onPayload(ctx, payload)),
-            OperationKind.CollectionExpression);
-        context.RegisterOperationAction(
-            ctx => AnalyzeAssignment((ISimpleAssignmentOperation)ctx.Operation, payload => onPayload(ctx, payload)),
-            OperationKind.SimpleAssignment);
+        context.RegisterOperationBlockStartAction(blockContext =>
+        {
+            var scope = new TelemetryPayloadFlowScope(blockContext.OperationBlocks);
+            blockContext.RegisterOperationAction(
+                ctx => AnalyzeInvocation((IInvocationOperation)ctx.Operation, scope, payload => onPayload(ctx, payload)),
+                OperationKind.Invocation);
+            blockContext.RegisterOperationAction(
+                ctx => AnalyzeObjectCreation((IObjectCreationOperation)ctx.Operation, scope, payload => onPayload(ctx, payload)),
+                OperationKind.ObjectCreation);
+            blockContext.RegisterOperationAction(
+                ctx => AnalyzeVariableDeclarator((IVariableDeclaratorOperation)ctx.Operation, scope, payload => onPayload(ctx, payload)),
+                OperationKind.VariableDeclarator);
+            blockContext.RegisterOperationAction(
+                ctx => AnalyzeAssignment((ISimpleAssignmentOperation)ctx.Operation, scope, payload => onPayload(ctx, payload)),
+                OperationKind.SimpleAssignment);
+        });
     }
 
     public static void AnalyzeInvocation(
         IInvocationOperation invocation,
+        TelemetryPayloadFlowScope scope,
         Action<TelemetryAttributePayloadLiteral> report)
     {
-        if (IsKnownTelemetryKeyValueInvocation(invocation))
+        if (TagSetterDetection.IsTagSetterInvocation(invocation))
         {
-            AnalyzeKeyValueInvocation(invocation, WithEmissionContext(report, isProductionEmission: true));
+            AnalyzeKeyValueArguments(invocation.Arguments, invocation.TargetMethod.IsExtensionMethod, WithSink(report, TelemetryPayloadSink.TagSetter));
+        }
+        else if (BaggageMethodNames.Contains(invocation.TargetMethod.Name))
+        {
+            AnalyzeKeyValueArguments(invocation.Arguments, invocation.TargetMethod.IsExtensionMethod, WithSink(report, TelemetryPayloadSink.Baggage));
+        }
+        else if (invocation.TargetMethod.Name == "Add"
+            && IsTelemetryTagCollection(ReceiverType(invocation))
+            && !IsInsideKnownTelemetryAttributePayload(invocation, scope))
+        {
+            // A TagList built up by Add calls and then handed to a metric or a span reports as
+            // that sink; one that never leaves the method is still a tag setter.
+            var sink = ResolveCollectionSink(invocation.Instance, scope, TelemetryPayloadSink.TagSetter);
+            AnalyzeKeyValueArguments(invocation.Arguments, invocation.TargetMethod.IsExtensionMethod, WithSink(report, sink));
         }
 
         if (IsMetricMeasurementInvocation(invocation))
@@ -46,65 +145,55 @@ internal static class TelemetryAttributePayloadDetection
             AnalyzeArgumentsAfterFirst(
                 invocation.Arguments,
                 invocation.TargetMethod.IsExtensionMethod,
-                WithEmissionContext(report, isProductionEmission: true));
+                WithSink(report, TelemetryPayloadSink.MetricMeasurement));
         }
 
         if (IsActivitySourceStartActivity(invocation)
             && TryGetArgumentByNameOrOrdinal(invocation.Arguments, "tags", 3, out var startActivityTagsArgument))
         {
-            AnalyzePayload(startActivityTagsArgument.Value, WithEmissionContext(report, isProductionEmission: true));
+            AnalyzePayload(startActivityTagsArgument.Value, WithSink(report, TelemetryPayloadSink.ActivityTags));
             return;
         }
 
         if (IsLoggerBeginScope(invocation)
             && TryGetArgumentByOrdinal(invocation.Arguments, invocation.TargetMethod.IsExtensionMethod, 0, out var scopeStateArgument))
         {
-            AnalyzePayload(scopeStateArgument.Value, WithEmissionContext(report, isProductionEmission: true));
+            AnalyzePayload(scopeStateArgument.Value, WithSink(report, TelemetryPayloadSink.LoggerState));
             return;
         }
 
         if (IsLoggerLog(invocation)
             && TryGetArgumentByNameOrOrdinal(invocation.Arguments, "state", 2, out var logStateArgument))
         {
-            AnalyzePayload(logStateArgument.Value, WithEmissionContext(report, isProductionEmission: true));
+            AnalyzePayload(logStateArgument.Value, WithSink(report, TelemetryPayloadSink.LoggerState));
             return;
         }
 
         if (IsResourceBuilderAddAttributes(invocation)
             && TryGetArgumentByOrdinal(invocation.Arguments, invocation.TargetMethod.IsExtensionMethod, 0, out var attributesArgument))
         {
-            AnalyzePayload(attributesArgument.Value, WithEmissionContext(report, isProductionEmission: true));
+            AnalyzePayload(attributesArgument.Value, WithSink(report, TelemetryPayloadSink.ResourceAttributes));
             return;
         }
 
-        if (!IsInsideKnownTelemetryAttributePayload(invocation)
-            && invocation.TargetMethod.Name == "Add"
-            && IsStringKeyDictionary(invocation.Instance?.Type ?? invocation.TargetMethod.ContainingType))
+        if (invocation.TargetMethod.Name == "Add"
+            && IsStringKeyDictionary(ReceiverType(invocation))
+            && !IsInsideKnownTelemetryAttributePayload(invocation, scope))
         {
-            AnalyzeAddLikeInvocation(
-                invocation,
-                WithEmissionContext(report, IsDictionaryAddOnLocalFlowingToTelemetry(invocation)));
+            var sink = ResolveCollectionSink(invocation.Instance, scope, TelemetryPayloadSink.None);
+            AnalyzeKeyValueArguments(invocation.Arguments, invocation.TargetMethod.IsExtensionMethod, WithSink(report, sink));
         }
     }
 
     public static void AnalyzeObjectCreation(
         IObjectCreationOperation objectCreation,
+        TelemetryPayloadFlowScope scope,
         Action<TelemetryAttributePayloadLiteral> report)
     {
         if (IsKeyValuePairStringObject(objectCreation.Type)
-            && !IsInsideKnownTelemetryAttributePayload(objectCreation))
+            && !IsInsideKnownTelemetryAttributePayload(objectCreation, scope))
         {
             AnalyzeKeyValuePairCreation(objectCreation, report);
-        }
-
-        if (objectCreation.Initializer is not null
-            && IsStringKeyDictionary(objectCreation.Type)
-            && IsInsideLocalDeclarationInitializerUsedAsTelemetryPayload(objectCreation))
-        {
-            AnalyzeObjectInitializer(
-                objectCreation.Initializer,
-                WithEmissionContext(report, isProductionEmission: true));
-            return;
         }
 
         if (IsMetricMeasurementCreation(objectCreation.Type))
@@ -112,45 +201,132 @@ internal static class TelemetryAttributePayloadDetection
             AnalyzeArgumentsAfterFirst(
                 objectCreation.Arguments,
                 extensionMethod: false,
-                WithEmissionContext(report, isProductionEmission: true));
+                WithSink(report, TelemetryPayloadSink.MetricMeasurement));
         }
 
         if (IsActivityEventCreation(objectCreation.Type)
             && TryGetArgumentByNameOrOrdinal(objectCreation.Arguments, "tags", 2, out var tagsArgument))
         {
-            AnalyzePayload(tagsArgument.Value, WithEmissionContext(report, isProductionEmission: true));
+            AnalyzePayload(tagsArgument.Value, WithSink(report, TelemetryPayloadSink.ActivityEvent));
         }
 
         if (IsActivityLinkCreation(objectCreation.Type)
             && TryGetArgumentByNameOrOrdinal(objectCreation.Arguments, "tags", 1, out var linkTagsArgument))
         {
-            AnalyzePayload(linkTagsArgument.Value, WithEmissionContext(report, isProductionEmission: true));
+            AnalyzePayload(linkTagsArgument.Value, WithSink(report, TelemetryPayloadSink.ActivityLink));
         }
     }
 
-    public static void AnalyzeCollectionExpression(
-        ICollectionExpressionOperation collectionExpression,
+    /// <summary>
+    /// A local whose initializer is a dictionary, array, collection expression or tag
+    /// collection, and which later reaches a telemetry sink, is analyzed as that sink's
+    /// payload. The per-element actions skip anything under such an initializer so no
+    /// literal reports twice.
+    /// </summary>
+    public static void AnalyzeVariableDeclarator(
+        IVariableDeclaratorOperation declarator,
+        TelemetryPayloadFlowScope scope,
         Action<TelemetryAttributePayloadLiteral> report)
     {
-        if (IsInsideLocalDeclarationInitializerUsedAsTelemetryPayload(collectionExpression))
+        if (declarator.Initializer?.Value is { } initializerValue
+            && scope.TryGetSink(declarator.Symbol, out var sink))
         {
-            AnalyzeCollectionExpressionElements(
-                collectionExpression,
-                WithEmissionContext(report, isProductionEmission: true));
+            AnalyzePayload(initializerValue, WithSink(report, sink));
         }
     }
 
     public static void AnalyzeAssignment(
         ISimpleAssignmentOperation assignment,
+        TelemetryPayloadFlowScope scope,
         Action<TelemetryAttributePayloadLiteral> report)
     {
-        if (IsTelemetryTagCollectionIndexerAssignment(assignment)
-            || IsDictionaryIndexerAssignmentOnLocalFlowingToTelemetry(assignment))
+        if (assignment.Target.UnwrapImplicitConversions() is not IPropertyReferenceOperation propertyReference)
         {
-            AnalyzeIndexerAssignment(
-                assignment,
-                WithEmissionContext(report, isProductionEmission: true));
+            return;
         }
+
+        var receiverType = propertyReference.Instance?.Type ?? propertyReference.Property.ContainingType;
+        if (IsTelemetryTagCollection(receiverType))
+        {
+            if (!IsInsideKnownTelemetryAttributePayload(assignment, scope))
+            {
+                var sink = ResolveCollectionSink(propertyReference.Instance, scope, TelemetryPayloadSink.TagSetter);
+                AnalyzeIndexerAssignment(assignment, WithSink(report, sink));
+            }
+
+            return;
+        }
+
+        if (IsStringKeyDictionary(receiverType)
+            && TryGetLocalSink(propertyReference.Instance, scope, out var dictionarySink))
+        {
+            AnalyzeIndexerAssignment(assignment, WithSink(report, dictionarySink));
+        }
+    }
+
+    /// <summary>
+    /// Classifies an argument by the sink its parent call feeds: the <c>tags</c> of
+    /// <c>StartActivity</c>, the state of a logger call, the attributes of a resource builder,
+    /// the tags after a metric measurement's value, or the tags of an event or link.
+    /// </summary>
+    internal static bool TryGetSinkForArgument(IArgumentOperation argument, out TelemetryPayloadSink sink)
+    {
+        switch (argument.Parent)
+        {
+            case IInvocationOperation invocation:
+                if (IsResourceBuilderAddAttributes(invocation)
+                    && IsLogicalArgument(argument, invocation.TargetMethod.IsExtensionMethod, 0))
+                {
+                    sink = TelemetryPayloadSink.ResourceAttributes;
+                    return true;
+                }
+
+                if (IsMetricMeasurementInvocation(invocation)
+                    && IsAfterFirstLogicalArgument(argument, invocation.TargetMethod.IsExtensionMethod))
+                {
+                    sink = TelemetryPayloadSink.MetricMeasurement;
+                    return true;
+                }
+
+                if (IsActivitySourceTagsArgument(invocation, argument))
+                {
+                    sink = TelemetryPayloadSink.ActivityTags;
+                    return true;
+                }
+
+                if (IsLoggerPayloadArgument(invocation, argument))
+                {
+                    sink = TelemetryPayloadSink.LoggerState;
+                    return true;
+                }
+
+                break;
+
+            case IObjectCreationOperation objectCreation:
+                if (IsMetricMeasurementCreation(objectCreation.Type)
+                    && IsAfterFirstLogicalArgument(argument, extensionMethod: false))
+                {
+                    sink = TelemetryPayloadSink.MetricMeasurement;
+                    return true;
+                }
+
+                if (IsActivityEventTagsArgument(objectCreation, argument))
+                {
+                    sink = TelemetryPayloadSink.ActivityEvent;
+                    return true;
+                }
+
+                if (IsActivityLinkTagsArgument(objectCreation, argument))
+                {
+                    sink = TelemetryPayloadSink.ActivityLink;
+                    return true;
+                }
+
+                break;
+        }
+
+        sink = TelemetryPayloadSink.None;
+        return false;
     }
 
     private static void AnalyzePayload(
@@ -198,7 +374,7 @@ internal static class TelemetryAttributePayloadDetection
 
         if (unwrapped is IInvocationOperation { TargetMethod.Name: "Add" } invocation)
         {
-            AnalyzeAddLikeInvocation(invocation, report);
+            AnalyzeKeyValueArguments(invocation.Arguments, invocation.TargetMethod.IsExtensionMethod, report);
             return;
         }
 
@@ -206,33 +382,6 @@ internal static class TelemetryAttributePayloadDetection
         {
             AnalyzeIndexerAssignment(assignment, report);
         }
-    }
-
-    private static void AnalyzeKeyValueInvocation(
-        IInvocationOperation invocation,
-        Action<TelemetryAttributePayloadLiteral> report)
-    {
-        if (!TryGetArgumentByOrdinal(invocation.Arguments, invocation.TargetMethod.IsExtensionMethod, 0, out var keyArgument)
-            || !TryGetKey(keyArgument.Value, out var key, out var keySyntax, out var keyIsBareLiteral))
-        {
-            return;
-        }
-
-        string? value = null;
-        SyntaxNode? valueSyntax = null;
-        var valueIsBareLiteral = false;
-        if (TryGetArgumentByOrdinal(invocation.Arguments, invocation.TargetMethod.IsExtensionMethod, 1, out var valueArgument))
-        {
-            TryGetValue(valueArgument.Value, out value, out valueSyntax, out valueIsBareLiteral);
-        }
-
-        report(new TelemetryAttributePayloadLiteral(
-            key,
-            keySyntax,
-            keyIsBareLiteral,
-            value,
-            valueSyntax,
-            valueIsBareLiteral));
     }
 
     private static void AnalyzeArrayInitializer(
@@ -292,11 +441,16 @@ internal static class TelemetryAttributePayloadDetection
             valueIsBareLiteral));
     }
 
-    private static void AnalyzeAddLikeInvocation(
-        IInvocationOperation invocation,
+    /// <summary>
+    /// Reads a (key, value) argument pair: <c>SetTag(key, value)</c>, <c>TagList.Add(key, value)</c>,
+    /// <c>Dictionary.Add(key, value)</c> and the collection-initializer form of the last two.
+    /// </summary>
+    private static void AnalyzeKeyValueArguments(
+        ImmutableArray<IArgumentOperation> arguments,
+        bool extensionMethod,
         Action<TelemetryAttributePayloadLiteral> report)
     {
-        if (!TryGetArgumentByOrdinal(invocation.Arguments, invocation.TargetMethod.IsExtensionMethod, 0, out var keyArgument)
+        if (!TryGetArgumentByOrdinal(arguments, extensionMethod, 0, out var keyArgument)
             || !TryGetKey(keyArgument.Value, out var key, out var keySyntax, out var keyIsBareLiteral))
         {
             return;
@@ -305,7 +459,7 @@ internal static class TelemetryAttributePayloadDetection
         string? value = null;
         SyntaxNode? valueSyntax = null;
         var valueIsBareLiteral = false;
-        if (TryGetArgumentByOrdinal(invocation.Arguments, invocation.TargetMethod.IsExtensionMethod, 1, out var valueArgument))
+        if (TryGetArgumentByOrdinal(arguments, extensionMethod, 1, out var valueArgument))
         {
             TryGetValue(valueArgument.Value, out value, out valueSyntax, out valueIsBareLiteral);
         }
@@ -394,10 +548,10 @@ internal static class TelemetryAttributePayloadDetection
         return false;
     }
 
-    private static Action<TelemetryAttributePayloadLiteral> WithEmissionContext(
+    private static Action<TelemetryAttributePayloadLiteral> WithSink(
         Action<TelemetryAttributePayloadLiteral> report,
-        bool isProductionEmission) =>
-        payload => report(payload.WithEmissionContext(isProductionEmission));
+        TelemetryPayloadSink sink) =>
+        payload => report(payload.WithSink(sink));
 
     private static bool TryGetIndexerKey(
         IOperation operation,
@@ -525,72 +679,25 @@ internal static class TelemetryAttributePayloadDetection
             && invocation.TargetMethod.Parameters[0].Type.Name == "ResourceBuilder";
     }
 
-    private static bool IsKnownTelemetryKeyValueInvocation(IInvocationOperation invocation)
-    {
-        if (TagSetterDetection.IsTagSetterInvocation(invocation)
-            || BaggageMethodNames.Contains(invocation.TargetMethod.Name))
-        {
-            return true;
-        }
-
-        return invocation.TargetMethod.Name == "Add"
-            && IsTelemetryTagCollection(invocation.Instance?.Type ?? invocation.TargetMethod.ContainingType);
-    }
-
     private static bool IsMetricMeasurementInvocation(IInvocationOperation invocation) =>
         invocation.TargetMethod.Name is "Add" or "Record"
         && IsMetricInstrument(invocation.TargetMethod.ContainingType);
 
-    private static bool IsInsideKnownTelemetryAttributePayload(IOperation operation)
+    /// <summary>
+    /// True when the operation sits under a sink argument or under the initializer of a local
+    /// that reaches a sink. Those payloads are reported from the sink side, so the per-element
+    /// actions must not report them again.
+    /// </summary>
+    private static bool IsInsideKnownTelemetryAttributePayload(IOperation operation, TelemetryPayloadFlowScope scope)
     {
-        if (IsInsideLocalDeclarationInitializerUsedAsTelemetryPayload(operation))
+        if (TryGetEnclosingLocalSink(operation, scope, out _))
         {
             return true;
         }
 
         for (var current = operation.Parent; current is not null; current = current.Parent)
         {
-            if (current is not IArgumentOperation argument)
-            {
-                continue;
-            }
-
-            if (argument.Parent is IInvocationOperation invocation
-                && IsResourceBuilderAddAttributes(invocation)
-                && IsLogicalArgument(argument, invocation.TargetMethod.IsExtensionMethod, 0))
-            {
-                return true;
-            }
-
-            if (argument.Parent is IInvocationOperation metricInvocation
-                && IsMetricMeasurementInvocation(metricInvocation)
-                && IsAfterFirstLogicalArgument(argument, metricInvocation.TargetMethod.IsExtensionMethod))
-            {
-                return true;
-            }
-
-            if (argument.Parent is IObjectCreationOperation metricMeasurement
-                && IsMetricMeasurementCreation(metricMeasurement.Type)
-                && IsAfterFirstLogicalArgument(argument, extensionMethod: false))
-            {
-                return true;
-            }
-
-            if (argument.Parent is IInvocationOperation startActivityInvocation
-                && IsActivitySourceTagsArgument(startActivityInvocation, argument))
-            {
-                return true;
-            }
-
-            if (argument.Parent is IInvocationOperation loggerInvocation
-                && IsLoggerPayloadArgument(loggerInvocation, argument))
-            {
-                return true;
-            }
-
-            if (argument.Parent is IObjectCreationOperation objectCreation
-                && (IsActivityEventTagsArgument(objectCreation, argument)
-                    || IsActivityLinkTagsArgument(objectCreation, argument)))
+            if (current is IArgumentOperation argument && TryGetSinkForArgument(argument, out _))
             {
                 return true;
             }
@@ -599,97 +706,45 @@ internal static class TelemetryAttributePayloadDetection
         return false;
     }
 
-    private static bool IsInsideLocalDeclarationInitializerUsedAsTelemetryPayload(IOperation operation)
-    {
-        if (!TryGetEnclosingLocalInitializer(operation, out var local))
-        {
-            return false;
-        }
-
-        return LocalFlowsToKnownTelemetryAttributePayload(local, operation);
-    }
-
-    private static bool TryGetEnclosingLocalInitializer(
+    private static bool TryGetEnclosingLocalSink(
         IOperation operation,
-        [NotNullWhen(true)] out ILocalSymbol? local)
+        TelemetryPayloadFlowScope scope,
+        out TelemetryPayloadSink sink)
     {
         for (var current = operation.Parent; current is not null; current = current.Parent)
         {
             if (current is IVariableInitializerOperation
-                && current.Parent is IVariableDeclaratorOperation { Symbol: ILocalSymbol localSymbol })
+                && current.Parent is IVariableDeclaratorOperation { Symbol: ILocalSymbol local })
             {
-                local = localSymbol;
-                return true;
+                return scope.TryGetSink(local, out sink);
             }
         }
 
-        local = null;
+        sink = TelemetryPayloadSink.None;
         return false;
     }
 
-    private static bool LocalFlowsToKnownTelemetryAttributePayload(
-        ILocalSymbol local,
-        IOperation operation)
+    private static TelemetryPayloadSink ResolveCollectionSink(
+        IOperation? instance,
+        TelemetryPayloadFlowScope scope,
+        TelemetryPayloadSink fallback) =>
+        TryGetLocalSink(instance, scope, out var sink) ? sink : fallback;
+
+    private static bool TryGetLocalSink(
+        IOperation? instance,
+        TelemetryPayloadFlowScope scope,
+        out TelemetryPayloadSink sink)
     {
-        var root = operation;
-        while (root.Parent is not null)
+        if (TryGetLocalReference(instance, out var local))
         {
-            root = root.Parent;
+            return scope.TryGetSink(local, out sink);
         }
 
-        foreach (var descendant in Microsoft.CodeAnalysis.Operations.OperationExtensions.DescendantsAndSelf(root))
-        {
-            if (descendant is not IArgumentOperation argument
-                || !IsLocalReference(argument.Value, local))
-            {
-                continue;
-            }
-
-            if (argument.Parent is IInvocationOperation invocation
-                && ((IsResourceBuilderAddAttributes(invocation)
-                        && IsLogicalArgument(argument, invocation.TargetMethod.IsExtensionMethod, 0))
-                    || (IsMetricMeasurementInvocation(invocation)
-                        && IsAfterFirstLogicalArgument(argument, invocation.TargetMethod.IsExtensionMethod))
-                    || IsActivitySourceTagsArgument(invocation, argument)
-                    || IsLoggerPayloadArgument(invocation, argument)))
-            {
-                return true;
-            }
-
-            if (argument.Parent is IObjectCreationOperation objectCreation
-                && (IsActivityEventTagsArgument(objectCreation, argument)
-                    || IsActivityLinkTagsArgument(objectCreation, argument)))
-            {
-                return true;
-            }
-        }
-
+        sink = TelemetryPayloadSink.None;
         return false;
     }
 
-    private static bool IsDictionaryIndexerAssignmentOnLocalFlowingToTelemetry(ISimpleAssignmentOperation assignment)
-    {
-        var target = assignment.Target.UnwrapImplicitConversions();
-        return target is IPropertyReferenceOperation propertyReference
-            && IsStringKeyDictionary(propertyReference.Instance?.Type ?? propertyReference.Property.ContainingType)
-            && TryGetLocalReference(propertyReference.Instance, out var local)
-            && LocalFlowsToKnownTelemetryAttributePayload(local, assignment);
-    }
-
-    private static bool IsDictionaryAddOnLocalFlowingToTelemetry(IInvocationOperation invocation) =>
-        invocation.TargetMethod.Name == "Add"
-        && IsStringKeyDictionary(invocation.Instance?.Type ?? invocation.TargetMethod.ContainingType)
-        && TryGetLocalReference(invocation.Instance, out var local)
-        && LocalFlowsToKnownTelemetryAttributePayload(local, invocation);
-
-    private static bool IsTelemetryTagCollectionIndexerAssignment(ISimpleAssignmentOperation assignment)
-    {
-        var target = assignment.Target.UnwrapImplicitConversions();
-        return target is IPropertyReferenceOperation propertyReference
-            && IsTelemetryTagCollection(propertyReference.Instance?.Type ?? propertyReference.Property.ContainingType);
-    }
-
-    private static bool TryGetLocalReference(
+    internal static bool TryGetLocalReference(
         IOperation? operation,
         [NotNullWhen(true)] out ILocalSymbol? local)
     {
@@ -704,9 +759,8 @@ internal static class TelemetryAttributePayloadDetection
         return false;
     }
 
-    private static bool IsLocalReference(IOperation operation, ILocalSymbol local) =>
-        operation.UnwrapImplicitConversions() is ILocalReferenceOperation localReference
-        && SymbolEqualityComparer.Default.Equals(localReference.Local, local);
+    private static ITypeSymbol? ReceiverType(IInvocationOperation invocation) =>
+        invocation.Instance?.Type ?? invocation.TargetMethod.ContainingType;
 
     private static bool IsActivityEventTagsArgument(
         IObjectCreationOperation objectCreation,
@@ -804,7 +858,7 @@ internal readonly struct TelemetryAttributePayloadLiteral
         string? value,
         SyntaxNode? valueSyntax,
         bool valueIsBareLiteral,
-        bool isProductionEmission = false)
+        TelemetryPayloadSink sink = TelemetryPayloadSink.None)
     {
         Key = key;
         KeySyntax = keySyntax;
@@ -812,7 +866,7 @@ internal readonly struct TelemetryAttributePayloadLiteral
         Value = value;
         ValueSyntax = valueSyntax;
         ValueIsBareLiteral = valueIsBareLiteral;
-        IsProductionEmission = isProductionEmission;
+        Sink = sink;
     }
 
     public string Key { get; }
@@ -827,9 +881,13 @@ internal readonly struct TelemetryAttributePayloadLiteral
 
     public bool ValueIsBareLiteral { get; }
 
-    public bool IsProductionEmission { get; }
+    /// <summary>Where the payload ends up; <see cref="TelemetryPayloadSink.None"/> when it provably goes nowhere.</summary>
+    public TelemetryPayloadSink Sink { get; }
 
-    public TelemetryAttributePayloadLiteral WithEmissionContext(bool isProductionEmission) =>
+    /// <summary>True when the payload reaches a telemetry sink rather than an unattached collection.</summary>
+    public bool IsProductionEmission => Sink != TelemetryPayloadSink.None;
+
+    public TelemetryAttributePayloadLiteral WithSink(TelemetryPayloadSink sink) =>
         new(
             Key,
             KeySyntax,
@@ -837,5 +895,5 @@ internal readonly struct TelemetryAttributePayloadLiteral
             Value,
             ValueSyntax,
             ValueIsBareLiteral,
-            isProductionEmission);
+            sink);
 }

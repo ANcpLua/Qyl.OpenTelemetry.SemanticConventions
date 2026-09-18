@@ -47,35 +47,44 @@ public sealed class SupplementalSemconvMigrationAnalyzer : DiagnosticAnalyzer
         var liveObsoleteAttributeNames = BuildLiveObsoleteAttributeNames(context.Compilation);
         var liveObsoleteAttributeValues = BuildLiveObsoleteAttributeValues(context.Compilation);
 
-        context.RegisterOperationAction(
-            ctx => AnalyzeInvocation(ctx, liveObsoleteAttributeNames, liveObsoleteAttributeValues),
-            OperationKind.Invocation);
-        context.RegisterOperationAction(
-            ctx => AnalyzeObjectCreation(ctx, liveObsoleteAttributeNames, liveObsoleteAttributeValues),
-            OperationKind.ObjectCreation);
-        context.RegisterOperationAction(
-            ctx => AnalyzeCollectionExpression(ctx, liveObsoleteAttributeNames, liveObsoleteAttributeValues),
-            OperationKind.CollectionExpression);
-        context.RegisterOperationAction(
-            ctx => AnalyzeAssignment(ctx, liveObsoleteAttributeNames, liveObsoleteAttributeValues),
-            OperationKind.SimpleAssignment);
+        context.RegisterOperationBlockStartAction(blockContext =>
+        {
+            if (blockContext.OperationBlocks.IsDefaultOrEmpty
+                || IsCatalogSource(blockContext.OperationBlocks[0]))
+            {
+                return;
+            }
+
+            var scope = new TelemetryPayloadFlowScope(blockContext.OperationBlocks);
+
+            blockContext.RegisterOperationAction(
+                ctx => AnalyzeInvocation(ctx, scope, liveObsoleteAttributeNames, liveObsoleteAttributeValues),
+                OperationKind.Invocation);
+            blockContext.RegisterOperationAction(
+                ctx => AnalyzeObjectCreation(ctx, scope, liveObsoleteAttributeNames, liveObsoleteAttributeValues),
+                OperationKind.ObjectCreation);
+            blockContext.RegisterOperationAction(
+                ctx => AnalyzeVariableDeclarator(ctx, scope, liveObsoleteAttributeNames, liveObsoleteAttributeValues),
+                OperationKind.VariableDeclarator);
+            blockContext.RegisterOperationAction(
+                ctx => AnalyzeAssignment(ctx, scope, liveObsoleteAttributeNames, liveObsoleteAttributeValues),
+                OperationKind.SimpleAssignment);
+        });
     }
 
     private static void AnalyzeInvocation(
         OperationAnalysisContext context,
+        TelemetryPayloadFlowScope scope,
         ImmutableHashSet<string> liveObsoleteAttributeNames,
         ImmutableHashSet<string> liveObsoleteAttributeValues)
     {
         var invocation = (IInvocationOperation)context.Operation;
-        if (IsCatalogSource(invocation))
-        {
-            return;
-        }
 
         AnalyzeMetricInstrumentName(context, invocation);
         AnalyzeActivityOrEventName(context, invocation);
         TelemetryAttributePayloadDetection.AnalyzeInvocation(
             invocation,
+            scope,
             payload => ReportPayloadIfCatalogOnly(
                 context,
                 payload,
@@ -85,14 +94,11 @@ public sealed class SupplementalSemconvMigrationAnalyzer : DiagnosticAnalyzer
 
     private static void AnalyzeObjectCreation(
         OperationAnalysisContext context,
+        TelemetryPayloadFlowScope scope,
         ImmutableHashSet<string> liveObsoleteAttributeNames,
         ImmutableHashSet<string> liveObsoleteAttributeValues)
     {
         var objectCreation = (IObjectCreationOperation)context.Operation;
-        if (IsCatalogSource(objectCreation))
-        {
-            return;
-        }
 
         if (objectCreation.Type?.Name == "ActivityEvent"
             && TelemetryAttributePayloadDetection.TryGetArgumentByOrdinal(
@@ -115,6 +121,7 @@ public sealed class SupplementalSemconvMigrationAnalyzer : DiagnosticAnalyzer
 
         TelemetryAttributePayloadDetection.AnalyzeObjectCreation(
             objectCreation,
+            scope,
             payload => ReportPayloadIfCatalogOnly(
                 context,
                 payload,
@@ -122,18 +129,15 @@ public sealed class SupplementalSemconvMigrationAnalyzer : DiagnosticAnalyzer
                 liveObsoleteAttributeValues));
     }
 
-    private static void AnalyzeCollectionExpression(
+    private static void AnalyzeVariableDeclarator(
         OperationAnalysisContext context,
+        TelemetryPayloadFlowScope scope,
         ImmutableHashSet<string> liveObsoleteAttributeNames,
         ImmutableHashSet<string> liveObsoleteAttributeValues)
     {
-        if (IsCatalogSource(context.Operation))
-        {
-            return;
-        }
-
-        TelemetryAttributePayloadDetection.AnalyzeCollectionExpression(
-            (ICollectionExpressionOperation)context.Operation,
+        TelemetryAttributePayloadDetection.AnalyzeVariableDeclarator(
+            (IVariableDeclaratorOperation)context.Operation,
+            scope,
             payload => ReportPayloadIfCatalogOnly(
                 context,
                 payload,
@@ -143,16 +147,13 @@ public sealed class SupplementalSemconvMigrationAnalyzer : DiagnosticAnalyzer
 
     private static void AnalyzeAssignment(
         OperationAnalysisContext context,
+        TelemetryPayloadFlowScope scope,
         ImmutableHashSet<string> liveObsoleteAttributeNames,
         ImmutableHashSet<string> liveObsoleteAttributeValues)
     {
-        if (IsCatalogSource(context.Operation))
-        {
-            return;
-        }
-
         TelemetryAttributePayloadDetection.AnalyzeAssignment(
             (ISimpleAssignmentOperation)context.Operation,
+            scope,
             payload => ReportPayloadIfCatalogOnly(
                 context,
                 payload,

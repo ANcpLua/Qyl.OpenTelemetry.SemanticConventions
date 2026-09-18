@@ -1,4 +1,3 @@
-
 namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 
 /// <summary>
@@ -14,6 +13,15 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 ///             <item>Query performance degradation</item>
 ///             <item>Cardinality explosions that crash collectors</item>
 ///         </list>
+///     </para>
+///     <para>
+///         Two paths reach a metric. The source-generator path is a <c>[Tag]</c> parameter on
+///         a <c>[Counter]</c> or <c>[Histogram]</c> method. The SDK path is a literal key in
+///         the tags of <c>Counter.Add</c>, <c>Histogram.Record</c>, <c>UpDownCounter.Add</c>
+///         or a <c>Measurement</c>, including a <c>TagList</c> or dictionary built up in a
+///         local and passed to one of those; that path is the shared
+///         <see cref="TelemetryAttributePayloadDetection"/> filtered to
+///         <see cref="TelemetryPayloadSink.MetricMeasurement"/>.
 ///     </para>
 ///     <para>
 ///         Alternatives to high-cardinality metric tags:
@@ -35,24 +43,32 @@ internal sealed class Qyl0202HighCardinalityMetricTagAnalyzer : AlAnalyzer {
     ];
 
     /// <summary>
-    ///     Known high-cardinality tag patterns that should be avoided on metrics.
+    ///     Known high-cardinality tag patterns, matched on segment boundaries so
+    ///     <c>user.id</c>, <c>user_id</c>, <c>userId</c> and <c>app.user.id</c> all match
+    ///     and <c>enduser.id</c> does not.
     /// </summary>
-    private static readonly string[] s_highCardinalityPatterns = [
-        "user.id", "user_id", "userId",
-        "request.id", "request_id", "requestId",
-        "session.id", "session_id", "sessionId",
-        "trace.id", "trace_id", "traceId",
-        "span.id", "span_id", "spanId",
-        "correlation.id", "correlation_id", "correlationId",
-        "transaction.id", "transaction_id", "transactionId",
-        "message.id", "message_id", "messageId",
-        "order.id", "order_id", "orderId",
-        "customer.id", "customer_id", "customerId",
-        "account.id", "account_id", "accountId",
-        "email", "ip", "ip_address", "user_agent",
-        "url", "uri", "path", "query",
-        "timestamp", "uuid", "guid"
-    ];
+    private static readonly AttributeKeyPatternSet s_highCardinalityPatterns = new(
+        "user.id",
+        "request.id",
+        "session.id",
+        "trace.id",
+        "span.id",
+        "correlation.id",
+        "transaction.id",
+        "message.id",
+        "order.id",
+        "customer.id",
+        "account.id",
+        "email",
+        "ip",
+        "user_agent",
+        "url",
+        "uri",
+        "path",
+        "query",
+        "timestamp",
+        "uuid",
+        "guid");
 
     /// <summary>The diagnostic identifier for QYL0202.</summary>
     private const string DiagnosticId = "QYL0202";
@@ -70,6 +86,9 @@ internal sealed class Qyl0202HighCardinalityMetricTagAnalyzer : AlAnalyzer {
         context.RegisterCompilationStartAction(OnCompilationStart);
 
     private static void OnCompilationStart(CompilationStartAnalysisContext context) {
+        // The SDK path needs no Qyl.Instrumentation reference, so it registers unconditionally.
+        TelemetryAttributePayloadDetection.RegisterPayloadAnalysis(context, ReportIfHighCardinalityMetricTag);
+
         var cache = new TypeCache<KnownType>(type => context.Compilation.GetTypeByMetadataName(s_knownTypeNames[(int)type]));
 
         if (cache.Get(KnownType.TagAttribute) is null) {
@@ -85,6 +104,17 @@ internal sealed class Qyl0202HighCardinalityMetricTagAnalyzer : AlAnalyzer {
             SyntaxKind.Parameter);
     }
 
+    private static void ReportIfHighCardinalityMetricTag(OperationAnalysisContext context, TelemetryAttributePayloadLiteral payload) {
+        if (payload.Sink != TelemetryPayloadSink.MetricMeasurement || !s_highCardinalityPatterns.Matches(payload.Key)) {
+            return;
+        }
+
+        context.ReportDiagnostic(Diagnostic.Create(
+            s_highCardinalityMetricTagRule,
+            payload.KeySyntax.GetLocation(),
+            payload.Key));
+    }
+
     private static void AnalyzeParameterForHighCardinalityTags(SyntaxNodeAnalysisContext context, TypeCache<KnownType> cache) {
         var parameter = (ParameterSyntax)context.Node;
 
@@ -98,36 +128,11 @@ internal sealed class Qyl0202HighCardinalityMetricTagAnalyzer : AlAnalyzer {
             return;
         }
 
-        if (MatchesHighCardinalityPattern(tagName)) {
+        if (s_highCardinalityPatterns.Matches(tagName)) {
             context.ReportDiagnostic(Diagnostic.Create(
                 s_highCardinalityMetricTagRule,
                 parameter.GetLocation(),
                 tagName));
         }
-    }
-
-    private static bool MatchesHighCardinalityPattern(string tagName) {
-        var normalizedTag = tagName.ToUpperInvariant();
-
-        foreach (var pattern in s_highCardinalityPatterns) {
-            var normalizedPattern = pattern.ToUpperInvariant();
-
-            if (normalizedTag == normalizedPattern) {
-                return true;
-            }
-
-            if (normalizedTag.EndsWithOrdinal("." + normalizedPattern) ||
-                normalizedTag.EndsWithOrdinal("_" + normalizedPattern.ReplaceOrdinal(".", "_"))) {
-                return true;
-            }
-
-            if (!normalizedPattern.ContainsOrdinal(".") && !normalizedPattern.ContainsOrdinal("_")
-                && (normalizedTag.EndsWithOrdinal("." + normalizedPattern)
-                    || normalizedTag.EndsWithOrdinal("_" + normalizedPattern))) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

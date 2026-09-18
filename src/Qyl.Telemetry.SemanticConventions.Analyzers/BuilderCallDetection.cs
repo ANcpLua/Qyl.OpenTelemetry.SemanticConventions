@@ -6,8 +6,10 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 /// <summary>Shared receiver-type check for OTel builder fluent-call analyzers.</summary>
 internal static class BuilderCallDetection {
     /// <summary>
-    /// Returns true when the invocation is a member access whose receiver type
-    /// inherits from or implements any of the given builder types.
+    /// Returns true when the invocation is a member access whose receiver type is, inherits
+    /// from, or implements any of the given builder types. The equality case is the common
+    /// one: the <c>builder</c> parameter of <c>WithTracing(builder => ...)</c> is typed as
+    /// <c>TracerProviderBuilder</c> itself, not as a subclass.
     /// </summary>
     public static bool IsBuilderCall(
         InvocationExpressionSyntax invocation,
@@ -20,6 +22,8 @@ internal static class BuilderCallDetection {
         }
 
         return builderTypes.Any(builderType =>
-            receiverType.InheritsFrom(builderType) || receiverType.Implements(builderType));
+            receiverType.IsEqualTo(builderType)
+            || receiverType.InheritsFrom(builderType)
+            || receiverType.Implements(builderType));
     }
 }

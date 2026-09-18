@@ -1,4 +1,3 @@
-
 namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 
 /// <summary>
@@ -17,10 +16,13 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 ///         types when they do not include a schema URL reference.
 ///     </para>
 ///     <para>
-///         Schema URL detection is heuristic: the analyzer looks for string literals
-///         containing "schema", "telemetry.schema_url", or "opentelemetry.io/schemas",
-///         as well as method calls with "Schema" in the name. This may not catch all
-///         indirect configurations but covers common patterns.
+///         A schema URL is recognized in three forms: a string literal that names a schema
+///         (<c>telemetry.schema_url</c>, <c>opentelemetry.io/schemas</c>, or any text
+///         containing "schema"), a method whose name contains "Schema", or a constant-valued
+///         expression whose name or resolved value does, such as the generated
+///         <c>SchemaUrl.Current</c> or a consumer's own <c>const string</c>. The last form
+///         goes through the semantic model, so a constant referenced by identifier counts the
+///         same as the literal it stands for.
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
@@ -87,7 +89,7 @@ internal sealed class Qyl0006MissingSchemaUrlAnalyzer : AlAnalyzer {
             return;
         }
 
-        if (CheckForSchemaUrl(invocation)) {
+        if (MentionsSchemaUrl(invocation, context.SemanticModel, context.CancellationToken)) {
             return;
         }
 
@@ -95,14 +97,11 @@ internal sealed class Qyl0006MissingSchemaUrlAnalyzer : AlAnalyzer {
         context.ReportDiagnostic(s_rule, location);
     }
 
-    private static bool CheckForSchemaUrl(SyntaxNode invocation) {
+    private static bool MentionsSchemaUrl(SyntaxNode invocation, SemanticModel semanticModel, CancellationToken cancellationToken) {
         foreach (var node in invocation.DescendantNodes()) {
             switch (node) {
                 case LiteralExpressionSyntax literal: {
-                    var value = literal.Token.ValueText;
-                    if (value.ContainsIgnoreCase("schema") ||
-                        value.ContainsIgnoreCase("telemetry.schema_url") ||
-                        value.ContainsIgnoreCase("opentelemetry.io/schemas")) {
+                    if (MentionsSchema(literal.Token.ValueText)) {
                         return true;
                     }
 
@@ -116,9 +115,28 @@ internal sealed class Qyl0006MissingSchemaUrlAnalyzer : AlAnalyzer {
 
                     break;
                 }
+                case IdentifierNameSyntax identifier: {
+                    if (MentionsSchema(identifier.Identifier.ValueText)) {
+                        return true;
+                    }
+
+                    break;
+                }
+                case MemberAccessExpressionSyntax memberAccess: {
+                    // SchemaUrl.Current, or a consumer const whose value is the URL.
+                    if (semanticModel.GetConstantValue(memberAccess, cancellationToken) is { HasValue: true, Value: string constant }
+                        && MentionsSchema(constant)) {
+                        return true;
+                    }
+
+                    break;
+                }
             }
         }
 
         return false;
     }
+
+    private static bool MentionsSchema(string text) =>
+        text.ContainsIgnoreCase("schema");
 }

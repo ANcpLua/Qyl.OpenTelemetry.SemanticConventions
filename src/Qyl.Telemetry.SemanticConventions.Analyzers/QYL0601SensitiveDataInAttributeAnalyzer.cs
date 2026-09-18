@@ -1,34 +1,39 @@
-
 namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     QYL0601: Detects potential PII or credential data in span attributes.
+///     QYL0601: Detects potential PII or credential data in telemetry attributes.
 /// </summary>
 /// <remarks>
 ///     <para>
-///         Span attributes containing sensitive data (passwords, secrets, tokens, API keys,
+///         Attributes containing sensitive data (passwords, secrets, tokens, API keys,
 ///         SSNs, credit card numbers) can leak sensitive information to telemetry backends
 ///         where it may be stored, logged, or exposed to unauthorized users.
 ///     </para>
 ///     <para>
-///         The analyzer detects sensitive patterns in two ways:
-///         <list type="bullet">
-///             <item>Attribute names containing sensitive keywords (password, secret, token, etc.)</item>
-///             <item>Values coming from variables with sensitive names</item>
-///         </list>
+///         A key is inspected only when it provably reaches telemetry: a tag setter, a
+///         baggage entry, a metric measurement, <c>StartActivity</c> tags, a logger scope
+///         or state, resource attributes, or an event or link, including a dictionary or
+///         <c>TagList</c> built up in a local and handed to one of those. The detection is
+///         the shared <see cref="TelemetryAttributePayloadDetection"/>, not a guess from
+///         the receiver's variable name.
 ///     </para>
 ///     <para>
-///         Context detection uses heuristics: the analyzer looks for patterns like
-///         SetTag, AddTag, dictionary indexers on telemetry containers, and invocations
-///         of methods containing "Attribute" or "Tag".
+///         Sensitive words match on segment boundaries, so <c>auth.token</c> is flagged and
+///         <c>gen_ai.usage.input_tokens</c> is not. A key the pinned registry defines
+///         outright is never flagged: the registry has already decided that
+///         <c>aws.secretsmanager.secret.arn</c> or <c>aspnetcore.authorization.policy</c>
+///         is safe to emit. A key that only extends a registry template, such as
+///         <c>http.request.header.authorization</c>, is still flagged.
 ///     </para>
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 internal sealed class Qyl0601SensitiveDataInAttributeAnalyzer : AlAnalyzer {
     /// <summary>
-    ///     Patterns in attribute names that indicate sensitive data.
+    ///     Words and word runs that indicate sensitive data. Separator and case variants of the
+    ///     same words are covered by segment matching; the joined spellings stay listed because
+    ///     an all-lowercase <c>apikey</c> is a single segment.
     /// </summary>
-    private static readonly string[] s_sensitiveAttributeNamePatterns = [
+    private static readonly AttributeKeyPatternSet s_sensitivePatterns = new(
         // Credentials
         "password",
         "passwd",
@@ -44,16 +49,12 @@ internal sealed class Qyl0601SensitiveDataInAttributeAnalyzer : AlAnalyzer {
         "token",
         "api_key",
         "apikey",
-        "api.key",
         "private_key",
         "privatekey",
-        "private.key",
         "access_key",
         "accesskey",
-        "access.key",
         "secret_key",
         "secretkey",
-        "secret.key",
         "encryption_key",
         "encryptionkey",
 
@@ -61,34 +62,17 @@ internal sealed class Qyl0601SensitiveDataInAttributeAnalyzer : AlAnalyzer {
         "ssn",
         "social_security",
         "socialsecurity",
-        "social.security",
         "credit_card",
         "creditcard",
-        "credit.card",
         "card_number",
         "cardnumber",
-        "card.number",
         "cvv",
         "pin",
 
         // Connection strings
         "connection_string",
         "connectionstring",
-        "connection.string",
-        "conn_str"
-    ];
-
-    /// <summary>
-    ///     Known telemetry method patterns.
-    /// </summary>
-    private static readonly HashSet<string> s_telemetryMethodPatterns =
-        new(StringComparer.OrdinalIgnoreCase) {
-            "SetTag",
-            "AddTag",
-            "SetAttribute",
-            "AddAttribute",
-            "SetCustomProperty"
-        };
+        "conn_str");
 
     /// <summary>The diagnostic identifier for QYL0601.</summary>
     private const string DiagnosticId = "QYL0601";
@@ -101,98 +85,18 @@ internal sealed class Qyl0601SensitiveDataInAttributeAnalyzer : AlAnalyzer {
     /// <summary>Gets the diagnostic descriptors for the supported diagnostics.</summary>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
 
-    /// <summary>Registers syntax node actions to analyze string literals for sensitive attribute names.</summary>
+    /// <summary>Routes every telemetry payload literal in the compilation through the sensitive-name check.</summary>
     protected override void InitializeCore(AnalysisContext context) =>
-        context.RegisterSyntaxNodeAction(AnalyzeStringLiteral, SyntaxKind.StringLiteralExpression);
+        context.RegisterCompilationStartAction(static start =>
+            TelemetryAttributePayloadDetection.RegisterPayloadAnalysis(start, ReportIfSensitive));
 
-    private static void AnalyzeStringLiteral(SyntaxNodeAnalysisContext context) {
-        var literal = (LiteralExpressionSyntax)context.Node;
-        var value = literal.Token.ValueText;
-
-        if (string.IsNullOrEmpty(value)
-            || !IsLikelyAttributeName(literal)
-            || !IsInTelemetryContext(literal)
-            || !ContainsSensitivePattern(value)) {
+    private static void ReportIfSensitive(OperationAnalysisContext context, TelemetryAttributePayloadLiteral payload) {
+        if (payload.Sink == TelemetryPayloadSink.None
+            || SemconvRegistryFacts.IsRegistryAttributeKey(payload.Key)
+            || !s_sensitivePatterns.Matches(payload.Key)) {
             return;
         }
 
-        context.ReportDiagnostic(s_rule, literal.GetLocation(), value);
-    }
-
-    private static bool IsLikelyAttributeName(LiteralExpressionSyntax literal) =>
-        literal.Parent switch {
-            // First argument in a method call (key position)
-            ArgumentSyntax { Parent: ArgumentListSyntax argumentList } argument
-                when argumentList.Arguments.FirstOrDefault() == argument => true,
-            // Dictionary/indexer access
-            ArgumentSyntax { Parent: BracketedArgumentListSyntax } => true,
-            // Key in object initializer
-            AssignmentExpressionSyntax { Parent: InitializerExpressionSyntax } => true,
-            _ => false
-        };
-
-    private static bool IsInTelemetryContext(SyntaxNode node) {
-        var current = node.Parent;
-
-        while (current is not null) {
-            if (IsTelemetryElementAccess(current) ||
-                IsTelemetryInvocation(current) ||
-                IsTelemetryInitializer(current)) {
-                return true;
-            }
-
-            current = current.Parent;
-        }
-
-        return false;
-    }
-
-    private static bool IsTelemetryElementAccess(SyntaxNode node) =>
-        node is ElementAccessExpressionSyntax elementAccess &&
-        elementAccess.Expression.GetIdentifierName() is { } identifier &&
-        IsLikelyTelemetryContainer(identifier);
-
-    private static bool IsTelemetryInvocation(SyntaxNode node) =>
-        node is InvocationExpressionSyntax invocation
-        && invocation.GetMethodName() is { } methodName
-        && (s_telemetryMethodPatterns.Contains(methodName)
-            || methodName.ContainsIgnoreCase("ATTRIBUTE")
-            || methodName.ContainsIgnoreCase("TAG"));
-
-    private static bool IsTelemetryInitializer(SyntaxNode node) =>
-        node is InitializerExpressionSyntax { Parent: ObjectCreationExpressionSyntax creation } &&
-        IsTelemetryTypeName(creation.Type.ToString());
-
-    private static bool IsTelemetryTypeName(string typeName) =>
-        typeName.ContainsOrdinal("Tag") ||
-        typeName.ContainsOrdinal("Attribute") ||
-        typeName.ContainsOrdinal("KeyValuePair");
-
-    private static bool IsLikelyTelemetryContainer(string identifier) =>
-        identifier.ContainsIgnoreCase("ATTRIBUTE") ||
-        identifier.ContainsIgnoreCase("TAG") ||
-        identifier.ContainsIgnoreCase("ATTR") ||
-        identifier.EqualsIgnoreCase("ATTRS") ||
-        identifier.ContainsIgnoreCase("SPAN") ||
-        identifier.ContainsIgnoreCase("ACTIVITY");
-
-    private static bool ContainsSensitivePattern(string attributeName) {
-        var normalizedName = attributeName.ToUpperInvariant();
-
-        foreach (var pattern in s_sensitiveAttributeNamePatterns) {
-            var normalizedPattern = pattern.ToUpperInvariant();
-
-            if (normalizedName == normalizedPattern || normalizedName.ContainsOrdinal(normalizedPattern)) {
-                return true;
-            }
-
-            // Handle separator variations (dot vs underscore)
-            if (normalizedName.ContainsOrdinal(normalizedPattern.ReplaceOrdinal(".", "_"))
-                || normalizedName.ContainsOrdinal(normalizedPattern.ReplaceOrdinal("_", "."))) {
-                return true;
-            }
-        }
-
-        return false;
+        context.ReportDiagnostic(Diagnostic.Create(s_rule, payload.KeySyntax.GetLocation(), payload.Key));
     }
 }

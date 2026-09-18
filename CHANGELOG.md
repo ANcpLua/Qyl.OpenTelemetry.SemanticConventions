@@ -9,6 +9,48 @@ consumer.
 
 ## Unreleased
 
+### Changed
+
+- **The shared payload detection builds its local-flow set once per method.** Every rule that
+  asks "does this dictionary or `TagList` reach telemetry?" (QYL0005, QYL0009/QYL0010, and now
+  QYL0202 and QYL0601) goes through `TelemetryAttributePayloadDetection`, which answered by
+  walking the whole enclosing operation tree once per literal. It now registers per operation
+  block, computes the locals that flow into a sink once and lazily, and each literal answers
+  with a lookup. Each payload also carries *which* sink it reaches (`TelemetryPayloadSink`), so
+  a rule can ask for metric measurements alone. A plain array local handed to
+  `StartActivity(tags:)` is now covered too; before, only a collection expression was.
+
+- **QYL0601 finds the sink semantically and matches sensitive words on word boundaries.** The
+  rule fired wherever a string literal sat under a call whose method or receiver *name*
+  contained "tag", "attribute", "span" or "activity", and matched sensitive words as substrings,
+  so `tokens` matched `token` and `pipeline` matched `pin`. Against the pinned registry's own
+  1031 attribute keys, that flagged 33, every GenAI token-usage counter among them. The rule now
+  runs on the shared payload detection, so it fires only where a key provably reaches a tag
+  setter, baggage, a metric, `StartActivity` tags, a logger scope, resource attributes, an event
+  or a link; sensitive words match on segment boundaries, so `api_key`, `api.key`, `apiKey` and
+  `x-api-key` all read as `api key` and `input_tokens` no longer reads as `token`; and a key the
+  registry defines outright is exempt, since the registry already decided that
+  `aws.secretsmanager.secret.arn` is safe to emit. A key that only extends a registry template,
+  such as `http.request.header.authorization`, is still flagged. Of the registry's own keys,
+  none is flagged now.
+
+- **QYL0202 covers the SDK path, not only `[Tag]` parameters.** A high-cardinality key in the
+  tags of `Counter.Add`, `Histogram.Record`, `UpDownCounter.Add` or a `Measurement`, or in a
+  `TagList` built in a local and passed to one of those, now reports; the same key on a span
+  does not. The word list matches on segment boundaries like QYL0601's.
+
+- **QYL0006 and QYL0703 fire on a receiver typed as the builder itself, and QYL0006 accepts a
+  schema URL that arrives as a constant.** `BuilderCallDetection` accepted a receiver that
+  *inherits from* or *implements* a builder type but not one that *is* the type, and the
+  `builder` parameter of `WithTracing(builder => ...)` is `TracerProviderBuilder` itself, so
+  neither rule fired on the common shape. QYL0006 also recognized a schema URL only as a literal
+  or a method name containing "schema"; the generated `SchemaUrl.Current`, or a consumer's own
+  `const`, referenced by name was a false positive. It now resolves constant values through the
+  semantic model.
+
+- `SemconvRegistryFacts.IsRegistryAttributeKey` is generated beside `IsKnownAttributeKey`: true
+  only for a key the registry defines outright, not for one that extends a template.
+
 ### Upstream watch
 
 - **A second policy set now judges this registry's telemetry from outside it.**
