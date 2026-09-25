@@ -29,4 +29,4 @@ jobs:
       contents: read
       id-token: write
       security-events: write
-    uses: open-telemetry/shared-workflows/.github/workflows/scorecard.yml@03559ef555db0eae5d85c3c6347d1530243e7aa7 # v0.13.0
+    uses: open-telemetry/shared-workflows/.github/workflows/scorecard.yml@ad1959372f2919fcf2556d3a3d12ed5265c54209 # v0.16.0
