@@ -8,7 +8,7 @@
     <ANcpLuaRoslynUtilitiesVersion>2.2.46</ANcpLuaRoslynUtilitiesVersion>
     <MicrosoftCodeAnalysisVersion>5.9.0</MicrosoftCodeAnalysisVersion>
 
-    <NukeVersion>10.1.0</NukeVersion>
+    <FalloutVersion>10.4.0</FalloutVersion>
 
     <XunitVersion>4.0.0</XunitVersion>
     <AwesomeAssertionsVersion>9.6.0</AwesomeAssertionsVersion>
