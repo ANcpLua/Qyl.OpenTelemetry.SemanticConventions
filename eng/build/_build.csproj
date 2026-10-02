@@ -7,17 +7,17 @@
     <AssemblyName>_build</AssemblyName>
 
     <IsPackable>false</IsPackable>
-    <!-- Nuke requires the _build assembly name. -->
+    <!-- _build is the build-project name fallout :setup defaults to. -->
     <NoWarn>$(NoWarn);CA1050;CA1707;CA1822;CA2007;CS1591</NoWarn>
 
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
 
-    <NukeRootDirectory>../..</NukeRootDirectory>
-    <NukeScriptDirectory>../..</NukeScriptDirectory>
+    <FalloutRootDirectory>../..</FalloutRootDirectory>
+    <FalloutScriptDirectory>../..</FalloutScriptDirectory>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nuke.Common"/>
+    <PackageReference Include="Fallout.Common"/>
   </ItemGroup>
 
 </Project>

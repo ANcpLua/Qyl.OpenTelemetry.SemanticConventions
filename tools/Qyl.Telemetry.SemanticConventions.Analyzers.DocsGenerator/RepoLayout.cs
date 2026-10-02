@@ -41,7 +41,7 @@ internal static class RepoLayout
 
     /// <summary>
     ///   Walks up from the assembly directory looking for the solution file. The
-    ///   generator is invoked from Nuke (CWD = repo root) and ad-hoc <c>dotnet run</c>
+    ///   generator is invoked from Fallout (CWD = repo root) and ad-hoc <c>dotnet run</c>
     ///   (CWD = project dir), so anchoring on the solution file makes both shapes work.
     /// </summary>
     public static string FindRepoRoot(string start)
