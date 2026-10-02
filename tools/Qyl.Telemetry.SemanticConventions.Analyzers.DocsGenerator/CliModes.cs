@@ -4,7 +4,7 @@
 namespace Qyl.Telemetry.SemanticConventions.Analyzers.DocsGenerator;
 
 /// <summary>
-///   The generator's operating modes. Each maps to a Nuke target in <c>eng/build/Build.cs</c>
+///   The generator's operating modes. Each maps to a Fallout target in <c>eng/build/Build.cs</c>
 ///   (<c>GenerateDocs</c>, <c>CheckDocs</c>, <c>AuditDocs</c>, <c>EnforceIds</c>,
 ///   <c>EnforceIdsApply</c>) plus a <c>--rewrite-shipped</c> ad-hoc fixup.
 /// </summary>
@@ -21,7 +21,7 @@ internal enum Mode
 internal static class CliModes
 {
     /// <summary>
-    ///   Nuke's <c>DotNetRunSettings.SetApplicationArguments</c> passes a single quoted
+    ///   Fallout's <c>DotNetRunSettings.SetApplicationArguments</c> passes a single quoted
     ///   string, so <c>"--enforce-ids --apply"</c> arrives as <c>args[0]</c> instead of
     ///   two separate args. Flatten on whitespace so both invocation shapes work.
     /// </summary>

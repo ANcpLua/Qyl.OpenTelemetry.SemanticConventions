@@ -19,10 +19,10 @@
   </ItemGroup>
 
   <ItemGroup Label="Repository build host">
-    <PackageVersion Include="Nuke.Common" Version="$(NukeVersion)"/>
+    <PackageVersion Include="Fallout.Common" Version="$(FalloutVersion)"/>
   </ItemGroup>
 
-  <ItemGroup Label="Transitive security overrides (Nuke.Common 10.1.0)">
+  <ItemGroup Label="Transitive security overrides (Fallout.Common 10.4.0)">
     <PackageVersion Include="NuGet.Packaging" Version="$(NuGetPackagingVersion)"/>
     <PackageVersion Include="System.Security.Cryptography.Xml" Version="$(SystemSecurityCryptographyXmlVersion)"/>
   </ItemGroup>

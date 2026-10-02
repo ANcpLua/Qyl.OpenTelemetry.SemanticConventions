@@ -11,9 +11,10 @@ obj/
 # Built packages — published to nuget.org + GH Releases, never vendored in git
 release-artifacts/
 
-# Nuke
+# Fallout
 .tmp/
-.nuke/temp/
+.fallout/temp/
+.fallout/build.schema.json
 
 # macOS
 .DS_Store

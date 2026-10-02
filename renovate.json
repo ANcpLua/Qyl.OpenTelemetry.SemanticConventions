@@ -46,6 +46,7 @@
       "description": "Review and regenerate all semantic-conventions toolchain pin updates together",
       "matchFileNames": ["registry/manifest.yaml", "Version.props"],
       "matchManagers": ["custom.regex"],
+      "matchDatasources": ["github-releases", "git-refs"],
       "groupName": "semantic-conventions toolchain",
       "automerge": false
     }

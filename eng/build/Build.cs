@@ -1,11 +1,11 @@
 // Copyright (c) Alexander Nachtmann
 // SPDX-License-Identifier: Apache-2.0
 
-using Nuke.Common;
-using Nuke.Common.IO;
-using Nuke.Common.ProjectModel;
-using Nuke.Common.Tooling;
-using Nuke.Common.Tools.DotNet;
+using Fallout.Common;
+using Fallout.Common.IO;
+using Fallout.Solutions;
+using Fallout.Common.Tooling;
+using Fallout.Common.Tools.DotNet;
 using Serilog;
 
 namespace Qyl.Telemetry.SemanticConventions.Build;
@@ -15,7 +15,7 @@ namespace Qyl.Telemetry.SemanticConventions.Build;
 ///   packages' generated surface is committed and guarded by scripts/check-generated.sh, so
 ///   nothing here regenerates it.
 /// </summary>
-internal sealed class Build : NukeBuild
+internal sealed class Build : FalloutBuild
 {
     public static int Main() => Execute<Build>(x => x.Compile);
 
