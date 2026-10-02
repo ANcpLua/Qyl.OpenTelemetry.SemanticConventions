@@ -20,8 +20,6 @@
 
     <!-- renovate: datasource=nuget depName=NuGet.Packaging -->
     <NuGetPackagingVersion>7.9.0</NuGetPackagingVersion>
-    <!-- renovate: datasource=nuget depName=System.Security.Cryptography.Xml -->
-    <SystemSecurityCryptographyXmlVersion>10.0.11</SystemSecurityCryptographyXmlVersion>
     <!-- renovate: datasource=nuget depName=System.Diagnostics.DiagnosticSource -->
     <SystemDiagnosticsDiagnosticSourceVersion>10.0.11</SystemDiagnosticsDiagnosticSourceVersion>
   </PropertyGroup>

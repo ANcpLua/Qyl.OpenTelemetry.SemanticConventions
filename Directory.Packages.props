@@ -22,9 +22,10 @@
     <PackageVersion Include="Fallout.Common" Version="$(FalloutVersion)"/>
   </ItemGroup>
 
-  <ItemGroup Label="Transitive security overrides (Fallout.Common 10.4.0)">
+  <!-- The .NET SDK's NuGet (7.9.0) for the build host, not the 6.14.3 Fallout.Common 10.4.0 brings
+       (Fallout-build/Fallout#677). Transitive pinning applies it without a direct reference. -->
+  <ItemGroup Label="Build host">
     <PackageVersion Include="NuGet.Packaging" Version="$(NuGetPackagingVersion)"/>
-    <PackageVersion Include="System.Security.Cryptography.Xml" Version="$(SystemSecurityCryptographyXmlVersion)"/>
   </ItemGroup>
 
   <ItemGroup Label="Tests">
