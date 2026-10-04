@@ -9,8 +9,8 @@
 #
 #   1. The full sample with --config and --advice-policies. Every attribute must produce
 #      exactly the findings the table below names -- those ids, those levels, no more and no
-#      fewer. The sample deliberately contains the two cases that stay violations, so the run
-#      exits 1.
+#      fewer. The sample deliberately contains the three cases that stay violations, so the
+#      run exits 1.
 #   2. The reproduction from the first AutoInstrumentation live-check run, with the same two
 #      flags. A renamed key, an open-enum value and a coercible int: none of it is qyl's
 #      defect and none of it may fail the build, so this run exits 0 under
@@ -128,6 +128,15 @@ EXPECTED = {
             "missing_namespace:improvement",
         ]),
     ],
+    # A key extends a template only across a dot (Weaver 0.27.0). `headers.host` shares the
+    # template's prefix but not its namespace, so it is an undeclared key, not an instance.
+    "qyl.live_check.template_boundary": [
+        ("http.request.header.host", ["template_attribute:information"]),
+        ("http.request.headers.host", [
+            "extends_namespace:information",
+            "missing_attribute:violation",
+        ]),
+    ],
 }
 
 EXPECTED_REPRO = {
@@ -203,8 +212,8 @@ for label, report in (("cases", full), ("repro", repro)):
 if full_exit != "1":
     problems.append(
         f"the run over {full_path} exited {full_exit}; the sample carries "
-        "type_not_coercible and the two otel.rego name violations, so --fail-on violation "
-        "must exit 1"
+        "type_not_coercible, the two otel.rego name violations and a key past a template "
+        "boundary, so --fail-on violation must exit 1"
     )
 
 if repro_exit != "0":

@@ -55,7 +55,10 @@ consumer.
   `0.26.1` one only in the recorded Weaver version. `otel.rego` is replaced with the `v0.27.0`
   copy, which matches a key to a template only when a dot follows the template name, so
   `http.request.headers.host` no longer extends `http.request.header` and draws a
-  `missing_attribute` violation. The pinned live-check findings are unchanged.
+  `missing_attribute` violation. `scripts/check-live-check-policies.sh` pins that boundary on a
+  new `template_boundary` span, which fails under 0.26.1; the other pinned findings are
+  unchanged. The violation comes from the 0.27.0 binary, not from `otel.rego`: a consumer still
+  on Weaver 0.26.1 keeps matching by prefix with this policy set.
 
 ### Upstream watch
 

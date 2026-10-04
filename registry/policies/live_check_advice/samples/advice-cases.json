@@ -154,5 +154,21 @@
         }
       ]
     }
+  },
+  {
+    "span": {
+      "name": "qyl.live_check.template_boundary",
+      "kind": "client",
+      "attributes": [
+        {
+          "name": "http.request.header.host",
+          "value": ["example.com"]
+        },
+        {
+          "name": "http.request.headers.host",
+          "value": ["example.com"]
+        }
+      ]
+    }
   }
 ]
