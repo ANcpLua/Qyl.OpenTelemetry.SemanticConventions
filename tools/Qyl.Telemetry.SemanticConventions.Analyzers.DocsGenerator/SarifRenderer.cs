@@ -40,8 +40,10 @@ internal static class SarifRenderer
                 ["name"] = ruleName,
                 ["shortDescription"] = new JsonObject { ["text"] = d.Title.ToString() },
                 ["fullDescription"] = new JsonObject { ["text"] = d.Description.ToString() },
-                ["helpUri"] = d.HelpLinkUri,
             };
+
+            if (!string.IsNullOrEmpty(d.HelpLinkUri))
+                rule["helpUri"] = d.HelpLinkUri;
 
             var defaultConfig = new JsonObject { ["level"] = SarifLevel(d.DefaultSeverity) };
             if (!d.IsEnabledByDefault)
@@ -81,7 +83,6 @@ internal static class SarifRenderer
         DiagnosticSeverity.Error => "error",
         DiagnosticSeverity.Warning => "warning",
         DiagnosticSeverity.Info => "note",
-        DiagnosticSeverity.Hidden => "none",
         _ => "none",
     };
 }
