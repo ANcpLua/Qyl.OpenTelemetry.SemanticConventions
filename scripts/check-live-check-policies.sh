@@ -212,7 +212,7 @@ for label, report in (("cases", full), ("repro", repro)):
 if full_exit != "1":
     problems.append(
         f"the run over {full_path} exited {full_exit}; the sample carries "
-        "type_not_coercible, the two otel.rego name violations and a key past a template "
+        "type_not_coercible, the two name violations on NotANamespacedKey and a key past a template "
         "boundary, so --fail-on violation must exit 1"
     )
 
