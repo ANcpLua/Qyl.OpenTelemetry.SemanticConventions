@@ -288,7 +288,7 @@ weaver registry live-check \
   --input-source ../spans.json --fail-on violation
 ```
 
-Weaver 0.26.1 answers that `--include-unreferenced` with `⚠ The flag include_unreferenced is
+Weaver 0.27.0 answers that `--include-unreferenced` with `⚠ The flag include_unreferenced is
 deprecated. Please prefer manually adding the required imports`; the warning is expected and the
 flag stays, because a registry's `imports` block declares metrics, events and entities only and
 this registry generates every attribute key its dependencies carry.

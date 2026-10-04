@@ -51,6 +51,16 @@ consumer.
 - `SemconvRegistryFacts.IsRegistryAttributeKey` is generated beside `IsKnownAttributeKey`: true
   only for a key the registry defines outright, not for one that extends a template.
 
+- `WeaverVersion` moves from `0.26.1` to `0.27.0`. The regenerated output differs from the
+  `0.26.1` one only in the recorded Weaver version. Weaver 0.27.0 extends a template only
+  across a dot, so `http.request.headers.host` is no longer an instance of
+  `http.request.header`: the 0.27.0 binary raises a `missing_attribute` violation on it, and
+  `otel.rego`, replaced with the `v0.27.0` copy, raises `extends_namespace` (information).
+  `scripts/check-live-check-policies.sh` pins both on a new `template_boundary` span, which
+  fails under 0.26.1; the other pinned findings are unchanged. A consumer still on Weaver
+  0.26.1 runs this policy set with a binary that matches by prefix, so it draws the
+  `extends_namespace` advice but not the `missing_attribute` violation.
+
 ### Upstream watch
 
 - **A second policy set now judges this registry's telemetry from outside it.**

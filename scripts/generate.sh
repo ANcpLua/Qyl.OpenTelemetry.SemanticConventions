@@ -4,8 +4,9 @@
 # straight into the Jinja templates under templates/, and the output is committed.
 # scripts/check-generated.sh runs this and fails on `git diff`.
 #
-# Pins live in exactly one place, registry/manifest.yaml. Version.props keeps WeaverVersion
-# so CI's setup-weaver and this guard agree on the binary.
+# Pins live in exactly one place, registry/manifest.yaml. Version.props keeps WeaverVersion,
+# and this guard refuses any other binary; mise.toml installs the binary in CI and locally, so
+# a Weaver bump moves both files.
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

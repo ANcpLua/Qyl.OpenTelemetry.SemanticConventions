@@ -2,8 +2,8 @@ package live_check_advice
 
 import rego.v1
 
-# Verbatim copy of Weaver 0.26.1's default advice policy,
-# defaults/policies/live_check_advice/otel.rego at tag v0.26.1. `--advice-policies` replaces
+# Verbatim copy of Weaver 0.27.0's default advice policy,
+# defaults/policies/live_check_advice/otel.rego at tag v0.27.0. `--advice-policies` replaces
 # the default policy directory rather than adding to it, so a policy set that does not carry
 # this file loses the four name and namespace advisors below. It is copied, not edited: the
 # qyl rules live in their own files next to it, and a Weaver upgrade replaces this one.
@@ -129,8 +129,10 @@ make_advice_with_signal_info(advice_type, advice_level, advice_context, signal_n
 	"message": message,
 }
 
-# Helper function to check if name is a template type
+# Helper function to check if name is a template type, extending it across a dot
 is_template_type(name) if {
 	some template in object.keys(templates_set)
-	startswith(name, template)
+	prefix := concat("", [trim_suffix(template, "."), "."])
+	startswith(name, prefix)
+	count(name) > count(prefix)
 }

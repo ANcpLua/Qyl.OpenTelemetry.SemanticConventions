@@ -1,9 +1,11 @@
 <Project>
   <PropertyGroup Label="Central Versions">
     <!-- The registry pins live in registry/manifest.yaml and reach the build through the
-         generated generated/pins.props. WeaverVersion is the one pin MSBuild owns: CI's
-         setup-weaver and scripts/generate.sh both read it. -->
-    <WeaverVersion>0.26.1</WeaverVersion>
+         generated generated/pins.props. WeaverVersion is the one pin MSBuild owns:
+         scripts/generate.sh refuses a Weaver binary of any other version, and
+         scripts/check-pin-freshness.py and Renovate read it. The binary itself comes from
+         mise.toml, which CI and `mise install` both install, so a Weaver bump moves both. -->
+    <WeaverVersion>0.27.0</WeaverVersion>
 
     <!-- renovate: datasource=nuget depName=ANcpLua.Roslyn.Utilities -->
     <ANcpLuaRoslynUtilitiesVersion>2.2.46</ANcpLuaRoslynUtilitiesVersion>
