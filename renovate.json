@@ -39,16 +39,35 @@
       "datasourceTemplate": "github-releases",
       "versioningTemplate": "semver",
       "extractVersionTemplate": "^v(?<version>\\d+\\.\\d+\\.\\d+)$"
+    },
+    {
+      "customType": "regex",
+      "description": "Track the same Weaver release where mise.toml installs the binary",
+      "managerFilePatterns": ["/(^|/)mise\\.toml$/"],
+      "matchStrings": [
+        "\"github:open-telemetry/weaver\" = \"(?<currentValue>[^\"]+)\""
+      ],
+      "depNameTemplate": "open-telemetry/weaver",
+      "packageNameTemplate": "open-telemetry/weaver",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver",
+      "extractVersionTemplate": "^v(?<version>\\d+\\.\\d+\\.\\d+)$"
     }
   ],
   "packageRules": [
     {
       "description": "Review and regenerate all semantic-conventions toolchain pin updates together",
-      "matchFileNames": ["registry/manifest.yaml", "Version.props"],
+      "matchFileNames": ["registry/manifest.yaml", "Version.props", "mise.toml"],
       "matchManagers": ["custom.regex"],
       "matchDatasources": ["github-releases", "git-refs"],
       "groupName": "semantic-conventions toolchain",
       "automerge": false
+    },
+    {
+      "description": "The Weaver pin in mise.toml moves with the custom manager above, so mise's own manager leaves it alone",
+      "matchManagers": ["mise"],
+      "matchDepNames": ["/weaver/"],
+      "enabled": false
     }
   ]
 }
