@@ -3,7 +3,7 @@
     <!-- The registry pins live in registry/manifest.yaml and reach the build through the
          generated generated/pins.props. WeaverVersion is the one pin MSBuild owns: CI's
          setup-weaver and scripts/generate.sh both read it. -->
-    <WeaverVersion>0.26.1</WeaverVersion>
+    <WeaverVersion>0.27.0</WeaverVersion>
 
     <!-- renovate: datasource=nuget depName=ANcpLua.Roslyn.Utilities -->
     <ANcpLuaRoslynUtilitiesVersion>2.2.46</ANcpLuaRoslynUtilitiesVersion>
