@@ -24,7 +24,7 @@ jobs:
       - name: Test pin freshness checker
         run: python3 -m unittest discover --start-directory tests/scripts --pattern 'test_*.py'
 
-      - uses: jdx/mise-action@94c60b39bc2d90ab2f9bab27f38d3cc4812c1834 # v5.1.0
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
 
       # Regenerates everything from registry/ and fails on drift, the same shape as the
       # check-generated target in opentelemetry-weaver-examples/basic/Makefile. This is the
@@ -38,7 +38,7 @@ jobs:
       - name: Check live-check advice policies
         run: ./scripts/check-live-check-policies.sh
 
-      - uses: jdx/mise-action@94c60b39bc2d90ab2f9bab27f38d3cc4812c1834 # v5.1.0
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
 
       - name: Restore
         run: dotnet restore Qyl.Telemetry.SemanticConventions.slnx
