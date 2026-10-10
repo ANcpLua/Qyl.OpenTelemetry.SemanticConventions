@@ -70,12 +70,72 @@ class BranchPinTests(unittest.TestCase):
                 "behind_by": 0,
                 "html_url": "https://example.test",
                 "commits": [{"sha": "123456789", "commit": {"message": "Registry change\n\nDetails"}}],
+                "files": [{"filename": "model/gen-ai/spans.yaml"}],
             }
         )
 
         self.assertFalse(current)
         self.assertIn("1 commit(s) behind", lines[0])
-        self.assertIn("`1234567` Registry change", lines[2])
+        self.assertIn("1 file(s) under `model/` changed", lines[0])
+        self.assertIn("`model/gen-ai/spans.yaml`", lines[2])
+        self.assertIn("`1234567` Registry change", lines[3])
+
+    def test_branch_ahead_outside_model_is_current(self) -> None:
+        current, lines = self.check(
+            {
+                "status": "ahead",
+                "ahead_by": 2,
+                "behind_by": 0,
+                "html_url": "https://example.test",
+                "commits": [
+                    {"sha": "123456789", "commit": {"message": "Lock file maintenance"}},
+                    {"sha": "abcdef012", "commit": {"message": "Update tooling dependencies"}},
+                ],
+                "files": [{"filename": "package-lock.json"}, {"filename": "model-docs/readme.md"}],
+            }
+        )
+
+        self.assertTrue(current)
+        self.assertIn("current at `abcdef1`", lines[0])
+        self.assertIn("2 commit(s) ahead, none of which changes a file under `model/`", lines[0])
+
+    def test_renamed_model_file_counts_as_model_change(self) -> None:
+        current, lines = self.check(
+            {
+                "status": "ahead",
+                "ahead_by": 1,
+                "behind_by": 0,
+                "html_url": "https://example.test",
+                "commits": [{"sha": "123456789", "commit": {"message": "Move a file out of model"}}],
+                "files": [{"filename": "docs/old.yaml", "previous_filename": "model/old.yaml"}],
+            }
+        )
+
+        self.assertFalse(current)
+        self.assertIn("`model/old.yaml`", lines[2])
+
+    def test_missing_file_list_is_unknown_instead_of_current(self) -> None:
+        with self.assertRaises(CHECKER.FreshnessUnknown):
+            self.check(
+                {
+                    "status": "ahead",
+                    "ahead_by": 1,
+                    "behind_by": 0,
+                    "commits": [{"sha": "123456789", "commit": {"message": "Registry change"}}],
+                }
+            )
+
+    def test_file_list_at_the_api_limit_is_unknown(self) -> None:
+        with self.assertRaises(CHECKER.FreshnessUnknown):
+            self.check(
+                {
+                    "status": "ahead",
+                    "ahead_by": 1,
+                    "behind_by": 0,
+                    "commits": [{"sha": "123456789", "commit": {"message": "Registry change"}}],
+                    "files": [{"filename": f"file{i}.txt"} for i in range(CHECKER.COMPARE_FILE_LIMIT)],
+                }
+            )
 
     def test_branch_behind_pin_is_not_reported_current(self) -> None:
         current, lines = self.check(
@@ -114,6 +174,7 @@ class BranchPinTests(unittest.TestCase):
                     "ahead_by": 1,
                     "behind_by": 0,
                     "commits": [{"sha": "123456789", "commit": None}],
+                    "files": [{"filename": "model/gen-ai/spans.yaml"}],
                 }
             )
 
@@ -192,6 +253,7 @@ class MainTests(unittest.TestCase):
             "ahead_by": 1,
             "behind_by": 0,
             "commits": [{"sha": "123456789", "commit": {"message": ""}}],
+            "files": [{"filename": "model/gen-ai/spans.yaml"}],
         }
         stdout = io.StringIO()
         stderr = io.StringIO()

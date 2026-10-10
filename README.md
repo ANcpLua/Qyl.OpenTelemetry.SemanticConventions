@@ -148,7 +148,10 @@ copied verbatim into the set — carries.
 The pins are exact by design: a moving input must not change generated constants without a
 commit here. [`scripts/check-pin-freshness.py`](scripts/check-pin-freshness.py) reports when
 one falls behind upstream and does not decide whether to move it; the scheduled
-[`pin-freshness`](.github/workflows/pin-freshness.yml) workflow runs it.
+[`pin-freshness`](.github/workflows/pin-freshness.yml) workflow runs it. The genai pin is a
+branch commit, and the manifest pins that repository's `model/` sub-folder only, so the check
+counts a commit against the pin only when it changes a file under `model/`; a lock-file or
+tooling commit on `main` leaves the pin current and is reported as distance without staleness.
 
 ```bash
 python3 scripts/check-pin-freshness.py   # 0 = every pin current, 10 = a pin is behind, 2 = unknown

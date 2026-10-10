@@ -12,6 +12,11 @@ version in Version.props:
   WeaverVersion         release tag   v{version} vs the latest release
   SemConvGenAiRef       branch SHA    commit distance from the tracked branch head
 
+The branch pin counts only movement that can reach the generated code. The manifest pins
+semantic-conventions-genai's `[model]` sub-folder and nothing else, so a run of lock-file and
+tooling commits on `main` that leaves `model/` untouched is reported as current, with the
+distance named; the pin is stale once a commit since it changed a file under `model/`.
+
 A lookup that cannot prove freshness exits 2 rather than reporting "current".
 
 CLI: check_pin_freshness.py   (exit 0 = every pin current; exit 10 = a pin differs,
@@ -38,9 +43,13 @@ MANIFEST = REPO_ROOT / "registry" / "manifest.yaml"
 CORE_REPO = os.environ.get("SEMCONV_CORE_UPSTREAM", "open-telemetry/semantic-conventions")
 GENAI_REPO = os.environ.get("SEMCONV_GENAI_UPSTREAM", "open-telemetry/semantic-conventions-genai")
 GENAI_BRANCH = os.environ.get("SEMCONV_GENAI_BRANCH", "main")
+GENAI_MODEL_PREFIX = "model/"
 WEAVER_REPO = os.environ.get("SEMCONV_WEAVER_UPSTREAM", "open-telemetry/weaver")
 
 COMPARE_COMMIT_LIMIT = 10
+# The compare API lists at most this many changed files; a response at the cap may be
+# truncated, and a truncated file list cannot prove that `model/` is untouched.
+COMPARE_FILE_LIMIT = 300
 EXIT_CURRENT = 0
 EXIT_UNKNOWN = 2
 EXIT_STALE = 10
@@ -156,6 +165,33 @@ def check_release_pin(label: str, repo: str, pinned_version: str) -> tuple[bool,
     ]
 
 
+def changed_model_files(comparison: dict, context: str) -> list[str]:
+    """The files under the pinned sub-folder that the comparison range changed.
+
+    The manifest pins `[model]`, so only these can reach the generated code. A file list
+    that may be truncated, or that is missing, cannot prove the sub-folder untouched.
+    """
+    files = comparison.get("files")
+    if not isinstance(files, list):
+        raise FreshnessUnknown(f"{context}: response carried no valid files list")
+    if len(files) >= COMPARE_FILE_LIMIT:
+        raise FreshnessUnknown(
+            f"{context}: {len(files)} changed files reach the compare API's limit; "
+            f"whether {GENAI_MODEL_PREFIX} changed cannot be proven"
+        )
+    paths: set[str] = set()
+    for entry in files:
+        if not isinstance(entry, dict):
+            raise FreshnessUnknown(f"{context}: response carried a malformed file entry")
+        for key in ("filename", "previous_filename"):
+            path = entry.get(key)
+            if key == "filename" and not isinstance(path, str):
+                raise FreshnessUnknown(f"{context}: response carried a file entry without a filename")
+            if isinstance(path, str) and path.startswith(GENAI_MODEL_PREFIX):
+                paths.add(path)
+    return sorted(paths)
+
+
 def check_branch_pin(label: str, repo: str, pinned_sha: str, branch: str) -> tuple[bool, list[str]]:
     """Measure how far a pinned commit sits behind the head of a tracked branch."""
     comparison = github_json(f"repos/{repo}/compare/{pinned_sha}...{branch}")
@@ -197,10 +233,21 @@ def check_branch_pin(label: str, repo: str, pinned_sha: str, branch: str) -> tup
     if branch_ahead_by == 0 or branch_behind_by != 0:
         raise FreshnessUnknown(f"{context}: ahead comparison carried inconsistent distances")
 
+    model_files = changed_model_files(comparison, context)
+    if not model_files:
+        return True, [
+            f"- **{label}** current at `{pinned_sha[:7]}`: `{branch}` is {branch_ahead_by} commit(s) ahead, "
+            f"none of which changes a file under `{GENAI_MODEL_PREFIX}` ({repo})",
+            f"  - {compare_url}",
+        ]
+
     lines = [
-        f"- **{label}** pinned at `{pinned_sha[:7]}`, **{branch_ahead_by} commit(s) behind** `{branch}` ({repo})",
+        f"- **{label}** pinned at `{pinned_sha[:7]}`, **{branch_ahead_by} commit(s) behind** `{branch}` ({repo}), "
+        f"{len(model_files)} file(s) under `{GENAI_MODEL_PREFIX}` changed",
         f"  - {compare_url}",
     ]
+    for path in model_files:
+        lines.append(f"  - `{path}`")
 
     commits = comparison.get("commits", [])
     if not isinstance(commits, list):

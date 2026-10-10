@@ -1,7 +1,9 @@
 name: pin-freshness
 
 # Reports when an upstream ref this repository pins has fallen behind upstream. The registry
-# pins live in registry/manifest.yaml, the Weaver version in Version.props.
+# pins live in registry/manifest.yaml, the Weaver version in Version.props. The genai pin is
+# behind only when a commit since it changes a file under model/, the sub-folder the manifest
+# pins; the script says so.
 #
 # Deliberately not a step in ci.yml: upstream movement is news, not a defect in the
 # current commit. It runs weekly and keeps one issue in step with reality: opened
