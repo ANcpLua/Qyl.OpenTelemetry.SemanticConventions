@@ -270,7 +270,7 @@ and reports a finding per attribute, judged by the two halves above.
 All three of `-r`, `--config` and `--advice-policies` need a **local path**. Weaver's
 `<url>[sub-folder]` archive syntax does not work for this registry: the core dependency is a
 local filtered copy at `.build/core-filtered/model` that only `scripts/fetch-core.sh`
-materialises, so pointing `-r` at `…/archive/refs/tags/v9.3.0.zip[registry]` fails with
+materialises, so pointing `-r` at `…/archive/refs/tags/<tag>.zip[registry]` fails with
 `IO error for operation on .build/core-filtered/model`. `--advice-policies` and `--config` do
 not accept a URL at all — and `--advice-policies` fails *silently* on a path it cannot read,
 loading no policies and leaving only the built-in advisors, so a typo there looks like a
@@ -297,7 +297,7 @@ deprecated. Please prefer manually adding the required imports`; the warning is 
 flag stays, because a registry's `imports` block declares metrics, events and entities only and
 this registry generates every attribute key its dependencies carry.
 
-`git clone --depth 1 --branch v9.3.0` followed by `./scripts/fetch-core.sh` is equivalent and
+`git clone --depth 1 --branch "${tag}"` followed by `./scripts/fetch-core.sh` is equivalent and
 is what `Qyl.OpenTelemetry.AutoInstrumentation`'s live-check workflow does, with
 `actions/checkout` into `.semconv`.
 [`scripts/check-live-check-policies.sh`](scripts/check-live-check-policies.sh) pins the exact
