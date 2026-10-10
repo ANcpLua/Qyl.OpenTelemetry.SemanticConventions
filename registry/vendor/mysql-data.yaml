@@ -1,5 +1,10 @@
-# MySql.Data 9.7.0 — the attributes the library puts on the spans of its own
-# ActivitySource and that upstream semantic conventions do not define. Vendor keys are
+# MySql.Data 26.7.0 — the attributes the library puts on the spans of its own
+# ActivitySource and that upstream semantic conventions do not define.
+#
+# 26.7.0 is the package on nuget.org (Oracle renumbered Connector/NET; its assembly says
+# 26.7.0.0 and its nuspec names no repository). The newest source tag in
+# mysql/mysql-connector-net is 9.7.0, so the ActivitySource name was read there; the 26.7.0
+# assembly still carries the same literal "connector-net" and the same MySQLActivitySource type. Vendor keys are
 # tags: the collector passes them through, the application never renames them.
 #
 # Two groups: `registry.vendor.*` carries the attributes into the resolved catalog (which
@@ -14,7 +19,7 @@ groups:
       qyl:
         vendor:
           library: "MySql.Data"
-          version: "9.7.0"
+          version: "26.7.0"
           repository: "https://github.com/mysql/mysql-connector-net"
           ref: "9.7.0"
           license: "GPL-2.0-with-FOSS-exception"

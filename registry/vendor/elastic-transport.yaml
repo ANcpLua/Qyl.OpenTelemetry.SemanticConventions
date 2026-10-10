@@ -1,4 +1,4 @@
-# Elastic.Transport 1.0.0 — the attributes the library puts on the spans of its own
+# Elastic.Transport 1.1.0 — the attributes the library puts on the spans of its own
 # ActivitySource and that upstream semantic conventions do not define. Vendor keys are
 # tags: the collector passes them through, the application never renames them.
 #
@@ -9,7 +9,7 @@ groups:
   - id: registry.vendor.elastic_transport
     type: attribute_group
     display_name: "Elastic.Transport Vendor Attributes"
-    brief: "Attributes Elastic.Transport 1.0.0 puts on the spans of its own \"Elastic.Transport\" ActivitySource and that upstream semantic conventions 1.44.0 does not define."
+    brief: "Attributes Elastic.Transport 1.1.0 puts on the spans of its own \"Elastic.Transport\" ActivitySource and that upstream semantic conventions 1.44.0 does not define."
     attributes:
       - id: elastic.transport.product.name
         type: string
@@ -54,9 +54,9 @@ groups:
       qyl:
         vendor:
           library: "Elastic.Transport"
-          version: "1.0.0"
+          version: "1.1.0"
           repository: "https://github.com/elastic/elastic-transport-net"
-          ref: "1.0.0"
+          ref: "1.1.0"
           license: "Apache-2.0"
           activity_sources:
             - name: "Elastic.Transport"

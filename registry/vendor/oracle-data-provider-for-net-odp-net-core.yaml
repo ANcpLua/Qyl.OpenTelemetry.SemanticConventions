@@ -1,4 +1,4 @@
-# Oracle Data Provider for .NET (ODP.NET Core) 23.4.0 — the attributes the library puts on the spans of its own
+# Oracle Data Provider for .NET (ODP.NET Core) 23.26.301 — the attributes the library puts on the spans of its own
 # ActivitySource and that upstream semantic conventions do not define. Vendor keys are
 # tags: the collector passes them through, the application never renames them.
 #
@@ -49,9 +49,9 @@ groups:
       qyl:
         vendor:
           library: "Oracle Data Provider for .NET (ODP.NET Core)"
-          version: "23.4.0"
+          version: "23.26.301"
           repository: "https://www.nuget.org/packages/Oracle.ManagedDataAccess.Core"
-          ref: "23.4.0"
+          ref: "23.26.301"
           license: "OTN (proprietary)"
           activity_sources:
             - name: "Oracle.ManagedDataAccess.Core"

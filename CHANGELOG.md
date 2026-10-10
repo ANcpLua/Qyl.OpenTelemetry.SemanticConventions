@@ -7,6 +7,36 @@ through NuGet trusted publishing, and
 [`eng/release/verify-packages.sh`](eng/release/verify-packages.sh) proves the indexed packages in a clean `net10.0`
 consumer.
 
+## [9.7.0] - 2026-10-10
+
+### Changed
+
+- **Eight vendor models re-read at the releases `Qyl.OpenTelemetry.AutoInstrumentation` 23.0.0
+  pins.** Every file-and-line citation was resolved again at the new tag by content, not by
+  number, and the version, ref and briefs moved with it: Grpc.Net.Client 2.84.0, MongoDB.Driver
+  3.12.0, Elastic.Transport 1.1.0 and Elastic.Clients.Elasticsearch 9.5.3 (all citations at the
+  same lines), Azure.Core 1.63.0 (one citation moved), MassTransit 8.5.11 (no tag in the
+  repository yet, so the ref is the commit the package's nuspec names) and ODP.NET 23.26.301.
+  - **Quartz.NET 4.4.0** moved 30 citations and added three keys the library now writes:
+    `quartz.job.result` on the job-execution span and on `quartz.job.execution.duration`,
+    `quartz.jobstore.lock` on the new `quartz.jobstore.lock.wait.duration` histogram, and
+    `quartz.jobstore.trigger.fired_on_acquire` on the acquisition span. The two citations the
+    content match could not place, `quartz.jobstore.trigger.count` and `quartz.jobstore.batch.size`
+    in `TracingJobStore.cs`, were re-read by hand; both tags are set at more sites than 4.0.0 had.
+  - **Two vendor files were wrong before this release.** `mysql-data.yaml` said MySql.Data 9.7.0
+    while the instrumentation pins 26.7.0: Oracle renumbered Connector/NET, the 26.7.0 assembly
+    says so, its nuspec names no repository, and the newest source tag is 9.7.0, which is where
+    the `connector-net` source name was read and which the 26.7.0 assembly still carries. The
+    file says 26.7.0 at ref 9.7.0 and explains why. `oracle-data-provider-for-net-odp-net-core.yaml`
+    said 23.4.0 while the pin was 23.26.300; it says 23.26.301. And
+    `elastic-clients-elasticsearch.yaml` cited Elastic.Transport source paths as if they were in
+    the Elasticsearch client repository; they are named as elastic-transport-net 1.1.0 paths now.
+  - `azure-core.yaml` describes Azure.Core as a direct pin at 1.63.0 beside Azure.Storage.Blobs
+    12.30.1, which is how the instrumentation pins it from 23.0.0 on.
+
+- **`VersionPrefix` and the registry's schema URL move to 9.7.0**, and qyl.at serves
+  `https://qyl.at/schemas/9.7.0`. The stable package changes only in its provenance line.
+
 ## [9.6.0] - 2026-10-10
 
 ### Added

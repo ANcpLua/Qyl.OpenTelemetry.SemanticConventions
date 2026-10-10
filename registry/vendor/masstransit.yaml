@@ -1,4 +1,4 @@
-# MassTransit 8.5.10 — the attributes the library puts on the spans of its own
+# MassTransit 8.5.11 — the attributes the library puts on the spans of its own
 # ActivitySource and that upstream semantic conventions do not define. Vendor keys are
 # tags: the collector passes them through, the application never renames them.
 #
@@ -9,7 +9,7 @@ groups:
   - id: registry.vendor.masstransit
     type: attribute_group
     display_name: "MassTransit Vendor Attributes"
-    brief: "Attributes MassTransit 8.5.10 puts on the spans of its own \"MassTransit\" ActivitySource and that upstream semantic conventions 1.44.0 does not define."
+    brief: "Attributes MassTransit 8.5.11 puts on the spans of its own \"MassTransit\" ActivitySource and that upstream semantic conventions 1.44.0 does not define."
     attributes:
       - id: messaging.masstransit.message_id
         type: string
@@ -89,9 +89,11 @@ groups:
       qyl:
         vendor:
           library: "MassTransit"
-          version: "8.5.10"
+          version: "8.5.11"
           repository: "https://github.com/MassTransit/MassTransit"
-          ref: "v8.5.10"
+          # 8.5.11 is on nuget.org without a matching tag in the repository; the ref is the
+          # commit the package's own nuspec repository metadata names.
+          ref: "5d6a89578fe9bc5ec17df0fb3d307a0b16cde2a7"
           license: "Apache-2.0"
           activity_sources:
             - name: "MassTransit"

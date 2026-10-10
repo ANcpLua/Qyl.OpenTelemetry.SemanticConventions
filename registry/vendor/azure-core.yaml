@@ -1,4 +1,4 @@
-# Azure.Core 1.55.0 — the attributes the library puts on the spans of its own
+# Azure.Core 1.63.0 — the attributes the library puts on the spans of its own
 # ActivitySource and that upstream semantic conventions do not define. Vendor keys are
 # tags: the collector passes them through, the application never renames them.
 #
@@ -6,15 +6,15 @@
 # drops group annotations), `vendor.*` carries the library metadata, which survives as a
 # plain attribute group.
 #
-# Azure.Core is not a direct pin: it is the version Azure.Storage.Blobs 12.29.2 restores
-# to. `az.namespace` is not here — upstream defines it, renamed to
+# Azure.Core is pinned directly at 1.63.0 beside Azure.Storage.Blobs 12.30.1, which declares
+# 1.60.0 as its floor; the direct pin is what keeps the SDK on the newest Azure.Core. `az.namespace` is not here — upstream defines it, renamed to
 # `azure.resource_provider.namespace`, and the collector rewrites it through
 # AttributeMapping rather than passing it through.
 groups:
   - id: registry.vendor.azure_core
     type: attribute_group
     display_name: "Azure SDK for .NET Vendor Attributes"
-    brief: "Attributes Azure.Core 1.55.0 puts on the spans of the \"Azure.*\" ActivitySources every Azure SDK client emits on, and that upstream semantic conventions 1.44.0 does not define."
+    brief: "Attributes Azure.Core 1.63.0 puts on the spans of the \"Azure.*\" ActivitySources every Azure SDK client emits on, and that upstream semantic conventions 1.44.0 does not define."
     attributes:
       - id: az.schema_url
         type: string
@@ -34,12 +34,12 @@ groups:
       qyl:
         vendor:
           library: "Azure.Core"
-          version: "1.55.0"
+          version: "1.63.0"
           repository: "https://github.com/Azure/azure-sdk-for-net"
-          ref: "Azure.Core_1.55.0"
+          ref: "Azure.Core_1.63.0"
           license: "MIT"
           activity_sources:
             - name: "Azure.*"
-              note: "One name matches every Azure SDK source because Azure.Core builds a client source name per client type: `<client options namespace>.<client type>`, composed at sdk/core/Azure.Core/src/Shared/DiagnosticScopeFactory.cs:98 and constructed at sdk/core/Azure.Core/src/Shared/DiagnosticScopeFactory.cs:101 (for Azure.Storage.Blobs 12.29.2 that is, for example, \"Azure.Storage.Blobs.BlobClient\"). The HTTP-level spans come from the fixed source \"Azure.Core.Http\", constructed at sdk/core/Azure.Core/src/Pipeline/Internal/RequestActivityPolicy.cs:23. The prefix pattern covers both. The ActivitySource path itself is off until the `Azure.Experimental.EnableActivitySource` switch is set, read at sdk/core/Azure.Core/src/Shared/DiagnosticScope.cs:466."
+              note: "One name matches every Azure SDK source because Azure.Core builds a client source name per client type: `<client options namespace>.<client type>`, composed at sdk/core/Azure.Core/src/Shared/DiagnosticScopeFactory.cs:98 and constructed at sdk/core/Azure.Core/src/Shared/DiagnosticScopeFactory.cs:101 (for Azure.Storage.Blobs 12.30.1 that is, for example, \"Azure.Storage.Blobs.BlobClient\"). The HTTP-level spans come from the fixed source \"Azure.Core.Http\", constructed at sdk/core/Azure.Core/src/Pipeline/Internal/RequestActivityPolicy.cs:23. The prefix pattern covers both. The ActivitySource path itself is off until the `Azure.Experimental.EnableActivitySource` switch is set, read at sdk/core/Azure.Core/src/Shared/DiagnosticScope.cs:469."
     attributes:
       - ref: qyl.instrumentation.domain

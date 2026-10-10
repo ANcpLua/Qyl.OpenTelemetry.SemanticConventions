@@ -1,4 +1,4 @@
-# Quartz.NET 4.0.0 — the attributes the library puts on the spans of its own
+# Quartz.NET 4.4.0 — the attributes the library puts on the spans of its own
 # ActivitySource and that upstream semantic conventions do not define. Vendor keys are
 # tags: the collector passes them through, the application never renames them.
 #
@@ -9,73 +9,88 @@ groups:
   - id: registry.vendor.quartz_net
     type: attribute_group
     display_name: "Quartz.NET Vendor Attributes"
-    brief: "Attributes Quartz.NET 4.0.0 puts on the spans of its own \"Quartz\" ActivitySource and on the instruments of its \"Quartz\" Meter, and that upstream semantic conventions 1.44.0 does not define."
+    brief: "Attributes Quartz.NET 4.4.0 puts on the spans of its own \"Quartz\" ActivitySource and on the instruments of its \"Quartz\" Meter, and that upstream semantic conventions 1.44.0 does not define."
     attributes:
       - id: quartz.scheduler.name
         type: string
         stability: development
         brief: "Name of the scheduler that produced the telemetry."
-        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:25; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:69 and src/Quartz/Diagnostics/TracingJobStore.cs:570."
+        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:27; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:141 and src/Quartz/Diagnostics/TracingJobStore.cs:708."
       - id: quartz.scheduler.id
         type: string
         stability: development
         brief: "Instance id of the scheduler that produced the telemetry, which is what tells two cluster nodes apart."
-        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:30; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:70 and src/Quartz/Diagnostics/TracingJobStore.cs:571."
+        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:32; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:142 and src/Quartz/Diagnostics/TracingJobStore.cs:709."
       - id: quartz.fire.instance.id
         type: string
         stability: development
         brief: "Identity of one firing, which is what an interrupt names."
-        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:35; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:72."
+        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:37; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:144."
       - id: quartz.trigger.group
         type: string
         stability: development
         brief: "Group of the trigger that fired."
-        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:40; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:75 and src/Quartz/Diagnostics/TracingJobStore.cs:704."
+        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:42; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:147 and src/Quartz/Diagnostics/TracingJobStore.cs:892."
       - id: quartz.trigger.name
         type: string
         stability: development
         brief: "Name of the trigger that fired."
-        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:45; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:76 and src/Quartz/Diagnostics/TracingJobStore.cs:705."
+        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:47; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:148 and src/Quartz/Diagnostics/TracingJobStore.cs:893."
       - id: quartz.job.type
         type: string
         stability: development
         brief: "Assembly-qualified type name of the job."
-        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:50; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:71."
+        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:52; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:143."
       - id: quartz.job.group
         type: string
         stability: development
         brief: "Group of the job."
-        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:55; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:77 and src/Quartz/Diagnostics/TracingJobStore.cs:693."
+        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:57; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:149 and src/Quartz/Diagnostics/TracingJobStore.cs:881."
       - id: quartz.job.name
         type: string
         stability: development
         brief: "Name of the job."
-        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:60; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:78 and src/Quartz/Diagnostics/TracingJobStore.cs:694."
+        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:62; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:150 and src/Quartz/Diagnostics/TracingJobStore.cs:882."
       - id: quartz.execution.group
         type: string
         stability: development
         brief: "Execution group the trigger belongs to, which is the bucket a thread limit is applied per. A trigger that names no execution group carries no such attribute at all."
-        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:70; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:86."
+        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:72; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:158."
       - id: quartz.jobstore.trigger.count
         type: int
         stability: development
         brief: "Number of triggers a job-store operation was asked for, or handed back."
-        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:76; set at src/Quartz/Diagnostics/TracingJobStore.cs:544,648."
+        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:93; set at src/Quartz/Diagnostics/TracingJobStore.cs:682,805,835."
       - id: quartz.jobstore.batch.size
         type: int
         stability: development
         brief: "Number of triggers the scheduler asked its store for in one acquisition attempt."
-        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:81; set at src/Quartz/Diagnostics/TracingJobStore.cs:531."
+        note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:98; set at src/Quartz/Diagnostics/TracingJobStore.cs:650,669."
+      - id: quartz.jobstore.trigger.fired_on_acquire
+        type: int
+        stability: development
+        brief: "Number of the acquired triggers that were already due and fired on acquisition, as opposed to pending."
+        note: "Span tag on the \"Quartz\" ActivitySource, new in 4.4.0. Declared at src/Quartz/Diagnostics/ActivityTags.cs:104; set at src/Quartz/Diagnostics/TracingJobStore.cs:836, next to the `quartz.jobstore.trigger.count` of the same acquisition at :835."
+      - id: quartz.job.result
+        type: string
+        stability: development
+        brief: "What a job run achieved, as the `JobRunResult` member name: the same classification the execution-duration histogram is tagged with and the history row records."
+        note: "Span tag on the \"Quartz\" ActivitySource and metric tag on the \"Quartz\" Meter, new in 4.4.0. Declared at src/Quartz/Diagnostics/ActivityTags.cs:87; set on the job-execution span at src/Quartz/Diagnostics/QuartzActivitySource.cs:215 and on `quartz.job.execution.duration` at src/Quartz/Diagnostics/Meters.cs:460, both through `Meters.JobResultTag` at src/Quartz/Diagnostics/Meters.cs:485."
+      - id: quartz.jobstore.lock
+        type: string
+        stability: development
+        brief: "Name of the job-store lock a wait was measured for."
+        note: "Metric tag on the \"Quartz\" Meter, new in 4.4.0, the dimension of the `quartz.jobstore.lock.wait.duration` histogram created at src/Quartz/Diagnostics/Meters.cs:117. Declared at src/Quartz/Diagnostics/ActivityTags.cs:121; set at src/Quartz/Diagnostics/Meters.cs:221."
       - id: quartz.jobstore.operation
         type: string
         stability: development
         brief: "Job-store operation a measurement is about."
-        note: "Metric tag on the \"Quartz\" Meter. Declared at src/Quartz/Diagnostics/ActivityTags.cs:87; set at src/Quartz/Diagnostics/Meters.cs:172."
+        note: "Metric tag on the \"Quartz\" Meter. Declared at src/Quartz/Diagnostics/ActivityTags.cs:110; set at src/Quartz/Diagnostics/Meters.cs:189."
       - id: quartz.cluster.recovered.instance.id
         type: string
         stability: development
         brief: "Instance id of the cluster node whose work is being recovered, which is a node other than the one reporting the measurement."
-        note: "Metric tag on the \"Quartz\" Meter. Declared at src/Quartz/Diagnostics/ActivityTags.cs:98; set at src/Quartz/Diagnostics/Meters.cs:297,325."
+        note: "Metric tag on the \"Quartz\" Meter. Declared at src/Quartz/Diagnostics/ActivityTags.cs:132; set at src/Quartz/Diagnostics/Meters.cs:373,401."
   - id: vendor.quartz_net
     type: attribute_group
     display_name: "Quartz.NET Vendor Metadata"
@@ -84,9 +99,9 @@ groups:
       qyl:
         vendor:
           library: "Quartz.NET"
-          version: "4.0.0"
+          version: "4.4.0"
           repository: "https://github.com/quartznet/quartznet"
-          ref: "v4.0.0"
+          ref: "v4.4.0"
           license: "Apache-2.0"
           activity_sources:
             - name: "Quartz"

@@ -1,4 +1,4 @@
-# MongoDB.Driver 3.11.1 — the attributes the library puts on the spans of its own
+# MongoDB.Driver 3.12.0 — the attributes the library puts on the spans of its own
 # ActivitySource and that upstream semantic conventions do not define. Vendor keys are
 # tags: the collector passes them through, the application never renames them.
 #
@@ -9,7 +9,7 @@ groups:
   - id: registry.vendor.mongodb_driver
     type: attribute_group
     display_name: "MongoDB.Driver Vendor Attributes"
-    brief: "Attributes MongoDB.Driver 3.11.1 puts on the spans of its own \"MongoDB.Driver\" ActivitySource and that upstream semantic conventions 1.44.0 does not define."
+    brief: "Attributes MongoDB.Driver 3.12.0 puts on the spans of its own \"MongoDB.Driver\" ActivitySource and that upstream semantic conventions 1.44.0 does not define."
     attributes:
       - id: db.mongodb.lsid
         type: string
@@ -54,9 +54,9 @@ groups:
       qyl:
         vendor:
           library: "MongoDB.Driver"
-          version: "3.11.1"
+          version: "3.12.0"
           repository: "https://github.com/mongodb/mongo-csharp-driver"
-          ref: "v3.11.1"
+          ref: "v3.12.0"
           license: "Apache-2.0"
           activity_sources:
             - name: "MongoDB.Driver"

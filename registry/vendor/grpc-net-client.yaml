@@ -1,4 +1,4 @@
-# Grpc.Net.Client 2.83.0 — the attributes the library puts on the spans of its own
+# Grpc.Net.Client 2.84.0 — the attributes the library puts on the spans of its own
 # ActivitySource and that upstream semantic conventions do not define. Vendor keys are
 # tags: the collector passes them through, the application never renames them.
 #
@@ -13,7 +13,7 @@ groups:
   - id: registry.vendor.grpc_net_client
     type: attribute_group
     display_name: "Grpc.Net.Client Vendor Attributes"
-    brief: "Attributes Grpc.Net.Client 2.83.0 puts on the spans of its own \"Grpc.Net.Client\" ActivitySource and that upstream semantic conventions 1.44.0 does not define."
+    brief: "Attributes Grpc.Net.Client 2.84.0 puts on the spans of its own \"Grpc.Net.Client\" ActivitySource and that upstream semantic conventions 1.44.0 does not define."
     attributes:
       - id: grpc.method
         type: string
@@ -33,9 +33,9 @@ groups:
       qyl:
         vendor:
           library: "Grpc.Net.Client"
-          version: "2.83.0"
+          version: "2.84.0"
           repository: "https://github.com/grpc/grpc-dotnet"
-          ref: "v2.83.0"
+          ref: "v2.84.0"
           license: "Apache-2.0"
           activity_sources:
             - name: "Grpc.Net.Client"
