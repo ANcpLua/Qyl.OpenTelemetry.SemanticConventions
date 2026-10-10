@@ -5,9 +5,10 @@
 #
 # Four of the keys in its Tags.cs are not declared here because upstream already defines them:
 # `error.type`, `error.message` and `session.id` are the upstream keys and travel as such, and
-# `message.type` is upstream's deprecated RPC message-type key (renamed to `rpc.message.type`),
-# so the collector rewrites the workflow's .NET type name onto that key. That collision is the
-# library's, and a vendor row cannot redeclare a key the catalog has.
+# `message.type` is upstream's RPC message-type key (enum SENT/RECEIVED), deprecated in 1.44.0 as
+# obsoleted with no replacement. `AttributeMapping.IsObsoleted` is true for it, so the collector
+# drops the workflow's .NET type name at ingest and counts the drop under `message`. That
+# collision is the library's, and a vendor row cannot redeclare a key the catalog has.
 #
 # Two groups: `registry.vendor.*` carries the attributes into the resolved catalog (which drops
 # group annotations), `vendor.*` carries the library metadata, which survives as a plain

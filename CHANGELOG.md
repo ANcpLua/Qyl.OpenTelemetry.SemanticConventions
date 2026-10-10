@@ -42,8 +42,10 @@ consumer.
     `qyl.attribute.namespace`; `message` and `session` were already members. Four keys in the
     library's `Tags.cs` are not declared because upstream already owns them: `error.type`,
     `error.message` and `session.id` travel as upstream keys, and `message.type` is upstream's
-    deprecated RPC key, renamed to `rpc.message.type`, so the collector rewrites the workflow's
-    .NET type name onto that key. That collision is the library's.
+    RPC message-type key, deprecated in 1.44.0 as obsoleted with no replacement, so
+    `AttributeMapping.IsObsoleted` is true for it and the collector drops the workflow's .NET
+    type name at ingest. That collision is the library's; the fix is a library-owned prefix
+    upstream.
   - `Experimental.Microsoft.Extensions.AI`, `Experimental.Microsoft.Agents.AI` and
     `Microsoft.Agents.AI.Workflows` are `VendorActivitySources` members, and `AttributeMapping.IsVendorPassThrough`
     is true for all twenty-one keys.
