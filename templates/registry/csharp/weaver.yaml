@@ -404,7 +404,6 @@ templates:
           | sort_by([(if .constraint_key == null then 1 else 0 end), .id])) as $rules
       | {attributes: [$all[] | {key: .key} + kindof(.type) + {values: enumvals}],
          metric_names: ([$allm[] | .name] | unique),
-         genai_metrics: ([$allm[] | select(genai) | .name] | unique),
          genai_token_histograms: ([$allm[] | select(genai)
                                    | select(.instrument == "histogram" and .unit == "{token}")
                                    | .name] | unique),

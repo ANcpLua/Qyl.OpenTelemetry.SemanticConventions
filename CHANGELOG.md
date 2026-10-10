@@ -7,6 +7,69 @@ through NuGet trusted publishing, and
 [`eng/release/verify-packages.sh`](eng/release/verify-packages.sh) proves the indexed packages in a clean `net10.0`
 consumer.
 
+## [9.6.0] - 2026-10-10
+
+### Added
+
+- **Three vendor models for the Microsoft GenAI stack, read at the versions
+  `Qyl.OpenTelemetry.AutoInstrumentation` 22.0.0 pins.** 9.5.0 followed upstream in dropping
+  `gen_ai.client.token.usage` and `gen_ai.token.type`, and no library has followed yet:
+  Microsoft.Extensions.AI 10.10.0 still records that histogram with that dimension, and
+  Microsoft.Agents.AI 1.24.0 emits through the same `OpenTelemetryChatClient` under its own source
+  name. Without a declaration the collector counts and drops the key and QYL0201 rejects the
+  metric name. The registry's answer to a key a pinned library writes and upstream does not define
+  is a vendor file, so there are three, each with the file and line every finding was read at:
+  - [`registry/vendor/microsoft-extensions-ai.yaml`](registry/vendor/microsoft-extensions-ai.yaml)
+    declares `gen_ai.token.type` with the six values the library writes (`input`, `output`, and
+    the realtime session's `input_audio`, `input_text`, `output_audio`, `output_text`), the four
+    realtime span counts `gen_ai.usage.{input_audio,input_text,output_audio,output_text}_tokens`
+    that upstream spells `gen_ai.usage.audio.input_tokens` and so on, and the histogram
+    `gen_ai.client.token.usage` itself as a `metric.vendor.*` group with the dimensions upstream gave
+    it. `GenAiAttributes.TokenType`, `TokenTypeValues`, `SetGenAiTokenType` and
+    `GenAiIncubatingMetricDefinitions.GenAiClientTokenUsage` are back, now as vendor rows, so a
+    consumer that compiled against 9.4.0 compiles against 9.6.0.
+  - [`registry/vendor/microsoft-agents-ai.yaml`](registry/vendor/microsoft-agents-ai.yaml) is
+    metadata only: the Agent Framework declares no key of its own, and the file puts
+    `Experimental.Microsoft.Agents.AI` into `QylTelemetryNames.VendorActivitySources` and QYL0200's
+    allowlist with the lines that prove it is Microsoft.Extensions.AI's client under another name.
+  - [`registry/vendor/microsoft-agents-ai-workflows.yaml`](registry/vendor/microsoft-agents-ai-workflows.yaml)
+    declares the sixteen keys the workflow runtime puts on `workflow.build`, `workflow.session`,
+    `workflow_invoke`, `executor.process`, `message.send` and `edge_group.process`:
+    `workflow.{id,name,description,definition}`, `build.error.{message,type}`,
+    `executor.{id,type,input,output}`, `message.{content,source_id,target_id}` and
+    `edge_group.{type,delivered,delivery_status}`. Until now the collector dropped every one of
+    them, workflow id included. `build`, `edge_group`, `executor` and `workflow` join
+    `qyl.attribute.namespace`; `message` and `session` were already members. Four keys in the
+    library's `Tags.cs` are not declared because upstream already owns them: `error.type`,
+    `error.message` and `session.id` travel as upstream keys, and `message.type` is upstream's
+    deprecated RPC key, renamed to `rpc.message.type`, so the collector rewrites the workflow's
+    .NET type name onto that key. That collision is the library's.
+  - `Experimental.Microsoft.Extensions.AI`, `Experimental.Microsoft.Agents.AI` and
+    `Microsoft.Agents.AI.Workflows` are `VendorActivitySources` members, and `AttributeMapping.IsVendorPassThrough`
+    is true for all twenty-one keys.
+
+### Changed
+
+- **QYL0402 judges against the complete metric inventory.** The rule compared a `gen_ai.*token*`
+  histogram name against the GenAI metrics of upstream provenance only, so the vendor-declared
+  `gen_ai.client.token.usage` would have been reported as unknown while QYL0201 accepted it. It
+  now asks `SemconvRegistryFacts.IsKnownMetricName`, the set every other metric rule reads; the
+  upstream-only set and `IsKnownGenAiMetric` had no other reader and are gone.
+
+- **`VersionPrefix` and the registry's schema URL move to 9.6.0**, and qyl.at serves
+  `https://qyl.at/schemas/9.6.0`.
+
+- **Renovate no longer tracks the genai branch commit.** Its `git-refs` manager opened a branch
+  that moved the digest in `registry/manifest.yaml` and nothing else, which `check-generated.sh`
+  fails by definition; the branch sat under "pending status checks" since the pin was set. The
+  pin-freshness report is where that movement is seen, and the bump is a hand-made commit that
+  regenerates. The semantic-conventions release and the Weaver release stay with Renovate.
+
+- A correction to the 9.5.0 "Upstream watch" note below: `Qyl.OpenTelemetry.AutoInstrumentation`'s
+  live-check gate judges the nine container-backed demo lanes and not the GenAI one, so 9.5.0 did
+  not fail that gate; the consequence it did have was the collector dropping `gen_ai.token.type`
+  and the compile error on `GenAiAttributes.TokenType`, both of which this release removes.
+
 ## [9.5.0] - 2026-10-10
 
 ### Changed

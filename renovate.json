@@ -1,11 +1,15 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>ANcpLua/github-settings-automation"],
+  "extends": [
+    "github>ANcpLua/github-settings-automation"
+  ],
   "customManagers": [
     {
       "customType": "regex",
       "description": "Track the OpenTelemetry semantic-conventions release pinned in registry/manifest.yaml",
-      "managerFilePatterns": ["/(^|/)registry/manifest\\.yaml$/"],
+      "managerFilePatterns": [
+        "/(^|/)registry/manifest\\.yaml$/"
+      ],
       "matchStrings": [
         "schema_url: https://opentelemetry\\.io/schemas/(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s"
       ],
@@ -17,20 +21,10 @@
     },
     {
       "customType": "regex",
-      "description": "Track the semantic-conventions-genai main-branch commit pinned in registry/manifest.yaml",
-      "managerFilePatterns": ["/(^|/)registry/manifest\\.yaml$/"],
-      "matchStrings": [
-        "semantic-conventions-genai\\.git@(?<currentDigest>[0-9a-f]{40})\\[model\\]"
-      ],
-      "currentValueTemplate": "main",
-      "depNameTemplate": "open-telemetry/semantic-conventions-genai",
-      "packageNameTemplate": "https://github.com/open-telemetry/semantic-conventions-genai",
-      "datasourceTemplate": "git-refs"
-    },
-    {
-      "customType": "regex",
       "description": "Track the OpenTelemetry Weaver release pinned in Version.props",
-      "managerFilePatterns": ["/(^|/)Version\\.props$/"],
+      "managerFilePatterns": [
+        "/(^|/)Version\\.props$/"
+      ],
       "matchStrings": [
         "<WeaverVersion>(?<currentValue>[^<]+)</WeaverVersion>"
       ],
@@ -43,7 +37,9 @@
     {
       "customType": "regex",
       "description": "Track the same Weaver release where mise.toml installs the binary",
-      "managerFilePatterns": ["/(^|/)mise\\.toml$/"],
+      "managerFilePatterns": [
+        "/(^|/)mise\\.toml$/"
+      ],
       "matchStrings": [
         "\"github:open-telemetry/weaver\" = \"(?<currentValue>[^\"]+)\""
       ],
@@ -56,17 +52,29 @@
   ],
   "packageRules": [
     {
-      "description": "Review and regenerate all semantic-conventions toolchain pin updates together",
-      "matchFileNames": ["registry/manifest.yaml", "Version.props", "mise.toml"],
-      "matchManagers": ["custom.regex"],
-      "matchDatasources": ["github-releases", "git-refs"],
+      "description": "Review and regenerate the semantic-conventions release and Weaver pin updates together. The genai branch commit is moved by hand after the pin-freshness report: a digest bump without regeneration cannot pass check-generated, so Renovate does not track it.",
+      "matchFileNames": [
+        "registry/manifest.yaml",
+        "Version.props",
+        "mise.toml"
+      ],
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchDatasources": [
+        "github-releases"
+      ],
       "groupName": "semantic-conventions toolchain",
       "automerge": false
     },
     {
       "description": "The Weaver pin in mise.toml moves with the custom manager above, so mise's own manager leaves it alone",
-      "matchManagers": ["mise"],
-      "matchDepNames": ["/weaver/"],
+      "matchManagers": [
+        "mise"
+      ],
+      "matchDepNames": [
+        "/weaver/"
+      ],
       "enabled": false
     }
   ]

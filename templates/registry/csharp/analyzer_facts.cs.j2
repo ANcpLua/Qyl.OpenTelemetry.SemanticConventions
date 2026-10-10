@@ -108,9 +108,6 @@ internal static class SemconvRegistryFacts
     private static readonly HashSet<string> GenAiSpanDiscriminatorKeys =
         new(new[] { {% for k in ctx.genai_discriminators %}{% if not loop.first %}, {% endif %}"{{ k }}"{% endfor %} }, StringComparer.Ordinal);
 
-    private static readonly HashSet<string> GenAiMetricNames =
-        new(new[] { {% for n in ctx.genai_metrics %}{% if not loop.first %}, {% endif %}"{{ n }}"{% endfor %} }, StringComparer.Ordinal);
-
     private static readonly HashSet<string> KnownMetricNames =
         new(new[] { {% for n in ctx.metric_names %}{% if not loop.first %}, {% endif %}"{{ n }}"{% endfor %} }, StringComparer.Ordinal);
 
@@ -171,8 +168,6 @@ internal static class SemconvRegistryFacts
     }
 
     internal static bool IsGenAiSpanDiscriminator(string key) => GenAiSpanDiscriminatorKeys.Contains(key);
-
-    internal static bool IsKnownGenAiMetric(string name) => GenAiMetricNames.Contains(name);
 
     internal static bool IsKnownAttributeKey(string key) => TryGetAttributeType(key, out _);
 

@@ -47,6 +47,10 @@ groups:
               value: "browser"
               stability: development
               brief: "The `browser` attribute namespace."
+            - id: build
+              value: "build"
+              stability: development
+              brief: "The `build` attribute namespace."
             - id: cassandra
               value: "cassandra"
               stability: development
@@ -115,6 +119,10 @@ groups:
               value: "dotnet"
               stability: development
               brief: "The `dotnet` attribute namespace."
+            - id: edge_group
+              value: "edge_group"
+              stability: development
+              brief: "The `edge_group` attribute namespace."
             - id: elastic
               value: "elastic"
               stability: development
@@ -143,6 +151,10 @@ groups:
               value: "execution"
               stability: development
               brief: "The `execution` attribute namespace."
+            - id: executor
+              value: "executor"
+              stability: development
+              brief: "The `executor` attribute namespace."
             - id: faas
               value: "faas"
               stability: development
@@ -407,6 +419,10 @@ groups:
               value: "webengine"
               stability: development
               brief: "The `webengine` attribute namespace."
+            - id: workflow
+              value: "workflow"
+              stability: development
+              brief: "The `workflow` attribute namespace."
             - id: zos
               value: "zos"
               stability: development

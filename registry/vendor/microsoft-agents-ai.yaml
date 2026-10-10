@@ -1,0 +1,26 @@
+# Microsoft.Agents.AI 1.24.0 — the Agent Framework's "Experimental.Microsoft.Agents.AI"
+# ActivitySource and Meter. The library declares no key of its own: OpenTelemetryAgent delegates
+# every span and every instrument to Microsoft.Extensions.AI's OpenTelemetryChatClient, which it
+# constructs under its own source name, and adds only the upstream `gen_ai.agent.*` keys and the
+# `invoke_agent` operation on top. The keys that source carries and upstream does not define are
+# Microsoft.Extensions.AI's, declared in microsoft-extensions-ai.yaml; this file is the metadata
+# that puts the source name into `QylTelemetryNames.VendorActivitySources` and QYL0200's
+# allowlist, with the file and line it was read at.
+groups:
+  - id: vendor.microsoft_agents_ai
+    type: attribute_group
+    display_name: "Microsoft.Agents.AI Vendor Metadata"
+    brief: "The pinned Microsoft.Agents.AI release qyl read its ActivitySource and Meter at."
+    annotations:
+      qyl:
+        vendor:
+          library: "Microsoft.Agents.AI"
+          version: "1.24.0"
+          repository: "https://github.com/microsoft/agent-framework"
+          ref: "dotnet-1.24.0"
+          license: "MIT"
+          activity_sources:
+            - name: "Experimental.Microsoft.Agents.AI"
+              note: "`OpenTelemetryConsts.DefaultSourceName` at dotnet/src/Microsoft.Agents.AI/OpenTelemetryConsts.cs:8. OpenTelemetryAgent resolves the name at dotnet/src/Microsoft.Agents.AI/OpenTelemetryAgent.cs:120 and constructs Microsoft.Extensions.AI's OpenTelemetryChatClient with it at :123-125, so the agent's spans and its Meter carry that client's keys, `gen_ai.client.token.usage` and `gen_ai.token.type` among them; the inner chat client is wrapped under the same name through dotnet/src/Microsoft.Agents.AI/ChatClient/DeferredOpenTelemetryChatClient.cs:74-92."
+    attributes:
+      - ref: qyl.instrumentation.domain

@@ -1,0 +1,115 @@
+# Microsoft.Extensions.AI 10.10.0 — the keys its OpenTelemetry decorators put on the spans and
+# instruments of their own "Experimental.Microsoft.Extensions.AI" ActivitySource and Meter and
+# that upstream semantic conventions do not define. Vendor keys are tags: the collector passes
+# them through, the application never renames them.
+#
+# semantic-conventions-genai 8ffdf56 (#374, 2026-09-22) replaced the one token-usage histogram
+# `gen_ai.client.token.usage` and its `gen_ai.token.type` dimension with the
+# `gen_ai.client.inference.usage.*` counters, the `gen_ai.client.inference.operation.*`
+# histograms and `gen_ai.token.modality`. Microsoft.Extensions.AI 10.10.0 still records the old
+# pair, and so does every library built on its OpenTelemetryChatClient: Microsoft.Agents.AI
+# 1.24.0 constructs that same client under its own source name (microsoft-agents-ai.yaml).
+# Until the library moves, this file is where the registry knows the names it emits; the
+# collector keeps the input/output split instead of dropping the key as unknown.
+#
+# Three groups: `registry.vendor.*` carries the attributes into the resolved catalog (which drops
+# group annotations), `vendor.*` carries the library metadata, and `metric.vendor.*` is the
+# histogram itself, so the metric name is in the catalog QYL0201 and the collector read.
+groups:
+  - id: registry.vendor.microsoft_extensions_ai
+    type: attribute_group
+    display_name: "Microsoft.Extensions.AI Vendor Attributes"
+    brief: "Attributes Microsoft.Extensions.AI 10.10.0 puts on the spans and instruments of its own \"Experimental.Microsoft.Extensions.AI\" ActivitySource and Meter and that semantic-conventions-genai at the pinned commit does not define."
+    attributes:
+      - id: gen_ai.token.type
+        type:
+          members:
+            - id: input
+              value: "input"
+              stability: development
+              brief: "Input tokens (prompt, input, etc.)."
+            - id: output
+              value: "output"
+              stability: development
+              brief: "Output tokens (completion, response, etc.)."
+            - id: input_audio
+              value: "input_audio"
+              stability: development
+              brief: "Audio input tokens of a realtime session."
+            - id: input_text
+              value: "input_text"
+              stability: development
+              brief: "Text input tokens of a realtime session."
+            - id: output_audio
+              value: "output_audio"
+              stability: development
+              brief: "Audio output tokens of a realtime session."
+            - id: output_text
+              value: "output_text"
+              stability: development
+              brief: "Text output tokens of a realtime session."
+        stability: development
+        brief: "The type of token `gen_ai.client.token.usage` counts, as Microsoft.Extensions.AI 10.10.0 spells it."
+        note: "Metric tag on the \"Experimental.Microsoft.Extensions.AI\" Meter, the dimension of `gen_ai.client.token.usage`. Declared as `OpenTelemetryConsts.GenAI.Token.Type` at src/Libraries/Microsoft.Extensions.AI/OpenTelemetryConsts.cs:149 with its values at :26-31; set at src/Libraries/Microsoft.Extensions.AI/ChatCompletion/OpenTelemetryChatClient.cs:422,430, src/Libraries/Microsoft.Extensions.AI/Embeddings/OpenTelemetryEmbeddingGenerator.cs:216, src/Libraries/Microsoft.Extensions.AI/ChatCompletion/OpenTelemetryImageGenerator.cs:247,255, src/Libraries/Microsoft.Extensions.AI/SpeechToText/OpenTelemetrySpeechToTextClient.cs:266,274, src/Libraries/Microsoft.Extensions.AI/TextToSpeech/OpenTelemetryTextToSpeechClient.cs:265,273 and, for all six members, src/Libraries/Microsoft.Extensions.AI/Realtime/OpenTelemetryRealtimeClientSession.cs:764-804. Upstream semantic-conventions-genai 8ffdf56 (#374) replaced the key with `gen_ai.token.modality`, whose values are modalities rather than directions; the two are different keys and neither is a rename of the other."
+      - id: gen_ai.usage.input_audio_tokens
+        type: int
+        stability: development
+        brief: "Audio input tokens a realtime session used, as Microsoft.Extensions.AI 10.10.0 spells it."
+        note: "Span tag on the \"Experimental.Microsoft.Extensions.AI\" ActivitySource. Declared at src/Libraries/Microsoft.Extensions.AI/OpenTelemetryConsts.cs:173; set at src/Libraries/Microsoft.Extensions.AI/Realtime/OpenTelemetryRealtimeClientSession.cs:862. Upstream spells the same count `gen_ai.usage.audio.input_tokens`; the library does not."
+      - id: gen_ai.usage.input_text_tokens
+        type: int
+        stability: development
+        brief: "Text input tokens a realtime session used, as Microsoft.Extensions.AI 10.10.0 spells it."
+        note: "Span tag on the \"Experimental.Microsoft.Extensions.AI\" ActivitySource. Declared at src/Libraries/Microsoft.Extensions.AI/OpenTelemetryConsts.cs:174; set at src/Libraries/Microsoft.Extensions.AI/Realtime/OpenTelemetryRealtimeClientSession.cs:867. Upstream spells the same count `gen_ai.usage.text.input_tokens`; the library does not."
+      - id: gen_ai.usage.output_audio_tokens
+        type: int
+        stability: development
+        brief: "Audio output tokens a realtime session used, as Microsoft.Extensions.AI 10.10.0 spells it."
+        note: "Span tag on the \"Experimental.Microsoft.Extensions.AI\" ActivitySource. Declared at src/Libraries/Microsoft.Extensions.AI/OpenTelemetryConsts.cs:175; set at src/Libraries/Microsoft.Extensions.AI/Realtime/OpenTelemetryRealtimeClientSession.cs:872. Upstream spells the same count `gen_ai.usage.audio.output_tokens`; the library does not."
+      - id: gen_ai.usage.output_text_tokens
+        type: int
+        stability: development
+        brief: "Text output tokens a realtime session used, as Microsoft.Extensions.AI 10.10.0 spells it."
+        note: "Span tag on the \"Experimental.Microsoft.Extensions.AI\" ActivitySource. Declared at src/Libraries/Microsoft.Extensions.AI/OpenTelemetryConsts.cs:176; set at src/Libraries/Microsoft.Extensions.AI/Realtime/OpenTelemetryRealtimeClientSession.cs:877. Upstream spells the same count `gen_ai.usage.text.output_tokens`; the library does not."
+  - id: vendor.microsoft_extensions_ai
+    type: attribute_group
+    display_name: "Microsoft.Extensions.AI Vendor Metadata"
+    brief: "The pinned Microsoft.Extensions.AI release qyl read its ActivitySource, Meter and attribute findings at."
+    annotations:
+      qyl:
+        vendor:
+          library: "Microsoft.Extensions.AI"
+          version: "10.10.0"
+          repository: "https://github.com/dotnet/extensions"
+          ref: "v10.10.0"
+          license: "MIT"
+          activity_sources:
+            - name: "Experimental.Microsoft.Extensions.AI"
+              note: "`OpenTelemetryConsts.DefaultSourceName` at src/Libraries/Microsoft.Extensions.AI/OpenTelemetryConsts.cs:11. Every OpenTelemetry decorator constructs its ActivitySource and its Meter from that one name, so the Meter is \"Experimental.Microsoft.Extensions.AI\" as well: src/Libraries/Microsoft.Extensions.AI/ChatCompletion/OpenTelemetryChatClient.cs:69-71, src/Libraries/Microsoft.Extensions.AI/Embeddings/OpenTelemetryEmbeddingGenerator.cs:66-67, src/Libraries/Microsoft.Extensions.AI/ChatCompletion/OpenTelemetryImageGenerator.cs:62-63, src/Libraries/Microsoft.Extensions.AI/SpeechToText/OpenTelemetrySpeechToTextClient.cs:64-65, src/Libraries/Microsoft.Extensions.AI/TextToSpeech/OpenTelemetryTextToSpeechClient.cs:63-64, src/Libraries/Microsoft.Extensions.AI/Realtime/OpenTelemetryRealtimeClientSession.cs:120-121, src/Libraries/Microsoft.Extensions.AI/Files/OpenTelemetryHostedFileClient.cs:82-83. A caller may pass another sourceName, and Microsoft.Agents.AI does."
+    attributes:
+      - ref: qyl.instrumentation.domain
+  - id: metric.vendor.microsoft_extensions_ai.gen_ai_client_token_usage
+    type: metric
+    metric_name: gen_ai.client.token.usage
+    instrument: histogram
+    unit: "{token}"
+    stability: development
+    brief: "Number of input and output tokens used, as Microsoft.Extensions.AI 10.10.0 records it."
+    note: "The histogram semantic-conventions-genai carried until 8ffdf56 (#374) replaced it with the `gen_ai.client.inference.usage.*` counters and the `gen_ai.client.inference.operation.{input,output}_tokens` histograms. Created by `OtelMetricHelpers.CreateGenAITokenUsageHistogram` at src/Libraries/Microsoft.Extensions.AI/Common/OtelMetricHelpers.cs:12-17 from the name at src/Libraries/Microsoft.Extensions.AI/OpenTelemetryConsts.cs:71, on the Meter of every decorator listed on `gen_ai.token.type`; recorded at src/Libraries/Microsoft.Extensions.AI/ChatCompletion/OpenTelemetryChatClient.cs:424,432 as one measurement per token type."
+    attributes:
+      - ref: gen_ai.operation.name
+        requirement_level: required
+      - ref: gen_ai.provider.name
+        requirement_level: required
+      - ref: gen_ai.token.type
+        requirement_level: required
+      - ref: gen_ai.request.model
+        requirement_level:
+          conditionally_required: "If available."
+      - ref: gen_ai.response.model
+        requirement_level: recommended
+      - ref: server.address
+        requirement_level: recommended
+      - ref: server.port
+        requirement_level:
+          conditionally_required: "If `server.address` is set."

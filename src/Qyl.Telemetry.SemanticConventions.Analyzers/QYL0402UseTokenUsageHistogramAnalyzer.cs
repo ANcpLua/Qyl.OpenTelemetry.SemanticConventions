@@ -36,7 +36,7 @@ internal sealed class Qyl0402UseTokenUsageHistogramAnalyzer : AlAnalyzer
                 || attribute.ConstructorArguments.Length == 0
                 || attribute.ConstructorArguments[0].Value is not string metricName
                 || !IsCandidate(metricName)
-                || SemconvRegistryFacts.IsKnownGenAiMetric(metricName))
+                || SemconvRegistryFacts.IsKnownMetricName(metricName))
             {
                 continue;
             }
