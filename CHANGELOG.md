@@ -7,61 +7,69 @@ through NuGet trusted publishing, and
 [`eng/release/verify-packages.sh`](eng/release/verify-packages.sh) proves the indexed packages in a clean `net10.0`
 consumer.
 
-## Unreleased
+## [9.5.0] - 2026-10-10
 
 ### Changed
 
-- **The shared payload detection builds its local-flow set once per method.** Every rule that
-  asks "does this dictionary or `TagList` reach telemetry?" (QYL0005, QYL0009/QYL0010, and now
-  QYL0202 and QYL0601) goes through `TelemetryAttributePayloadDetection`, which answered by
-  walking the whole enclosing operation tree once per literal. It now registers per operation
-  block, computes the locals that flow into a sink once and lazily, and each literal answers
-  with a lookup. Each payload also carries *which* sink it reaches (`TelemetryPayloadSink`), so
-  a rule can ask for metric measurements alone. A plain array local handed to
-  `StartActivity(tags:)` is now covered too; before, only a collection expression was.
+- **The genai pin moves from `fee465d` to `6fd0d76`**, the head of
+  `open-telemetry/semantic-conventions-genai` `main` on 2026-10-09, which closes
+  [#51](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/issues/51). 25 upstream
+  commits; six files under `model/gen-ai/` changed. The core pin stays at `v1.44.0` and Weaver at
+  `0.27.0`. The stable package changes only in its provenance line, because every GenAI
+  convention is at `development` stability; the surface below is the Incubating package and the
+  analyzer facts.
+  - **The one token-usage histogram is gone.** Upstream
+    [genai#374](https://github.com/open-telemetry/semantic-conventions-genai/pull/374) replaces `gen_ai.client.token.usage` with five counters,
+    `gen_ai.client.inference.usage.{input_tokens,output_tokens,cache_read.input_tokens,cache_write.input_tokens,reasoning.output_tokens}`,
+    and two per-operation histograms,
+    `gen_ai.client.inference.operation.{input_tokens,output_tokens}`. Input and output are in
+    the metric name now, and `gen_ai.token.type` (`input`, `output`) is replaced in place by
+    `gen_ai.token.modality` (`text`, `image`, `audio`, `unknown`). Upstream renamed rather than
+    deprecated, so `GenAiIncubatingMetricDefinitions.GenAiClientTokenUsage`,
+    `GenAiAttributes.TokenType`, `TokenTypeValues` and `SetGenAiTokenType` go without a deprecated
+    alias, and `AttributeMapping` carries no rename for `gen_ai.token.type`.
+  - **Inference signals live under `gen_ai.client.inference`**
+    ([genai#521](https://github.com/open-telemetry/semantic-conventions-genai/pull/521)): the span `gen_ai.inference.client` is
+    `gen_ai.client.inference` (`GenAiIncubatingSpanDefinitions.GenAiClientInference`), the two
+    streaming histograms are `gen_ai.client.inference.time_to_first_chunk` and
+    `.time_per_output_chunk`, and the new `gen_ai.client.inference.duration` takes the inference
+    case over from `gen_ai.client.operation.duration`, which stays for the other operations. The
+    provider refinements follow (`openai.gen_ai.client.inference` and so on), so the span rules
+    QYL0401 resolves against carry the new ids; their discriminators and required attributes are
+    unchanged.
+  - **New vocabulary.** `gen_ai.main_agent.{id,name,description}` and the `gen_ai.main_agent`
+    entity ([genai#270](https://github.com/open-telemetry/semantic-conventions-genai/pull/270)), the first GenAI entity, so
+    `GenAiIncubatingEntityDefinitions` is a new file; `gen_ai.skill.{name,description,source.uri,resource.name}`
+    ([genai#498](https://github.com/open-telemetry/semantic-conventions-genai/pull/498)) with three `execute_tool` refinements for loading a skill,
+    reading a skill resource and running a command; `gen_ai.conversation.id` is conditionally
+    required on the `execute_tool` span ([genai#518](https://github.com/open-telemetry/semantic-conventions-genai/pull/518)); and the
+    `gen_ai.client.inference.operation.details` event is recommended rather than opt-in and SHOULD
+    be recorded at DEBUG ([genai#579](https://github.com/open-telemetry/semantic-conventions-genai/pull/579), [genai#520](https://github.com/open-telemetry/semantic-conventions-genai/pull/520)). The
+    other upstream commits in the range change notes, lock files and tooling only.
 
-- **QYL0601 finds the sink semantically and matches sensitive words on word boundaries.** The
-  rule fired wherever a string literal sat under a call whose method or receiver *name*
-  contained "tag", "attribute", "span" or "activity", and matched sensitive words as substrings,
-  so `tokens` matched `token` and `pipeline` matched `pin`. Against the pinned registry's own
-  1031 attribute keys, that flagged 33, every GenAI token-usage counter among them. The rule now
-  runs on the shared payload detection, so it fires only where a key provably reaches a tag
-  setter, baggage, a metric, `StartActivity` tags, a logger scope, resource attributes, an event
-  or a link; sensitive words match on segment boundaries, so `api_key`, `api.key`, `apiKey` and
-  `x-api-key` all read as `api key` and `input_tokens` no longer reads as `token`; and a key the
-  registry defines outright is exempt, since the registry already decided that
-  `aws.secretsmanager.secret.arn` is safe to emit. A key that only extends a registry template,
-  such as `http.request.header.authorization`, is still flagged. Of the registry's own keys,
-  none is flagged now.
+- **QYL0402 names the registry's token histograms instead of one metric.**
+  `registry/policies-v2/genai_invariants.rego` demanded exactly one GenAI metric named
+  `*.token.usage`, and `SemconvRegistryFacts.GenAiTokenUsageMetricName` was that metric; the new
+  registry has none, so both had nothing to point at. The policy now asks for at least one GenAI
+  histogram whose unit is `{token}` (the unit, not the name: `gen_ai.server.time_per_output_token`
+  carries the word and measures seconds), and the facts carry them as `GenAiTokenHistogramNames`.
+  The rule fires exactly as before, on a `[Histogram]` named `gen_ai.*token*` that the registry
+  does not define; its message now ends "its token histograms are
+  'gen_ai.client.inference.operation.input_tokens', 'gen_ai.client.inference.operation.output_tokens'".
 
-- **QYL0202 covers the SDK path, not only `[Tag]` parameters.** A high-cardinality key in the
-  tags of `Counter.Add`, `Histogram.Record`, `UpDownCounter.Add` or a `Measurement`, or in a
-  `TagList` built in a local and passed to one of those, now reports; the same key on a span
-  does not. The word list matches on segment boundaries like QYL0601's.
-
-- **QYL0006 and QYL0703 fire on a receiver typed as the builder itself, and QYL0006 accepts a
-  schema URL that arrives as a constant.** `BuilderCallDetection` accepted a receiver that
-  *inherits from* or *implements* a builder type but not one that *is* the type, and the
-  `builder` parameter of `WithTracing(builder => ...)` is `TracerProviderBuilder` itself, so
-  neither rule fired on the common shape. QYL0006 also recognized a schema URL only as a literal
-  or a method name containing "schema"; the generated `SchemaUrl.Current`, or a consumer's own
-  `const`, referenced by name was a false positive. It now resolves constant values through the
-  semantic model.
-
-- `SemconvRegistryFacts.IsRegistryAttributeKey` is generated beside `IsKnownAttributeKey`: true
-  only for a key the registry defines outright, not for one that extends a template.
-
-- `WeaverVersion` moves from `0.26.1` to `0.27.0`. The regenerated output differs from the
-  `0.26.1` one only in the recorded Weaver version. Weaver 0.27.0 extends a template only
-  across a dot, so `http.request.headers.host` is no longer an instance of
-  `http.request.header`: the 0.27.0 binary raises a `missing_attribute` violation on it, and
-  `otel.rego`, replaced with the `v0.27.0` copy, raises `extends_namespace` (information).
-  `scripts/check-live-check-policies.sh` pins both on a new `template_boundary` span, which
-  fails under 0.26.1; the other pinned findings are unchanged. A consumer still on Weaver
-  0.26.1 runs this policy set with a binary that matches by prefix, so it draws the
-  `extends_namespace` advice but not the `missing_attribute` violation.
+- **`VersionPrefix` and the registry's schema URL move to 9.5.0.** `AttributeMapping.QylSchemaUrl`
+  and every generated header name `https://qyl.at/schemas/9.5.0`, and qyl.at serves that document.
 
 ### Upstream watch
+
+- **Libraries still emit the names this registry no longer knows.** Microsoft.Extensions.AI 10.9.0
+  and Microsoft.Agents.AI 1.20.0, the versions `Qyl.OpenTelemetry.AutoInstrumentation` pins, record
+  `gen_ai.client.token.usage` with `gen_ai.token.type`, and its GenAI demo asserts exactly that.
+  Against this registry those are an unknown metric and an unknown key: Weaver's live-check reports
+  `missing_attribute` as a violation, and the qyl collector counts and drops an unknown key at
+  ingest. The registry's mechanism for a key a pinned library writes and upstream does not define
+  is a `registry/vendor/` file; none is added in this release, so a consumer moving to 9.5.0 decides
+  that first.
 
 - **A second policy set now judges this registry's telemetry from outside it.**
   `ANcpLua/opentelemetry-compliance-checker` carries `policies/live/{upstream,contract,regression}.rego`

@@ -15,16 +15,16 @@ namespace Qyl.Telemetry.SemanticConventions.Incubating.Entities;
 /// typed object carrying the entity name, stability, structured deprecation, and the
 /// describing attribute references from the pinned registry.
 /// </summary>
-public static class AndroidIncubatingEntityDefinitions
+public static class GenAiIncubatingEntityDefinitions
 {
     /// <summary>
-    /// The Android platform on which the Android application is running.
+    /// A logical top-level Generative AI agent in the process.
     /// </summary>
-    public static readonly global::Qyl.Telemetry.SemanticConventions.EntityDefinition Android =
+    public static readonly global::Qyl.Telemetry.SemanticConventions.EntityDefinition GenAiMainAgent =
         new(
-            name: "android",
-            brief: "The Android platform on which the Android application is running.",
+            name: "gen_ai.main_agent",
+            brief: "A logical top-level Generative AI agent in the process.",
             stability: global::Qyl.Telemetry.SemanticConventions.Stability.Development,
             deprecation: global::Qyl.Telemetry.SemanticConventions.Deprecation.None,
-            attributes: new global::Qyl.Telemetry.SemanticConventions.AttributeRef[] { new("android.os.api_level", "string", global::Qyl.Telemetry.SemanticConventions.RequirementLevel.Recommended, false) });
+            attributes: new global::Qyl.Telemetry.SemanticConventions.AttributeRef[] { new("gen_ai.main_agent.description", "string", global::Qyl.Telemetry.SemanticConventions.RequirementLevel.Recommended, false), new("gen_ai.main_agent.name", "string", global::Qyl.Telemetry.SemanticConventions.RequirementLevel.Recommended, false) });
 }

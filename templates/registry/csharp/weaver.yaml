@@ -405,6 +405,9 @@ templates:
       | {attributes: [$all[] | {key: .key} + kindof(.type) + {values: enumvals}],
          metric_names: ([$allm[] | .name] | unique),
          genai_metrics: ([$allm[] | select(genai) | .name] | unique),
+         genai_token_histograms: ([$allm[] | select(genai)
+                                   | select(.instrument == "histogram" and .unit == "{token}")
+                                   | .name] | unique),
          event_names: $events,
          span_rules: $rules,
          genai_discriminators: ([$rules[] | .discriminator_key | select(startswith("gen_ai."))] | unique)}

@@ -163,7 +163,7 @@ public sealed class Qyl0200TelemetryNameAnalyzerTests
 
         var clean = await AnalyzerHarness.RunAsync(
             new Qyl0201InvalidMetricNameAnalyzer(),
-            DescriptorSink("gen_ai.client.token.usage"));
+            DescriptorSink("gen_ai.client.inference.operation.input_tokens"));
         clean.Should().BeEmpty();
     }
 

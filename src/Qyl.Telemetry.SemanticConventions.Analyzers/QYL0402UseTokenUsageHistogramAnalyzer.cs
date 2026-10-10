@@ -50,7 +50,7 @@ internal sealed class Qyl0402UseTokenUsageHistogramAnalyzer : AlAnalyzer
                         s_rule,
                         location,
                         metricName,
-                        SemconvRegistryFacts.GenAiTokenUsageMetricName));
+                        string.Join("', '", SemconvRegistryFacts.GenAiTokenHistogramNames)));
             }
         }
     }

@@ -108,8 +108,9 @@ group has its metadata sibling naming the library, version, repository, ref, lic
 registry directory itself. [`registry/policies-v2`](registry/policies-v2) is passed
 explicitly and runs against the materialized v2 registry, the only shape that carries the
 full dependency catalog: `qyl.attribute.namespace` enumerates every root namespace plus
-`other`, there is exactly one GenAI token-usage metric and exactly one unconstrained
-`execute_tool` span, and every GenAI `any` attribute carries a JSON Schema annotation.
+`other`, there is at least one GenAI token histogram (unit `{token}`) for QYL0402 to name
+and exactly one unconstrained `execute_tool` span, and every GenAI `any` attribute carries a
+JSON Schema annotation.
 
 ### Live-check judgement
 

@@ -109,7 +109,7 @@
         <value>Use a registry-defined GenAI token metric</value>
     </data>
     <data name="QYL0402AnalyzerMessageFormat" xml:space="preserve">
-        <value>GenAI token metric '{0}' is not defined by the pinned registry; use '{1}' for token usage</value>
+        <value>GenAI token metric '{0}' is not defined by the pinned registry; its token histograms are '{1}'</value>
     </data>
     <data name="QYL0402AnalyzerDescription" xml:space="preserve">
         <value>Token-related GenAI histogram names are checked against the complete metric inventory from the pinned registry, including valid client and server token metrics.</value>

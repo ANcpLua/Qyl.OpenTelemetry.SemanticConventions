@@ -138,7 +138,7 @@ public sealed class RegistryDerivedAnalyzerTests
             HistogramSource("gen_ai.custom.token.count"));
 
         diagnostics.Should().ContainSingle();
-        diagnostics[0].GetMessage(CultureInfo.InvariantCulture).Should().Contain("gen_ai.client.token.usage");
+        diagnostics[0].GetMessage(CultureInfo.InvariantCulture).Should().Contain("gen_ai.client.inference.operation.input_tokens");
     }
 
     [Fact]

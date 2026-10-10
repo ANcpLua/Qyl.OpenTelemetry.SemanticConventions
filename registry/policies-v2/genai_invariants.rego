@@ -15,18 +15,22 @@ genai_metric_names contains name if {
 	name := metric.name
 }
 
-token_usage_metrics contains name if {
-	some name in genai_metric_names
-	endswith(name, ".token.usage")
+# A token histogram is one whose unit is `{token}`; the name is not the criterion, because
+# `gen_ai.server.time_per_output_token` contains the word and measures seconds. QYL0402 names
+# these as the registry-defined replacements for a token histogram the registry does not know,
+# so there has to be at least one for the message to name.
+token_histograms contains name if {
+	some metric in input.registry.metrics
+	startswith(object.get(metric, ["provenance", "source"], ""), genai_schema_prefix)
+	metric.instrument == "histogram"
+	metric.unit == "{token}"
+	name := metric.name
 }
 
 deny contains genai_violation(description, "-") if {
 	count(genai_metric_names) > 0
-	count(token_usage_metrics) != 1
-	description := sprintf(
-		"expected exactly one GenAI token usage metric, found %v. QYL0402 rewrites a counter into that one histogram and cannot choose between two.",
-		[sort([n | some n in token_usage_metrics])],
-	)
+	count(token_histograms) == 0
+	description := "expected at least one GenAI token histogram (instrument histogram, unit {token}), found none. QYL0402 names them as the registry-defined token histograms."
 }
 
 # A GenAI `any` attribute is a structured payload; the JSON Schema of that payload is what the
