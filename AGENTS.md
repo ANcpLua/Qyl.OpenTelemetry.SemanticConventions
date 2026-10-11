@@ -1,5 +1,11 @@
 # Qyl.OpenTelemetry.SemanticConventions
 
+## Ownership and upstream versions
+
+qyl owns and publishes these .NET semantic-convention bindings. Weaver generates them directly from the language-independent OpenTelemetry registries plus qyl-owned and library-native definitions. Their update path is independent of upstream .NET SDK and automatic-instrumentation releases.
+
+Read `registry/manifest.yaml` for the core and GenAI pins and `registry/vendor/` for the verified library versions. Compare those sources directly when auditing updates. An upstream .NET SDK or agent version does not establish this registry's coverage. Keep the language-independent convention version, qyl package version, vendor-library version and .NET SDK version distinct in reports.
+
 ## Release ripple across the qyl-dev repos
 
 This section is identical in the `AGENTS.md` of all six qyl-dev repos (qyl-api-schema, Qyl.OpenTelemetry.SemanticConventions, Qyl.OpenTelemetry.AutoInstrumentation, qyl, qyl.mcp, qyl.at). Change it in all six in one sweep.

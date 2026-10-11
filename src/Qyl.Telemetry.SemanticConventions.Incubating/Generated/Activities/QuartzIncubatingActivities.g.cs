@@ -18,7 +18,7 @@ namespace Qyl.Telemetry.SemanticConventions.Incubating.Activities;
 public static class QuartzIncubatingActivityExtensions
 {
     /// <summary>
-    /// Instance id of the cluster node whose work is being recovered, which is a node other than the one reporting the measurement.
+    /// Instance id of the cluster node whose work is being recovered. On self-recovery this equals the reporting scheduler instance id.
     /// </summary>
     /// <remarks>
     /// Metric tag on the "Quartz" Meter. Declared at src/Quartz/Diagnostics/ActivityTags.cs:132; set at src/Quartz/Diagnostics/Meters.cs:373,401.

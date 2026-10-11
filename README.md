@@ -5,6 +5,11 @@ semantic-convention registry. The registry is the one artifact both halves of qy
 what an application emits and what the collector recognises are generated from it, so qyl
 cannot emit an attribute name its own collector does not know.
 
+qyl owns these .NET bindings and generates them directly from the language-independent
+OpenTelemetry registries, together with qyl and library-native definitions. The pins in
+[`registry/manifest.yaml`](registry/manifest.yaml) determine convention coverage; qyl can
+update and publish them independently of upstream .NET SDK and automatic-instrumentation releases.
+
 ## Packages
 
 | Package | Contents |
