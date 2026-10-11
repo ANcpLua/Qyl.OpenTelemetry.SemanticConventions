@@ -150,6 +150,11 @@ internal static class Program
             return 1;
         }
 
+        if (RegistrySnapshot.Sha256 != Environment.GetEnvironmentVariable("QYL_EXPECTED_REGISTRY_SHA256"))
+        {
+            return 6;
+        }
+
         if (!HttpAttributes.RequestMethodValues.Contains("POST"))
         {
             return 2;
@@ -218,6 +223,7 @@ if [[ "${restored}" != true ]]; then
   exit 1
 fi
 
+QYL_EXPECTED_REGISTRY_SHA256=$(node --input-type=module -e 'import {REGISTRY_SNAPSHOT_SHA256 as hash} from "./typescript/dist/index.js"; console.log(hash)') \
 dotnet run --project "${consumer_directory}/ReleaseSmoke.csproj" \
   --configuration Release \
   --no-restore

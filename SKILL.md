@@ -9,11 +9,10 @@ Weaver version pinned in `Version.props`.
 
 ## This repository
 
-- Publishes to NuGet exactly three packages: `Qyl.Telemetry.SemanticConventions`, `.Analyzers`
-  and `.Incubating`. The TypeScript package `@ancplua/qyl-semantic-conventions` in `typescript/`
-  is owned by the shared-registry migration (Codex); when it is ready to ship, its owner adds
-  the `bun publish` step to `release.sh` and widens the "exactly three" guard to four. Until
-  then nothing claims it is published.
+- Publishes exactly four artifacts at one version: three NuGet packages,
+  `Qyl.Telemetry.SemanticConventions`, `.Analyzers` and `.Incubating`, and the npm package
+  `@ancplua/qyl-semantic-conventions` from `typescript/`. No runtime dependencies or Zod
+  belong in the TypeScript package. Both languages are generated from the resolved registry.
 - Version sources that must agree on `main`: `Directory.Build.props` `VersionPrefix`,
   `registry/manifest.yaml` `schema_url` (`https://qyl.at/schemas/<x.y.z>`) and a `## [x.y.z]`
   entry in `CHANGELOG.md`; run `scripts/generate.sh` after the bump and commit its output. The
@@ -22,17 +21,17 @@ Weaver version pinned in `Version.props`.
   `https://qyl.at/schemas/<x.y.z>` before the push. Send qyl.at's agent the schema request
   first (section "Notify", message type SCHEMA), wait until the URL returns 200, then release.
 - Release command: `./release.sh <x.y.z> --dry-run`, then `./release.sh <x.y.z>` (restore,
-  build and pack the solution at that version, the exactly-three guard, push,
-  `eng/release/verify-packages.sh`, tag, GitHub release, wait for indexing).
-- Key: `vitals keys` entry "qyl-dev manual publish and release (NuGet)", file
+  build and pack the solution at that version, the exact three-NuGet plus one-npm artifact guard, publish,
+  wait for all four registry indexes, isolated NuGet and npm consumer verification, tag and GitHub release).
+- Keys: npm uses `~/.config/vitals/npm-qyl-manual-publish-token`; NuGet uses the `vitals keys` entry "qyl-dev manual publish and release (NuGet)", file
   `~/.config/vitals/nuget-qyl-manual-publish-key`. The script reads it; never print, paste,
   commit or log a key. If the entry is missing or its note's expiry has passed, stop and tell
-  the owner.
+  the owner. A rejected key or npm OTP request also stops publication. Never print key values.
 - Upstream pins: the OpenTelemetry registry inputs in `registry/manifest.yaml` and
   `scripts/fetch-core.sh`; no qyl-dev package.
-- Consumers to notify after all three packages are indexed: Qyl.Telemetry.AutoInstrumentation
+- Consumers to notify after all four packages are indexed: Qyl.Telemetry.AutoInstrumentation
   (`Directory.Packages.props`, `SEMCONV_REF`), qyl (`Version.props`
-  `QylSemanticConventionsVersion`) and qyl.at (`src/data/site.ts`).
+  `QylSemanticConventionsVersion`), qyl.mcp (`server/package.json` and `bun.lock`) and qyl.at (`src/data/site.ts`).
 
 ## Before any work: the stale-version guard
 
@@ -53,9 +52,9 @@ Weaver version pinned in `Version.props`.
 3. `./release.sh <x.y.z> --dry-run`; fix whatever it refuses.
 4. `./release.sh <x.y.z>`.
 5. Watch indexing: the script runs `eng/release/verify-packages.sh` against nuget.org and polls
-   the index. Keep polling every 30 s until all three ids list `<x.y.z>`. Until then, do
+   the index. Keep polling every 30 s until all three NuGet ids and the npm package list `<x.y.z>`. Until then, do
    nothing else about this release.
-6. The moment all three are indexed: stop watching and notify the consumers (section
+6. The moment all four are indexed: stop watching and notify the consumers (section
    "Notify").
 7. Record the published version in
    `/Users/alexandernachtmann/Downloads/qyl-codex-claude/qyl-handoff-for-codex.md` and rewrite
@@ -76,9 +75,9 @@ add: public/schemas/<version> (schema_url https://qyl.at/schemas/<version>), the
 ```
 
 ```
-RELEASE Qyl.Telemetry.SemanticConventions (3 packages) <version> indexed <UTC time>
-repo: <Qyl.Telemetry.AutoInstrumentation | qyl | qyl.at>
-re-pin: <Directory.Packages.props + SEMCONV_REF | Version.props QylSemanticConventionsVersion | src/data/site.ts>
+RELEASE Qyl.Telemetry.SemanticConventions (3 NuGet packages + 1 npm package) <version> indexed <UTC time>
+repo: <Qyl.Telemetry.AutoInstrumentation | qyl | qyl.mcp | qyl.at>
+re-pin: <Directory.Packages.props + SEMCONV_REF | Version.props QylSemanticConventionsVersion | server/package.json + bun.lock | src/data/site.ts>
 then: regenerate the lockfile, run the gate, commit, push main
 ```
 
@@ -90,7 +89,7 @@ This repo consumes no qyl-dev package. When upstream OpenTelemetry conventions m
 
 ## Order rules that never change
 
-- qyl.at serves the schema before the NuGet push.
+- qyl.at serves the schema before package publication.
 - This repo and AutoInstrumentation both feed qyl: qyl re-pins both in one commit once both
   are indexed, so tell qyl's agent whether AutoInstrumentation moves in the same wave.
 - qyl.at lists a version only after the index confirms it.

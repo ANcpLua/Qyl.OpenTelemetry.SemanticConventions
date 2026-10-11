@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { test } from 'node:test';
@@ -27,13 +27,12 @@ assert.equal(all.METRIC_MCP_SERVER_OPERATION_DURATION_UNIT, 's');
 assert.equal(all.METRIC_MCP_SERVER_OPERATION_DURATION_DEFINITION.instrument, 'histogram');
 assert.equal(stable.ATTR_MCP_METHOD_NAME, undefined);
 for (const [key,value] of Object.entries(stable)) assert.deepEqual(all[key], value);
-console.log(JSON.stringify(all));
+console.log(JSON.stringify({stable, incubating: all}));
 `;
-    const all = JSON.parse(execFileSync('node', ['--input-type=module', '-e', check], {cwd:temp,encoding:'utf8'}));
-    const csharp = execFileSync('python3', ['-c', `from pathlib import Path\nprint('\\n'.join(p.read_text() for p in Path('src/Qyl.Telemetry.SemanticConventions.Incubating/Generated/Attributes').glob('*.cs')))`], {cwd:root,encoding:'utf8',maxBuffer:20*1024*1024});
-    for (const [key, value] of Object.entries(all)) {
-      if (key.startsWith('ATTR_')) assert.ok(csharp.includes('"' + value + '"'), key + ' absent from C#');
-    }
+    const exported = execFileSync('node', ['--input-type=module', '-e', check], {cwd:temp,encoding:'utf8'});
+    const parity = resolve(temp, 'exports.json');
+    writeFileSync(parity, exported);
+    execFileSync('python3', ['scripts/verify-typescript-parity.py', parity], {cwd:root,encoding:'utf8'});
     const pkg = JSON.parse(readFileSync(resolve(temp, 'node_modules/@ancplua/qyl-semantic-conventions/package.json')));
     assert.equal(pkg.sideEffects, false);
     assert.equal(pkg.dependencies, undefined);

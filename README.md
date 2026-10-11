@@ -351,7 +351,7 @@ sample and the expected table in `scripts/check-live-check-policies.sh`.
 
 ## Releasing
 
-Bump `VersionPrefix` in `Directory.Build.props`, set the `registry/manifest.yaml` `schema_url` to the same version, add the `CHANGELOG.md` entry, run `scripts/generate.sh` (it rejects a `schema_url` that differs from `VersionPrefix`) and make sure `qyl.at/schemas/<version>` is served. Then pack and push the three packages to nuget.org from your machine with the NuGet API key registered in Vitals, tag the commit `v<version>` and create the GitHub release. `eng/release/verify-packages.sh` checks the published packages against nuget.org.
+Bump `VersionPrefix` in `Directory.Build.props`, set the `registry/manifest.yaml` `schema_url` to the same version, add the `CHANGELOG.md` entry, run `scripts/generate.sh` (it rejects a `schema_url` that differs from `VersionPrefix`) and make sure `qyl.at/schemas/<version>` is served. Then run `./release.sh <version> --dry-run` and `./release.sh <version>`. The script verifies exactly three named NuGet packages and one npm tarball, publishes all four at the same version using the keys registered in Vitals, waits for indexing, verifies isolated public consumers, tags the commit `v<version>` and creates the GitHub release. `eng/release/verify-packages.sh` and `eng/release/verify-typescript.sh` check the published artifacts.
 
 ## License
 

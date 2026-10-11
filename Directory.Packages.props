@@ -23,6 +23,8 @@
        (Fallout-build/Fallout#677). Transitive pinning applies it without a direct reference. -->
   <ItemGroup Label="Build host">
     <PackageVersion Include="NuGet.Packaging" Version="$(NuGetPackagingVersion)"/>
+    <!-- Fallout's transitive 10.0.6 has published security advisories. -->
+    <PackageVersion Include="System.Security.Cryptography.Xml" Version="$(SystemSecurityCryptographyXmlVersion)"/>
   </ItemGroup>
 
   <ItemGroup Label="Tests">
