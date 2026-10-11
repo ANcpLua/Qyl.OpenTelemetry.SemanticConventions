@@ -33,8 +33,9 @@ say "checks"
 [[ -z $(git status --porcelain --untracked-files=no) ]] || die "working tree not clean"
 git fetch -q origin main
 [[ $(git rev-parse HEAD) == $(git rev-parse origin/main) ]] || die "main differs from origin/main"
-[[ -z $(git ls-remote --tags origin "refs/tags/v$version") ]] || die "tag v$version already on origin"
-git rev-parse -q --verify "refs/tags/v$version" >/dev/null && die "tag v$version already exists locally"
+if [[ -n $(git ls-remote --tags origin "refs/tags/v$version") ]] || git rev-parse -q --verify "refs/tags/v$version" >/dev/null; then
+  (( dry )) || die "tag v$version already exists"; echo "warning: tag v$version already exists; the real run refuses"
+fi
 prefix=$(sed -n 's:.*<VersionPrefix[^>]*>\([^<]*\)</VersionPrefix>.*:\1:p' Directory.Build.props | head -1)
 schema=$(sed -n 's#^schema_url: https://qyl.at/schemas/##p' registry/manifest.yaml)
 [[ $prefix == "$version" ]] || die "Directory.Build.props VersionPrefix is $prefix, not $version"
