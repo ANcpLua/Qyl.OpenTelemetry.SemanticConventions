@@ -59,7 +59,8 @@ Weaver version pinned in `Version.props`.
    output.
 2. Ask qyl.at for the schema (SCHEMA message) and wait for
    `curl -fsS https://qyl.at/schemas/<x.y.z>` to return 200.
-3. `./release.sh <x.y.z> --dry-run`; fix whatever it refuses.
+3. `./release.sh <x.y.z> --dry-run` only when a step is new or unsure; otherwise go straight to
+   the release, the script refuses before it publishes when anything is off.
 4. `./release.sh <x.y.z>`.
 5. Watch indexing: the script runs `eng/release/verify-packages.sh` against nuget.org and polls
    the index. Keep polling every 30 s until all three NuGet ids and the npm package list `<x.y.z>`. Until then, do
