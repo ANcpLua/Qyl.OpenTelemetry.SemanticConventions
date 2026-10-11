@@ -72,7 +72,7 @@ public static class RpcActivityExtensions
     [global::System.Obsolete("Use string representation of the gRPC status code on the `rpc.response.status_code` attribute.", false)]
     public static global::System.Diagnostics.Activity SetRpcGrpcStatusCode(
         this global::System.Diagnostics.Activity activity,
-        string value)
+        long value)
         => activity.SetTag("rpc.grpc.status_code", value);
 
     /// <summary>
@@ -267,92 +267,92 @@ public static class RpcActivityExtensions
         /// <summary>
         /// OK.
         /// </summary>
-        public const string Ok = "0";
+        public const long Ok = 0;
 
         /// <summary>
         /// CANCELLED.
         /// </summary>
-        public const string Cancelled = "1";
+        public const long Cancelled = 1;
 
         /// <summary>
         /// UNKNOWN.
         /// </summary>
-        public const string Unknown = "2";
+        public const long Unknown = 2;
 
         /// <summary>
         /// INVALID_ARGUMENT.
         /// </summary>
-        public const string InvalidArgument = "3";
+        public const long InvalidArgument = 3;
 
         /// <summary>
         /// DEADLINE_EXCEEDED.
         /// </summary>
-        public const string DeadlineExceeded = "4";
+        public const long DeadlineExceeded = 4;
 
         /// <summary>
         /// NOT_FOUND.
         /// </summary>
-        public const string NotFound = "5";
+        public const long NotFound = 5;
 
         /// <summary>
         /// ALREADY_EXISTS.
         /// </summary>
-        public const string AlreadyExists = "6";
+        public const long AlreadyExists = 6;
 
         /// <summary>
         /// PERMISSION_DENIED.
         /// </summary>
-        public const string PermissionDenied = "7";
+        public const long PermissionDenied = 7;
 
         /// <summary>
         /// RESOURCE_EXHAUSTED.
         /// </summary>
-        public const string ResourceExhausted = "8";
+        public const long ResourceExhausted = 8;
 
         /// <summary>
         /// FAILED_PRECONDITION.
         /// </summary>
-        public const string FailedPrecondition = "9";
+        public const long FailedPrecondition = 9;
 
         /// <summary>
         /// ABORTED.
         /// </summary>
-        public const string Aborted = "10";
+        public const long Aborted = 10;
 
         /// <summary>
         /// OUT_OF_RANGE.
         /// </summary>
-        public const string OutOfRange = "11";
+        public const long OutOfRange = 11;
 
         /// <summary>
         /// UNIMPLEMENTED.
         /// </summary>
-        public const string Unimplemented = "12";
+        public const long Unimplemented = 12;
 
         /// <summary>
         /// INTERNAL.
         /// </summary>
-        public const string Internal = "13";
+        public const long Internal = 13;
 
         /// <summary>
         /// UNAVAILABLE.
         /// </summary>
-        public const string Unavailable = "14";
+        public const long Unavailable = 14;
 
         /// <summary>
         /// DATA_LOSS.
         /// </summary>
-        public const string DataLoss = "15";
+        public const long DataLoss = 15;
 
         /// <summary>
         /// UNAUTHENTICATED.
         /// </summary>
-        public const string Unauthenticated = "16";
+        public const long Unauthenticated = 16;
 
         /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
+        public static global::System.Collections.Generic.IReadOnlyList<long> AllValues { get; } = new long[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
+        /// <summary>Whether <paramref name="value"/> is a catalogued value.</summary>
+        public static bool Contains(long value) { foreach (var candidate in AllValues) if (candidate == value) return true; return false; }
     }
 
     /// <summary>

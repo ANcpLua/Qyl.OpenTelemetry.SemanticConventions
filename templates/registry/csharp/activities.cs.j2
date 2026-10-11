@@ -3,7 +3,7 @@
   Typed System.Diagnostics.Activity setter extensions, one class per registry root. Each
   method calls Activity.SetTag with the registry-defined key and a strongly-typed value; for
   `template[...]` attributes the setter takes a `segment` parameter to compose the runtime
-  key. Enum-typed attributes get a nested `{Key}Values` class of const strings so call sites
+  key. Enum-typed attributes get a nested `{Key}Values` class of typed constants so call sites
   are discoverable, with the same AllValues/Contains value set the attribute classes carry.
 -#}
 {%- set root = ctx.root -%}
@@ -95,7 +95,7 @@ public static class {{ ctx.type_root }}ActivityExtensions
 {% if m.dep %}
 {{ lib.obsolete_line(inner, m.dep) }}
 {% endif %}
-{{ inner }}public const string {{ m.id }} = "{{ m.value }}";
+{{ inner }}public const {{ lib.parameter_type(a.type) }} {{ m.id }} = {% if m.value is string %}{{ lib.cs_string(m.value) }}{% else %}{{ m.value }}{% endif %};
 {% endfor %}
 
 {{ lib.value_set(inner, g.vals | map(attribute="value") | list, "Every catalogued value, in registry order.") }}

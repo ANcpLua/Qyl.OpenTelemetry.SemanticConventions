@@ -12,6 +12,23 @@ namespace Qyl.Telemetry.SemanticConventions.Pipeline.Tests;
 public sealed class RegistryDerivedAnalyzerTests
 {
     [Fact]
+    public async Task Qyl0013_preserves_integer_enum_types()
+    {
+        var diagnostics = await AnalyzerHarness.RunAsync(
+            new Qyl0013IncorrectAttributeTypeAnalyzer(),
+            SinkSource(
+                """
+                SetTag("cpython.gc.generation", 0L);
+                SetTag("cpython.gc.generation", "0");
+                SetTag("rpc.grpc.status_code", 0L);
+                SetTag("rpc.grpc.status_code", "0");
+                """));
+
+        diagnostics.Should().HaveCount(2);
+        diagnostics.Should().OnlyContain(static diagnostic => diagnostic.Id == "QYL0013");
+    }
+
+    [Fact]
     public async Task Qyl0013_uses_attribute_types_outside_the_old_handwritten_subset()
     {
         var diagnostics = await AnalyzerHarness.RunAsync(

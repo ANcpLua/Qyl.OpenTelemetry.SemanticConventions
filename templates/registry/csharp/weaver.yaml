@@ -338,7 +338,7 @@ templates:
       def segment($id): ($id | split(".")) as $p
                         | if ($p | length) >= 2 then $p[($p | length) - 2] else $id end;
       def kindof($t):
-        if ($t | type) == "object" then {kind: "String", template: false}
+        if ($t | type) == "object" then {kind: (if ($t.members[0].value | type) == "number" then "Integer" else "String" end), template: false}
         elif ($t | type) != "string" then {kind: "Unknown", template: false}
         else (if ($t | startswith("template[")) then {p: $t[9:-1], template: true}
               else {p: $t, template: false} end)

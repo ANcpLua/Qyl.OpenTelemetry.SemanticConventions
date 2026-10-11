@@ -40,9 +40,9 @@ for tier in ('stable', 'incubating'):
                 effective = dict(member, stability=member.get('stability', row.get('stability')))
                 if included(effective, tier):
                     expected[symbol(key) + '_VALUE_' + symbol(member['id'])] = member['value']
-                    # C# models all registry enum values as strings, including integer enums.
-                    literal = json.dumps(str(member['value']))
-                    assert re.search(r'public const string \w+ = ' + re.escape(literal) + ';', block[1]), f'C# enum missing: {key}/{member["id"]}'
+                    literal = json.dumps(member['value'])
+                    cs_type = 'string' if isinstance(member['value'], str) else 'long'
+                    assert re.search(r'public const ' + cs_type + r' \w+ = ' + re.escape(literal) + ';', block[1]), f'C# enum missing: {key}/{member["id"]}'
     for row in rows('metrics', 'name'):
         if included(row, tier):
             key = 'METRIC_' + symbol(row['name'])

@@ -111,6 +111,7 @@ using Qyl.Telemetry.SemanticConventions.Metrics;
 using Qyl.Telemetry.SemanticConventions.Names;
 using Qyl.Telemetry.SemanticConventions.Incubating.Activities;
 using Qyl.Telemetry.SemanticConventions.Incubating.Attributes.GenAi;
+using Qyl.Telemetry.SemanticConventions.Incubating.Attributes.Cpython;
 using Qyl.Telemetry.SemanticConventions.Incubating.Mapping;
 
 namespace ReleaseSmoke;
@@ -167,6 +168,11 @@ internal static class Program
         using var activity = new Activity("release-smoke").Start();
         activity.SetHttpRequestMethod(HttpAttributes.RequestMethodValues.Get);
         activity.SetGenAiOperationName(GenAiAttributes.OperationNameValues.Chat);
+        activity.SetCpythonGcGeneration(CpythonAttributes.GcGenerationValues.Generation0);
+        if (activity.GetTagItem(CpythonAttributes.GcGeneration) is not long generation || generation != 0L)
+        {
+            return 7;
+        }
 
         if (activity.GetTagItem("http.request.method") is not "GET"
             || activity.GetTagItem("gen_ai.operation.name") is not "chat")

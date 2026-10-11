@@ -110,7 +110,7 @@ public static class {{ ctx.pascal_root }}Attributes
 {% if m.dep %}
 {{ lib.obsolete_line(inner, m.dep) }}
 {% endif %}
-{{ inner }}public const string {{ m.id }} = "{{ m.value }}";
+{{ inner }}public const {{ lib.parameter_type(a.type) }} {{ m.id }} = {% if m.value is string %}{{ lib.cs_string(m.value) }}{% else %}{{ m.value }}{% endif %};
 {% endfor %}
 
 {{ lib.value_set(inner, members | map(attribute="value") | list, "Every catalogued value, in the order the constants are declared.") }}

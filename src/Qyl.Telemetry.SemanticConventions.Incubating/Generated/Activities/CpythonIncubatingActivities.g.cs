@@ -22,7 +22,7 @@ public static class CpythonIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetCpythonGcGeneration(
         this global::System.Diagnostics.Activity activity,
-        string value)
+        long value)
         => activity.SetTag("cpython.gc.generation", value);
 
     /// <summary>
@@ -33,21 +33,21 @@ public static class CpythonIncubatingActivityExtensions
         /// <summary>
         /// Generation 0.
         /// </summary>
-        public const string Generation0 = "0";
+        public const long Generation0 = 0;
 
         /// <summary>
         /// Generation 1.
         /// </summary>
-        public const string Generation1 = "1";
+        public const long Generation1 = 1;
 
         /// <summary>
         /// Generation 2.
         /// </summary>
-        public const string Generation2 = "2";
+        public const long Generation2 = 2;
 
         /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "0", "1", "2" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
+        public static global::System.Collections.Generic.IReadOnlyList<long> AllValues { get; } = new long[] { 0, 1, 2 };
+        /// <summary>Whether <paramref name="value"/> is a catalogued value.</summary>
+        public static bool Contains(long value) { foreach (var candidate in AllValues) if (candidate == value) return true; return false; }
     }
 }

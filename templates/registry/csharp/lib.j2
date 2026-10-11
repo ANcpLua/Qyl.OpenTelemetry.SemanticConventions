@@ -383,12 +383,15 @@ Deprecated.
 {#- The value-set members every generated `…Values` class carries after its constants:
     AllValues (every catalogued value, in the order the constants are declared) and Contains
     (ordinal membership). Fully qualified BCL names so the code needs no usings; string
-    literals so referencing an [Obsolete] constant never raises CS0618. -#}
+    literals so referencing an [Obsolete] constant never raises CS0618. Numeric enums
+    preserve their integer representation throughout constants, collections and setters. -#}
 {%- macro value_set(pad, values, summary) -%}
+{%- set numeric = (values | length) > 0 and values[0] is number -%}
+{%- set cs_type = "long" if numeric else "string" -%}
 {{ pad }}/// <summary>{{ summary }}</summary>
-{{ pad }}public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = {% if (values | length) == 0 %}global::System.Array.Empty<string>(){% else %}new[] { {% for v in values %}{% if not loop.first %}, {% endif %}"{{ v }}"{% endfor %} }{% endif %};
-{{ pad }}/// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-{{ pad }}public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
+{{ pad }}public static global::System.Collections.Generic.IReadOnlyList<{{ cs_type }}> AllValues { get; } = {% if (values | length) == 0 %}global::System.Array.Empty<{{ cs_type }}>(){% else %}new{% if numeric %} long{% endif %}[] { {% for v in values %}{% if not loop.first %}, {% endif %}{% if numeric %}{{ v }}{% else %}{{ cs_string(v) }}{% endif %}{% endfor %} }{% endif %};
+{{ pad }}/// <summary>Whether <paramref name="value"/> is a catalogued value{% if not numeric %} (ordinal){% endif %}.</summary>
+{{ pad }}public static bool Contains({{ cs_type }} value) { foreach (var candidate in AllValues) if ({% if numeric %}candidate == value{% else %}string.Equals(candidate, value, global::System.StringComparison.Ordinal){% endif %}) return true; return false; }
 {%- endmacro -%}
 
 {#- ------------------------------------------------------------------------
@@ -468,7 +471,7 @@ global::System.Array.Empty<global::Qyl.Telemetry.SemanticConventions.EntityRef>(
 
 {#- The C# parameter type of an attribute, for the Activity setter extensions. -#}
 {%- macro parameter_type(t) -%}
-{%- if t is mapping -%}string
+{%- if t is mapping -%}{% if t.members is defined and (t.members | length) > 0 and t.members[0].value is number %}long{% else %}string{% endif %}
 {%- else -%}
 {%- set p = t[9:-1] if (t is string and t[0:9] == "template[") else t -%}
 {%- if p == "int" -%}long

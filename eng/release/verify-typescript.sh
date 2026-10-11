@@ -21,6 +21,7 @@ assert.equal(pkg.dependencies, undefined);
 assert.equal(stable.SCHEMA_URL, `https://qyl.at/schemas/${process.argv[2]}`);
 assert.equal(stable.ATTR_SERVICE_NAME, 'service.name');
 assert.equal(all.ATTR_MCP_METHOD_NAME, 'mcp.method.name');
+assert.equal(all.CPYTHON_GC_GENERATION_VALUE_GENERATION_0, 0);
 assert.equal(all.EVENT_QYL_MCP_OPERATION, 'qyl.mcp.operation');
 assert.equal(all.METRIC_MCP_SERVER_OPERATION_DURATION_UNIT, 's');
 assert.equal(all.METRIC_MCP_SERVER_OPERATION_DURATION_DEFINITION.instrument, 'histogram');
