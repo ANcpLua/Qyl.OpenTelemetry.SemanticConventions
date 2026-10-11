@@ -1,5 +1,7 @@
 # Qyl.Telemetry.SemanticConventions
 
+Release, re-pin and agent hand-offs: follow [`SKILL.md`](SKILL.md) at this repo root (canonical clone `/Users/alexandernachtmann/RiderProjects/Qyl.Telemetry.SemanticConventions/SKILL.md`); the one command is `./release.sh`. Published versions: `/Users/alexandernachtmann/Downloads/qyl-codex-claude/qyl-published-versions.yaml`.
+
 ## Ownership and upstream versions
 
 qyl owns and publishes these .NET semantic-convention bindings. Weaver generates them directly from the language-independent OpenTelemetry registries plus qyl-owned and library-native definitions. Their update path is independent of upstream .NET SDK and automatic-instrumentation releases.
