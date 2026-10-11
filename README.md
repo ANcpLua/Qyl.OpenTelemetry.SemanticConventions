@@ -20,8 +20,8 @@ automatic-instrumentation releases.
 | `Qyl.Telemetry.SemanticConventions.Incubating` | Attribute-key constants at every stability tier, the rows the stable tier does not carry for the other five kinds, the qyl-owned instrument names, and `Mapping.AttributeMapping` — the collector's normalize table |
 | `Qyl.Telemetry.SemanticConventions.Analyzers` | Roslyn diagnostics and code fixes for semantic-convention consumers, with a [generated rule catalog](docs/Qyl.Telemetry.SemanticConventions.Analyzers.md), a [migration catalog](docs/migration-catalog.md), and [editorconfig severity profiles](docs/editorconfig/) |
 
-Three packages ship; `Qyl.Telemetry.SemanticConventions.SourceGeneration` is retired at its
-last version `8.1.0`, as [CHANGELOG 9.0.0](CHANGELOG.md#900---2026-09-07) records.
+Three packages ship. `Qyl.Telemetry.SemanticConventions.SourceGeneration` is retired: its
+last published version is `8.1.0`, and no later release ships it.
 
 All three are published on [nuget.org](https://www.nuget.org/profiles/ANcpLua);
 `VersionPrefix` in [`Directory.Build.props`](Directory.Build.props) names the current release
@@ -286,7 +286,9 @@ registry that suddenly disagrees with itself.
 Fetch the tag and materialise the core copy once:
 
 ```bash
-tag="$(gh release view --repo ANcpLua/Qyl.OpenTelemetry.SemanticConventions --json tagName -q .tagName)"
+tag="$(git ls-remote --tags --refs --sort=-version:refname \
+  https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions 'v*' | head -n1 | cut -f2)"
+tag="${tag#refs/tags/}"                    # the latest tag, e.g. v9.8.0
 curl -sSLo semconv.zip \
   "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/archive/refs/tags/${tag}.zip"
 unzip -q semconv.zip                       # -> Qyl.OpenTelemetry.SemanticConventions-<version>/
@@ -349,10 +351,13 @@ sample and the expected table in `scripts/check-live-check-policies.sh`.
 ## Releasing
 
 Pushing a `v*` tag is the release. The tag triggers
-[`nuget-publish.yml`](.github/workflows/nuget-publish.yml), which stamps the published version
-from the tag name, packs the solution and pushes every `.nupkg` to nuget.org and GitHub
-Packages through NuGet trusted publishing over GitHub Actions OIDC — no long-lived API key is
-stored in the repository. Bump `VersionPrefix` in `Directory.Build.props` and add the
+[`nuget-publish.yml`](.github/workflows/nuget-publish.yml), which fails unless the tag equals
+`VersionPrefix` and the `registry/manifest.yaml` `schema_url` and that schema URL is served on
+qyl.at. It stamps the published version from the tag name, packs the solution, requires exactly
+the three packages, and pushes them to nuget.org and GitHub Packages through NuGet trusted
+publishing over GitHub Actions OIDC — no long-lived API key is stored in the repository. It then
+waits for nuget.org to index them and proves them in a clean consumer before it creates the
+GitHub release. Bump `VersionPrefix` in `Directory.Build.props` and add the
 `CHANGELOG.md` entry in the commit that opens the release line, then tag it.
 
 ## License

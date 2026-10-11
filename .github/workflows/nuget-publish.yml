@@ -1,12 +1,15 @@
+# CANONICAL-DEPARTURE: multi-stage release pipeline with version/schema, package-set, indexing and published-consumer gates plus a GitHub release job
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 #
-# CANONICAL — owned by ANcpLua/github-settings-automation/templates/nuget-publish.yml.
-# DO NOT EDIT in the consumer repo. Edits will be overwritten by the next
-# sync run of enforce-repo-settings.yml.
+# Derived from ANcpLua/github-settings-automation/templates/nuget-publish.yml.
+# The CANONICAL-DEPARTURE marker on line 1 makes sync-nuget-publish.sh skip this
+# file, so the release gates below survive a template sync. Keep the marker.
+# Local departures from the template are each marked `# Departure (SC-n):`.
 #
 # Algorithm:
-#   - Triggered by `v*` tag push OR manual workflow_dispatch with an input
-#     `version` (without the leading `v`).
+#   - Triggered only by a `v*` tag push; the tag is the release act.
+#   - Fails unless the tag equals VersionPrefix and the registry schema_url,
+#     and unless https://qyl.at/schemas/<version> is served.
 #   - Discovers the repo's `.slnx` or `.sln` at the repo root, restores +
 #     builds it with the version override, packs the whole solution,
 #     pushes every produced `.nupkg` to nuget.org and GitHub Packages.
@@ -42,11 +45,9 @@ on:
   push:
     tags:
       - 'v*'
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to publish (without v prefix, e.g. 3.0.0)'
-        required: true
+  # Departure (SC-8): no workflow_dispatch. A manual run with a typed version
+  # interpolated untrusted input into the shell and could publish a version no
+  # tag names; the tag push is the only release act.
 
 permissions:
   contents: read
@@ -70,14 +71,25 @@ jobs:
 
       - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
 
-      - name: Determine version
+      # Departure (SC-1): the tag must be vX.Y.Z and name the version the sources
+      # already declare in Directory.Build.props and registry/manifest.yaml.
+      - name: Determine version and require it to match the sources
         id: version
         run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "version=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME}"
+          if ! [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::tag '$tag' is not vX.Y.Z"
+            exit 1
           fi
+          version="${tag#v}"
+          prefix="$(sed -n 's:.*<VersionPrefix[^>]*>\([^<]*\)</VersionPrefix>.*:\1:p' Directory.Build.props)"
+          schema="$(sed -n 's#^schema_url: https://qyl.at/schemas/##p' registry/manifest.yaml)"
+          if [ "$version" != "$prefix" ] || [ "$version" != "$schema" ]; then
+            echo "::error::tag $tag != VersionPrefix '$prefix' / registry/manifest.yaml schema_url suffix '$schema'"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
 
       - name: Discover solution
         id: sln
@@ -105,6 +117,32 @@ jobs:
             -p:Version=${{ steps.version.outputs.version }}
           ls -la artifacts/
 
+      # Departure (SC-9): publish exactly the three package IDs this repository ships,
+      # never an empty or unexpected set.
+      - name: Require exactly the three expected packages
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          expected="$(printf '%s\n' \
+            "Qyl.Telemetry.SemanticConventions.${VERSION}.nupkg" \
+            "Qyl.Telemetry.SemanticConventions.Analyzers.${VERSION}.nupkg" \
+            "Qyl.Telemetry.SemanticConventions.Incubating.${VERSION}.nupkg" | sort)"
+          actual="$(find artifacts -maxdepth 1 -type f -name '*.nupkg' -exec basename {} \; | sort)"
+          if [ "$actual" != "$expected" ]; then
+            echo "::error::expected exactly these packages:"
+            echo "$expected"
+            echo "::error::pack produced:"
+            echo "${actual:-<none>}"
+            exit 1
+          fi
+
+      # Departure (SC-2): the schema URL the packages advertise must already be served.
+      - name: Require the schema URL to be served
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: curl -fsS --retry 3 -o /dev/null "https://qyl.at/schemas/${VERSION}"
+
       - name: NuGet login (OIDC → temp API key)
         id: nuget_login
         uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1
@@ -113,12 +151,7 @@ jobs:
 
       - name: Push to nuget.org (trusted publishing)
         run: |
-          shopt -s nullglob
           pkgs=(artifacts/*.nupkg)
-          if [ ${#pkgs[@]} -eq 0 ]; then
-            echo "::warning::no .nupkg artifacts produced; nothing to publish"
-            exit 0
-          fi
           for p in "${pkgs[@]}"; do echo "Pushing $p"; done
           dotnet nuget push "${pkgs[@]}" \
             --source https://api.nuget.org/v3/index.json \
@@ -127,13 +160,20 @@ jobs:
 
       - name: Push to GitHub Packages
         run: |
-          shopt -s nullglob
           pkgs=(artifacts/*.nupkg)
-          [ ${#pkgs[@]} -eq 0 ] && exit 0
           dotnet nuget push "${pkgs[@]}" \
             --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" \
             --api-key ${{ secrets.GITHUB_TOKEN }} \
             --skip-duplicate
+
+      # Departure (SC-3, SC-4): wait until nuget.org serves the pushed packages and
+      # prove them in a clean net10.0 consumer before the release job runs. The script
+      # retries restore against nuget.org while the new version is not yet indexed.
+      - name: Verify the published packages from nuget.org
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: ./eng/release/verify-packages.sh "${VERSION}" https://api.nuget.org/v3/index.json
+
   # Every v* tag published a package and left no release entry, so the eight tags
   # this repository carries had zero releases between them while the sibling
   # repositories had one per tag. This is that missing step, copied from
@@ -160,10 +200,6 @@ jobs:
           GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         run: |
           set -euo pipefail
-          if [ "${{ github.event_name }}" != "push" ]; then
-            echo "not a tag push; nothing to release"
-            exit 0
-          fi
           if [ -z "${GH_TOKEN:-}" ]; then
             echo "RELEASE_TOKEN is not set; github.token cannot create releases in this repository" >&2
             exit 1

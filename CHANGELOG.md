@@ -2,10 +2,12 @@
 
 Notable changes to the `Qyl.Telemetry.SemanticConventions` package family. `VersionPrefix` in
 [`Directory.Build.props`](Directory.Build.props) names the current release line; the publish workflow stamps the
-published version from the `v*` tag that triggers it. That tag runs the release gate: CI packs the solution, publishes
-through NuGet trusted publishing, and
-[`eng/release/verify-packages.sh`](eng/release/verify-packages.sh) proves the indexed packages in a clean `net10.0`
-consumer.
+published version from the `v*` tag that triggers it. That tag runs the release gate in
+[`.github/workflows/nuget-publish.yml`](.github/workflows/nuget-publish.yml): the publish workflow verifies that the
+tag equals `VersionPrefix` and the registry `schema_url`, that the schema URL is served, and that the solution packs
+exactly the three packages; it then publishes through NuGet trusted publishing, and
+[`eng/release/verify-packages.sh`](eng/release/verify-packages.sh) waits for nuget.org to index the packages and proves
+them in a clean `net10.0` consumer before the GitHub release is created.
 
 ## [9.8.0] - 2026-10-11
 
