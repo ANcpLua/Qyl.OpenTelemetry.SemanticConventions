@@ -1,4 +1,4 @@
-# Qyl.OpenTelemetry.SemanticConventions
+# Qyl.Telemetry.SemanticConventions
 
 ## Ownership and upstream versions
 

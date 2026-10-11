@@ -63,7 +63,7 @@ groups:
         type: string
         stability: development
         brief: "The message an executor received, serialized as JSON."
-        note: "Span tag on the \"Microsoft.Agents.AI.Workflows\" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:18; set at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/WorkflowTelemetryContext.cs:150 on `executor.process`, only when `WorkflowTelemetryOptions.EnableSensitiveData` is on. A payload, not metadata: the Qyl.OpenTelemetry.AutoInstrumentation GenAI demo asserts its absence under the default options."
+        note: "Span tag on the \"Microsoft.Agents.AI.Workflows\" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:18; set at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/WorkflowTelemetryContext.cs:150 on `executor.process`, only when `WorkflowTelemetryOptions.EnableSensitiveData` is on. A payload, not metadata: the Qyl.Telemetry.AutoInstrumentation GenAI demo asserts its absence under the default options."
       - id: executor.output
         type: string
         stability: development

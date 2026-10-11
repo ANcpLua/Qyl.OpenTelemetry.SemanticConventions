@@ -56,7 +56,7 @@
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions</RepositoryUrl>
+    <RepositoryUrl>https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions</RepositoryUrl>
     <PackageProjectUrl>$(RepositoryUrl)</PackageProjectUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>

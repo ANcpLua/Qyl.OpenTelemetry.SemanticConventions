@@ -287,12 +287,12 @@ Fetch the tag and materialise the core copy once:
 
 ```bash
 tag="$(git ls-remote --tags --refs --sort=-version:refname \
-  https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions 'v*' | head -n1 | cut -f2)"
+  https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions 'v*' | head -n1 | cut -f2)"
 tag="${tag#refs/tags/}"                    # the latest tag, e.g. v9.8.0
 curl -sSLo semconv.zip \
-  "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/archive/refs/tags/${tag}.zip"
-unzip -q semconv.zip                       # -> Qyl.OpenTelemetry.SemanticConventions-<version>/
-cd Qyl.OpenTelemetry.SemanticConventions-"${tag#v}"
+  "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/archive/refs/tags/${tag}.zip"
+unzip -q semconv.zip                       # -> Qyl.Telemetry.SemanticConventions-<version>/
+cd Qyl.Telemetry.SemanticConventions-"${tag#v}"
 ./scripts/fetch-core.sh                    # writes .build/core-filtered/model
 weaver registry live-check \
   -r registry --include-unreferenced \
@@ -307,7 +307,7 @@ flag stays, because a registry's `imports` block declares metrics, events and en
 this registry generates every attribute key its dependencies carry.
 
 `git clone --depth 1 --branch "${tag}"` followed by `./scripts/fetch-core.sh` is equivalent and
-is what `Qyl.OpenTelemetry.AutoInstrumentation`'s live-check workflow does, with
+is what `Qyl.Telemetry.AutoInstrumentation`'s live-check workflow does, with
 `actions/checkout` into `.semconv`.
 [`scripts/check-live-check-policies.sh`](scripts/check-live-check-policies.sh) pins the exact
 findings the set produces over

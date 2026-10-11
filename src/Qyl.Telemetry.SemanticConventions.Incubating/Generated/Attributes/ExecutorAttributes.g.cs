@@ -25,7 +25,7 @@ public static class ExecutorAttributes
     /// The message an executor received, serialized as JSON.
     /// </summary>
     /// <remarks>
-    /// Span tag on the "Microsoft.Agents.AI.Workflows" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:18; set at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/WorkflowTelemetryContext.cs:150 on <c>executor.process</c>, only when <c>WorkflowTelemetryOptions.EnableSensitiveData</c> is on. A payload, not metadata: the Qyl.OpenTelemetry.AutoInstrumentation GenAI demo asserts its absence under the default options.
+    /// Span tag on the "Microsoft.Agents.AI.Workflows" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:18; set at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/WorkflowTelemetryContext.cs:150 on <c>executor.process</c>, only when <c>WorkflowTelemetryOptions.EnableSensitiveData</c> is on. A payload, not metadata: the Qyl.Telemetry.AutoInstrumentation GenAI demo asserts its absence under the default options.
     /// </remarks>
     public const string Input = "executor.input";
 

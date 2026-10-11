@@ -66,7 +66,7 @@ internal static class SarifRenderer
                         ["driver"] = new JsonObject
                         {
                             ["name"] = RepoLayout.PackageName,
-                            ["informationUri"] = "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions",
+                            ["informationUri"] = "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions",
                             ["rules"] = rulesArray,
                         },
                     },

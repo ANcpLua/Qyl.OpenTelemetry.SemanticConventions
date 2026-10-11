@@ -20,7 +20,7 @@ internal static class RuleDocs
     ///     <c>tools/Qyl.Telemetry.SemanticConventions.Analyzers.DocsGenerator</c>.
     /// </summary>
     public const string HelpLinkBase =
-        "https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions"
+        "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions"
         + "/blob/main/docs/rules/";
 
     /// <summary>

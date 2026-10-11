@@ -6,7 +6,7 @@ This package analyzes OpenTelemetry semantic-convention usage in C# consumers. T
 
 ## Package family
 
-- **[Qyl OTel-conventions repo](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions)** — this analyzer (`QYL00xx` rules) and the stable + incubating packages, whose attribute constants, `Activity` setter extensions and metric/span/event/entity definitions Weaver generates from one semantic-convention registry.
+- **[Qyl OTel-conventions repo](https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions)** — this analyzer (`QYL00xx` rules) and the stable + incubating packages, whose attribute constants, `Activity` setter extensions and metric/span/event/entity definitions Weaver generates from one semantic-convention registry.
 - **[ANcpLua framework](https://www.nuget.org/profiles/ANcpLua)** — upstream Roslyn infrastructure consumed by this package: `ANcpLua.Roslyn.Utilities` (shared helpers + `Guard.*` API), `ANcpLua.Analyzers` (general-purpose `AL00xx` band), `ANcpLua.NET.Sdk` (MSBuild SDK that auto-injects the framework's analyzers + `.editorconfig` defaults), `ANcpLua.Agents` (Microsoft Agent Framework toolkit). `QYL00xx` rules are scoped to OTel-conventions consumers; framework rules live in `ANcpLua.Analyzers`.
 
 ## Diagnostics

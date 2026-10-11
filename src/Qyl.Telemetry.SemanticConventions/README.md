@@ -43,6 +43,6 @@ publishes NativeAOT clean.
 ## More
 
 - The registry, its policies and how generation works:
-  [repository README](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions#readme)
+  [repository README](https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions#readme)
 - Changes per version:
-  [CHANGELOG](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/CHANGELOG.md)
+  [CHANGELOG](https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/CHANGELOG.md)

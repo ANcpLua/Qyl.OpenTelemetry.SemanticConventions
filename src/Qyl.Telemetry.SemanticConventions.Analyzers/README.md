@@ -18,14 +18,14 @@ whose generated constants are what the fixes rewrite to.
 
 Every rule has an id, a default severity and a code fix where one is possible. Severity is set
 the usual way in `.editorconfig`; the repository ships ready-made
-[severity profiles](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/tree/main/docs/editorconfig)
+[severity profiles](https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/tree/main/docs/editorconfig)
 for strict, default and migration-only use.
 
 ## More
 
 - Every rule with its rationale:
-  [rule catalog](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/Qyl.Telemetry.SemanticConventions.Analyzers.md)
+  [rule catalog](https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/Qyl.Telemetry.SemanticConventions.Analyzers.md)
 - Which deprecated key maps to which live one:
-  [migration catalog](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/docs/migration-catalog.md)
+  [migration catalog](https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/migration-catalog.md)
 - Changes per version:
-  [CHANGELOG](https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions/blob/main/CHANGELOG.md)
+  [CHANGELOG](https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/CHANGELOG.md)

@@ -7,7 +7,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ANcpLua/Qyl.OpenTelemetry.SemanticConventions.git",
+    "url": "git+https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions.git",
     "directory": "typescript"
   },
   "exports": {
