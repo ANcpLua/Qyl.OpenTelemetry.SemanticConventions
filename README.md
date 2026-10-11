@@ -351,14 +351,15 @@ sample and the expected table in `scripts/check-live-check-policies.sh`.
 ## Releasing
 
 Pushing a `v*` tag is the release. The tag triggers
-[`nuget-publish.yml`](.github/workflows/nuget-publish.yml), which fails unless the tag equals
-`VersionPrefix` and the `registry/manifest.yaml` `schema_url` and that schema URL is served on
-qyl.at. It stamps the published version from the tag name, packs the solution, requires exactly
-the three packages, and pushes them to nuget.org and GitHub Packages through NuGet trusted
-publishing over GitHub Actions OIDC — no long-lived API key is stored in the repository. It then
-waits for nuget.org to index them and proves them in a clean consumer before it creates the
-GitHub release. Bump `VersionPrefix` in `Directory.Build.props` and add the
-`CHANGELOG.md` entry in the commit that opens the release line, then tag it.
+[`nuget-publish.yml`](.github/workflows/nuget-publish.yml), which fails unless the tagged commit
+is already on `main`, the tag equals `VersionPrefix` and the `registry/manifest.yaml`
+`schema_url`, and that schema URL is served on qyl.at. It stamps the published version from the
+tag name, packs the solution, requires exactly the three packages, and pushes them to nuget.org
+and GitHub Packages through NuGet trusted publishing over GitHub Actions OIDC — no long-lived API
+key is stored in the repository. It then waits for nuget.org to index them and proves them in a
+clean consumer before it creates the GitHub release. Bump `VersionPrefix` in
+`Directory.Build.props` and add the `CHANGELOG.md` entry in the commit that opens the release
+line, then tag it.
 
 ## License
 
