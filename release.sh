@@ -90,7 +90,7 @@ if (( dry )); then
   curl -fsSL -o "$probe_dir/probe.nupkg" "$NUGET_FLAT/$id/$latest/$id.$latest.nupkg"
   echo "dry run: pushing the published ${PACKAGES[0]} $latest again with --skip-duplicate to prove the key (expect 'already exists')"
   dotnet nuget push "$probe_dir/probe.nupkg" --api-key "$(<"$NUGET_KEY_FILE")" --source "$NUGET_SOURCE" --skip-duplicate
-  NPM_CONFIG_TOKEN=$(<"$NPM_TOKEN_FILE") bun publish "$OUT/ancplua-qyl-semantic-conventions-$version.tgz" --registry "$NPM_REGISTRY" --access public --dry-run </dev/null
+  NPM_CONFIG_TOKEN=$(<"$NPM_TOKEN_FILE") bun publish --cwd typescript "$PWD/$OUT/ancplua-qyl-semantic-conventions-$version.tgz" --registry "$NPM_REGISTRY" --access public --dry-run </dev/null
   say "dry run finished: nothing published, nothing tagged"
   git status --short --untracked-files=no
   exit 0
@@ -100,7 +100,7 @@ for id in "${PACKAGES[@]}"; do
 done
 
 # Publish the verified tarball itself; stdin is closed so an OTP request cannot hang.
-NPM_CONFIG_TOKEN=$(<"$NPM_TOKEN_FILE") bun publish "$OUT/ancplua-qyl-semantic-conventions-$version.tgz" --registry "$NPM_REGISTRY" --access public </dev/null || die "npm publication failed; if a token or OTP is requested, renew credentials before continuing"
+NPM_CONFIG_TOKEN=$(<"$NPM_TOKEN_FILE") bun publish --cwd typescript "$PWD/$OUT/ancplua-qyl-semantic-conventions-$version.tgz" --registry "$NPM_REGISTRY" --access public </dev/null || die "npm publication failed; if a token or OTP is requested, renew credentials before continuing"
 
 say "wait until every package is indexed"
 for id in "${PACKAGES[@]}"; do
