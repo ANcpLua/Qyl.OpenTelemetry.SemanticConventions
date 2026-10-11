@@ -27,17 +27,25 @@ OUT=$(python3 -c 'from pathlib import Path; import sys; print(Path(sys.argv[1]).
 PACKAGES=(Qyl.Telemetry.SemanticConventions Qyl.Telemetry.SemanticConventions.Analyzers Qyl.Telemetry.SemanticConventions.Incubating)
 
 version=${1:-}
-dry=0; resume=0
+dry=0; resume=0; browser_auth=0
 for flag in "${@:2}"; do
   case "$flag" in
     --dry-run) dry=1 ;;
     --resume) resume=1 ;;
+    --browser-auth) browser_auth=1 ;;
     *) echo "unknown option: $flag" >&2; exit 2 ;;
   esac
 done
-[[ $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "usage: $0 <x.y.z> [--dry-run] [--resume]" >&2; exit 2; }
+[[ $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "usage: $0 <x.y.z> [--dry-run] [--resume] [--browser-auth]" >&2; exit 2; }
 say() { printf '\n== %s\n' "$*"; }
 die() { echo "release: $*" >&2; exit 1; }
+publish_npm() {
+  if (( browser_auth )); then
+    python3 eng/release/publish-npm.py --browser-auth "$@"
+  else
+    python3 eng/release/publish-npm.py "$@"
+  fi
+}
 lower() { tr '[:upper:]' '[:lower:]' <<<"$1"; }
 indexed() { curl -fsSL "$NUGET_FLAT/$(lower "$1")/index.json" 2>/dev/null | grep -q "\"$2\""; }
 
@@ -59,7 +67,9 @@ if (( resume )); then
   release_commit=$(python3 eng/release/artifact-record.py commit "$OUT" "$version")
   git cat-file -e "$release_commit^{commit}"
   git merge-base --is-ancestor "$release_commit" HEAD || die "recorded release commit is not an ancestor of main"
-  git diff --exit-code "$release_commit" -- Directory.Build.props Directory.Build.targets Directory.Packages.props Version.props global.json registry templates scripts/generate.sh scripts/generate-typescript.py src generated typescript || die "package sources differ from the original packed commit"
+  git diff --exit-code "$release_commit" -- . \
+    ":(exclude)AGENTS.md" ":(exclude)SKILL.md" ":(exclude)release.sh" \
+    ":(exclude)eng/release" ":(exclude)tests/scripts/test_release_resume.py" || die "package sources differ from the original packed commit"
 fi
 if [[ -n $(git ls-remote --tags origin "refs/tags/v$version") ]] || git rev-parse -q --verify "refs/tags/v$version" >/dev/null; then
   (( dry )) || die "tag v$version already exists"; echo "warning: tag v$version already exists; the real run refuses"
@@ -123,7 +133,7 @@ if (( dry )); then
   curl -fsSL -o "$probe_dir/probe.nupkg" "$NUGET_FLAT/$id/$latest/$id.$latest.nupkg"
   echo "dry run: pushing the published ${PACKAGES[0]} $latest again with --skip-duplicate to prove the key (expect 'already exists')"
   dotnet nuget push "$probe_dir/probe.nupkg" --api-key "$(<"$NUGET_KEY_FILE")" --source "$NUGET_SOURCE" --skip-duplicate
-  NPM_CONFIG_TOKEN=$(<"$NPM_TOKEN_FILE") python3 eng/release/publish-npm.py bun publish --cwd typescript "$OUT/ancplua-qyl-semantic-conventions-$version.tgz" --registry "$NPM_REGISTRY" --access public --dry-run </dev/null
+  NPM_CONFIG_TOKEN=$(<"$NPM_TOKEN_FILE") publish_npm bun publish --cwd typescript "$OUT/ancplua-qyl-semantic-conventions-$version.tgz" --registry "$NPM_REGISTRY" --access public --dry-run </dev/null
   say "dry run finished: nothing published, nothing tagged"
   git status --short --untracked-files=no
   exit 0
@@ -136,7 +146,7 @@ if (( ! resume )); then
 fi
 
 # Publish the verified tarball itself; stop immediately on an interactive auth request.
-NPM_CONFIG_TOKEN=$(<"$NPM_TOKEN_FILE") python3 eng/release/publish-npm.py bun publish --cwd typescript "$OUT/ancplua-qyl-semantic-conventions-$version.tgz" --registry "$NPM_REGISTRY" --access public </dev/null || die "npm publication failed; if a token or OTP is requested, renew credentials before continuing"
+NPM_CONFIG_TOKEN=$(<"$NPM_TOKEN_FILE") publish_npm bun publish --cwd typescript "$OUT/ancplua-qyl-semantic-conventions-$version.tgz" --registry "$NPM_REGISTRY" --access public </dev/null || die "npm publication failed; if a token or OTP is requested, renew credentials before continuing"
 
 say "wait until every package is indexed"
 for id in "${PACKAGES[@]}"; do

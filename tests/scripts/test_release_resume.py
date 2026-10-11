@@ -61,3 +61,9 @@ class ResumeTests(unittest.TestCase):
         self.assertEqual(3, result.returncode)
         self.assertIn('publication stopped', result.stderr)
         self.assertNotIn('Authenticate your account at', result.stdout)
+
+    def test_browser_auth_requires_explicit_opt_in(self):
+        code = 'print("Authenticate your account at https://example.invalid/auth", flush=True)'
+        result = subprocess.run([sys.executable, str(ROOT / 'eng/release/publish-npm.py'), '--browser-auth', sys.executable, '-c', code], capture_output=True, text=True, timeout=10)
+        self.assertEqual(0, result.returncode)
+        self.assertIn('https://example.invalid/auth', result.stdout)

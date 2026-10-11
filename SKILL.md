@@ -30,6 +30,9 @@ Weaver version pinned in `Version.props`.
   commit, unchanged package sources, and the complete public NuGet payloads (excluding only the
   registry signature). It publishes the preserved npm archive and tags the original packed commit;
   it does not rebuild or upload NuGet again.
+  Only after the owner explicitly offers to complete browser authentication, add `--browser-auth`
+  to keep the npm process alive and show its authentication URL. The default still stops; OTP
+  input in the terminal is never supplied by the script.
 - Keys: npm uses `~/.config/vitals/npm-qyl-manual-publish-token`; NuGet uses the `vitals keys` entry "qyl-dev manual publish and release (NuGet)", file
   `~/.config/vitals/nuget-qyl-manual-publish-key`. The script reads it; never print, paste,
   commit or log a key. If the entry is missing or its note's expiry has passed, stop and tell

@@ -4,12 +4,13 @@ import subprocess
 import sys
 
 
-def run(command):
+def run(command, allow_browser_auth=False):
     with subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
                           stderr=subprocess.STDOUT, text=True, bufsize=1) as process:
         for line in process.stdout:
             lower = line.lower()
-            if any(prompt in lower for prompt in ('authenticate your account', 'one-time password', 'enter otp')):
+            if (('authenticate your account' in lower and not allow_browser_auth)
+                    or any(prompt in lower for prompt in ('one-time password', 'enter otp'))):
                 process.terminate()
                 try:
                     process.wait(timeout=5)
@@ -23,4 +24,6 @@ def run(command):
 
 
 if __name__ == '__main__':
-    raise SystemExit(run(sys.argv[1:]))
+    args = sys.argv[1:]
+    browser_auth = bool(args and args[0] == '--browser-auth')
+    raise SystemExit(run(args[1:] if browser_auth else args, browser_auth))
