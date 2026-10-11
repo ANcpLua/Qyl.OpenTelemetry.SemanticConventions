@@ -13,16 +13,16 @@ concurrency:
 permissions:
   contents: read
 
+# The `check` task in mise.toml, split over two parallel jobs: the Weaver gates (regenerate +
+# drift, live-check policies) read only registry/ and the committed output, and the .NET build
+# reads only the committed output, so neither waits ~30 s for the other.
 jobs:
-  build:
+  registry:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
-
-      - name: Test pin freshness checker
-        run: python3 -m unittest discover --start-directory tests/scripts --pattern 'test_*.py'
 
       - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
 
@@ -37,6 +37,18 @@ jobs:
       # the exact findings it produces, id and level, on a sample covering every rule.
       - name: Check live-check advice policies
         run: ./scripts/check-live-check-policies.sh
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Test pin freshness checker
+        run: python3 -m unittest discover --start-directory tests/scripts --pattern 'test_*.py'
+
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
 
       - name: Restore
         run: dotnet restore Qyl.Telemetry.SemanticConventions.slnx
