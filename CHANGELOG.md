@@ -19,6 +19,11 @@ consumer.
 - Move the package version and schema URL to 9.8.0. AutoInstrumentation 23.1.0 consumes these
   definitions when enabling Quartz metrics.
 
+### Corrected before publication
+
+- Require native Quartz `error.type` only when Quartz records an exception; a job can report
+  failure without throwing. Clarify that self-recovery reports the scheduler's own instance id.
+
 ## [9.7.0] - 2026-10-10
 
 ### Changed

@@ -89,7 +89,7 @@ groups:
       - id: quartz.cluster.recovered.instance.id
         type: string
         stability: development
-        brief: "Instance id of the cluster node whose work is being recovered, which is a node other than the one reporting the measurement."
+        brief: "Instance id of the cluster node whose work is being recovered. On self-recovery this equals the reporting scheduler instance id."
         note: "Metric tag on the \"Quartz\" Meter. Declared at src/Quartz/Diagnostics/ActivityTags.cs:132; set at src/Quartz/Diagnostics/Meters.cs:373,401."
   - id: vendor.quartz_net
     type: attribute_group
@@ -170,7 +170,7 @@ groups:
         conditionally_required: If the trigger declares an execution group.
     - ref: error.type
       requirement_level:
-        conditionally_required: If the operation failed.
+        conditionally_required: If Quartz records an exception for the job execution.
   - id: metric.vendor.quartz_net.trigger_misfire
     type: metric
     metric_name: quartz.trigger.misfire
@@ -290,7 +290,7 @@ groups:
       requirement_level: required
     - ref: error.type
       requirement_level:
-        conditionally_required: If the operation failed.
+        conditionally_required: If Quartz records an exception for the cluster check-in.
   - id: metric.vendor.quartz_net.cluster_recovery_trigger
     type: metric
     metric_name: quartz.cluster.recovery.trigger
@@ -332,7 +332,7 @@ groups:
       requirement_level: required
     - ref: error.type
       requirement_level:
-        conditionally_required: If the operation failed.
+        conditionally_required: If Quartz records an exception for the job store operation.
   - id: metric.vendor.quartz_net.jobstore_lock_wait_duration
     type: metric
     metric_name: quartz.jobstore.lock.wait.duration
@@ -352,4 +352,4 @@ groups:
       requirement_level: required
     - ref: error.type
       requirement_level:
-        conditionally_required: If the operation failed.
+        conditionally_required: If Quartz records an exception for the lock acquisition.
