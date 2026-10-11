@@ -2,9 +2,9 @@
 # ActivitySource and that upstream semantic conventions do not define. Vendor keys are
 # tags: the collector passes them through, the application never renames them.
 #
-# Two groups: `registry.vendor.*` carries the attributes into the resolved catalog (which
+# Three kinds of groups: `registry.vendor.*` carries the attributes into the resolved catalog (which
 # drops group annotations), `vendor.*` carries the library metadata, which survives as a
-# plain attribute group.
+# plain attribute group. The metric.vendor.* groups describe all 11 native instruments.
 groups:
   - id: registry.vendor.quartz_net
     type: attribute_group
@@ -108,3 +108,248 @@ groups:
               note: "QuartzInstrumentation.ActivitySourceName at src/Quartz/Diagnostics/QuartzInstrumentation.cs:23; QuartzInstrumentation.MeterName at src/Quartz/Diagnostics/QuartzInstrumentation.cs:34 is the same string."
     attributes:
       - ref: qyl.instrumentation.domain
+
+
+  - id: metric.vendor.quartz_net.job_execution_active
+    type: metric
+    metric_name: quartz.job.execution.active
+    instrument: updowncounter
+    unit: '{job}'
+    stability: development
+    brief: Number of jobs currently running.
+    note: Quartz.NET 4.4.0 native Meter "Quartz". Instrument created at src/Quartz/Diagnostics/Meters.cs:67; dimensions and
+      measurements at src/Quartz/Diagnostics/Meters.cs:414-437,455, tag constants at src/Quartz/Diagnostics/ActivityTags.cs.
+      Read at https://github.com/quartznet/quartznet/blob/v4.4.0/src/Quartz/Diagnostics/Meters.cs. The running count is decremented
+      with its original dimensions before result and error dimensions are added to the duration histogram.
+    attributes:
+    - ref: quartz.scheduler.name
+      requirement_level: required
+    - ref: quartz.scheduler.id
+      requirement_level: required
+    - ref: quartz.trigger.group
+      requirement_level: required
+    - ref: quartz.trigger.name
+      requirement_level: required
+    - ref: quartz.job.group
+      requirement_level: required
+    - ref: quartz.job.name
+      requirement_level: required
+    - ref: quartz.execution.group
+      requirement_level:
+        conditionally_required: If the trigger declares an execution group.
+    annotations:
+      code_generation:
+        metric_value_type: int
+  - id: metric.vendor.quartz_net.job_execution_duration
+    type: metric
+    metric_name: quartz.job.execution.duration
+    instrument: histogram
+    unit: s
+    stability: development
+    brief: Elapsed time spent executing a job.
+    note: Quartz.NET 4.4.0 native Meter "Quartz". Instrument created at src/Quartz/Diagnostics/Meters.cs:72; dimensions and
+      measurements at src/Quartz/Diagnostics/Meters.cs:414-437,450-472, tag constants at src/Quartz/Diagnostics/ActivityTags.cs.
+      Read at https://github.com/quartznet/quartznet/blob/v4.4.0/src/Quartz/Diagnostics/Meters.cs.
+    attributes:
+    - ref: quartz.scheduler.name
+      requirement_level: required
+    - ref: quartz.scheduler.id
+      requirement_level: required
+    - ref: quartz.trigger.group
+      requirement_level: required
+    - ref: quartz.trigger.name
+      requirement_level: required
+    - ref: quartz.job.group
+      requirement_level: required
+    - ref: quartz.job.name
+      requirement_level: required
+    - ref: quartz.job.result
+      requirement_level: required
+    - ref: quartz.execution.group
+      requirement_level:
+        conditionally_required: If the trigger declares an execution group.
+    - ref: error.type
+      requirement_level:
+        conditionally_required: If the operation failed.
+  - id: metric.vendor.quartz_net.trigger_misfire
+    type: metric
+    metric_name: quartz.trigger.misfire
+    instrument: counter
+    unit: '{trigger}'
+    stability: development
+    brief: Number of trigger misfires the scheduler was notified of.
+    note: Quartz.NET 4.4.0 native Meter "Quartz". Instrument created at src/Quartz/Diagnostics/Meters.cs:77; dimensions and
+      measurements at src/Quartz/Diagnostics/Meters.cs:237-256, tag constants at src/Quartz/Diagnostics/ActivityTags.cs. Read
+      at https://github.com/quartznet/quartznet/blob/v4.4.0/src/Quartz/Diagnostics/Meters.cs.
+    attributes:
+    - ref: quartz.scheduler.name
+      requirement_level: required
+    - ref: quartz.scheduler.id
+      requirement_level: required
+    - ref: quartz.trigger.group
+      requirement_level: required
+    - ref: quartz.execution.group
+      requirement_level:
+        conditionally_required: If the trigger declares an execution group.
+    annotations:
+      code_generation:
+        metric_value_type: int
+  - id: metric.vendor.quartz_net.trigger_retry
+    type: metric
+    metric_name: quartz.trigger.retry
+    instrument: counter
+    unit: '{trigger}'
+    stability: development
+    brief: Number of trigger retries the scheduler scheduled after a job failed.
+    note: Quartz.NET 4.4.0 native Meter "Quartz". Instrument created at src/Quartz/Diagnostics/Meters.cs:83; dimensions and
+      measurements at src/Quartz/Diagnostics/Meters.cs:262-283, tag constants at src/Quartz/Diagnostics/ActivityTags.cs. Read
+      at https://github.com/quartznet/quartznet/blob/v4.4.0/src/Quartz/Diagnostics/Meters.cs.
+    attributes:
+    - ref: quartz.scheduler.name
+      requirement_level: required
+    - ref: quartz.scheduler.id
+      requirement_level: required
+    - ref: quartz.trigger.group
+      requirement_level: required
+    - ref: quartz.execution.group
+      requirement_level:
+        conditionally_required: If the trigger declares an execution group.
+    annotations:
+      code_generation:
+        metric_value_type: int
+  - id: metric.vendor.quartz_net.trigger_retries_exhausted
+    type: metric
+    metric_name: quartz.trigger.retries_exhausted
+    instrument: counter
+    unit: '{trigger}'
+    stability: development
+    brief: Number of failed occurrences whose retry policy ran out of attempts.
+    note: Quartz.NET 4.4.0 native Meter "Quartz". Instrument created at src/Quartz/Diagnostics/Meters.cs:90; dimensions and
+      measurements at src/Quartz/Diagnostics/Meters.cs:289-310, tag constants at src/Quartz/Diagnostics/ActivityTags.cs. Read
+      at https://github.com/quartznet/quartznet/blob/v4.4.0/src/Quartz/Diagnostics/Meters.cs.
+    attributes:
+    - ref: quartz.scheduler.name
+      requirement_level: required
+    - ref: quartz.scheduler.id
+      requirement_level: required
+    - ref: quartz.trigger.group
+      requirement_level: required
+    - ref: quartz.execution.group
+      requirement_level:
+        conditionally_required: If the trigger declares an execution group.
+    annotations:
+      code_generation:
+        metric_value_type: int
+  - id: metric.vendor.quartz_net.trigger_acquisition_duration
+    type: metric
+    metric_name: quartz.trigger.acquisition.duration
+    instrument: histogram
+    unit: s
+    stability: development
+    brief: Elapsed time spent acquiring the next batch of triggers.
+    note: Quartz.NET 4.4.0 native Meter "Quartz". Instrument created at src/Quartz/Diagnostics/Meters.cs:95; dimensions and
+      measurements at src/Quartz/Diagnostics/Meters.cs:316-326, tag constants at src/Quartz/Diagnostics/ActivityTags.cs. Read
+      at https://github.com/quartznet/quartznet/blob/v4.4.0/src/Quartz/Diagnostics/Meters.cs.
+    attributes:
+    - ref: quartz.scheduler.name
+      requirement_level: required
+    - ref: quartz.scheduler.id
+      requirement_level: required
+  - id: metric.vendor.quartz_net.trigger_acquired
+    type: metric
+    metric_name: quartz.trigger.acquired
+    instrument: counter
+    unit: '{trigger}'
+    stability: development
+    brief: Number of triggers acquired for firing.
+    note: Quartz.NET 4.4.0 native Meter "Quartz". Instrument created at src/Quartz/Diagnostics/Meters.cs:99; dimensions and
+      measurements at src/Quartz/Diagnostics/Meters.cs:316-330, tag constants at src/Quartz/Diagnostics/ActivityTags.cs. Read
+      at https://github.com/quartznet/quartznet/blob/v4.4.0/src/Quartz/Diagnostics/Meters.cs.
+    attributes:
+    - ref: quartz.scheduler.name
+      requirement_level: required
+    - ref: quartz.scheduler.id
+      requirement_level: required
+    annotations:
+      code_generation:
+        metric_value_type: int
+  - id: metric.vendor.quartz_net.cluster_checkin_duration
+    type: metric
+    metric_name: quartz.cluster.checkin.duration
+    instrument: histogram
+    unit: s
+    stability: development
+    brief: Elapsed time spent on a cluster check-in.
+    note: Quartz.NET 4.4.0 native Meter "Quartz". Instrument created at src/Quartz/Diagnostics/Meters.cs:103; dimensions and
+      measurements at src/Quartz/Diagnostics/Meters.cs:337-350, tag constants at src/Quartz/Diagnostics/ActivityTags.cs. Read
+      at https://github.com/quartznet/quartznet/blob/v4.4.0/src/Quartz/Diagnostics/Meters.cs.
+    attributes:
+    - ref: quartz.scheduler.name
+      requirement_level: required
+    - ref: quartz.scheduler.id
+      requirement_level: required
+    - ref: error.type
+      requirement_level:
+        conditionally_required: If the operation failed.
+  - id: metric.vendor.quartz_net.cluster_recovery_trigger
+    type: metric
+    metric_name: quartz.cluster.recovery.trigger
+    instrument: counter
+    unit: '{trigger}'
+    stability: development
+    brief: Number of fired triggers recovered from a failed cluster node.
+    note: Quartz.NET 4.4.0 native Meter "Quartz". Instrument created at src/Quartz/Diagnostics/Meters.cs:107; dimensions and
+      measurements at src/Quartz/Diagnostics/Meters.cs:360-378,390-404, tag constants at src/Quartz/Diagnostics/ActivityTags.cs.
+      Read at https://github.com/quartznet/quartznet/blob/v4.4.0/src/Quartz/Diagnostics/Meters.cs. On self-recovery the counter
+      records one recovery event, with the recovered instance equal to the reporting scheduler instance; the trigger count is
+      no longer available.
+    attributes:
+    - ref: quartz.scheduler.name
+      requirement_level: required
+    - ref: quartz.scheduler.id
+      requirement_level: required
+    - ref: quartz.cluster.recovered.instance.id
+      requirement_level: required
+    annotations:
+      code_generation:
+        metric_value_type: int
+  - id: metric.vendor.quartz_net.jobstore_operation_duration
+    type: metric
+    metric_name: quartz.jobstore.operation.duration
+    instrument: histogram
+    unit: s
+    stability: development
+    brief: Elapsed time spent on a job store operation.
+    note: Quartz.NET 4.4.0 native Meter "Quartz". Instrument created at src/Quartz/Diagnostics/Meters.cs:112; dimensions and
+      measurements at src/Quartz/Diagnostics/Meters.cs:178-197, tag constants at src/Quartz/Diagnostics/ActivityTags.cs. Read
+      at https://github.com/quartznet/quartznet/blob/v4.4.0/src/Quartz/Diagnostics/Meters.cs.
+    attributes:
+    - ref: quartz.scheduler.name
+      requirement_level: required
+    - ref: quartz.scheduler.id
+      requirement_level: required
+    - ref: quartz.jobstore.operation
+      requirement_level: required
+    - ref: error.type
+      requirement_level:
+        conditionally_required: If the operation failed.
+  - id: metric.vendor.quartz_net.jobstore_lock_wait_duration
+    type: metric
+    metric_name: quartz.jobstore.lock.wait.duration
+    instrument: histogram
+    unit: s
+    stability: development
+    brief: Elapsed time spent waiting for a job store lock.
+    note: Quartz.NET 4.4.0 native Meter "Quartz". Instrument created at src/Quartz/Diagnostics/Meters.cs:117; dimensions and
+      measurements at src/Quartz/Diagnostics/Meters.cs:210-229, tag constants at src/Quartz/Diagnostics/ActivityTags.cs. Read
+      at https://github.com/quartznet/quartznet/blob/v4.4.0/src/Quartz/Diagnostics/Meters.cs.
+    attributes:
+    - ref: quartz.scheduler.name
+      requirement_level: required
+    - ref: quartz.scheduler.id
+      requirement_level: required
+    - ref: quartz.jobstore.lock
+      requirement_level: required
+    - ref: error.type
+      requirement_level:
+        conditionally_required: If the operation failed.
