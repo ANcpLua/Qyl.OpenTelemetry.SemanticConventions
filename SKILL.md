@@ -67,9 +67,9 @@ Weaver version pinned in `Version.props`.
 6. The moment all four are indexed: stop watching and notify the consumers (section
    "Notify").
 7. Record the published version in
-   `/Users/alexandernachtmann/Downloads/qyl-codex-claude/qyl-handoff-for-codex.md` and rewrite
-   `/Users/alexandernachtmann/Downloads/qyl-codex-claude/qyl-published-versions.yaml` (the
-   registries are the truth; this file is the snapshot every agent reads first).
+   `/Users/alexandernachtmann/Downloads/qyl-codex-claude/qyl-handoff-for-codex.md` and run
+   `/Users/alexandernachtmann/Downloads/qyl-codex-claude/refresh-published-versions.sh`, which rewrites
+   `qyl-published-versions.yaml` beside it from the registries (the snapshot every agent reads first).
 
 ## Notify
 
