@@ -41,6 +41,7 @@ NPM_CONFIG_USERCONFIG=$npmrc npm whoami --registry="$NPM_REGISTRY" >/dev/null ||
 [[ -z $(git status --porcelain --untracked-files=no) ]] || die "working tree not clean"
 git fetch -q origin main
 [[ $(git rev-parse HEAD) == $(git rev-parse origin/main) ]] || die "main differs from origin/main"
+release_commit=$(git rev-parse HEAD)
 if [[ -n $(git ls-remote --tags origin "refs/tags/v$version") ]] || git rev-parse -q --verify "refs/tags/v$version" >/dev/null; then
   (( dry )) || die "tag v$version already exists"; echo "warning: tag v$version already exists; the real run refuses"
 fi
@@ -58,7 +59,7 @@ if npm view "$NPM_PACKAGE@$version" version --registry="$NPM_REGISTRY" >/dev/nul
   (( dry )) || die "$NPM_PACKAGE $version is already on npm"
   echo "warning: $NPM_PACKAGE $version is already on npm; the real run refuses"
 fi
-if curl -fsS --retry 2 -o /dev/null "https://qyl.at/schemas/$version"; then
+if [[ $(curl -fsS --retry 2 -o /dev/null -w '%{http_code}' "https://qyl.at/schemas/$version") == 200 ]]; then
   echo "qyl.at serves https://qyl.at/schemas/$version"
 else
   (( dry )) || die "https://qyl.at/schemas/$version is not served; add public/schemas/$version in qyl.at and deploy it first"
@@ -78,9 +79,11 @@ dotnet pack "$slnx" -c Release --no-build -o "$OUT" -p:Version="$version"
 say "pack TypeScript and verify exactly four named artifacts"
 npm pack ./typescript --pack-destination "$OUT" >/dev/null
 python3 eng/release/verify-artifact-set.py "$OUT" "$version"
+./eng/release/verify-packages.sh "$version" "$PWD/$OUT" "$OUT"
 ./eng/release/verify-typescript.sh "$version" "$PWD/$OUT/ancplua-qyl-semantic-conventions-$version.tgz"
 
 say "NuGet and npm publication"
+[[ $(git rev-parse HEAD) == "$release_commit" && -z $(git status --porcelain --untracked-files=no) ]] || die "tracked source changed while packing; commit, re-run the gate and retry"
 if (( dry )); then
   id=$(lower "${PACKAGES[0]}")
   latest=$(curl -fsSL "$NUGET_FLAT/$id/index.json" | python3 -I -c 'import json,sys; print(json.load(sys.stdin)["versions"][-1])')
@@ -122,7 +125,7 @@ say "verify the published packages"
 
 say "tag and GitHub release (notes from CHANGELOG.md)"
 awk -v v="$version" 'index($0, "## [" v "]") == 1 {on=1; next} on && /^## \[/ {exit} on' CHANGELOG.md >"$notes"
-git tag -a "v$version" -m "v$version"
+git tag -a "v$version" "$release_commit" -m "v$version"
 git push -q origin "v$version"
 gh release create "v$version" --title "v$version" --notes-file "$notes" "$OUT"/Qyl.Telemetry.SemanticConventions*."$version".nupkg "$OUT/ancplua-qyl-semantic-conventions-$version.tgz"
 

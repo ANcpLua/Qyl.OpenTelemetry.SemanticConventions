@@ -24,12 +24,16 @@ public sealed class GeneratedSurfaceTests
         "src/Qyl.Telemetry.SemanticConventions/Generated",
         "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated",
         "generated",
+        "typescript/src",
+        "typescript/dist",
     };
 
     private static readonly string[] GeneratedFiles =
     {
         "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvRegistryFacts.g.cs",
         "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvDeprecations.g.cs",
+        "typescript/package.json",
+        "typescript/LICENSE",
     };
 
     [Fact]
