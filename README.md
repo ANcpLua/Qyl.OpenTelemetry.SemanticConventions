@@ -355,3 +355,7 @@ Bump `VersionPrefix` in `Directory.Build.props`, set the `registry/manifest.yaml
 ## License
 
 Apache-2.0
+
+## TypeScript bindings
+
+The `typescript/` package generates stable and incubating constants from the same resolved registry as the C# bindings. See [the TypeScript package documentation](typescript/README.md). The package has no runtime dependencies. Run `npm test --prefix typescript` to verify the packed exports.

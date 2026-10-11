@@ -493,3 +493,9 @@ templates:
       | . + $schema_urls
     application_mode: single
     file_name: "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvDeprecations.g.cs"
+
+  # Share this exact resolved snapshot with the TypeScript generator.
+  - template: registry.json.j2
+    filter: .
+    application_mode: single
+    file_name: .build/typescript-registry.json

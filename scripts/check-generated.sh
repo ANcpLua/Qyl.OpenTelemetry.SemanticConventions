@@ -21,6 +21,10 @@ generated_paths=(
   "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvRegistryFacts.g.cs"
   "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvDeprecations.g.cs"
   "generated"
+  "typescript/src"
+  "typescript/dist"
+  "typescript/package.json"
+  "typescript/LICENSE"
 )
 
 if ! git diff HEAD --exit-code -- "${generated_paths[@]}"; then

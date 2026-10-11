@@ -1,6 +1,7 @@
 # The toolchain this repository builds with. CI installs it with jdx/mise-action;
 # locally `mise install` does the same. dotnet also keeps global.json, which dotnet itself reads.
 [tools]
+"node" = "24.21.0"
 "dotnet" = "10.0.401"
 "github:open-telemetry/weaver" = "0.27.0"
 
@@ -9,6 +10,7 @@ description = "The gate: what CI runs, in order"
 run = [
   "python3 -m unittest discover --start-directory tests/scripts --pattern 'test_*.py'",
   "./scripts/check-generated.sh",
+  "npm test --prefix typescript",
   "./scripts/check-live-check-policies.sh",
   "dotnet restore Qyl.Telemetry.SemanticConventions.slnx",
   "dotnet build Qyl.Telemetry.SemanticConventions.slnx --no-restore --configuration Release",
