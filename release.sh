@@ -40,7 +40,9 @@ schema=$(sed -n 's#^schema_url: https://qyl.at/schemas/##p' registry/manifest.ya
 [[ $prefix == "$version" ]] || die "Directory.Build.props VersionPrefix is $prefix, not $version"
 [[ $schema == "$version" ]] || die "registry/manifest.yaml schema_url names $schema, not $version"
 grep -q "^## \[$version\]" CHANGELOG.md || die "CHANGELOG.md has no '## [$version]' entry"
-for id in "${PACKAGES[@]}"; do indexed "$id" "$version" && die "$id $version is already on NuGet"; done
+for id in "${PACKAGES[@]}"; do
+  if indexed "$id" "$version"; then (( dry )) || die "$id $version is already on NuGet"; echo "warning: $id $version is already on NuGet; the real run refuses"; fi
+done
 if curl -fsS --retry 2 -o /dev/null "https://qyl.at/schemas/$version"; then
   echo "qyl.at serves https://qyl.at/schemas/$version"
 else
