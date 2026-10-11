@@ -167,6 +167,18 @@ public sealed class Qyl0200TelemetryNameAnalyzerTests
         clean.Should().BeEmpty();
     }
 
+    [Theory]
+    [InlineData("quartz.job.execution.active")]
+    [InlineData("quartz.job.execution.duration")]
+    [InlineData("quartz.trigger.retry")]
+    public async Task Qyl0201_accepts_native_Quartz_metrics(string name)
+    {
+        var diagnostics = await AnalyzerHarness.RunAsync(
+            new Qyl0201InvalidMetricNameAnalyzer(), DescriptorSink(name));
+
+        diagnostics.Should().BeEmpty();
+    }
+
     private static string ActivitySink(string statements) =>
         $$"""
         #nullable enable

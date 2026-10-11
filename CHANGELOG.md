@@ -7,6 +7,18 @@ through NuGet trusted publishing, and
 [`eng/release/verify-packages.sh`](eng/release/verify-packages.sh) proves the indexed packages in a clean `net10.0`
 consumer.
 
+## [9.8.0] - 2026-10-11
+
+### Added
+
+- Declare all 11 metrics published by Quartz.NET 4.4.0's native `Quartz` meter, with
+  their instrument kinds, units, required dimensions, conditional error/execution-group
+  dimensions and source citations. The generated incubating metric API and analyzer catalog
+  now recognize job execution, trigger misfires/retries/acquisition, cluster recovery/check-in,
+  and job-store operation/lock timings. Existing upstream pins and advice policies are unchanged.
+- Move the package version and schema URL to 9.8.0. AutoInstrumentation 23.1.0 consumes these
+  definitions when enabling Quartz metrics.
+
 ## [9.7.0] - 2026-10-10
 
 ### Changed
