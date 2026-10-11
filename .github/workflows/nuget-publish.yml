@@ -134,6 +134,11 @@ jobs:
             -p:Version=${{ steps.version.outputs.version }}
           ls -la artifacts/
 
+      - name: Test and pack generated TypeScript
+        run: |
+          npm test --prefix typescript
+          npm pack ./typescript --pack-destination artifacts
+
       # Departure (SC-9): publish exactly the three package IDs this repository ships,
       # never an empty or unexpected set.
       - name: Require exactly the three expected packages
@@ -153,6 +158,11 @@ jobs:
             echo "${actual:-<none>}"
             exit 1
           fi
+
+      - name: Require all NuGet and npm artifacts
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: python3 eng/release/verify-artifact-set.py artifacts "${VERSION}"
 
       # Departure (SC-2): the schema URL the packages advertise must already be served.
       - name: Require the schema URL to be served

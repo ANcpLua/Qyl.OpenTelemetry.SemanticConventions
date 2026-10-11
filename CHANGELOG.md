@@ -5,9 +5,16 @@ Notable changes to the `Qyl.Telemetry.SemanticConventions` package family. `Vers
 published version from the `v*` tag that triggers it. That tag runs the release gate in
 [`.github/workflows/nuget-publish.yml`](.github/workflows/nuget-publish.yml): the publish workflow verifies that the
 tagged commit is on `main`, that the tag equals `VersionPrefix` and the registry `schema_url`, that the schema URL is
-served, and that the solution packs exactly the three packages; it then publishes through NuGet trusted publishing,
+served, and that the solution packs exactly the three NuGet packages and the generated npm tarball; it then publishes through NuGet trusted publishing,
 and [`eng/release/verify-packages.sh`](eng/release/verify-packages.sh) waits for nuget.org to index the packages and
 proves them in a clean `net10.0` consumer before the GitHub release is created.
+
+## [9.9.0] - Unreleased
+
+- Generate stable and incubating TypeScript bindings from the same resolved registry as C#.
+- Add the dependency-free `@ancplua/qyl-semantic-conventions` package and packed-consumer checks.
+- Preserve the exact three-NuGet artifact check and additionally require one expected npm tarball.
+- Declare the existing `qyl.mcp.operation` event in the shared registry.
 
 ## [9.8.0] - 2026-10-11
 

@@ -32,6 +32,9 @@ jobs:
       - name: Check generated code is in sync with the registry
         run: ./scripts/check-generated.sh
 
+      - name: Test generated TypeScript package
+        run: npm test --prefix typescript
+
       # The advice policy set decides what level a finding on ingested telemetry is reported
       # at, and AutoInstrumentation and the collector both run live-check with it. This pins
       # the exact findings it produces, id and level, on a sample covering every rule.
@@ -61,10 +64,13 @@ jobs:
 
       - name: Pack
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: dotnet pack Qyl.Telemetry.SemanticConventions.slnx --no-build --configuration Release --output artifacts/packages
+        run: |
+          dotnet pack Qyl.Telemetry.SemanticConventions.slnx --no-build --configuration Release --output artifacts/packages
+          npm pack ./typescript --pack-destination artifacts/packages
 
       - name: Inspect and smoke packed artifacts
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           version="$(dotnet msbuild src/Qyl.Telemetry.SemanticConventions/Qyl.Telemetry.SemanticConventions.csproj -getProperty:PackageVersion -nologo)"
+          python3 eng/release/verify-artifact-set.py artifacts/packages "${version}"
           ./eng/release/verify-packages.sh "${version}" "${GITHUB_WORKSPACE}/artifacts/packages" "${GITHUB_WORKSPACE}/artifacts/packages"

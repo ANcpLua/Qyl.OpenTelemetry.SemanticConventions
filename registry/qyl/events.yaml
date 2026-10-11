@@ -6,3 +6,9 @@ groups:
     stability: development
     brief: The qyl.rpc.grpc telemetry event.
     attributes: []
+  - id: event.qyl_mcp_operation
+    type: event
+    name: qyl.mcp.operation
+    stability: development
+    brief: The existing qyl MCP operation telemetry event.
+    attributes: []

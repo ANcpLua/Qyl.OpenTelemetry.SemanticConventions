@@ -128,6 +128,8 @@ PY
   csharp \
   .
 
+python3 scripts/generate-typescript.py .build/typescript-registry.json
+
 echo "Regenerated from registry/ with Weaver ${actual_weaver_version}"
 echo "  core:  ${core_ref} (${core_commit})"
 echo "  genai: ${genai_commit}"
