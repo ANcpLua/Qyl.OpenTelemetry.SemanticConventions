@@ -154,8 +154,8 @@ copied verbatim into the set — carries.
 
 The pins are exact by design: a moving input must not change generated constants without a
 commit here. [`scripts/check-pin-freshness.py`](scripts/check-pin-freshness.py) reports when
-one falls behind upstream and does not decide whether to move it; the scheduled
-[`pin-freshness`](.github/workflows/pin-freshness.yml) workflow runs it. The genai pin is a
+one falls behind upstream and does not decide whether to move it; run it by hand, the
+scheduled workflow that ran it went with CI. The genai pin is a
 branch commit, and the manifest pins that repository's `model/` sub-folder only, so the check
 counts a commit against the pin only when it changes a file under `model/`; a lock-file or
 tooling commit on `main` leaves the pin current and is reported as distance without staleness.
@@ -208,12 +208,13 @@ the SHA-256 of every generated file so a mismatch names each differing, missing 
 `REGEN_SNAPSHOTS=1` rewrites that manifest after an intentional change.
 
 `weaver` must be the version [`Version.props`](Version.props) pins — `scripts/generate.sh`
-refuses to run against any other, and CI's `setup-weaver` reads the same property.
-[CI](.github/workflows/ci.yml) runs the whole sequence on every push and pull request:
+refuses to run against any other. `mise run check` runs the whole sequence; run it before
+every push:
 
 ```bash
 python3 -m unittest discover --start-directory tests/scripts --pattern 'test_*.py'
 ./scripts/check-generated.sh
+npm test --prefix typescript
 ./scripts/check-live-check-policies.sh
 dotnet build Qyl.Telemetry.SemanticConventions.slnx -c Release
 dotnet run --project tests/Qyl.Telemetry.SemanticConventions.Pipeline.Tests -c Release
@@ -221,8 +222,8 @@ dotnet run --project tests/Qyl.Telemetry.SemanticConventions.Pipeline.Tests -c R
 
 `dotnet test` does not drive the test project: it is a Microsoft.Testing.Platform project and
 the .NET 10 SDK dropped the VSTest bridge, so the runner is `dotnet run --project`, which is
-what CI uses. On a push to `main` CI also packs and runs
-[`eng/release/verify-packages.sh`](eng/release/verify-packages.sh), which proves the packed
+what `mise run check` uses. `./release.sh <version>` packs, pushes and then runs
+[`eng/release/verify-packages.sh`](eng/release/verify-packages.sh), which proves the published
 packages install and work together in a clean `net10.0` consumer.
 
 ## The generated surface
@@ -307,8 +308,8 @@ flag stays, because a registry's `imports` block declares metrics, events and en
 this registry generates every attribute key its dependencies carry.
 
 `git clone --depth 1 --branch "${tag}"` followed by `./scripts/fetch-core.sh` is equivalent and
-is what `Qyl.Telemetry.AutoInstrumentation`'s live-check workflow does, with
-`actions/checkout` into `.semconv`.
+is what `Qyl.Telemetry.AutoInstrumentation`'s live check (`make live-check`) needs in
+`.semconv`.
 [`scripts/check-live-check-policies.sh`](scripts/check-live-check-policies.sh) pins the exact
 findings the set produces over
 [a sample covering every rule](registry/policies/live_check_advice/samples), and asserts that
