@@ -23,6 +23,13 @@ Weaver version pinned in `Version.props`.
 - Release command: `./release.sh <x.y.z> --dry-run`, then `./release.sh <x.y.z>` (restore,
   build and pack the solution at that version, the exact three-NuGet plus one-npm artifact guard, publish,
   wait for all four registry indexes, isolated NuGet and npm consumer verification, tag and GitHub release).
+- If publication stops after NuGet accepts the packages, preserve the original four artifacts and
+  `release-<version>.json`. Once credentials are renewed and all three NuGet packages are indexed,
+  run `QYL_RELEASE_ARTIFACTS=/path/to/original/artifacts ./release.sh <version> --resume --dry-run`,
+  then the same command without `--dry-run`. Resume verifies artifact hashes, the original source
+  commit, unchanged package sources, and the complete public NuGet payloads (excluding only the
+  registry signature). It publishes the preserved npm archive and tags the original packed commit;
+  it does not rebuild or upload NuGet again.
 - Keys: npm uses `~/.config/vitals/npm-qyl-manual-publish-token`; NuGet uses the `vitals keys` entry "qyl-dev manual publish and release (NuGet)", file
   `~/.config/vitals/nuget-qyl-manual-publish-key`. The script reads it; never print, paste,
   commit or log a key. If the entry is missing or its note's expiry has passed, stop and tell

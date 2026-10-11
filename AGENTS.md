@@ -16,7 +16,7 @@ A release is done from the developer's machine with the registry API keys regist
 
 | Repo | Version source | Publishes |
 |---|---|---|
-| qyl-api-schema | `package.json` via `npm version` (one version for npm and NuGet) | `@ancplua/qyl-api-schema` (npm), `Qyl.Api.Contracts` (NuGet) |
+| qyl-api-schema | release tag (one version for npm and NuGet); `package.json` stays `0.0.0-development` on `main` | `@ancplua/qyl-api-schema` (npm), `Qyl.Api.Contracts` (NuGet) |
 | SemanticConventions | `Directory.Build.props` `VersionPrefix`, `registry/manifest.yaml` `schema_url` and a `CHANGELOG.md` entry; `scripts/generate.sh` must agree; `qyl.at/schemas/<version>` is served first | the three `Qyl.Telemetry.SemanticConventions*` packages (NuGet) and `@ancplua/qyl-semantic-conventions` (npm) |
 | AutoInstrumentation | `Directory.Build.props` `Version` | the six `Qyl.Telemetry.*` packages (NuGet) |
 | qyl | `Version.props` `QylVersion` | `qyl`, `qyl.<rid>` ×6, `Qyl.Api.Sdk` (NuGet) |
