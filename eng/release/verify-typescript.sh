@@ -9,13 +9,12 @@ trap 'rm -rf "$temp"' EXIT
 npm install --prefix "$temp" --registry=https://registry.npmjs.org --ignore-scripts --no-audit --no-fund "$source" >/dev/null
 cat > "$temp/verify.mjs" <<'JS'
 import assert from 'node:assert/strict';
-import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
 import * as stable from '@ancplua/qyl-semantic-conventions';
 import * as all from '@ancplua/qyl-semantic-conventions/incubating';
 import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-const require = createRequire(import.meta.url);
-const pkg = JSON.parse(readFileSync(resolve(dirname(require.resolve('@ancplua/qyl-semantic-conventions')), '../package.json')));
+const pkg = JSON.parse(readFileSync(resolve(dirname(fileURLToPath(import.meta.resolve('@ancplua/qyl-semantic-conventions'))), '../package.json')));
 assert.equal(pkg.version, process.argv[2]);
 assert.equal(pkg.dependencies, undefined);
 assert.equal(stable.SCHEMA_URL, `https://qyl.at/schemas/${process.argv[2]}`);
