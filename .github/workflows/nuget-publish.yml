@@ -1,13 +1,15 @@
-# CANONICAL-DEPARTURE: multi-stage release pipeline with version/schema, package-set, indexing and published-consumer gates plus a GitHub release job
+# CANONICAL-DEPARTURE: multi-stage release pipeline with main-ancestry, version/schema, package-set, indexing and published-consumer gates plus a GitHub release job
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 #
 # Derived from ANcpLua/github-settings-automation/templates/nuget-publish.yml.
 # The CANONICAL-DEPARTURE marker on line 1 makes sync-nuget-publish.sh skip this
 # file, so the release gates below survive a template sync. Keep the marker.
-# Local departures from the template are each marked `# Departure (SC-n):`.
+# Local departures from the template are each marked `# Departure (SC-n):`
+# or `# Departure (main ancestry):`.
 #
 # Algorithm:
 #   - Triggered only by a `v*` tag push; the tag is the release act.
+#   - Fails unless the tagged commit is reachable from origin main.
 #   - Fails unless the tag equals VersionPrefix and the registry schema_url,
 #     and unless https://qyl.at/schemas/<version> is served.
 #   - Discovers the repo's `.slnx` or `.sln` at the repo root, restores +
@@ -68,6 +70,21 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
+
+      # Departure (main ancestry): the nuget environment admits main and v* tags, but a
+      # v* tag can name a commit that never reached main. Publish only commits main
+      # already contains, checked before anything is built, packed or pushed.
+      # refs/heads/main is spelled out because a bare "main" would resolve a tag named
+      # main ahead of the branch.
+      - name: Require the tagged commit to be on main
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin refs/heads/main
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" FETCH_HEAD; then
+            echo "::error::$GITHUB_SHA is not reachable from origin main ($(git rev-parse FETCH_HEAD)); only commits main already contains are published."
+            exit 1
+          fi
+          echo "$GITHUB_SHA is on origin main ($(git rev-parse FETCH_HEAD))."
 
       - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
 
