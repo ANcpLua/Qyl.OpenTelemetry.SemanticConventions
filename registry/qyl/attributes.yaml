@@ -519,6 +519,15 @@ groups:
               brief: "qyl rpc.wcf.client instrumentation domain."
         stability: development
         brief: "qyl auto-instrumentation domain that emitted the span or metric."
+      - id: qyl.gen_ai.tool.call.arguments_hash
+        type: string
+        stability: development
+        brief: "Producer-supplied opaque fingerprint of normalized tool arguments for repeated-call detection."
+        note: >
+          Staging: upstream semantic conventions have no argument fingerprint attribute.
+          Compare only within the same producer and project; hashes with different canonicalization
+          or keys are not comparable. Producers should use a keyed cryptographic hash and must not
+          place raw arguments in this field. Absence means repeated arguments are unknown.
       - id: qyl.mcp.evaluation_run.id
         type: string
         stability: development

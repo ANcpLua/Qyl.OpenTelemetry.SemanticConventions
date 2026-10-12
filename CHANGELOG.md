@@ -6,6 +6,11 @@ Notable changes to the `Qyl.Telemetry.SemanticConventions` package family. `Vers
 (the three NuGet packages and the TypeScript npm package), then tagged `v<version>`;
 [`eng/release/verify-packages.sh`](eng/release/verify-packages.sh) proves the published packages against nuget.org.
 
+## [9.9.1] - 2026-10-12
+
+- Define `qyl.gen_ai.tool.call.arguments_hash` once in the shared registry for producer-supplied, opaque argument fingerprints.
+- Generate matching C# and TypeScript constants; no raw argument capture or instrumentation behavior changes.
+
 ## [9.9.0] - 2026-10-12
 
 - Generate stable and incubating TypeScript bindings from the same resolved registry as C#.
