@@ -100,20 +100,5 @@
     </ItemGroup>
   </Target>
 
-  <!-- Keep diagnostic IDs and generated documentation synchronized on every normal build. -->
-  <Target Name="_VerifyAnalyzerConsistency"
-          AfterTargets="Build"
-          Condition="'$(_QylInsideConsistencyCheck)' != 'true'">
-    <PropertyGroup>
-      <_DocsGenProject>$(MSBuildThisFileDirectory)../../tools/Qyl.Telemetry.SemanticConventions.Analyzers.DocsGenerator/Qyl.Telemetry.SemanticConventions.Analyzers.DocsGenerator.csproj</_DocsGenProject>
-    </PropertyGroup>
-    <!-- The sentinel prevents the nested DocsGenerator build from re-entering this target. -->
-    <Exec Command="dotnet run --project &quot;$(_DocsGenProject)&quot; --configuration $(Configuration) -- --enforce-ids"
-          WorkingDirectory="$(MSBuildThisFileDirectory)../.."
-          EnvironmentVariables="_QylInsideConsistencyCheck=true"/>
-    <Exec Command="dotnet run --project &quot;$(_DocsGenProject)&quot; --configuration $(Configuration) -- --check"
-          WorkingDirectory="$(MSBuildThisFileDirectory)../.."
-          EnvironmentVariables="_QylInsideConsistencyCheck=true"/>
-  </Target>
 
 </Project>

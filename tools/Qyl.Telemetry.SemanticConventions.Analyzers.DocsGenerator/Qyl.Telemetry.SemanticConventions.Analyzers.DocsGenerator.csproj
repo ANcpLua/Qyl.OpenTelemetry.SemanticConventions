@@ -18,4 +18,12 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" PrivateAssets="all"/>
   </ItemGroup>
 
+  <!-- The solution builds this project after the analyzer. Run the completed binary;
+       invoking dotnet run from the analyzer itself recursively built this project. -->
+  <Target Name="VerifyAnalyzerConsistency" AfterTargets="Build">
+    <Exec Command="dotnet &quot;$(TargetPath)&quot; --enforce-ids"
+          WorkingDirectory="$(MSBuildThisFileDirectory)../.."/>
+    <Exec Command="dotnet &quot;$(TargetPath)&quot; --check"
+          WorkingDirectory="$(MSBuildThisFileDirectory)../.."/>
+  </Target>
 </Project>

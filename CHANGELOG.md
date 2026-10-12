@@ -8,6 +8,7 @@ Notable changes to the `Qyl.Telemetry.SemanticConventions` package family. `Vers
 
 ## [9.9.1] - 2026-10-12
 
+- Run analyzer documentation checks from the completed generator binary; remove nested `dotnet run` builds.
 - Define `qyl.gen_ai.tool.call.arguments_hash` once in the shared registry for producer-supplied, opaque argument fingerprints.
 - Generate matching C# and TypeScript constants; no raw argument capture or instrumentation behavior changes.
 
