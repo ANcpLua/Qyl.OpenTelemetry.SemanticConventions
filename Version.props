@@ -12,8 +12,9 @@
     <!-- renovate: datasource=nuget depName=Microsoft.CodeAnalysis.CSharp -->
     <MicrosoftCodeAnalysisVersion>5.9.0</MicrosoftCodeAnalysisVersion>
 
+    <!-- Stay on 10.x. Fallout's 11.0.x packages on nuget.org are unlisted builds from May 2026, older than 10.4.0. -->
     <!-- renovate: datasource=nuget depName=Fallout.Common -->
-    <FalloutVersion>11.0.18</FalloutVersion>
+    <FalloutVersion>10.4.0</FalloutVersion>
 
     <!-- renovate: datasource=nuget depName=xunit.v3.mtp-v2 -->
     <XunitVersion>4.0.2</XunitVersion>
@@ -24,7 +25,5 @@
     <NuGetPackagingVersion>7.9.0</NuGetPackagingVersion>
     <!-- renovate: datasource=nuget depName=System.Diagnostics.DiagnosticSource -->
     <SystemDiagnosticsDiagnosticSourceVersion>10.0.12</SystemDiagnosticsDiagnosticSourceVersion>
-    <!-- renovate: datasource=nuget depName=System.Security.Cryptography.Xml -->
-    <SystemSecurityCryptographyXmlVersion>10.0.12</SystemSecurityCryptographyXmlVersion>
   </PropertyGroup>
 </Project>
