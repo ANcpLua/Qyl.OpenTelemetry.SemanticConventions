@@ -39,10 +39,10 @@ policies: ## Check the live-check advice policy set against the registry
 	./scripts/check-live-check-policies.sh
 
 pins: ## Report upstream refs this repository pins that differ from upstream
-	python3 scripts/check-pin-freshness.py
+	uv run scripts/check-pin-freshness.py
 
 test: build ## Script unit tests and the pipeline tests
-	python3 -m unittest discover --start-directory tests/scripts --pattern 'test_*.py'
+	uv run --no-project --with pyyaml python3 -m unittest discover --start-directory tests/scripts --pattern 'test_*.py'
 	dotnet run --project $(PIPELINE_TESTS)/ --configuration Release --no-build
 
 check: ## The former CI gate, in order

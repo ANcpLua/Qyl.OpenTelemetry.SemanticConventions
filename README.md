@@ -161,7 +161,7 @@ counts a commit against the pin only when it changes a file under `model/`; a lo
 tooling commit on `main` leaves the pin current and is reported as distance without staleness.
 
 ```bash
-python3 scripts/check-pin-freshness.py   # 0 = every pin current, 10 = a pin is behind, 2 = unknown
+uv run scripts/check-pin-freshness.py   # 0 = every pin current, 10 = a pin is behind, 2 = unknown
 ```
 
 Moving a pin is a deliberate change: edit `registry/manifest.yaml`, re-run

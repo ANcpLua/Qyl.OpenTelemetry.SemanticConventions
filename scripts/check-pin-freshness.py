@@ -1,4 +1,7 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# dependencies = ["pyyaml"]
+# ///
 """Report when an upstream ref this repository pins differs from upstream.
 
 The registry pins are exact by design: moving inputs must not change generated

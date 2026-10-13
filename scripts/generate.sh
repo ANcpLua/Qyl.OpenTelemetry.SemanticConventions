@@ -5,13 +5,16 @@
 # scripts/check-generated.sh runs this and fails on `git diff`.
 #
 # Pins live in exactly one place, registry/manifest.yaml. Version.props keeps WeaverVersion,
-# and this guard refuses any other binary; mise.toml installs the binary in CI and locally, so
-# a Weaver bump moves both files.
+# and this guard refuses any other binary; mise.toml installs the binary, so a Weaver bump
+# moves both files.
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "${script_dir}/.." && pwd)"
 cd "${repo_root}"
+
+# Plain python3 has only the standard library. uv supplies PyYAML from its cache.
+python_yaml() { uv run --quiet --no-project --with pyyaml python3 "$@"; }
 
 WEAVER="${WEAVER:-weaver}"
 read -r -a WEAVER_CMD <<< "${WEAVER}"
@@ -46,7 +49,7 @@ if not value or not value.strip():
 print(value.strip())
 PYVP
 )"
-manifest_schema_url="$(python3 - registry/manifest.yaml <<'PYSU'
+manifest_schema_url="$(python_yaml - registry/manifest.yaml <<'PYSU'
 import sys
 import yaml
 print((yaml.safe_load(open(sys.argv[1])) or {}).get("schema_url", ""))
@@ -65,7 +68,7 @@ core_commit="$(cat .build/core-commit.txt)"
 # The three schema URLs are registry facts: Weaver's materialized v2 registry carries them and
 # the template filters read them off it. The git ref the genai dependency is pinned to is not
 # part of that registry, so it is read out of the manifest here and handed over as a parameter.
-genai_commit="$(python3 - registry/manifest.yaml <<'PY'
+genai_commit="$(python_yaml - registry/manifest.yaml <<'PY'
 import sys
 import yaml
 
@@ -79,7 +82,7 @@ PY
 # their group annotations, so the two lists the templates need — the scope names qyl
 # constructs and the ActivitySource names of the pinned vendor libraries — are read out of the
 # same YAML here and handed to the templates as parameters. registry/ stays the only source.
-scope_names="$(python3 - registry/qyl/names.yaml <<'PY'
+scope_names="$(python_yaml - registry/qyl/names.yaml <<'PY'
 import sys
 import yaml
 
@@ -93,7 +96,7 @@ else:
 PY
 )"
 
-vendor_activity_sources="$(python3 - <<'PY'
+vendor_activity_sources="$(python_yaml - <<'PY'
 import glob
 import yaml
 

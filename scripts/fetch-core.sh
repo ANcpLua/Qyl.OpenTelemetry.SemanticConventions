@@ -18,7 +18,10 @@ out_dir="${work_dir}/core-filtered"
 CORE_REMOTE="${SEMCONV_CORE_REMOTE:-https://github.com/open-telemetry/semantic-conventions.git}"
 CORE_REPO="${SEMCONV_CORE_REPO:-${work_dir}/semantic-conventions}"
 
-core_ref="$(python3 - "${manifest}" <<'PY'
+# Plain python3 has only the standard library. uv supplies PyYAML from its cache.
+python_yaml() { uv run --quiet --no-project --with pyyaml python3 "$@"; }
+
+core_ref="$(python_yaml - "${manifest}" <<'PY'
 import sys
 import yaml
 
