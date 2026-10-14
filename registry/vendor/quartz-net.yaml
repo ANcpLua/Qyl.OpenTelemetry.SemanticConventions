@@ -16,46 +16,70 @@ groups:
         stability: development
         brief: "Name of the scheduler that produced the telemetry."
         note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:27; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:141 and src/Quartz/Diagnostics/TracingJobStore.cs:708."
+        examples:
+          - "QuartzScheduler"
+          - "OrderScheduler"
       - id: quartz.scheduler.id
         type: string
         stability: development
         brief: "Instance id of the scheduler that produced the telemetry, which is what tells two cluster nodes apart."
         note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:32; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:142 and src/Quartz/Diagnostics/TracingJobStore.cs:709."
+        examples:
+          - "NON_CLUSTERED"
+          - "web-01"
+          - "web-011790466385049"
       - id: quartz.fire.instance.id
         type: string
         stability: development
         brief: "Identity of one firing, which is what an interrupt names."
         note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:37; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:144."
+        examples:
+          - "NON_CLUSTERED1790466385049"
+          - "1790466385049"
       - id: quartz.trigger.group
         type: string
         stability: development
         brief: "Group of the trigger that fired."
         note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:42; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:147 and src/Quartz/Diagnostics/TracingJobStore.cs:892."
+        examples:
+          - "DEFAULT"
+          - "reports"
       - id: quartz.trigger.name
         type: string
         stability: development
         brief: "Name of the trigger that fired."
         note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:47; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:148 and src/Quartz/Diagnostics/TracingJobStore.cs:893."
+        examples:
+          - "nightly-report-trigger"
       - id: quartz.job.type
         type: string
         stability: development
         brief: "Assembly-qualified type name of the job."
         note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:52; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:143."
+        examples:
+          - "MyApp.Jobs.ReportJob"
       - id: quartz.job.group
         type: string
         stability: development
         brief: "Group of the job."
         note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:57; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:149 and src/Quartz/Diagnostics/TracingJobStore.cs:881."
+        examples:
+          - "DEFAULT"
+          - "reports"
       - id: quartz.job.name
         type: string
         stability: development
         brief: "Name of the job."
         note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:62; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:150 and src/Quartz/Diagnostics/TracingJobStore.cs:882."
+        examples:
+          - "nightly-report"
       - id: quartz.execution.group
         type: string
         stability: development
         brief: "Execution group the trigger belongs to, which is the bucket a thread limit is applied per. A trigger that names no execution group carries no such attribute at all."
         note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:72; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:158."
+        examples:
+          - "tenant:acme"
       - id: quartz.jobstore.trigger.count
         type: int
         stability: development
@@ -76,21 +100,33 @@ groups:
         stability: development
         brief: "What a job run achieved, as the `JobRunResult` member name: the same classification the execution-duration histogram is tagged with and the history row records."
         note: "Span tag on the \"Quartz\" ActivitySource and metric tag on the \"Quartz\" Meter, new in 4.4.0. Declared at src/Quartz/Diagnostics/ActivityTags.cs:87; set on the job-execution span at src/Quartz/Diagnostics/QuartzActivitySource.cs:215 and on `quartz.job.execution.duration` at src/Quartz/Diagnostics/Meters.cs:460, both through `Meters.JobResultTag` at src/Quartz/Diagnostics/Meters.cs:485."
+        examples:
+          - "succeeded"
+          - "failed"
+          - "cancelled"
       - id: quartz.jobstore.lock
         type: string
         stability: development
         brief: "Name of the job-store lock a wait was measured for."
         note: "Metric tag on the \"Quartz\" Meter, new in 4.4.0, the dimension of the `quartz.jobstore.lock.wait.duration` histogram created at src/Quartz/Diagnostics/Meters.cs:117. Declared at src/Quartz/Diagnostics/ActivityTags.cs:121; set at src/Quartz/Diagnostics/Meters.cs:221."
+        examples:
+          - "TRIGGER_ACCESS"
+          - "STATE_ACCESS"
       - id: quartz.jobstore.operation
         type: string
         stability: development
         brief: "Job-store operation a measurement is about."
         note: "Metric tag on the \"Quartz\" Meter. Declared at src/Quartz/Diagnostics/ActivityTags.cs:110; set at src/Quartz/Diagnostics/Meters.cs:189."
+        examples:
+          - "Quartz.JobStore.AcquireNextTriggers"
+          - "Quartz.JobStore.TriggersFired"
       - id: quartz.cluster.recovered.instance.id
         type: string
         stability: development
         brief: "Instance id of the cluster node whose work is being recovered. On self-recovery this equals the reporting scheduler instance id."
         note: "Metric tag on the \"Quartz\" Meter. Declared at src/Quartz/Diagnostics/ActivityTags.cs:132; set at src/Quartz/Diagnostics/Meters.cs:373,401."
+        examples:
+          - "web-021790466385049"
   - id: vendor.quartz_net
     type: attribute_group
     display_name: "Quartz.NET Vendor Metadata"

@@ -7,6 +7,7 @@
 # direct unfiltered core dependency collides with genai:
 #   Ambiguous reference 'gen_ai.agent.description' ... gen-ai-dev/1.42.0-dev and .../1.44.0
 # genai's own transitive (unfiltered) core dependency is fine.
+file_format: definition_manifest/2.0
 name: qyl
 description: qyl vocabulary layered on the core and genai OpenTelemetry semantic conventions.
 schema_url: https://qyl.at/schemas/9.9.2

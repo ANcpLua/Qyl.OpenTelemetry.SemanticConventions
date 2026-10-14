@@ -16,6 +16,8 @@ groups:
         stability: development
         brief: "Logical session id of the command, as JSON."
         note: "Span tag on the \"MongoDB.Driver\" ActivitySource. Declared at src/MongoDB.Driver/MongoTelemetry.cs:47; set at src/MongoDB.Driver/MongoTelemetry.cs:102,106."
+        examples:
+          - '{ "id" : { "$binary" : { "base64" : "tF1sGVfXTAWbP6E8nDqWPw==", "subType" : "04" } } }'
       - id: db.mongodb.txn_number
         type: int
         stability: development
@@ -41,11 +43,18 @@ groups:
         stability: development
         brief: "Name of the MongoDB command the span covers."
         note: "Span tag on the \"MongoDB.Driver\" ActivitySource. Declared at src/MongoDB.Driver/MongoTelemetry.cs:39; set at src/MongoDB.Driver/MongoTelemetry.cs:82."
+        examples:
+          - "find"
+          - "insert"
+          - "aggregate"
       - id: db.operation.summary
         type: string
         stability: development
         brief: "Low-cardinality summary of the driver operation, spelled \"<operation> <database>.<collection>\"."
         note: "Span tag on the \"MongoDB.Driver\" ActivitySource. Declared at src/MongoDB.Driver/MongoTelemetry.cs:38; set at src/MongoDB.Driver/MongoTelemetry.cs:165."
+        examples:
+          - "find shop.orders"
+          - "insert shop.orders"
   - id: vendor.mongodb_driver
     type: attribute_group
     display_name: "MongoDB.Driver Vendor Metadata"

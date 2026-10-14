@@ -434,14 +434,21 @@ groups:
         type: string
         stability: development
         brief: "Stable identifier of the qyl capability that produced the telemetry."
+        examples:
+          - "qyl-collector"
       - id: qyl.capability.kind
         type: string
         stability: development
         brief: "Kind of the qyl capability that produced the telemetry."
+        examples:
+          - "collector"
       - id: qyl.exception.source
         type: string
         stability: development
         brief: "Origin of a captured exception inside a qyl process (which capture layer recorded it)."
+        examples:
+          - "AppDomain.UnhandledException"
+          - "TaskScheduler.UnobservedTaskException"
       - id: qyl.instrumentation.domain
         type:
           members:
@@ -528,43 +535,68 @@ groups:
           Compare only within the same producer and project; hashes with different canonicalization
           or keys are not comparable. Producers should use a keyed cryptographic hash and must not
           place raw arguments in this field. Absence means repeated arguments are unknown.
+        examples:
+          - "5c74502b204fa7d66a0d03caf5c15960be740acd30631161095791aa8f5c47c8"
       - id: qyl.mcp.evaluation_run.id
         type: string
         stability: development
         brief: "Identifier of the MCP evaluation run. Staging: upstream semconv has no equivalent yet."
+        examples:
+          - "8e2e580a-baff-4069-b768-004adecc9134"
       - id: qyl.mcp.execution.id
         type: string
         stability: development
         brief: "Identifier of the MCP workbench execution. Staging: upstream semconv has no equivalent yet."
+        examples:
+          - "58c140ef-82c1-4be4-9003-0a6ffbe8d476"
       - id: qyl.mcp.flow.id
         type: string
         stability: development
         brief: "Identifier of the MCP flow. Staging: upstream semconv has no equivalent yet."
+        examples:
+          - "fe1426a3-4905-43ba-816d-89f396f56cf5"
       - id: qyl.mcp.protocol.era
         type: string
         stability: development
         brief: "Negotiated MCP protocol era. Derived from the negotiated protocol version, never from envelope presence."
+        examples:
+          - "legacy"
+          - "modern"
       - id: qyl.mcp.sdk.tier
         type: string
         stability: development
         brief: "MCP SDK tier observed on the connection. Staging: upstream semconv has no equivalent yet."
+        examples:
+          - "Tier 1"
       - id: qyl.mcp.server.id
         type: string
         stability: development
         brief: "Identifier of the MCP server as registered in the qyl workbench. Staging: upstream semconv has no equivalent yet."
+        examples:
+          - "b9566d9f-01bf-46f8-b123-ad8f2b597b9f"
       - id: qyl.mcp.test_case.id
         type: string
         stability: development
         brief: "Identifier of the MCP test case. Staging: upstream semconv has no equivalent yet."
+        examples:
+          - "3f6c1d2e-7a4b-4c8e-9d1f-2b5a6e7c8d90"
       - id: qyl.mcp.tool.name
         type: string
         stability: development
         brief: "Name of the MCP tool the telemetry concerns. Staging: upstream semconv has no equivalent yet."
+        examples:
+          - "triage"
+          - "get_failure_context"
       - id: qyl.project.id
         type: string
         stability: development
         brief: "qyl project identifier the telemetry belongs to."
+        examples:
+          - "default"
+          - "acme"
       - id: qyl.workspace.id
         type: string
         stability: development
         brief: "qyl workspace identifier the telemetry belongs to."
+        examples:
+          - "default"

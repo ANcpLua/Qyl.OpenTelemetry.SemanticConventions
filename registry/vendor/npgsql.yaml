@@ -21,6 +21,8 @@ groups:
         stability: development
         brief: "Name of the Npgsql data source the command ran on."
         note: "Span tag on the \"Npgsql\" ActivitySource. Set as a literal at src/Npgsql/NpgsqlActivitySource.cs:86,121."
+        examples:
+          - "Host=localhost;Database=shop;Username=app"
       - id: db.npgsql.prepared
         type: boolean
         stability: development

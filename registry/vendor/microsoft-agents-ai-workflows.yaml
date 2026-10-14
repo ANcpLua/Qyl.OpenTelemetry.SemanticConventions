@@ -24,71 +24,103 @@ groups:
         stability: development
         brief: "Id of the workflow, which Microsoft.Agents.AI.Workflows 1.24.0 takes from its start executor."
         note: "Span tag on the \"Microsoft.Agents.AI.Workflows\" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:7; set at dotnet/src/Microsoft.Agents.AI.Workflows/WorkflowBuilder.cs:645 on `workflow.build`, at dotnet/src/Microsoft.Agents.AI.Workflows/Execution/LockstepRunEventStream.cs:42,67 and dotnet/src/Microsoft.Agents.AI.Workflows/Execution/StreamingRunEventStream.cs:71,91 on `workflow.session` and `workflow_invoke`. The value is `workflow.StartExecutorId`."
+        examples:
+          - "Uppercase"
       - id: workflow.name
         type: string
         stability: development
         brief: "Name given to the workflow."
         note: "Span tag on the \"Microsoft.Agents.AI.Workflows\" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:8; set at dotnet/src/Microsoft.Agents.AI.Workflows/WorkflowBuilder.cs:648 on `workflow.build`, when the workflow has a name."
+        examples:
+          - "Uppercase pipeline"
       - id: workflow.description
         type: string
         stability: development
         brief: "Description given to the workflow."
         note: "Span tag on the \"Microsoft.Agents.AI.Workflows\" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:9; set at dotnet/src/Microsoft.Agents.AI.Workflows/WorkflowBuilder.cs:652 on `workflow.build`, when the workflow has a description."
+        examples:
+          - "Uppercases the input text and emits it."
       - id: workflow.definition
         type: string
         stability: development
         brief: "The workflow's executors and edges, serialized as JSON."
         note: "Span tag on the \"Microsoft.Agents.AI.Workflows\" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:10; set at dotnet/src/Microsoft.Agents.AI.Workflows/WorkflowBuilder.cs:655 on `workflow.build`."
+        examples:
+          - '{"executors":{"Uppercase":{"executorType":{"assemblyName":"MyApp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null","typeName":"MyApp.UppercaseExecutor"},"executorId":"Uppercase"}},"edges":{},"requestPorts":[],"startExecutorId":"Uppercase","outputExecutorIds":{}}'
       - id: build.error.message
         type: string
         stability: development
         brief: "Message of the exception that failed building the workflow."
         note: "Tag of the `build.error` activity event on the \"Microsoft.Agents.AI.Workflows\" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:11; set at dotnet/src/Microsoft.Agents.AI.Workflows/WorkflowBuilder.cs:627."
+        examples:
+          - "Workflow cannot be built because there are unreachable executors: Reverse."
+          - "Workflow cannot be built because there are unbound executors: Uppercase."
       - id: build.error.type
         type: string
         stability: development
         brief: "Full type name of the exception that failed building the workflow."
         note: "Tag of the `build.error` activity event on the \"Microsoft.Agents.AI.Workflows\" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:12; set at dotnet/src/Microsoft.Agents.AI.Workflows/WorkflowBuilder.cs:628."
+        examples:
+          - "System.InvalidOperationException"
       - id: executor.id
         type: string
         stability: development
         brief: "Id of the executor processing the message."
         note: "Span tag on the \"Microsoft.Agents.AI.Workflows\" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:16; set at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/WorkflowTelemetryContext.cs:144 on `executor.process`."
+        examples:
+          - "Uppercase"
       - id: executor.type
         type: string
         stability: development
         brief: "Type name of the executor processing the message."
         note: "Span tag on the \"Microsoft.Agents.AI.Workflows\" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:17; set at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/WorkflowTelemetryContext.cs:145 on `executor.process`."
+        examples:
+          - "MyApp.UppercaseExecutor"
       - id: executor.input
         type: string
         stability: development
         brief: "The message an executor received, serialized as JSON."
         note: "Span tag on the \"Microsoft.Agents.AI.Workflows\" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:18; set at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/WorkflowTelemetryContext.cs:150 on `executor.process`, only when `WorkflowTelemetryOptions.EnableSensitiveData` is on. A payload, not metadata: the Qyl.Telemetry.AutoInstrumentation GenAI demo asserts its absence under the default options."
+        examples:
+          - '"hello world"'
       - id: executor.output
         type: string
         stability: development
         brief: "The output an executor produced, serialized as JSON."
         note: "Span tag on the \"Microsoft.Agents.AI.Workflows\" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:19; set at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/WorkflowTelemetryContext.cs:165 on `executor.process`, only when `WorkflowTelemetryOptions.EnableSensitiveData` is on. A payload, not metadata."
+        examples:
+          - '"HELLO WORLD"'
       - id: message.content
         type: string
         stability: development
         brief: "The message sent along an edge, serialized as JSON."
         note: "Span tag on the \"Microsoft.Agents.AI.Workflows\" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:21; set at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/WorkflowTelemetryContext.cs:211 on `message.send`, only when `WorkflowTelemetryOptions.EnableSensitiveData` is on. A payload, not metadata."
+        examples:
+          - '"HELLO WORLD"'
       - id: message.source_id
         type: string
         stability: development
         brief: "Id of the executor a message was sent from."
         note: "Span tag on the \"Microsoft.Agents.AI.Workflows\" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:23; set at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/WorkflowTelemetryContext.cs:203 on `message.send` and at dotnet/src/Microsoft.Agents.AI.Workflows/Execution/DirectEdgeRunner.cs:18, dotnet/src/Microsoft.Agents.AI.Workflows/Execution/FanOutEdgeRunner.cs:20 and dotnet/src/Microsoft.Agents.AI.Workflows/Execution/ResponseEdgeRunner.cs:32 on `edge_group.process`."
+        examples:
+          - "Uppercase"
       - id: message.target_id
         type: string
         stability: development
         brief: "Id of the executor a message is delivered to."
         note: "Span tag on the \"Microsoft.Agents.AI.Workflows\" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:24; set at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/WorkflowTelemetryContext.cs:206 on `message.send` and at dotnet/src/Microsoft.Agents.AI.Workflows/Execution/DirectEdgeRunner.cs:19, dotnet/src/Microsoft.Agents.AI.Workflows/Execution/FanInEdgeRunner.cs:26 and dotnet/src/Microsoft.Agents.AI.Workflows/Execution/ResponseEdgeRunner.cs:33 on `edge_group.process`."
+        examples:
+          - "Reverse"
       - id: edge_group.type
         type: string
         stability: development
         brief: "The edge runner that delivered the message: DirectEdgeRunner, FanInEdgeRunner, FanOutEdgeRunner or ResponseEdgeRunner."
         note: "Span tag on the \"Microsoft.Agents.AI.Workflows\" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:22; set at dotnet/src/Microsoft.Agents.AI.Workflows/Execution/DirectEdgeRunner.cs:17, dotnet/src/Microsoft.Agents.AI.Workflows/Execution/FanInEdgeRunner.cs:25, dotnet/src/Microsoft.Agents.AI.Workflows/Execution/FanOutEdgeRunner.cs:19 and dotnet/src/Microsoft.Agents.AI.Workflows/Execution/ResponseEdgeRunner.cs:31 on `edge_group.process`, each with its own `nameof`."
+        examples:
+          - "DirectEdgeRunner"
+          - "FanOutEdgeRunner"
+          - "FanInEdgeRunner"
+          - "ResponseEdgeRunner"
       - id: edge_group.delivered
         type: boolean
         stability: development
@@ -99,6 +131,10 @@ groups:
         stability: development
         brief: "Why the edge group did or did not deliver the message, as `EdgeRunnerDeliveryStatus`."
         note: "Span tag on the \"Microsoft.Agents.AI.Workflows\" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:26; set at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/ActivityExtensions.cs:32 on `edge_group.process`."
+        examples:
+          - "delivered"
+          - "dropped type mismatch"
+          - "dropped condition false"
   - id: vendor.microsoft_agents_ai_workflows
     type: attribute_group
     display_name: "Microsoft.Agents.AI.Workflows Vendor Metadata"

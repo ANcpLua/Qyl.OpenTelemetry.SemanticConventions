@@ -16,71 +16,105 @@ groups:
         stability: development
         brief: "MassTransit message id of the message being sent or consumed."
         note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:13; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:195,282."
+        examples:
+          - "3a1f6e0c-8b7d-4c52-9e1a-5d2b7c4f9a10"
       - id: messaging.masstransit.correlation_id
         type: string
         stability: development
         brief: "MassTransit correlation id of the message."
         note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:14; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:199,286."
+        examples:
+          - "c7d4e2b1-0f93-4a68-b1d5-6e8a9f3c2d47"
       - id: messaging.masstransit.initiator_id
         type: string
         stability: development
         brief: "Id of the message that initiated the conversation this message belongs to."
         note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:15; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:203,290."
+        examples:
+          - "5e9b1d3a-72c4-4f08-a6b7-1c0d8e2f4a93"
       - id: messaging.masstransit.request_id
         type: string
         stability: development
         brief: "Request id of the message, when it is part of a request/response exchange."
         note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:16; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:201,288."
+        examples:
+          - "9d2c4f6a-1b3e-4857-8c0d-7a5e3b1f2c64"
       - id: messaging.masstransit.source_address
         type: string
         stability: development
         brief: "Endpoint address the message was sent from."
         note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:17; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:205,292."
+        examples:
+          - "rabbitmq://localhost/order-service"
+          - "rabbitmq://mq.example.com/shop/order-service"
       - id: messaging.masstransit.destination_address
         type: string
         stability: development
         brief: "Endpoint address the message was sent to."
         note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:18; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:207,294."
+        examples:
+          - "rabbitmq://localhost/submit-order"
       - id: messaging.masstransit.input_address
         type: string
         stability: development
         brief: "Input address of the receive endpoint that consumed the message."
         note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:19; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:90."
+        examples:
+          - "rabbitmq://localhost/order-service"
       - id: messaging.masstransit.tracking_number
         type: string
         stability: development
         brief: "Tracking number of the Courier routing slip an activity is executing or compensating."
         note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:20; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:153,165."
+        examples:
+          - "e4b8a2d6-3c1f-4957-8a0e-9b7d5f1c2e38"
       - id: messaging.masstransit.message_types
         type: string
         stability: development
         brief: "Comma-separated list of the message types supported by the message."
         note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:22; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:209,296 and src/MassTransit/Logging/Diagnostics/DiagnosticActivityExtensions.cs:38."
+        examples:
+          - "urn:message:Shop.Orders.Contracts:SubmitOrder"
+          - "urn:message:Shop.Orders.Contracts:SubmitOrder,urn:message:Shop.Orders.Contracts:IOrderCommand"
       - id: messaging.masstransit.consumer_type
         type: string
         stability: development
         brief: "Short type name of the consumer, handler, saga, state machine or Courier activity processing the message."
         note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:24; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:108,118,130,142,154,166."
+        examples:
+          - "Shop.Orders.SubmitOrderConsumer"
+          - "Handler"
       - id: messaging.masstransit.saga_id
         type: string
         stability: development
         brief: "Correlation id of the saga instance handling the message."
         note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:30; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:129,141."
+        examples:
+          - "b2f7c9e1-6a4d-4e38-95c0-d1a8e3b7f406"
       - id: messaging.masstransit.begin_state
         type: string
         stability: development
         brief: "Name of the state machine state the instance was in before the event was raised."
         note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:28; set at src/MassTransit/Middleware/StateMachineSagaMessageFilter.cs:63."
+        examples:
+          - "Initial"
+          - "Submitted"
       - id: messaging.masstransit.end_state
         type: string
         stability: development
         brief: "Name of the state machine state the instance is in after the event was raised."
         note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:29; set at src/MassTransit/Middleware/StateMachineSagaMessageFilter.cs:98."
+        examples:
+          - "Submitted"
+          - "Final"
       - id: peer.address
         type: string
         stability: development
         brief: "MassTransit diagnostic address of the message type being consumed."
         note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:26; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:109,119,131,143,155,167."
+        examples:
+          - "SubmitOrder/Shop.Orders.Contracts"
+          - "ReserveInventory"
   - id: vendor.masstransit
     type: attribute_group
     display_name: "MassTransit Vendor Metadata"

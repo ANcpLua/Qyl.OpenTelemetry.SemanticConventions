@@ -16,21 +16,30 @@ groups:
         stability: development
         brief: "Name of the product library consuming Elastic.Transport."
         note: "Span tag on the \"Elastic.Transport\" ActivitySource. Declared at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetryAttributes.cs:15; set at src/Elastic.Transport/DistributedTransport.cs:128."
+        examples:
+          - "elasticsearch-net"
+          - "elastic-transport-net"
       - id: elastic.transport.product.version
         type: string
         stability: development
         brief: "Informational version of the product library consuming Elastic.Transport."
         note: "Span tag on the \"Elastic.Transport\" ActivitySource. Declared at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetryAttributes.cs:20; set at src/Elastic.Transport/DistributedTransport.cs:129."
+        examples:
+          - "9.5.3"
       - id: elastic.transport.version
         type: string
         stability: development
         brief: "Informational version of the Elastic.Transport library."
         note: "Span tag on the \"Elastic.Transport\" ActivitySource. Declared at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetryAttributes.cs:25; set at src/Elastic.Transport/DistributedTransport.cs:130."
+        examples:
+          - "1.1.0"
       - id: elastic.transport.schema_url
         type: string
         stability: development
         brief: "Semantic-convention schema URL the transport layer's own attributes conform to."
         note: "Span tag on the \"Elastic.Transport\" ActivitySource. Declared at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetryAttributes.cs:30; set at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetry.cs:67."
+        examples:
+          - "https://opentelemetry.io/schemas/1.21.0"
       - id: elastic.transport.attempted_nodes
         type: int
         stability: development

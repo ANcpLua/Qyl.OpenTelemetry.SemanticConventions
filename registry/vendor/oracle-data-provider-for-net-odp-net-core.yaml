@@ -16,6 +16,9 @@ groups:
         stability: development
         brief: "Unique identifier of the ODP.NET connection, for diagnostic purposes."
         note: "Span tag on the \"Oracle.ManagedDataAccess.Core\" ActivitySource. ODP.NET ships no public source, so the finding is the vendor's own attribute table in Oracle's ODP.NET OpenTelemetry documentation, https://docs.oracle.com/en/database/oracle/oracle-database/23/odpnt/featOpenTelemetry.html; the brief is that table's wording and the type follows the fact it describes."
+        examples:
+          - "lVd4L7ekiU2z0QXMF+WT6A=="
+          - "OrderSvc4Svv2bWEAmXgYwIAAH/2Bw=="
       - id: db.odp.roundtrip.count
         type: int
         stability: development
@@ -36,11 +39,15 @@ groups:
         stability: development
         brief: "Oracle database SQL statement identifier, equivalent to SQL_ID."
         note: "Span tag on the \"Oracle.ManagedDataAccess.Core\" ActivitySource. ODP.NET ships no public source, so the finding is the vendor's own attribute table in Oracle's ODP.NET OpenTelemetry documentation, https://docs.oracle.com/en/database/oracle/oracle-database/23/odpnt/featOpenTelemetry.html; the brief is that table's wording and the type follows the fact it describes."
+        examples:
+          - "71jyh89d1cz9r"
       - id: db.odp.user.statement
         type: string
         stability: development
         brief: "Redacted ODP.NET user-supplied command text, which can differ from the statement the database executes."
         note: "Span tag on the \"Oracle.ManagedDataAccess.Core\" ActivitySource. ODP.NET ships no public source, so the finding is the vendor's own attribute table in Oracle's ODP.NET OpenTelemetry documentation, https://docs.oracle.com/en/database/oracle/oracle-database/23/odpnt/featOpenTelemetry.html; the brief is that table's wording and the type follows the fact it describes."
+        examples:
+          - "update_blog_name"
   - id: vendor.oracle_data_provider_for_net_odp_net_core
     type: attribute_group
     display_name: "Oracle Data Provider for .NET (ODP.NET Core) Vendor Metadata"
