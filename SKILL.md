@@ -1,101 +1,46 @@
 # Qyl.Telemetry.SemanticConventions: release and pins
 
-Who reads this: the one agent working on this repository's `main`. Agent, user and owner are
-the same word. There is one agent per repository, six in all (qyl, qyl.mcp, qyl-api-schema,
-Qyl.Telemetry.AutoInstrumentation, Qyl.Telemetry.SemanticConventions, qyl.at), each on its own
-`main`. Commit and push to `main` directly: no pull requests, no CI, no branch rules. The gate
-is `mise run check`; the registry is regenerated with `scripts/generate.sh`, which needs the
-Weaver version pinned in `Version.props`.
+One agent per qyl-dev repo (qyl, qyl.mcp, qyl-api-schema, Qyl.Telemetry.AutoInstrumentation, Qyl.Telemetry.SemanticConventions, qyl.at), each on its own `main`; agent, user and owner are one word. No PR, no CI, no publishing workflow: releases run on this machine with the keys in Vitals (`vitals keys`).
 
 ## This repository
 
-- Publishes exactly four artifacts at one version: three NuGet packages,
-  `Qyl.Telemetry.SemanticConventions`, `.Analyzers` and `.Incubating`, and the npm package
-  `@ancplua/qyl-semantic-conventions` from `typescript/`. No runtime dependencies or Zod
-  belong in the TypeScript package. Both languages are generated from the resolved registry.
-- Version sources that must agree on `main`: `Directory.Build.props` `VersionPrefix`,
-  `registry/manifest.yaml` `schema_url` (`https://qyl.at/schemas/<x.y.z>`) and a `## [x.y.z]`
-  entry in `CHANGELOG.md`; run `scripts/generate.sh` after the bump and commit its output. The
-  CHANGELOG entry becomes the GitHub release notes.
-- Precondition: qyl.at must serve `https://qyl.at/schemas/<x.y.z>` before the push.
-  `release.sh` handles it: it polls the URL (Cloudflare's edge can 404 for a minute after a
-  deploy) and, when the file does not exist yet, creates `public/schemas/<x.y.z>` in the local
-  qyl.at clone (`../qyl.at`, or `QYL_AT_DIR`), commits, pushes and runs qyl.at's `./release.sh`.
-  No message to another agent is needed.
-- Release command: `./release.sh <x.y.z> --dry-run`, then `./release.sh <x.y.z>` (restore,
-  build and pack the solution at that version, the exact three-NuGet plus one-npm artifact guard, publish,
-  wait for all four registry indexes, isolated NuGet and npm consumer verification, tag and GitHub release).
-  The dry run pushes nothing: it proves the NuGet key for each of the three ids through NuGet's
-  package-verification handshake (a one-use key minted and verified against the id's latest
-  version, three attempts) and runs npm's `publish --dry-run`; an existing tag or published
-  version only warns.
-- If publication stops after NuGet accepts the packages, preserve the original four artifacts and
-  `release-<version>.json`. Once credentials are renewed and all three NuGet packages are indexed,
-  run `QYL_RELEASE_ARTIFACTS=/path/to/original/artifacts ./release.sh <version> --resume --dry-run`,
-  then the same command without `--dry-run`. Resume verifies artifact hashes, the original source
-  commit, unchanged package sources, and the complete public NuGet payloads (excluding only the
-  registry signature). It publishes the preserved npm archive and tags the original packed commit;
-  it does not rebuild or upload NuGet again.
-  Only after the owner explicitly offers to complete browser authentication, add `--browser-auth`
-  to keep the npm process alive and show its authentication URL. The default still stops; OTP
-  input in the terminal is never supplied by the script.
-- Keys: npm uses `~/.config/vitals/npm-qyl-manual-publish-token`; NuGet uses the `vitals keys` entry "qyl-dev manual publish and release (NuGet)", file
-  `~/.config/vitals/nuget-qyl-manual-publish-key`. The script reads it; never print, paste,
-  commit or log a key. If the entry is missing or its note's expiry has passed, stop and tell
-  the owner. A rejected key or npm OTP request also stops publication. Never print key values.
-- Upstream pins: the OpenTelemetry registry inputs in `registry/manifest.yaml` and
-  `scripts/fetch-core.sh`; no qyl-dev package.
-- Consumers to notify after all four packages are indexed: Qyl.Telemetry.AutoInstrumentation
-  (`Directory.Packages.props`, the single source; the registry ref derives from it), qyl (`Version.props`
-  `QylSemanticConventionsVersion`), qyl.mcp (`server/package.json` and `bun.lock`) and qyl.at (`src/data/site.ts`).
+- Publishes four artifacts at one version: NuGet `Qyl.Telemetry.SemanticConventions`, `.Analyzers` and `.Incubating`, and npm `@ancplua/qyl-semantic-conventions` from `typescript/` (no runtime dependencies, no Zod).
+- Version sources that agree on `main`: `Directory.Build.props` `VersionPrefix`, `registry/manifest.yaml` `schema_url` (`https://qyl.at/schemas/<x.y.z>`), `typescript/package.json` `version`, and a `## [x.y.z]` entry on top of `CHANGELOG.md` (the GitHub release notes). Run `scripts/generate.sh` after the bump and commit its output.
+- qyl.at serves `https://qyl.at/schemas/<x.y.z>` before the push; `release.sh` creates and deploys it through the qyl.at clone (`../qyl.at` or `QYL_AT_DIR`) when missing.
+- Keys: npm `~/.config/vitals/npm-qyl-manual-publish-token`; NuGet Vitals entry "qyl-dev manual publish and release (NuGet)", `~/.config/vitals/nuget-qyl-manual-publish-key`; read by the script. Never print, paste, commit or log a key. Entry missing, note expired, a rejected key or an npm one-time-password prompt: stop and tell the owner.
+- Upstream pins: the OpenTelemetry registry inputs in `registry/manifest.yaml` and `scripts/fetch-core.sh`. When they move: `scripts/fetch-core.sh`, `scripts/generate.sh`, `mise run check`, commit, push `main`.
 
-## Before any work: the stale-version guard
+## Stale-version guard, before any work
 
-1. `git pull --ff-only origin main`.
-2. `mise install`, then `dotnet restore`; `bun install --frozen-lockfile` inside `typescript/`
-   when working there.
-3. Check the last entry of
-   `curl -fsSL https://api.nuget.org/v3-flatcontainer/qyl.telemetry.semanticconventions/index.json`;
-   `VersionPrefix` on `main` is either that version or the next one being prepared. Never reuse
-   a published version.
+1. `git pull --ff-only origin main`, `mise install`, `dotnet restore`; `bun install --frozen-lockfile` in `typescript/` when working there.
+2. `VersionPrefix` is the last entry of `curl -fsSL https://api.nuget.org/v3-flatcontainer/qyl.telemetry.semanticconventions/index.json` or the next one; never reuse a published version.
 
-## Releasing
+## Release
 
-1. Land the bump commit on `main`: `VersionPrefix`, `schema_url`, CHANGELOG entry, regenerated
-   output.
-2. `./release.sh <x.y.z> --dry-run` only when a step is new or unsure; otherwise go straight to
-   the release, the script refuses before it publishes when anything is off.
-3. `./release.sh <x.y.z>` (it serves the schema through the qyl.at clone first if needed).
-5. Watch indexing: the script runs `eng/release/verify-packages.sh` against nuget.org and polls
-   the index. Keep polling every 30 s until all three NuGet ids and the npm package list `<x.y.z>`. Until then, do
-   nothing else about this release.
-6. The moment all four are indexed: stop watching and notify the consumers (section
-   "Notify").
-7. Run
-   `/Users/alexandernachtmann/Downloads/qyl-codex-claude/refresh-published-versions.sh`, which rewrites
-   `qyl-published-versions.yaml` beside it from the registries.
+1. Land the bump commit (version sources, regenerated output) on `main`.
+2. `./release.sh <x.y.z>` (`--dry-run` first only when a step is new or unsure; the script refuses before publishing when anything is off).
+3. If it stops before all three NuGet ids and the npm package list `<x.y.z>`, poll every 30 s; nothing else about this release until then.
+4. All four indexed: notify the consumers.
+5. Run `/Users/alexandernachtmann/Downloads/qyl-codex-claude/refresh-published-versions.sh` (rewrites `qyl-published-versions.yaml`, the snapshot every agent reads first).
+
+Stopped after NuGet accepted the packages: keep the four artifacts and `release-<version>.json`, renew credentials, wait until all three NuGet ids are indexed, then `--resume` as the script header shows, dry run first. `--browser-auth` only after the owner explicitly offers to complete browser authentication.
 
 ## Notify
 
-One message per consumer repo, to its running agent through the session's agent-messaging
-tool when there is one (Claude Code: `ListAgents`, then `SendMessage`). One message type:
+| Consumer | Re-pins |
+|---|---|
+| Qyl.Telemetry.AutoInstrumentation | `Directory.Packages.props` (single source; the registry tag derives from it) |
+| qyl | `Version.props` `QylSemanticConventionsVersion` |
+| qyl.mcp | `server/package.json`, `workbench/package.json`, `bun.lock` |
+| qyl.at | `src/data/site.ts` |
+
+One message per consumer through the session's agent-messaging tool (Claude Code: `ListAgents`, then `SendMessage`):
 
 ```
 RELEASE Qyl.Telemetry.SemanticConventions (3 NuGet packages + 1 npm package) <version> indexed <UTC time>
 repo: <Qyl.Telemetry.AutoInstrumentation | qyl | qyl.mcp | qyl.at>
-re-pin: <Directory.Packages.props (single source; the registry ref derives from it) | Version.props QylSemanticConventionsVersion | server/package.json + bun.lock | src/data/site.ts>
+re-pin: <files from the table>
 then: regenerate the lockfile, run the gate, commit, push main
 ```
 
-## When a release lands and you are the consumer
-
-This repo consumes no qyl-dev package. When upstream OpenTelemetry conventions move, update
-`registry/manifest.yaml`, run `scripts/fetch-core.sh` and `scripts/generate.sh`, run
-`mise run check`, commit, push `main`.
-
-## Order rules that never change
-
-- qyl.at serves the schema before package publication.
-- This repo and AutoInstrumentation both feed qyl: qyl re-pins both in one commit once both
-  are indexed, so tell qyl's agent whether AutoInstrumentation moves in the same wave.
-- qyl.at lists a version only after the index confirms it.
+This repo and AutoInstrumentation both feed qyl, which re-pins both in one commit once both are indexed: tell qyl's agent whether AutoInstrumentation moves in the same wave.

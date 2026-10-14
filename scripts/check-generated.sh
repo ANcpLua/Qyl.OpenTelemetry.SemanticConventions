@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# CI's drift gate: regenerate everything from registry/ and fail if the result differs from
+# The gate's drift check: regenerate everything from registry/ and fail if the result differs from
 # what is committed. Same shape as the `check-generated` target in
 # opentelemetry-weaver-examples/basic/Makefile.
 #
 # The comparison is against HEAD, not against the index. `git diff` alone compares the working
 # tree to the index, and scripts/generate.sh has already overwritten the working tree by the
 # time it runs — so a generated file edited but not committed, or staged but not committed,
-# reported OK locally while CI failed on the same commit.
+# reported OK while the committed tree was stale.
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# CI's gate on the live-check advice policy set. registry/policies/live_check_advice/ and
+# The gate on the live-check advice policy set. registry/policies/live_check_advice/ and
 # registry/.weaver.toml decide what level a finding on ingested telemetry is reported at, and
 # both Qyl.Telemetry.AutoInstrumentation and the collector run live-check with them; this
 # script pins the exact findings the set produces, id and level, on samples that cover every

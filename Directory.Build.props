@@ -12,9 +12,8 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Versioning">
-    <!-- Development fallback for the current Qyl.Telemetry.* release line. The release
-         workflow stamps the published version from the tag; this value is what a local or
-         CI build produces. No VersionSuffix default, so a build is stable unless one is
+    <!-- The current Qyl.Telemetry.* release version: release.sh refuses to publish any
+         other, and every local build produces it. No VersionSuffix default, so a build is stable unless one is
          passed explicitly (-p:VersionSuffix=rc.1). The frozen Qyl.OpenTelemetry.* IDs keep
          their own 4.0.0 on nuget.org until they are unlisted. -->
     <VersionPrefix Condition="'$(VersionPrefix)' == ''">9.9.2</VersionPrefix>
