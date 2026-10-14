@@ -4,9 +4,10 @@
 namespace Qyl.Telemetry.SemanticConventions.Analyzers.DocsGenerator;
 
 /// <summary>
-///   The generator's operating modes. Each maps to a Fallout target in <c>eng/build/Build.cs</c>
-///   (<c>GenerateDocs</c>, <c>CheckDocs</c>, <c>AuditDocs</c>, <c>EnforceIds</c>,
-///   <c>EnforceIdsApply</c>) plus a <c>--rewrite-shipped</c> ad-hoc fixup.
+///   The generator's operating modes. <c>eng/build/Build.cs</c> runs Generate
+///   (<c>GenerateDocs</c>), Audit (<c>AuditDocs</c>) and EnforceIdsApply
+///   (<c>EnforceIdsApply</c>); the generator's own build runs Check and EnforceIdsCheck;
+///   <c>--rewrite-shipped</c> is an ad-hoc fixup.
 /// </summary>
 internal enum Mode
 {
@@ -20,24 +21,15 @@ internal enum Mode
 
 internal static class CliModes
 {
-    /// <summary>
-    ///   Fallout's <c>DotNetRunSettings.SetApplicationArguments</c> passes a single quoted
-    ///   string, so <c>"--enforce-ids --apply"</c> arrives as <c>args[0]</c> instead of
-    ///   two separate args. Flatten on whitespace so both invocation shapes work.
-    /// </summary>
     public static Mode Parse(string[] args)
     {
-        var flat = args
-            .SelectMany(a => a.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries))
-            .ToArray();
-
-        var enforce = flat.Any(a => IsFlag(a, "enforce-ids"));
-        var apply = flat.Any(a => IsFlag(a, "apply"));
+        var enforce = args.Any(a => IsFlag(a, "enforce-ids"));
+        var apply = args.Any(a => IsFlag(a, "apply"));
         if (enforce) return apply ? Mode.EnforceIdsApply : Mode.EnforceIdsCheck;
 
-        if (flat.Any(a => IsFlag(a, "rewrite-shipped"))) return Mode.RewriteShipped;
+        if (args.Any(a => IsFlag(a, "rewrite-shipped"))) return Mode.RewriteShipped;
 
-        foreach (var arg in flat)
+        foreach (var arg in args)
         {
             if (IsFlag(arg, "audit")) return Mode.Audit;
             if (IsFlag(arg, "check") || Eq(arg, "validate")) return Mode.Check;

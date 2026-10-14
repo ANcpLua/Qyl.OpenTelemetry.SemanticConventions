@@ -45,13 +45,13 @@ internal sealed class Build : FalloutBuild
     /// </summary>
     Target GenerateDocs => _ => _
         .Description("Regenerate analyzer documentation and machine-readable rule artifacts.")
-        .Executes(() => RunDocsGenerator(applicationArguments: null, buildGenerator: true));
+        .Executes(() => RunDocsGenerator(buildGenerator: true));
 
     /// <summary>Print catalog statistics (curated vs supplemental, fixable counts, ...). No file I/O.</summary>
     Target AuditDocs => _ => _
         .Description("Print analyzer catalog statistics.")
         .DependsOn(Compile)
-        .Executes(() => RunDocsGenerator("--audit"));
+        .Executes(() => RunDocsGenerator(buildGenerator: false, "--audit"));
 
     /// <summary>
     ///   Rewrite analyzer source files in-place to make class names, class XML doc summaries, and
@@ -61,9 +61,10 @@ internal sealed class Build : FalloutBuild
     Target EnforceIdsApply => _ => _
         .Description("Rewrite analyzer files to align class/doc/id-const with runtime descriptors.")
         .DependsOn(Compile)
-        .Executes(() => RunDocsGenerator("--enforce-ids --apply"));
+        .Executes(() => RunDocsGenerator(buildGenerator: false, "--enforce-ids", "--apply"));
 
-    void RunDocsGenerator(string? applicationArguments, bool buildGenerator = false)
+    /// <summary>Each application argument reaches the generator as its own argv entry.</summary>
+    void RunDocsGenerator(bool buildGenerator, params string[] applicationArguments)
     {
         var settings = new DotNetRunSettings()
             .SetProjectFile(DocsGeneratorProject)
@@ -73,10 +74,8 @@ internal sealed class Build : FalloutBuild
             ? settings.SetProcessEnvironmentVariable("_QylInsideConsistencyCheck", "true")
             : settings.EnableNoBuild().EnableNoRestore();
 
-        if (applicationArguments is not null)
-            settings = settings.SetApplicationArguments(applicationArguments);
-
-        DotNetTasks.DotNetRun(settings);
-        Log.Information("DocsGenerator finished ({Mode}).", applicationArguments ?? "generate");
+        DotNetTasks.DotNetRun(settings.SetApplicationArguments(applicationArguments));
+        Log.Information("DocsGenerator finished ({Mode}).",
+            applicationArguments.Length == 0 ? "generate" : string.Join(' ', applicationArguments));
     }
 }
