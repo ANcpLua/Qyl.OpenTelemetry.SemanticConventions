@@ -4,6 +4,8 @@
 "node" = "24.21.0"
 "dotnet" = "10.0.401"
 "github:open-telemetry/weaver" = "0.27.0"
+# uv runs the Python helpers of scripts/generate.sh, the gate's unittest and scripts/check-pin-freshness.py.
+"uv" = "0.13.0"
 
 [tasks.check]
 description = "The gate before a push or a release; a line per step, full log in artifacts/logs, QYL_VERBOSE=1 prints everything"

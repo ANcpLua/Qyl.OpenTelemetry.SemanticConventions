@@ -1,0 +1,53 @@
+# Upstream pin freshness, Monday mornings and on demand, never on push: the registry pins in
+# registry/manifest.yaml and the Weaver version in Version.props against upstream. The report
+# goes to the job summary only (no issue). A pin that differs is a warning, not a failure;
+# the job fails only when freshness could not be determined.
+name: weekly
+
+on:
+  schedule:
+    - cron: "7 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: weekly-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pin-freshness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Only uv: the checker is a uv script and needs nothing else from mise.toml.
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
+        with:
+          install_args: uv
+
+      - name: Pin freshness
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          status=0
+          uv run --quiet --script scripts/check-pin-freshness.py >"$RUNNER_TEMP/report.md" 2>"$RUNNER_TEMP/error.txt" || status=$?
+          {
+            cat "$RUNNER_TEMP/report.md"
+            if [[ -s $RUNNER_TEMP/error.txt ]]; then
+              echo
+              sed 's/^/    /' "$RUNNER_TEMP/error.txt"
+            fi
+          } >>"$GITHUB_STEP_SUMMARY"
+          cat "$RUNNER_TEMP/report.md" "$RUNNER_TEMP/error.txt"
+          case $status in
+            0) ;;
+            10) echo "::warning::an upstream pin differs from upstream (see the job summary)" ;;
+            2) echo "::error::upstream pin freshness could not be determined"; exit 1 ;;
+            *) echo "::error::the pin freshness checker exited with status $status"; exit 1 ;;
+          esac
