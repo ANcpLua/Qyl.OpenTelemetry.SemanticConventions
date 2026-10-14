@@ -204,4 +204,4 @@ git tag -a "v$version" "$release_commit" -m "v$version"
 git push -q origin "v$version"
 gh release create "v$version" --title "v$version" --notes-file "$notes" "$OUT"/Qyl.Telemetry.SemanticConventions*."$version".nupkg "$OUT/ancplua-qyl-semantic-conventions-$version.tgz"
 
-say "next (SKILL.md): once indexed, notify AutoInstrumentation (Directory.Packages.props, SEMCONV_REF), qyl (Version.props QylSemanticConventionsVersion) , qyl.mcp (server/package.json and bun.lock) and qyl.at (src/data/site.ts)"
+say "next (SKILL.md): once indexed, notify AutoInstrumentation (Directory.Packages.props, the single source; the registry ref derives from it), qyl (Version.props QylSemanticConventionsVersion), qyl.mcp (server/package.json and bun.lock) and qyl.at (src/data/site.ts)"

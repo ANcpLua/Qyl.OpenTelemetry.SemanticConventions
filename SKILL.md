@@ -42,7 +42,7 @@ Weaver version pinned in `Version.props`.
 - Upstream pins: the OpenTelemetry registry inputs in `registry/manifest.yaml` and
   `scripts/fetch-core.sh`; no qyl-dev package.
 - Consumers to notify after all four packages are indexed: Qyl.Telemetry.AutoInstrumentation
-  (`Directory.Packages.props`, `SEMCONV_REF`), qyl (`Version.props`
+  (`Directory.Packages.props`, the single source; the registry ref derives from it), qyl (`Version.props`
   `QylSemanticConventionsVersion`), qyl.mcp (`server/package.json` and `bun.lock`) and qyl.at (`src/data/site.ts`).
 
 ## Before any work: the stale-version guard
@@ -79,7 +79,7 @@ tool when there is one (Claude Code: `ListAgents`, then `SendMessage`). One mess
 ```
 RELEASE Qyl.Telemetry.SemanticConventions (3 NuGet packages + 1 npm package) <version> indexed <UTC time>
 repo: <Qyl.Telemetry.AutoInstrumentation | qyl | qyl.mcp | qyl.at>
-re-pin: <Directory.Packages.props + SEMCONV_REF | Version.props QylSemanticConventionsVersion | server/package.json + bun.lock | src/data/site.ts>
+re-pin: <Directory.Packages.props (single source; the registry ref derives from it) | Version.props QylSemanticConventionsVersion | server/package.json + bun.lock | src/data/site.ts>
 then: regenerate the lockfile, run the gate, commit, push main
 ```
 
