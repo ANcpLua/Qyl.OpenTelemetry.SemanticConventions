@@ -307,7 +307,7 @@ if (( ! resume )); then
   python3 eng/release/artifact-record.py mark-started "$OUT" "$version"
   for id in "${PACKAGES[@]}"; do
     # --skip-duplicate: a rerun after a partial push (pushed, not indexed yet) goes on.
-    dotnet nuget push "$OUT/$id.$version.nupkg" --api-key "$(<"$NUGET_KEY_FILE")" --source "$NUGET_SOURCE" --skip-duplicate
+    NUGET_API_KEY="$(<"$NUGET_KEY_FILE")" dotnet nuget push "$OUT/$id.$version.nupkg" --source "$NUGET_SOURCE" --skip-duplicate
   done
 fi
 
