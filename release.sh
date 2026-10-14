@@ -3,7 +3,9 @@
 # machine with the keys registered in Vitals. No workflow publishes.
 #
 #   ./release.sh <x.y.z>            build, pack exactly four artifacts, publish, tag v<x.y.z>, GitHub release
-#   ./release.sh <x.y.z> --dry-run  every check, the real build and pack, NuGet/npm authentication probes; nothing published
+#   ./release.sh <x.y.z> --dry-run  every check, the real build and pack, a NuGet key probe for every package id
+#                                   and npm's publish --dry-run; nothing is pushed or published. Checks the real
+#                                   run enforces (tag, already on NuGet or npm) only warn.
 #
 # To resume a partial release, preserve its artifacts and record, then use
 # QYL_RELEASE_ARTIFACTS=/path/to/original/artifacts ./release.sh <version> --resume [--dry-run].
@@ -18,6 +20,7 @@ cd "$(dirname "$0")"
 
 NUGET_SOURCE=https://api.nuget.org/v3/index.json
 NUGET_FLAT=https://api.nuget.org/v3-flatcontainer
+NUGET_GALLERY=https://www.nuget.org/api/v2
 NUGET_KEY_FILE=$HOME/.config/vitals/nuget-qyl-manual-publish-key  # vitals keys: "qyl-dev manual publish and release (NuGet)"
 NPM_REGISTRY=https://registry.npmjs.org
 NPM_PACKAGE=@ancplua/qyl-semantic-conventions
@@ -48,13 +51,27 @@ publish_npm() {
 }
 lower() { tr '[:upper:]' '[:lower:]' <<<"$1"; }
 indexed() { curl -fsSL "$NUGET_FLAT/$(lower "$1")/index.json" 2>/dev/null | grep -q "\"$2\""; }
+latest() { curl -fsSL "$NUGET_FLAT/$(lower "$1")/index.json" 2>/dev/null | grep -o '"[0-9][^"]*"' | tail -1 | tr -d '"'; }
+# The key probe publishes nothing: it is NuGet's push-symbols handshake. The key mints a one-use
+# package verification key for <id> <version> (only a live key with push scope can), and that key
+# verifies with 200 only when the key's account owns <id>; the verify call consumes it. The key
+# travels in a curl config on stdin, never on a command line.
+key_probe() {
+  local id=$1 version=$2 minted temp
+  minted=$(printf 'header = "X-NuGet-ApiKey: %s"\n' "$(<"$NUGET_KEY_FILE")" |
+    curl -fsS -X POST -H 'Content-Length: 0' -K - "$NUGET_GALLERY/package/create-verification-key/$id/$version") || return 1
+  temp=$(sed -n 's/.*"Key":"\([^"]*\)".*/\1/p' <<<"$minted")
+  [[ -n $temp ]] || return 1
+  [[ $(printf 'header = "X-NuGet-ApiKey: %s"\n' "$temp" |
+    curl -sS -o /dev/null -w '%{http_code}' -K - "$NUGET_GALLERY/verifykey/$id/$version") == 200 ]]
+}
 
 say "checks"
 [[ -r $NUGET_KEY_FILE ]] || die "NuGet key missing: $NUGET_KEY_FILE (vitals keys)"
 [[ -r $NPM_TOKEN_FILE ]] || die "npm token missing: $NPM_TOKEN_FILE (vitals keys)"
-probe_dir=$(mktemp -d); notes=$(mktemp); npmrc=$(mktemp)
+notes=$(mktemp); npmrc=$(mktemp)
 chmod 600 "$npmrc"
-trap 'rm -rf "$probe_dir" "$notes" "$npmrc"' EXIT
+trap 'rm -f "$notes" "$npmrc"' EXIT
 printf '//registry.npmjs.org/:_authToken=%s\n' "$(<"$NPM_TOKEN_FILE")" >"$npmrc"
 NPM_CONFIG_USERCONFIG=$npmrc npm whoami --registry="$NPM_REGISTRY" >/dev/null || die "npm token rejected (vitals keys); renew it before publication"
 [[ $(git branch --show-current) == main ]] || die "not on main"
@@ -83,7 +100,10 @@ npm_version=$(node -p "require('./typescript/package.json').version")
 grep -q "^## \[$version\]" CHANGELOG.md || die "CHANGELOG.md has no '## [$version]' entry"
 for id in "${PACKAGES[@]}"; do
   if indexed "$id" "$version"; then
-    (( resume )) || die "$id $version is already on NuGet; use --resume with the original recorded artifacts"
+    if (( ! resume )); then
+      (( dry )) || die "$id $version is already on NuGet; use --resume with the original recorded artifacts"
+      echo "warning: $id $version is already on NuGet; the real run refuses"
+    fi
   elif (( resume )); then
     die "$id $version is not indexed yet; wait before resuming"
   fi
@@ -157,11 +177,14 @@ fi
 say "NuGet and npm publication"
 [[ $(git rev-parse HEAD) == "$workflow_commit" && -z $(git status --porcelain --untracked-files=no) ]] || die "tracked source changed while packing; commit, re-run the gate and retry"
 if (( dry )); then
-  id=$(lower "${PACKAGES[0]}")
-  latest=$(curl -fsSL "$NUGET_FLAT/$id/index.json" | python3 -I -c 'import json,sys; print(json.load(sys.stdin)["versions"][-1])')
-  curl -fsSL -o "$probe_dir/probe.nupkg" "$NUGET_FLAT/$id/$latest/$id.$latest.nupkg"
-  echo "dry run: pushing the published ${PACKAGES[0]} $latest again with --skip-duplicate to prove the key (expect 'already exists')"
-  dotnet nuget push "$probe_dir/probe.nupkg" --api-key "$(<"$NUGET_KEY_FILE")" --source "$NUGET_SOURCE" --skip-duplicate
+  for id in "${PACKAGES[@]}"; do
+    published=$(latest "$id") && [[ -n $published ]] || die "cannot read the published versions of $id from NuGet"
+    # A rejected key fails every attempt; a dropped connection does not.
+    probed=0
+    for _ in 1 2 3; do key_probe "$id" "$published" && { probed=1; break; }; sleep 3; done
+    (( probed )) || die "the NuGet key failed the probe for $id three times: expired, revoked, without push scope, or its account does not own $id (vitals keys)"
+    echo "key probe: $id ok (verified against $published, nothing published)"
+  done
   NPM_CONFIG_TOKEN=$(<"$NPM_TOKEN_FILE") publish_npm bun publish --cwd typescript "$OUT/ancplua-qyl-semantic-conventions-$version.tgz" --registry "$NPM_REGISTRY" --access public --dry-run </dev/null
   say "dry run finished: nothing published, nothing tagged"
   git status --short --untracked-files=no

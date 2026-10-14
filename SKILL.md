@@ -25,6 +25,10 @@ Weaver version pinned in `Version.props`.
 - Release command: `./release.sh <x.y.z> --dry-run`, then `./release.sh <x.y.z>` (restore,
   build and pack the solution at that version, the exact three-NuGet plus one-npm artifact guard, publish,
   wait for all four registry indexes, isolated NuGet and npm consumer verification, tag and GitHub release).
+  The dry run pushes nothing: it proves the NuGet key for each of the three ids through NuGet's
+  package-verification handshake (a one-use key minted and verified against the id's latest
+  version, three attempts) and runs npm's `publish --dry-run`; an existing tag or published
+  version only warns.
 - If publication stops after NuGet accepts the packages, preserve the original four artifacts and
   `release-<version>.json`. Once credentials are renewed and all three NuGet packages are indexed,
   run `QYL_RELEASE_ARTIFACTS=/path/to/original/artifacts ./release.sh <version> --resume --dry-run`,
