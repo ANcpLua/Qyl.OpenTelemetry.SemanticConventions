@@ -12,6 +12,17 @@ groups:
         note: "A resource-level attribute: one value per process, carried on the resource rather than written per span, so every signal the process emits carries it and no hot path touches it. It is computed at build time, not at startup: `Qyl.Api.Sdk`'s build targets run MSBuild's `GetFileHash` over the committed `openapi/<app>.json` and compile the resulting `sha256:<hex>` in as a constant, which `AddQylApi` stamps onto the resource. It answers which contract revision a running process was built from, so a response that disagrees with the published document is traced to a build rather than guessed at from a deployment."
         examples:
           - "sha256:264a9e4f1d70289a3b5c6e8f0a1d2c4b7e9f13058a6cd2ef4b91073d5c8e6a2f"
+      - id: qyl.app
+        type: template[string]
+        stability: development
+        brief: "An application-defined business attribute, `qyl.app.<key>`, written by `SetAppTag`; the caller never types the prefix."
+        note: >
+          The one sanctioned place for a business key such as `qyl.app.order.id`; upstream owns `app.*`.
+          The key is a compile-time constant (QYL0112) and contains no token the collector denies
+          (QYL0113). The collector keeps at most 16 `qyl.app.*` keys per span and drops a value longer
+          than 256 characters. Values are strings, 64-bit integers, doubles or booleans.
+        examples:
+          - "ord-1042"
       - id: qyl.attribute.namespace
         type:
           members:
@@ -452,6 +463,10 @@ groups:
       - id: qyl.instrumentation.domain
         type:
           members:
+            - id: app
+              value: "app"
+              stability: development
+              brief: "Application work started through the generated `Spans.Work` starter."
             - id: asp_net_core_server
               value: "aspnetcore.server"
               stability: development
@@ -488,6 +503,14 @@ groups:
               value: "elastic.transport"
               stability: development
               brief: "qyl elastic.transport instrumentation domain."
+            - id: gen_ai_execute_tool
+              value: "gen_ai.execute_tool"
+              stability: development
+              brief: "A tool execution started through a generated execute_tool starter."
+            - id: gen_ai_invoke_agent
+              value: "gen_ai.invoke_agent"
+              stability: development
+              brief: "An agent invocation started through the generated invoke_agent starter."
             - id: graph_ql
               value: "graphql"
               stability: development
@@ -512,6 +535,10 @@ groups:
               value: "messaging.nservicebus"
               stability: development
               brief: "qyl messaging.nservicebus instrumentation domain."
+            - id: messaging_process
+              value: "messaging.process"
+              stability: development
+              brief: "Message processing started through the generated process-consumer starter."
             - id: messaging_rabbit_mq
               value: "messaging.rabbitmq"
               stability: development

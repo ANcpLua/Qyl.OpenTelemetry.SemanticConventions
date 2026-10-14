@@ -6,10 +6,18 @@ Notable changes to the `Qyl.Telemetry.SemanticConventions` package family. `Vers
 (the three NuGet packages and the TypeScript npm package), then tagged `v<version>`;
 [`eng/release/verify-packages.sh`](eng/release/verify-packages.sh) proves the published packages against nuget.org.
 
-## [9.9.3]
+## [10.0.0]
 
+The agent-first API of the qyl API DSL ADR (2026-10-14): a breaking release.
+
+- Registry policy (`registry/qyl/policy.yaml`, handed to the templates as `-D policy=<json>`): `qyl.persisted: false` on the 42 keys the collector's `deniedExactKeys` listed (all but `gen_ai.agent.name`, which is now persisted), the denied-key tokens, the token-exempt keys, `qyl.phase: end` on the attributes known only when an operation ends, and the `qyl.span_name` chains and starters keyed by span refinement id.
+- New `RegistryPolicy` table in the stable package (`NotPersistedKeys`, `NotPersistedPrefixes`, `DeniedKeyTokens`, `TokenExemptKeys`, `VendorKeys`, `IsPersisted`, `ContainsDeniedToken`); the qyl collector's catalog reads it instead of its own deny lists.
+- Span definitions are keyed by refinement id: the gen_ai skill spans (`gen_ai.execute_tool.load_skill.internal`, `.read_skill_resource.internal`, `.command.internal`), `db.{mariadb,mysql,oracledb,postgresql,sql_server}.client`, the `messaging.<system>.*`, `dynamodb.*` and `aws.s3.client` rows are generated; the GenAI provider refinements stay out. `SpanDefinition` gains `Type`, `IsSpecialization` and `SpanName` (the name chain); its constructor changes.
+- `AttributeRef` gains `Condition`, `Phase` (new `AttributePhase`) and `IsPersisted`; its constructor changes.
+- Fix: a `{recommended: <condition>}` requirement level maps to `Recommended`, not `ConditionallyRequired` (for example `network.peer.address` on `db.client`).
+- Registry: the `qyl.app` template attribute (business keys, `qyl.app.<key>`), the `qyl.instrumentation.domain` values `app`, `messaging.process`, `gen_ai.invoke_agent` and `gen_ai.execute_tool`, and the scope `Qyl.Telemetry.Application` (`QylTelemetryNames.Scopes.QylTelemetryApplication`).
+- `SchemaUrl.Qyl` and `SchemaUrl.QylVersion`: the qyl registry's schema URL, `https://qyl.at/schemas/10.0.0`.
 - Give every string attribute of the qyl and vendor registries examples taken from the code that writes it, and declare the manifest's `file_format`; Weaver no longer reports diagnostics for this registry.
-- `RegistrySnapshot.Sha256` and `REGISTRY_SNAPSHOT_SHA256` change with the examples; no constant name, value set, doc comment or analyzer rule changes.
 - Build: the pipeline tests run under Microsoft code coverage, and `./build.sh Coverage` (in `mise run check-full`) gates line and branch coverage of this repository's sources through DotCov.Fallout 4.1.0.
 
 ## [9.9.2] - 2026-10-14

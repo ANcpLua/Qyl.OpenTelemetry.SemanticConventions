@@ -120,6 +120,70 @@ print(",".join(sorted(names)))
 PY
 )"
 
+# qyl's policy over the registry (registry/qyl/policy.yaml): the persistence rule, the
+# end-of-operation attributes and the span-name chains and starters. Its annotations ride on
+# non-registry groups, which the materialized v2 registry drops, so they are read here into one
+# JSON value the templates receive as `params.policy`. An annotation this reader does not know
+# is an error, not a silent no-op.
+policy_json="$(python_yaml - registry/qyl/policy.yaml <<'PY'
+import glob
+import json
+import sys
+import yaml
+
+groups = {g["id"]: g for g in (yaml.safe_load(open(sys.argv[1])) or {}).get("groups") or []}
+
+def qyl(node):
+    return ((node or {}).get("annotations") or {}).get("qyl") or {}
+
+def refs(group_id, allowed):
+    out = []
+    for attribute in groups[group_id].get("attributes") or []:
+        annotations = qyl(attribute)
+        unknown = set(annotations) - allowed
+        if unknown:
+            raise SystemExit(f"error: {group_id}: {attribute['ref']} has unknown qyl annotations {sorted(unknown)}")
+        out.append((attribute["ref"], annotations))
+    return out
+
+persistence = refs("qyl.policy.persistence", {"persisted", "token_exempt"})
+phase = refs("qyl.policy.phase", {"phase"})
+spans = qyl(groups["qyl.policy.spans"]).get("spans") or {}
+for span_id, entry in spans.items():
+    unknown = set(entry) - {"starter", "domain", "fixed", "span_name"}
+    if unknown:
+        raise SystemExit(f"error: qyl.policy.spans: {span_id} has unknown keys {sorted(unknown)}")
+    if entry.get("starter") and not entry.get("domain"):
+        raise SystemExit(f"error: qyl.policy.spans: starter {span_id} names no domain")
+
+# Vendor keys are exempt from the token rule only: a vendor spells its own tags.
+vendor_keys = sorted({attribute["id"]
+                      for path in glob.glob("registry/vendor/*.yaml")
+                      for g in (yaml.safe_load(open(path)) or {}).get("groups") or []
+                      for attribute in g.get("attributes") or [] if "id" in attribute})
+
+group = qyl(groups["qyl.policy.persistence"])
+policy = {
+    "vendor_keys": vendor_keys,
+    "not_persisted": sorted(key for key, a in persistence if a.get("persisted") is False),
+    "not_persisted_prefixes": sorted(group.get("not_persisted_prefixes") or []),
+    "denied_key_tokens": sorted(group.get("denied_key_tokens") or []),
+    "token_exempt": sorted(key for key, a in persistence if a.get("token_exempt") is True),
+    "phase_end": sorted(key for key, a in phase if a.get("phase") == "end"),
+    "spans": {span_id: {"starter": bool(entry.get("starter")),
+                        "domain": entry.get("domain") or "",
+                        "fixed": entry.get("fixed") or {},
+                        "templates": (entry.get("span_name") or {}).get("templates") or [],
+                        "substitutions": (entry.get("span_name") or {}).get("substitutions") or {}}
+              for span_id, entry in sorted(spans.items())},
+}
+for key in ("not_persisted", "denied_key_tokens", "token_exempt", "phase_end", "vendor_keys"):
+    if not policy[key]:
+        raise SystemExit(f"error: registry/qyl/policy.yaml declares no {key}")
+print(json.dumps(policy, separators=(",", ":"), sort_keys=True))
+PY
+)"
+
 "${WEAVER_CMD[@]}" registry check -r registry
 "${WEAVER_CMD[@]}" registry check -r registry --v2 --include-unreferenced -p registry/policies-v2
 
@@ -134,6 +198,7 @@ PY
   -D "genai_commit=${genai_commit}" \
   -D "scope_names=${scope_names}" \
   -D "vendor_activity_sources=${vendor_activity_sources}" \
+  -D "policy=${policy_json}" \
   csharp \
   .
 

@@ -1,0 +1,362 @@
+# qyl's policy over the registry: what the collector persists, which attributes are known only
+# when an operation ends, and how the spans qyl names and starts are named. Weaver's materialized
+# v2 registry drops the annotations of non-registry groups (as for names.yaml), so
+# scripts/generate.sh reads the `qyl` annotations below and hands them to the templates as the
+# `policy` parameter (-D policy=<json>). The attribute refs keep `weaver registry check` proving
+# that every key named here exists.
+groups:
+  # Ingest policy. `persisted: false` keys are dropped at ingest, and so is every key that starts
+  # with one of them plus "." (template keys such as http.request.header.<name>) or with a
+  # not-persisted prefix. The token rule drops any other key that contains a denied token
+  # (ordinal, case-insensitive) unless the key is `token_exempt` or a vendor key (registry/vendor/):
+  # a vendor spells its own tags. The generated RegistryPolicy table carries all of it; the
+  # starters' views, analyzer QYL0113 and the collector catalog read that one table.
+  - id: qyl.policy.persistence
+    type: attribute_group
+    display_name: qyl Persistence Policy
+    brief: The keys the qyl collector does not persist, and the token rule's exemptions.
+    annotations:
+      qyl:
+        not_persisted_prefixes: ["enduser.", "user."]
+        denied_key_tokens:
+          - access_token
+          - api-key
+          - api_key
+          - apikey
+          - authorization
+          - body
+          - completion
+          - cookie
+          - credential
+          - definition
+          - document
+          - fingerprint
+          - id_token
+          - instruction
+          - jwt
+          - message
+          - password
+          - private_key
+          - prompt
+          - query
+          - refresh_token
+          - result
+          - secret
+          - set-cookie
+          - token
+    attributes:
+      - ref: code.file.path
+        annotations: {qyl: {persisted: false}}
+      - ref: code.stacktrace
+        annotations: {qyl: {persisted: false}}
+      - ref: db.query.text
+        annotations: {qyl: {persisted: false}}
+      - ref: exception.message
+        annotations: {qyl: {persisted: false}}
+      - ref: exception.stacktrace
+        annotations: {qyl: {persisted: false}}
+      - ref: executor.input
+        annotations: {qyl: {persisted: false}}
+      - ref: executor.output
+        annotations: {qyl: {persisted: false}}
+      - ref: gen_ai.agent.description
+        annotations: {qyl: {persisted: false}}
+      - ref: gen_ai.agent.id
+        annotations: {qyl: {persisted: false}}
+      - ref: gen_ai.conversation.id
+        annotations: {qyl: {persisted: false}}
+      - ref: gen_ai.data_source.id
+        annotations: {qyl: {persisted: false}}
+      - ref: gen_ai.evaluation.explanation
+        annotations: {qyl: {persisted: false}}
+      - ref: gen_ai.evaluation.name
+        annotations: {qyl: {persisted: false}}
+      - ref: gen_ai.input.messages
+        annotations: {qyl: {persisted: false}}
+      - ref: gen_ai.output.messages
+        annotations: {qyl: {persisted: false}}
+      - ref: gen_ai.prompt.name
+        annotations: {qyl: {persisted: false}}
+      - ref: gen_ai.response.id
+        annotations: {qyl: {persisted: false}}
+      - ref: gen_ai.retrieval.documents
+        annotations: {qyl: {persisted: false}}
+      - ref: gen_ai.retrieval.query.text
+        annotations: {qyl: {persisted: false}}
+      - ref: gen_ai.system_instructions
+        annotations: {qyl: {persisted: false}}
+      - ref: gen_ai.tool.call.arguments
+        annotations: {qyl: {persisted: false}}
+      - ref: gen_ai.tool.call.id
+        annotations: {qyl: {persisted: false}}
+      - ref: gen_ai.tool.call.result
+        annotations: {qyl: {persisted: false}}
+      - ref: gen_ai.tool.definitions
+        annotations: {qyl: {persisted: false}}
+      - ref: gen_ai.tool.description
+        annotations: {qyl: {persisted: false}}
+      - ref: gen_ai.workflow.name
+        annotations: {qyl: {persisted: false}}
+      - ref: host.id
+        annotations: {qyl: {persisted: false}}
+      - ref: host.ip
+        annotations: {qyl: {persisted: false}}
+      - ref: host.mac
+        annotations: {qyl: {persisted: false}}
+      - ref: host.name
+        annotations: {qyl: {persisted: false}}
+      - ref: http.request.header
+        annotations: {qyl: {persisted: false}}
+      - ref: http.response.header
+        annotations: {qyl: {persisted: false}}
+      - ref: mcp.resource.uri
+        annotations: {qyl: {persisted: false}}
+      - ref: mcp.session.id
+        annotations: {qyl: {persisted: false}}
+      - ref: message.content
+        annotations: {qyl: {persisted: false}}
+      - ref: rpc.request.metadata
+        annotations: {qyl: {persisted: false}}
+      - ref: rpc.response.metadata
+        annotations: {qyl: {persisted: false}}
+      - ref: service.instance.id
+        annotations: {qyl: {persisted: false}}
+      - ref: session.id
+        annotations: {qyl: {persisted: false}}
+      - ref: session.previous_id
+        annotations: {qyl: {persisted: false}}
+      - ref: url.full
+        annotations: {qyl: {persisted: false}}
+      - ref: url.query
+        annotations: {qyl: {persisted: false}}
+      # Allowlisted keys that merely contain a denied token.
+      - ref: db.query.summary
+        annotations: {qyl: {token_exempt: true}}
+      - ref: gen_ai.token.type
+        annotations: {qyl: {token_exempt: true}}
+      - ref: messaging.kafka.message.offset
+        annotations: {qyl: {token_exempt: true}}
+      - ref: messaging.message.body.size
+        annotations: {qyl: {token_exempt: true}}
+      - ref: messaging.message.id
+        annotations: {qyl: {token_exempt: true}}
+      # The token counts the collector lifts into its hot columns: persisted although "token"
+      # is in their key.
+      - ref: gen_ai.usage.input_tokens
+        annotations: {qyl: {token_exempt: true}}
+      - ref: gen_ai.usage.output_tokens
+        annotations: {qyl: {token_exempt: true}}
+      - ref: gen_ai.usage.cache_read.input_tokens
+        annotations: {qyl: {token_exempt: true}}
+      - ref: gen_ai.usage.cache_write.input_tokens
+        annotations: {qyl: {token_exempt: true}}
+      - ref: gen_ai.usage.reasoning.output_tokens
+        annotations: {qyl: {token_exempt: true}}
+
+  # Attributes known only when the operation ends. A starter takes no parameter for them; they
+  # are set through the typed setters or RecordFailure before the span ends.
+  - id: qyl.policy.phase
+    type: attribute_group
+    display_name: qyl Attribute Phase
+    brief: Attributes known only when the operation ends.
+    attributes:
+      - ref: error.type
+        annotations: {qyl: {phase: end}}
+      - ref: db.response.status_code
+        annotations: {qyl: {phase: end}}
+      - ref: db.response.returned_rows
+        annotations: {qyl: {phase: end}}
+      - ref: gen_ai.response.finish_reasons
+        annotations: {qyl: {phase: end}}
+      - ref: gen_ai.response.id
+        annotations: {qyl: {phase: end}}
+      - ref: gen_ai.response.model
+        annotations: {qyl: {phase: end}}
+      - ref: gen_ai.output.messages
+        annotations: {qyl: {phase: end}}
+      - ref: gen_ai.tool.call.result
+        annotations: {qyl: {phase: end}}
+      - ref: gen_ai.usage.input_tokens
+        annotations: {qyl: {phase: end}}
+      - ref: gen_ai.usage.output_tokens
+        annotations: {qyl: {phase: end}}
+      - ref: gen_ai.usage.cache_read.input_tokens
+        annotations: {qyl: {phase: end}}
+      - ref: gen_ai.usage.cache_write.input_tokens
+        annotations: {qyl: {phase: end}}
+      - ref: gen_ai.usage.reasoning.output_tokens
+        annotations: {qyl: {phase: end}}
+      - ref: http.response.status_code
+        annotations: {qyl: {phase: end}}
+      - ref: process.exit.code
+        annotations: {qyl: {phase: end}}
+
+  # Span names and starters, keyed by span refinement id (a specialization without an entry of
+  # its own uses its type's). `span_name` is a fallback chain: the first template whose every
+  # {key} placeholder has a value names the span; `substitutions` rewrite a placeholder value
+  # first (null: treat the value as absent). The chains are the upstream naming rules, which the
+  # registry carries only as prose. `starter: true` generates a span starter (Qyl.Spans for a
+  # stable group, Qyl.IncubatingSpans otherwise) only for groups no library qyl subscribes to
+  # already emits; `domain` is the qyl.instrumentation.domain it stamps and `fixed` the
+  # attribute values the group itself determines.
+  - id: qyl.policy.spans
+    type: attribute_group
+    display_name: qyl Span Policy
+    brief: The span-name chains and the span starters qyl generates.
+    annotations:
+      qyl:
+        spans:
+          db.client:
+            starter: true
+            domain: db.client
+            span_name: &db_name
+              templates:
+                - "{db.query.summary}"
+                - "{db.operation.name} {db.collection.name}"
+                - "{db.operation.name} {db.stored_procedure.name}"
+                - "{db.operation.name} {db.namespace}"
+                - "{db.operation.name} {server.address}:{server.port}"
+                - "{db.operation.name} {server.address}"
+                - "{db.operation.name}"
+                - "{db.collection.name}"
+                - "{db.stored_procedure.name}"
+                - "{db.namespace}"
+                - "{server.address}:{server.port}"
+                - "{server.address}"
+                - "{db.system.name}"
+          db.sql.client:
+            span_name: *db_name
+          http.client:
+            span_name:
+              templates:
+                - "{http.request.method} {url.template}"
+                - "{http.request.method}"
+                - "HTTP {url.template}"
+                - "HTTP"
+              substitutions:
+                http.request.method: {_OTHER: HTTP}
+          http.server:
+            span_name:
+              templates:
+                - "{http.request.method} {http.route}"
+                - "{http.request.method}"
+                - "HTTP {http.route}"
+                - "HTTP"
+              substitutions:
+                http.request.method: {_OTHER: HTTP}
+          messaging.create.producer:
+            span_name: &messaging_name
+              templates:
+                - "{messaging.operation.name} {messaging.destination.template}"
+                - "{messaging.operation.name} {messaging.destination.name}"
+                - "{messaging.operation.name} {server.address}:{server.port}"
+                - "{messaging.operation.name}"
+          messaging.process.consumer:
+            starter: true
+            domain: messaging.process
+            fixed:
+              messaging.operation.type: process
+            span_name: *messaging_name
+          messaging.receive.client:
+            span_name: *messaging_name
+          messaging.send.client:
+            span_name: *messaging_name
+          messaging.send.producer:
+            span_name: *messaging_name
+          messaging.settle.client:
+            span_name: *messaging_name
+          rpc.call.client:
+            span_name: &rpc_name
+              templates:
+                - "{rpc.method}"
+                - "{rpc.system.name}"
+              substitutions:
+                rpc.method: {_OTHER: null}
+          rpc.call.server:
+            span_name: *rpc_name
+          rpc.grpc.call.client:
+            span_name: *rpc_name
+          rpc.grpc.call.server:
+            span_name: *rpc_name
+          gen_ai.client.inference:
+            span_name: &gen_ai_model_name
+              templates:
+                - "{gen_ai.operation.name} {gen_ai.request.model}"
+                - "{gen_ai.operation.name}"
+          gen_ai.embeddings.client:
+            span_name: *gen_ai_model_name
+          gen_ai.create_agent.client:
+            span_name:
+              templates: ["create_agent {gen_ai.agent.name}", "create_agent"]
+          gen_ai.invoke_agent.client:
+            span_name: &invoke_agent_name
+              templates: ["invoke_agent {gen_ai.agent.name}", "invoke_agent"]
+          gen_ai.invoke_agent.internal:
+            starter: true
+            domain: gen_ai.invoke_agent
+            fixed:
+              gen_ai.operation.name: invoke_agent
+            span_name: *invoke_agent_name
+          gen_ai.plan.internal:
+            span_name:
+              templates: ["plan {gen_ai.agent.name}", "plan"]
+          gen_ai.invoke_workflow.internal:
+            span_name:
+              templates: ["invoke_workflow {gen_ai.workflow.name}", "invoke_workflow"]
+          gen_ai.fetch_response.client:
+            span_name: &gen_ai_operation_name
+              templates: ["{gen_ai.operation.name}"]
+          gen_ai.memory.client:
+            span_name: *gen_ai_operation_name
+          gen_ai.retrieval.client:
+            span_name:
+              templates:
+                - "{gen_ai.operation.name} {gen_ai.data_source.id}"
+                - "{gen_ai.operation.name}"
+          gen_ai.execute_tool.internal:
+            starter: true
+            domain: gen_ai.execute_tool
+            fixed:
+              gen_ai.operation.name: execute_tool
+            span_name:
+              templates: ["execute_tool {gen_ai.tool.name}"]
+          gen_ai.execute_tool.load_skill.internal:
+            starter: true
+            domain: gen_ai.execute_tool
+            fixed:
+              gen_ai.operation.name: execute_tool
+            span_name:
+              templates:
+                - "execute_tool {gen_ai.tool.name} {gen_ai.skill.name}"
+                - "execute_tool {gen_ai.tool.name}"
+          gen_ai.execute_tool.read_skill_resource.internal:
+            starter: true
+            domain: gen_ai.execute_tool
+            fixed:
+              gen_ai.operation.name: execute_tool
+            span_name:
+              templates:
+                - "execute_tool {gen_ai.tool.name} {gen_ai.skill.name} {gen_ai.skill.resource.name}"
+                - "execute_tool {gen_ai.tool.name} {gen_ai.skill.resource.name}"
+                - "execute_tool {gen_ai.tool.name}"
+          gen_ai.execute_tool.command.internal:
+            starter: true
+            domain: gen_ai.execute_tool
+            fixed:
+              gen_ai.operation.name: execute_tool
+            span_name:
+              templates:
+                - "execute_tool {gen_ai.tool.name} {gen_ai.skill.name} {gen_ai.skill.resource.name}"
+                - "execute_tool {gen_ai.tool.name} {gen_ai.skill.resource.name}"
+                - "execute_tool {gen_ai.tool.name} {process.executable.name}"
+                - "execute_tool {gen_ai.tool.name}"
+          mcp.client:
+            span_name: &mcp_name
+              templates:
+                - "{mcp.method.name} {gen_ai.tool.name}"
+                - "{mcp.method.name} {gen_ai.prompt.name}"
+                - "{mcp.method.name}"
+          mcp.server:
+            span_name: *mcp_name
+    attributes:
+      - ref: qyl.instrumentation.domain

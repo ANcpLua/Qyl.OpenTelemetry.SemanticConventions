@@ -423,15 +423,55 @@ global::Qyl.Telemetry.SemanticConventions.Deprecation.Obsoleted
 {%- endif -%}
 {%- endmacro -%}
 
-{%- macro requirement_level_expr(level) -%}
-global::Qyl.Telemetry.SemanticConventions.RequirementLevel.
+{#- The requirement level. A level with a condition is a mapping whose one key names the level
+    ({conditionally_required: text}, {recommended: text}, {opt_in: text}); the key decides, the
+    text is the condition (requirement_level_condition). -#}
+{%- macro requirement_level_name(level) -%}
 {%- if level == "required" -%}Required
 {%- elif level == "recommended" -%}Recommended
 {%- elif level == "opt_in" -%}OptIn
-{%- elif level is mapping -%}ConditionallyRequired
 {%- elif level == "conditionally_required" -%}ConditionallyRequired
+{%- elif level is mapping and level.conditionally_required is defined -%}ConditionallyRequired
+{%- elif level is mapping and level.recommended is defined -%}Recommended
+{%- elif level is mapping and level.opt_in is defined -%}OptIn
 {%- else -%}Unspecified
 {%- endif -%}
+{%- endmacro -%}
+
+{%- macro requirement_level_expr(level) -%}
+global::Qyl.Telemetry.SemanticConventions.RequirementLevel.{{ requirement_level_name(level) }}
+{%- endmacro -%}
+
+{#- The condition text of a requirement level, or "" when it states none. -#}
+{%- macro requirement_level_condition(level) -%}
+{%- if level is mapping -%}
+{%- for _k, v in level | items -%}{{ v | trim }}{%- endfor -%}
+{%- endif -%}
+{%- endmacro -%}
+
+{#- The persistence rule of registry/qyl/policy.yaml, which RegistryPolicy carries at runtime:
+    "true" when the qyl collector persists `key`. A not-persisted key also denies its template
+    children (`http.request.header` denies `http.request.header.<name>`). -#}
+{%- macro persisted(key, policy) -%}
+{%- set s = namespace(denied = false, exempt = false) -%}
+{%- for k in policy.not_persisted -%}
+{%- if key == k or key[0:(k | length) + 1] == k ~ "." -%}{%- set s.denied = true -%}{%- endif -%}
+{%- endfor -%}
+{%- for p in policy.not_persisted_prefixes -%}
+{%- if key[0:(p | length)] == p -%}{%- set s.denied = true -%}{%- endif -%}
+{%- endfor -%}
+{%- if key in policy.token_exempt or key in policy.vendor_keys -%}{%- set s.exempt = true -%}{%- endif -%}
+{%- if not s.denied and not s.exempt -%}
+{%- for t in policy.denied_key_tokens -%}
+{%- if t in (key | lower) -%}{%- set s.denied = true -%}{%- endif -%}
+{%- endfor -%}
+{%- endif -%}
+{{ "false" if s.denied else "true" }}
+{%- endmacro -%}
+
+{#- The phase of `key`: End when registry/qyl/policy.yaml annotates it `qyl.phase: end`. -#}
+{%- macro phase_expr(key, policy) -%}
+global::Qyl.Telemetry.SemanticConventions.AttributePhase.{{ "End" if key in policy.phase_end else "Start" }}
 {%- endmacro -%}
 
 {%- macro attribute_type_name(t) -%}
@@ -443,14 +483,15 @@ global::Qyl.Telemetry.SemanticConventions.RequirementLevel.
 {%- endif -%}
 {%- endmacro -%}
 
-{%- macro attribute_array_expr(attributes) -%}
+{%- macro attribute_array_expr(attributes, policy) -%}
 {%- if (attributes | length) == 0 -%}
 global::System.Array.Empty<global::Qyl.Telemetry.SemanticConventions.AttributeRef>()
 {%- else -%}
 {%- set s = namespace(out = "new global::Qyl.Telemetry.SemanticConventions.AttributeRef[] { ") -%}
 {%- for a in attributes -%}
 {%- if not loop.first -%}{%- set s.out = s.out ~ ", " -%}{%- endif -%}
-{%- set s.out = s.out ~ 'new("' ~ escape_attribute(a.key) ~ '", "' ~ attribute_type_name(a.type) ~ '", ' ~ requirement_level_expr(a.requirement_level) ~ ", " ~ ("true" if a.deprecated else "false") ~ ")" -%}
+{%- set condition = requirement_level_condition(a.requirement_level) -%}
+{%- set s.out = s.out ~ 'new("' ~ escape_attribute(a.key) ~ '", "' ~ attribute_type_name(a.type) ~ '", ' ~ requirement_level_expr(a.requirement_level) ~ ", " ~ ("true" if a.deprecated else "false") ~ ", " ~ (('"' ~ escape_attribute(condition) ~ '"') if (condition | length) > 0 else "null") ~ ", " ~ phase_expr(a.key, policy) ~ ", " ~ persisted(a.key, policy) ~ ")" -%}
 {%- endfor -%}
 {{ s.out ~ " }" }}
 {%- endif -%}

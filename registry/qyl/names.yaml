@@ -12,6 +12,7 @@ groups:
         scope_names:
           - "Qyl.Collector"
           - "Qyl.Instrumentation.ErrorCapture"
+          - "Qyl.Telemetry.Application"
           - "Qyl.Telemetry.AutoInstrumentation"
           - "Qyl.Telemetry.AutoInstrumentation.Database"
           - "Qyl.Telemetry.AutoInstrumentation.NServiceBus"

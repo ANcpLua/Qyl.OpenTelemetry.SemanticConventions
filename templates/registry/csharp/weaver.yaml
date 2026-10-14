@@ -72,6 +72,18 @@ templates:
     application_mode: single
     file_name: "src/Qyl.Telemetry.SemanticConventions/Generated/SchemaUrl.g.cs"
 
+  # The persistence rule of registry/qyl/policy.yaml (params.policy), in the stable package.
+  - template: registry_policy.cs.j2
+    filter: >
+      . as $registry
+      | ($registry.schema_url) as $qyl
+      | ([($registry.dependencies | keys)[]
+           | select((($registry.dependency_graph[.]) | length) == 0)] | first) as $core
+      | ([($registry.dependencies | keys)[] | select(. != $core)] | first) as $genai
+      | {qyl_schema_url: $qyl, core_schema_url: $core, genai_schema_url: $genai}
+    application_mode: single
+    file_name: "src/Qyl.Telemetry.SemanticConventions/Generated/RegistryPolicy.g.cs"
+
   # The qyl-owned telemetry names, in the stable package only: the producer packages build
   # their ActivitySource and Meter from these and may not read the incubating tier.
   - template: names.cs.j2
@@ -196,7 +208,11 @@ templates:
     application_mode: each
     file_name: "{{ ctx.out_dir }}/Metrics/{{ ctx.type_root }}Metrics.g.cs"
 
-  # SpanDefinition<TKind> rows, per stability tier; disjoint the same way.
+  # SpanDefinition<TKind> rows, per stability tier; disjoint the same way. Rows are the span
+  # refinements, keyed by id and grouped by their type's root: every span type has a refinement
+  # row with its own id, and a specialization (db.postgresql.client, the gen_ai skill spans)
+  # keeps its own attributes instead of collapsing into its type's row. The GenAI provider
+  # refinements (openai.*, anthropic.*, azure.ai.*, aws.bedrock.*) stay out on purpose.
   - template: spans.cs.j2
     filter: >
       . as $registry
@@ -209,17 +225,16 @@ templates:
       | def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
                      | map(select(length > 0) | (.[0:1] | ascii_upcase) + .[1:]) | join("");
       def dedupe(f): group_by(f) | map(sort_by([(if .deprecated then 1 else 0 end), f]) | .[0]);
-      ([.registry.spans[]]) as $top
-      | ($top | map({key: .type, value: true}) | from_entries) as $seen
-      | ([.dependencies[].registry.spans[]] | map(select($seen[.type] | not))) as $extra
-      | (($top + $extra) | sort_by(.type)) as $all
+      ([.refinements.spans[]
+          | select(((.type | startswith("gen_ai.")) | not) or (.id | startswith("gen_ai.")))]
+         | sort_by(.id)) as $all
       | [ ($all
             | map(select((.stability == "stable" or (.deprecated != null)) | not))
             | group_by(.type | split(".")[0]) | .[]
             | (.[0].type | split(".")[0]) as $root
             | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
             | {tier: "incubating", root: $root, pascal_root: $p, type_root: ($p + "Incubating"),
-               spans: (. | dedupe(pascal(.type)) | sort_by(.type)),
+               spans: (. | dedupe(pascal(.id)) | sort_by(.id)),
                namespace: "Qyl.Telemetry.SemanticConventions.Incubating.Spans",
                out_dir: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"}),
           ($all
@@ -228,7 +243,7 @@ templates:
             | (.[0].type | split(".")[0]) as $root
             | ($root | split("_") | map((.[0:1] | ascii_upcase) + .[1:]) | join("")) as $p
             | {tier: "stable", root: $root, pascal_root: $p, type_root: $p,
-               spans: (. | dedupe(pascal(.type)) | sort_by(.type)),
+               spans: (. | dedupe(pascal(.id)) | sort_by(.id)),
                namespace: "Qyl.Telemetry.SemanticConventions.Spans",
                out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"}) ]
       | map(. + $schema_urls)
