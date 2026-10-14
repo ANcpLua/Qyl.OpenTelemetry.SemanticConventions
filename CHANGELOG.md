@@ -10,7 +10,7 @@ Notable changes to the `Qyl.Telemetry.SemanticConventions` package family. `Vers
 
 - Give every string attribute of the qyl and vendor registries examples taken from the code that writes it, and declare the manifest's `file_format`; Weaver no longer reports diagnostics for this registry.
 - `RegistrySnapshot.Sha256` and `REGISTRY_SNAPSHOT_SHA256` change with the examples; no constant name, value set, doc comment or analyzer rule changes.
-- Build: the pipeline tests run under Microsoft code coverage, and `./build.sh Coverage` (in `mise run check-full`) gates line and branch coverage through dotcov.fallout 3.0.0.
+- Build: the pipeline tests run under Microsoft code coverage, and `./build.sh Coverage` (in `mise run check-full`) gates line and branch coverage through DotCov.Fallout 4.1.0.
 
 ## [9.9.2] - 2026-10-14
 

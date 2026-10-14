@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Text.RegularExpressions;
+using DotCov;
 using DotCov.Fallout;
 using Fallout.Common;
 using Fallout.Common.IO;
@@ -61,6 +62,9 @@ internal sealed partial class Build : FalloutBuild, ICoverageReport
     /// <summary>
     ///   Run the pipeline tests under Microsoft code coverage into a clean artifacts/coverage,
     ///   then let dotcov's ReportCoverage gate the Cobertura report against the thresholds above.
+    ///   A failed test run exits 6 like <c>dotcov test</c>: coverage of failing tests is not
+    ///   evaluated. ReportCoverage exits with dotcov's gate codes (1 FAIL, 2 invalid parameter,
+    ///   3 NODATA, 4 DISABLED, 5 unreadable report); scripts/quiet.sh names them.
     /// </summary>
     Target Coverage => _ => _
         .Description("Run the pipeline tests with coverage and gate line and branch coverage.")
@@ -69,14 +73,23 @@ internal sealed partial class Build : FalloutBuild, ICoverageReport
         .Executes(() =>
         {
             CoverageDirectory.CreateOrCleanDirectory();
-            DotNetTasks.DotNetRun(s => s
-                .SetProjectFile(PipelineTestsProject)
-                .SetConfiguration("Release")
-                .EnableNoBuild()
-                .SetApplicationArguments(
-                    "--coverage", "--coverage-output-format", "cobertura",
-                    "--coverage-output", "coverage.cobertura.xml",
-                    "--results-directory", CoverageDirectory));
+            try
+            {
+                DotNetTasks.DotNetRun(s => s
+                    .SetProjectFile(PipelineTestsProject)
+                    .SetConfiguration("Release")
+                    .EnableNoBuild()
+                    .SetApplicationArguments(
+                        "--coverage", "--coverage-output-format", "cobertura",
+                        "--coverage-output", "coverage.cobertura.xml",
+                        "--results-directory", CoverageDirectory));
+            }
+            catch (ProcessException exception)
+            {
+                ExitCode = ExitCodes.TestRunFailed;
+                throw new InvalidOperationException(
+                    $"dotnet test exited with code {exception.ExitCode}; coverage was not evaluated.", exception);
+            }
         });
 
     [Parameter("VerifyRelease: the released version to verify on nuget.org and npm")]
