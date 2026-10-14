@@ -92,11 +92,40 @@ if npm view "$NPM_PACKAGE@$version" version --registry="$NPM_REGISTRY" >/dev/nul
   (( dry )) || die "$NPM_PACKAGE $version is already on npm"
   echo "warning: $NPM_PACKAGE $version is already on npm; the real run refuses"
 fi
-if [[ $(curl -fsS --retry 2 -o /dev/null -w '%{http_code}' "https://qyl.at/schemas/$version") == 200 ]]; then
-  echo "qyl.at serves https://qyl.at/schemas/$version"
+# The schema must be served before the NuGet push. Cloudflare's edge can answer 404 for a
+# minute after a deploy, so poll instead of failing on the first miss; and when qyl.at has no
+# file for this version yet, serve it from the local clone instead of stopping for a relay.
+schema_url="https://qyl.at/schemas/$version"
+schema_served() { [[ $(curl -fsS -o /dev/null -w '%{http_code}' "$schema_url" 2>/dev/null) == 200 ]]; }
+poll_schema() { local i; for ((i = 0; i < $1; i++)); do schema_served && return 0; sleep 5; done; return 1; }
+if poll_schema 2; then
+  echo "qyl.at serves $schema_url"
 else
-  (( dry )) || die "https://qyl.at/schemas/$version is not served; add public/schemas/$version in qyl.at and deploy it first"
-  echo "warning: https://qyl.at/schemas/$version is not served yet; the real run refuses until qyl.at deploys it"
+  qyl_at=${QYL_AT_DIR:-$(cd .. && pwd)/qyl.at}
+  if (( dry )); then
+    echo "warning: $schema_url is not served yet; the real run adds public/schemas/$version in $qyl_at and deploys it"
+  else
+    [[ -d $qyl_at/public/schemas ]] || die "$schema_url is not served and no qyl.at clone at $qyl_at (set QYL_AT_DIR)"
+    say "serve $schema_url from $qyl_at"
+    (
+      cd "$qyl_at"
+      git pull -q --ff-only origin main
+      [[ -z $(git status --porcelain --untracked-files=no) ]] || die "qyl.at working tree not clean"
+      if [[ ! -f public/schemas/$version ]]; then
+        latest=$(ls public/schemas | sort -V | tail -1)
+        sed -e "s|^schema_url: https://qyl.at/schemas/.*|schema_url: $schema_url|" \
+            -e "s|^versions:\$|versions:\n  $version:|" "public/schemas/$latest" > "public/schemas/$version"
+        bun run check >/dev/null
+        git add "public/schemas/$version"
+        git commit -q -m "chore: serve schema $version" -m "Qyl.Telemetry.SemanticConventions $version needs $schema_url before its NuGet push." \
+          -m "Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
+        git push -q origin main
+      fi
+      ./release.sh
+    )
+    poll_schema 36 || die "$schema_url still not served three minutes after the qyl.at deploy"
+    echo "qyl.at serves $schema_url"
+  fi
 fi
 gh auth status >/dev/null 2>&1 || die "gh is not logged in"
 slnx=$(find . -maxdepth 1 -type f \( -name '*.slnx' -o -name '*.sln' \) -print -quit | sed 's#^\./##')

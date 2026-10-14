@@ -17,9 +17,11 @@ Weaver version pinned in `Version.props`.
   `registry/manifest.yaml` `schema_url` (`https://qyl.at/schemas/<x.y.z>`) and a `## [x.y.z]`
   entry in `CHANGELOG.md`; run `scripts/generate.sh` after the bump and commit its output. The
   CHANGELOG entry becomes the GitHub release notes.
-- Precondition that belongs to another agent: qyl.at must serve
-  `https://qyl.at/schemas/<x.y.z>` before the push. Send qyl.at's agent the schema request
-  first (section "Notify", message type SCHEMA), wait until the URL returns 200, then release.
+- Precondition: qyl.at must serve `https://qyl.at/schemas/<x.y.z>` before the push.
+  `release.sh` handles it: it polls the URL (Cloudflare's edge can 404 for a minute after a
+  deploy) and, when the file does not exist yet, creates `public/schemas/<x.y.z>` in the local
+  qyl.at clone (`../qyl.at`, or `QYL_AT_DIR`), commits, pushes and runs qyl.at's `./release.sh`.
+  No message to another agent is needed.
 - Release command: `./release.sh <x.y.z> --dry-run`, then `./release.sh <x.y.z>` (restore,
   build and pack the solution at that version, the exact three-NuGet plus one-npm artifact guard, publish,
   wait for all four registry indexes, isolated NuGet and npm consumer verification, tag and GitHub release).
@@ -57,11 +59,9 @@ Weaver version pinned in `Version.props`.
 
 1. Land the bump commit on `main`: `VersionPrefix`, `schema_url`, CHANGELOG entry, regenerated
    output.
-2. Ask qyl.at for the schema (SCHEMA message) and wait for
-   `curl -fsS https://qyl.at/schemas/<x.y.z>` to return 200.
-3. `./release.sh <x.y.z> --dry-run` only when a step is new or unsure; otherwise go straight to
+2. `./release.sh <x.y.z> --dry-run` only when a step is new or unsure; otherwise go straight to
    the release, the script refuses before it publishes when anything is off.
-4. `./release.sh <x.y.z>`.
+3. `./release.sh <x.y.z>` (it serves the schema through the qyl.at clone first if needed).
 5. Watch indexing: the script runs `eng/release/verify-packages.sh` against nuget.org and polls
    the index. Keep polling every 30 s until all three NuGet ids and the npm package list `<x.y.z>`. Until then, do
    nothing else about this release.
@@ -74,13 +74,7 @@ Weaver version pinned in `Version.props`.
 ## Notify
 
 One message per consumer repo, to its running agent through the session's agent-messaging
-tool when there is one (Claude Code: `ListAgents`, then `SendMessage`). Two message types:
-
-```
-SCHEMA Qyl.Telemetry.SemanticConventions <version> needs https://qyl.at/schemas/<version>
-repo: qyl.at
-add: public/schemas/<version> (schema_url https://qyl.at/schemas/<version>), then ./release.sh
-```
+tool when there is one (Claude Code: `ListAgents`, then `SendMessage`). One message type:
 
 ```
 RELEASE Qyl.Telemetry.SemanticConventions (3 NuGet packages + 1 npm package) <version> indexed <UTC time>
