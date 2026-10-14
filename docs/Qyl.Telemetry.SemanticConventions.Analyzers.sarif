@@ -213,190 +213,122 @@
               }
             },
             {
-              "id": "QYL0100",
-              "name": "ActivityMissingSemconv",
-              "shortDescription": {
-                "text": "Activity/Span missing semantic convention attributes"
-              },
-              "fullDescription": {
-                "text": "OpenTelemetry Activities (Spans) should include semantic convention attributes appropriate for their operation type. This enables correlation, filtering, and analysis in observability backends."
-              },
-              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0100_ActivityMissingSemconv.md",
-              "defaultConfiguration": {
-                "level": "warning"
-              },
-              "properties": {
-                "category": "OpenTelemetry"
-              }
-            },
-            {
-              "id": "QYL0101",
-              "name": "UnregisteredActivitySource",
-              "shortDescription": {
-                "text": "ActivitySource should be registered with AddSource()"
-              },
-              "fullDescription": {
-                "text": "ActivitySources must be registered with AddSource() in the OpenTelemetry tracing configuration to be included in the trace pipeline. Unregistered sources will not emit spans. An instrumentation library whose sources are registered by a separate hosting package sets OtelSemConvInstrumentationLibrary=true and the rule does not report in that project."
-              },
-              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0101_UnregisteredActivitySource.md",
-              "defaultConfiguration": {
-                "level": "warning"
-              },
-              "properties": {
-                "category": "OpenTelemetry"
-              }
-            },
-            {
-              "id": "QYL0102",
-              "name": "TracedActivitySourceName",
-              "shortDescription": {
-                "text": "[Traced] attribute requires non-empty ActivitySourceName"
-              },
-              "fullDescription": {
-                "text": "The [Traced] attribute requires a non-empty ActivitySourceName to identify the source of spans. This name should match a registered ActivitySource in your application\u0027s tracing configuration."
-              },
-              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0102_TracedActivitySourceName.md",
-              "defaultConfiguration": {
-                "level": "error"
-              },
-              "properties": {
-                "category": "OpenTelemetry"
-              }
-            },
-            {
-              "id": "QYL0103",
-              "name": "DuplicateInstrumentation",
-              "shortDescription": {
-                "text": "Duplicate instrumentation detected"
-              },
-              "fullDescription": {
-                "text": "When a method is instrumented by both auto-instrumentation (e.g., [Traced] attribute or interceptor) AND manual Activity.StartActivity spans, it creates duplicate nested spans that increase telemetry volume and can cause confusion in trace visualization. Choose one instrumentation approach per method."
-              },
-              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0103_DuplicateInstrumentation.md",
-              "defaultConfiguration": {
-                "level": "warning"
-              },
-              "properties": {
-                "category": "OpenTelemetry"
-              }
-            },
-            {
-              "id": "QYL0104",
-              "name": "InvalidActivitySourceName",
-              "shortDescription": {
-                "text": "Invalid ActivitySource name"
-              },
-              "fullDescription": {
-                "text": "ActivitySource names should follow the reverse-DNS naming convention (e.g., \u0027company.product.component\u0027). Names must contain at least one dot, use only lowercase letters, digits, dots, and hyphens, and should not contain spaces. This ensures consistent identification across telemetry backends."
-              },
-              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0104_InvalidActivitySourceName.md",
-              "defaultConfiguration": {
-                "level": "error"
-              },
-              "properties": {
-                "category": "OpenTelemetry"
-              }
-            },
-            {
-              "id": "QYL0105",
-              "name": "ManualSpanRecommended",
-              "shortDescription": {
-                "text": "Manual span recommended"
-              },
-              "fullDescription": {
-                "text": "Complex async patterns like Task.WhenAll, Parallel.ForEach, multiple awaits, or ConfigureAwait(false) may not be fully captured by auto-instrumentation. Consider using manual Activity.StartActivity() to create explicit child spans for parallel operations, ensuring each branch of execution is properly traced."
-              },
-              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0105_ManualSpanRecommended.md",
-              "defaultConfiguration": {
-                "level": "note"
-              },
-              "properties": {
-                "category": "OpenTelemetry"
-              }
-            },
-            {
-              "id": "QYL0106",
-              "name": "OrphanedTracedTag",
-              "shortDescription": {
-                "text": "Orphaned [TracedTag]"
-              },
-              "fullDescription": {
-                "text": "The [TracedTag] attribute is only meaningful when used on parameters of methods that participate in tracing via [Traced]. When neither the method nor its declaring type has [Traced], the tag will be silently ignored and becomes dead metadata."
-              },
-              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0106_OrphanedTracedTag.md",
-              "defaultConfiguration": {
-                "level": "warning"
-              },
-              "properties": {
-                "category": "OpenTelemetry"
-              }
-            },
-            {
-              "id": "QYL0107",
-              "name": "RedundantNoTrace",
-              "shortDescription": {
-                "text": "Redundant [NoTrace]"
-              },
-              "fullDescription": {
-                "text": "The [NoTrace] attribute is used to opt a method out of class-level [Traced] auto-instrumentation. When the declaring type does not have [Traced], the [NoTrace] attribute has no effect and should be removed to avoid confusion."
-              },
-              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0107_RedundantNoTrace.md",
-              "defaultConfiguration": {
-                "level": "note"
-              },
-              "properties": {
-                "category": "OpenTelemetry"
-              }
-            },
-            {
-              "id": "QYL0108",
-              "name": "NonInterceptableTraced",
-              "shortDescription": {
-                "text": "Non-interceptable [Traced]"
-              },
-              "fullDescription": {
-                "text": "The [Traced] attribute triggers compile-time interception to create spans. Abstract, extern, and partial definition methods cannot be intercepted by the source generator, so [Traced] will be silently ignored."
-              },
-              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0108_NonInterceptableTraced.md",
-              "defaultConfiguration": {
-                "level": "warning"
-              },
-              "properties": {
-                "category": "OpenTelemetry"
-              }
-            },
-            {
-              "id": "QYL0109",
-              "name": "TracedTagOnOutRefParameter",
-              "shortDescription": {
-                "text": "[TracedTag] on out/ref parameter"
-              },
-              "fullDescription": {
-                "text": "The [TracedTag] attribute records parameter values as span attributes at the start of method execution. Parameters with out or ref modifiers are not supported because out parameters have no value at method entry and ref parameters may be mutated during execution."
-              },
-              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0109_TracedTagOnOutRefParameter.md",
-              "defaultConfiguration": {
-                "level": "error"
-              },
-              "properties": {
-                "category": "OpenTelemetry"
-              }
-            },
-            {
               "id": "QYL0110",
-              "name": "MissingExceptionRecordingOnActivity",
+              "name": "MissingRecordFailure",
               "shortDescription": {
-                "text": "Missing exception recording on Activity error status"
+                "text": "A catch that throws inside a span starter\u0027s scope must call RecordFailure"
               },
               "fullDescription": {
-                "text": "When setting an Activity status to Error in a catch block, the exception should be recorded as an event on the span for proper observability. Use activity.AddEvent with exception details or a RecordException helper."
+                "text": "A span whose operation fails needs status Error with a description, error.type and the exception event, or the collector records a success with an empty failure message. Call span.RecordFailure(exception) in every catch that throws inside the scope of a Qyl.Spans or Qyl.IncubatingSpans starter."
               },
-              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0110_MissingExceptionRecordingOnActivity.md",
+              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0110_MissingRecordFailure.md",
               "defaultConfiguration": {
-                "level": "warning"
+                "level": "error"
               },
               "properties": {
                 "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0111",
+              "name": "RawActivitySource",
+              "shortDescription": {
+                "text": "Start spans through the generated starters"
+              },
+              "fullDescription": {
+                "text": "A hand-made ActivitySource is unregistered until something subscribes it, and its StartActivity calls carry no registry kind, name or attributes. The generated starters on Qyl.Spans and Qyl.IncubatingSpans start every span on the registry-owned Qyl.Telemetry.Application scope that AddQyl subscribes. Instrumentation libraries that own their ActivitySources set the MSBuild property OtelSemConvInstrumentationLibrary to true."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0111_RawActivitySource.md",
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0112",
+              "name": "NonConstantTelemetryName",
+              "shortDescription": {
+                "text": "Span work names and business keys are compile-time constants"
+              },
+              "fullDescription": {
+                "text": "A Spans.Work name is the operation\u0027s identity in failure signatures and a SetAppTag key is a stored column, so both must stay low-cardinality. Use a constant and put the varying part into a SetAppTag value."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0112_NonConstantTelemetryName.md",
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0113",
+              "name": "DeniedAppTagKey",
+              "shortDescription": {
+                "text": "A business key must not contain a token the collector denies"
+              },
+              "fullDescription": {
+                "text": "The qyl collector drops every key that contains one of the registry\u0027s denied tokens (RegistryPolicy.DeniedKeyTokens). A SetAppTag key, or a qyl.app.* key, that contains one compiles and runs but never arrives. Rename the key."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0113_DeniedAppTagKey.md",
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0120",
+              "name": "ContribInstrumentationWithAddQyl",
+              "shortDescription": {
+                "text": "No OpenTelemetry.Instrumentation.* package next to AddQyl"
+              },
+              "fullDescription": {
+                "text": "AddQyl subscribes the HTTP server, HttpClient, Npgsql, Kafka and GenAI spans itself. A TracerProviderBuilder extension from an OpenTelemetry.Instrumentation.* assembly records the same operations a second time."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0120_ContribInstrumentationWithAddQyl.md",
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0121",
+              "name": "CustomValueEqualsMember",
+              "shortDescription": {
+                "text": "Custom value equals a registry member"
+              },
+              "fullDescription": {
+                "text": "Custom is the escape hatch for a value the registry does not list. A value a member already carries hides the member from readers and refactoring tools."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0121_CustomValueEqualsMember.md",
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "category": "OpenTelemetry"
+              }
+            },
+            {
+              "id": "QYL0122",
+              "name": "StarterInsideAIFunction",
+              "shortDescription": {
+                "text": "No span starter inside an AIFunction"
+              },
+              "fullDescription": {
+                "text": "FunctionInvokingChatClient records the execute_tool span of every AIFunction it invokes, and the registry says not to record two spans for one tool call. Inside the function, set business keys on Activity.Current with SetAppTag instead."
+              },
+              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0122_StarterInsideAIFunction.md",
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "category": "GenAI"
               }
             },
             {
@@ -451,23 +383,6 @@
               }
             },
             {
-              "id": "QYL0300",
-              "name": "IncompleteServiceDefaults",
-              "shortDescription": {
-                "text": "ServiceDefaults configuration incomplete"
-              },
-              "fullDescription": {
-                "text": "Complete ServiceDefaults configuration should include tracing, metrics, and logging setup. Missing components may result in incomplete observability data."
-              },
-              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0300_IncompleteServiceDefaults.md",
-              "defaultConfiguration": {
-                "level": "warning"
-              },
-              "properties": {
-                "category": "Configuration"
-              }
-            },
-            {
               "id": "QYL0301",
               "name": "NonOtlpCollectorEndpoint",
               "shortDescription": {
@@ -482,40 +397,6 @@
               },
               "properties": {
                 "category": "Configuration"
-              }
-            },
-            {
-              "id": "QYL0302",
-              "name": "MissingOTelConfiguration",
-              "shortDescription": {
-                "text": "Missing OpenTelemetry configuration"
-              },
-              "fullDescription": {
-                "text": "When using AddServiceDefaults() or similar setup methods, ensure AddOpenTelemetry() is also called to configure telemetry export. Without OpenTelemetry configuration, traces, metrics, and logs will not be exported to observability backends."
-              },
-              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0302_MissingOTelConfiguration.md",
-              "defaultConfiguration": {
-                "level": "warning"
-              },
-              "properties": {
-                "category": "OpenTelemetry"
-              }
-            },
-            {
-              "id": "QYL0303",
-              "name": "MissingResourceAttributes",
-              "shortDescription": {
-                "text": "Missing resource attributes"
-              },
-              "fullDescription": {
-                "text": "Resource attributes \u0027service.name\u0027 and \u0027service.version\u0027 are required for proper service identification in observability backends. These attributes enable grouping traces by service and tracking version-specific behavior. Use ResourceBuilder.CreateDefault().AddService(serviceName, serviceVersion) to set them."
-              },
-              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0303_MissingResourceAttributes.md",
-              "defaultConfiguration": {
-                "level": "warning"
-              },
-              "properties": {
-                "category": "OpenTelemetry"
               }
             },
             {
@@ -621,23 +502,6 @@
               }
             },
             {
-              "id": "QYL0405",
-              "name": "NonInterceptableAgentTraced",
-              "shortDescription": {
-                "text": "Non-interceptable [AgentTraced]"
-              },
-              "fullDescription": {
-                "text": "The [AgentTraced] attribute triggers compile-time interception to create agent spans. Abstract, extern, and partial definition methods cannot be intercepted by the source generator, so [AgentTraced] will be silently ignored."
-              },
-              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0405_NonInterceptableAgentTraced.md",
-              "defaultConfiguration": {
-                "level": "warning"
-              },
-              "properties": {
-                "category": "GenAI"
-              }
-            },
-            {
               "id": "QYL0406",
               "name": "DirectGenAiSdkUsage",
               "shortDescription": {
@@ -652,40 +516,6 @@
               },
               "properties": {
                 "category": "GenAI"
-              }
-            },
-            {
-              "id": "QYL0500",
-              "name": "MeterClassMustBePartialStatic",
-              "shortDescription": {
-                "text": "[Meter] class must be partial static"
-              },
-              "fullDescription": {
-                "text": "Classes decorated with [Meter] attribute must be declared as \u0027partial static\u0027 to allow the source generator to implement the metric recording methods. The generator creates static fields for Meter and instrument instances."
-              },
-              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0500_MeterClassMustBePartialStatic.md",
-              "defaultConfiguration": {
-                "level": "error"
-              },
-              "properties": {
-                "category": "Metrics"
-              }
-            },
-            {
-              "id": "QYL0501",
-              "name": "MetricMethodMustBePartial",
-              "shortDescription": {
-                "text": "Metric method must be partial"
-              },
-              "fullDescription": {
-                "text": "Methods decorated with [Counter] or [Histogram] attributes must be declared as \u0027partial\u0027 to allow the source generator to implement the metric recording logic. The generator creates the method body that records values to the corresponding instrument."
-              },
-              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0501_MetricMethodMustBePartial.md",
-              "defaultConfiguration": {
-                "level": "error"
-              },
-              "properties": {
-                "category": "Metrics"
               }
             },
             {

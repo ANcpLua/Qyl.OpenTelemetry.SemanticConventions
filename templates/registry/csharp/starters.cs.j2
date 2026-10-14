@@ -91,10 +91,10 @@ public static partial class IncubatingSpans
 {% set kindname = "Client" if s.kind == "client" else ("Server" if s.kind == "server" else ("Producer" if s.kind == "producer" else ("Consumer" if s.kind == "consumer" else "Internal"))) %}
 {#- the parameters, by level -#}
 {% set p = namespace(required = [], conditional = [], recommended = []) %}
+{% set included = lib.starter_keys(s, rule, policy) | split(",") | list %}
 {% for a in s.attributes %}
 {% set level = lib.requirement_level_name(a.requirement_level) %}
-{% set is_template = (a.type is string) and a.type[0:9] == "template[" %}
-{% if not (level == "OptIn" or a.key in policy.phase_end or a.key in rule.fixed or is_template or a.deprecated) %}
+{% if a.key in included %}
 {% set first = lib.param_base(a.key, s.type) == "system" %}
 {% if level == "Required" %}
 {% set p.required = ([a] + p.required) if first else (p.required + [a]) %}

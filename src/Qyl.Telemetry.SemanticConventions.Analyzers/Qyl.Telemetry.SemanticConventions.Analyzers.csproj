@@ -65,8 +65,6 @@
   <ItemGroup Label="Resource wiring (resx ↔ Designer + LogicalName for resolver)">
     <Compile Update="Resources.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="Resources.resx"/>
     <EmbeddedResource Update="Resources.resx" Generator="ResXFileCodeGenerator" LastGenOutput="Resources.Designer.cs" LogicalName="Qyl.Telemetry.SemanticConventions.Analyzers.Resources.resources"/>
-    <Compile Update="CodeFixResources.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="CodeFixResources.resx"/>
-    <EmbeddedResource Update="CodeFixResources.resx" Generator="ResXFileCodeGenerator" LastGenOutput="CodeFixResources.Designer.cs" LogicalName="Qyl.Telemetry.SemanticConventions.Analyzers.CodeFixResources.resources"/>
   </ItemGroup>
 
   <ItemGroup>

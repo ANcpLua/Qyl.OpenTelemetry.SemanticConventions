@@ -34,11 +34,8 @@ internal sealed class Qyl0012InvalidAttributeValueAnalyzer : AlAnalyzer
     private static void AnalyzeInvocation(OperationAnalysisContext context)
     {
         var invocation = (IInvocationOperation)context.Operation;
-        if (!TagSetterDetection.IsTagSetterInvocation(invocation)
-            || !TagSetterDetection.TryGetTagSetterKeyArgument(invocation, out var keyArgument)
-            || !TagSetterDetection.TryGetTagSetterValueArgument(invocation, out var valueArgument)
-            || !TagSetterDetection.TryGetNonEmptyStringConstant(keyArgument.Value, out var attributeName)
-            || !TagSetterDetection.TryGetStringConstant(valueArgument.Value, out var value)
+        if (!TagSetterDetection.TryGetTagWrite(invocation, out var attributeName, out var valueArgument)
+            || !TagSetterDetection.TryGetValueConstant(valueArgument.Value, out var value)
             || !SemconvRegistryFacts.TryGetCanonicalEnumValue(attributeName, value, out var canonical)
             || string.Equals(value, canonical, StringComparison.Ordinal))
         {

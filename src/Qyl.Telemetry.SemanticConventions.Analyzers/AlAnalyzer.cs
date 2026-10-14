@@ -41,4 +41,31 @@ internal abstract class AlAnalyzer : DiagnosticAnalyzerBase {
             new LocalizableResourceString($"{id}AnalyzerDescription", Resources.ResourceManager, typeof(Resources)),
             RuleDocs.HelpLink(id, symbolic));
     }
+
+    /// <summary>
+    ///     <see cref="CreateRule"/> for a rule reported from a compilation-end action, which the
+    ///     descriptor declares through the <see cref="WellKnownDiagnosticTags.CompilationEnd"/> tag.
+    /// </summary>
+    /// <param name="id">The diagnostic ID.</param>
+    /// <param name="category">The diagnostic category.</param>
+    /// <param name="severity">The diagnostic severity.</param>
+    /// <param name="callerFile">Compiler-injected; do not pass.</param>
+    /// <returns>A configured <see cref="DiagnosticDescriptor"/>.</returns>
+    protected static DiagnosticDescriptor CreateCompilationEndRule(
+        string id,
+        string category,
+        DiagnosticSeverity severity,
+        [CallerFilePath] string callerFile = "") {
+        var symbolic = RuleDocs.SymbolicNameFromFile(callerFile);
+        return new DiagnosticDescriptor(
+            id,
+            new LocalizableResourceString($"{id}AnalyzerTitle", Resources.ResourceManager, typeof(Resources)),
+            new LocalizableResourceString($"{id}AnalyzerMessageFormat", Resources.ResourceManager, typeof(Resources)),
+            category,
+            severity,
+            isEnabledByDefault: true,
+            new LocalizableResourceString($"{id}AnalyzerDescription", Resources.ResourceManager, typeof(Resources)),
+            RuleDocs.HelpLink(id, symbolic),
+            WellKnownDiagnosticTags.CompilationEnd);
+    }
 }

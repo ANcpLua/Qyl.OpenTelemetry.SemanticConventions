@@ -510,6 +510,32 @@ templates:
     application_mode: single
     file_name: "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvRegistryFacts.g.cs"
 
+  # The typed surface the analyzers read attribute writes through: setters, value-set members,
+  # starter parameters and the denied-key tokens.
+  - template: analyzer_typed_surface.cs.j2
+    filter: >
+      . as $registry
+      | ($registry.schema_url) as $qyl
+      | ([($registry.dependencies | keys)[]
+           | select((($registry.dependency_graph[.]) | length) == 0)] | first) as $core
+      | ([($registry.dependencies | keys)[] | select(. != $core)] | first) as $genai
+      | {qyl_schema_url: $qyl, core_schema_url: $core, genai_schema_url: $genai} as $schema_urls
+      | $registry
+      | def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
+                     | map(select(length > 0) | (.[0:1] | ascii_upcase) + .[1:]) | join("");
+      def dedupe(f): group_by(f) | map(sort_by([(if .deprecated then 1 else 0 end), f]) | .[0]);
+      ([.registry.attributes[]]) as $top
+      | ($top | map({key: .key, value: true}) | from_entries) as $seen
+      | ([.dependencies[].registry.attributes[]] | map(select($seen[.key] | not))) as $extra
+      | {attributes: (($top + $extra) | dedupe(pascal(.key)) | sort_by(.key)),
+         spans: ([.refinements.spans[]
+                  | select(((.type | startswith("gen_ai.")) | not) or (.id | startswith("gen_ai.")))]
+                 | sort_by(.id)),
+         app_key: ([.registry.attributes[] | select(.key == "qyl.app") | .key] | first)}
+      | . + $schema_urls
+    application_mode: single
+    file_name: "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvTypedSurface.g.cs"
+
   # The collector's normalize table. Renames resolve transitively to the final live key; a
   # cycle, or a rename target the registry does not know, fails generation here rather than
   # shipping a table that points at nothing.

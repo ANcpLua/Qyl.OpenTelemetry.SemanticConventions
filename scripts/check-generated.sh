@@ -20,6 +20,7 @@ generated_paths=(
   "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"
   "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvRegistryFacts.g.cs"
   "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvDeprecations.g.cs"
+  "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvTypedSurface.g.cs"
   "generated"
   "typescript/src"
   "typescript/dist"

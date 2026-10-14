@@ -255,6 +255,25 @@ public sealed class Qyl0200TelemetryNameAnalyzerTests
         diagnostics.Should().BeEmpty();
     }
 
+    [Fact]
+    public async Task Qyl0200_accepts_app_keys_and_the_application_scope()
+    {
+        var diagnostics = await Compile
+            .Source(ActivitySink(
+                """
+                activity?.SetTag("qyl.app.order.id", "ord-1042");
+                using var source = new ActivitySource("Qyl.Telemetry.Application");
+                """))
+            .WithReference<Activity>()
+            .Build()
+            .ShouldSucceed()
+            .Compilation
+            .WithAnalyzers([new Qyl0200TelemetryNameAnalyzer()])
+            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
+
+        diagnostics.Should().BeEmpty();
+    }
+
     private static string ActivitySink(string statements) =>
         SourceFixture.InMethod(statements, declarations: "using System.Diagnostics;", parameters: "Activity? activity");
 

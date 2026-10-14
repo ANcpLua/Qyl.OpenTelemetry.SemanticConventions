@@ -27,34 +27,24 @@ Each ID links to a per-rule page under [`docs/rules/`](rules/) with severity, ca
 | [QYL0010](rules/QYL0010_SupplementalSemconvMigration.md) | Warning | Semantic convention migration needs review | Exact replacements only |
 | [QYL0012](rules/QYL0012_InvalidAttributeValue.md) | Error | Semantic-convention enum value uses non-canonical casing | No |
 | [QYL0013](rules/QYL0013_IncorrectAttributeType.md) | Warning | Incorrect attribute type | No |
-| [QYL0100](rules/QYL0100_ActivityMissingSemconv.md) | Warning | Activity/Span missing semantic convention attributes | No |
-| [QYL0101](rules/QYL0101_UnregisteredActivitySource.md) | Warning | ActivitySource should be registered with AddSource() | No |
-| [QYL0102](rules/QYL0102_TracedActivitySourceName.md) | Error | [Traced] attribute requires non-empty ActivitySourceName | Yes |
-| [QYL0103](rules/QYL0103_DuplicateInstrumentation.md) | Warning | Duplicate instrumentation detected | No |
-| [QYL0104](rules/QYL0104_InvalidActivitySourceName.md) | Error | Invalid ActivitySource name | No |
-| [QYL0105](rules/QYL0105_ManualSpanRecommended.md) | Info | Manual span recommended | No |
-| [QYL0106](rules/QYL0106_OrphanedTracedTag.md) | Warning | Orphaned [TracedTag] | Yes |
-| [QYL0107](rules/QYL0107_RedundantNoTrace.md) | Info | Redundant [NoTrace] | Yes |
-| [QYL0108](rules/QYL0108_NonInterceptableTraced.md) | Warning | Non-interceptable [Traced] | Yes |
-| [QYL0109](rules/QYL0109_TracedTagOnOutRefParameter.md) | Error | [TracedTag] on out/ref parameter | Yes |
-| [QYL0110](rules/QYL0110_MissingExceptionRecordingOnActivity.md) | Warning | Missing exception recording on Activity error status | No |
+| [QYL0110](rules/QYL0110_MissingRecordFailure.md) | Error | A catch that throws inside a span starter's scope must call RecordFailure | No |
+| [QYL0111](rules/QYL0111_RawActivitySource.md) | Error | Start spans through the generated starters | No |
+| [QYL0112](rules/QYL0112_NonConstantTelemetryName.md) | Error | Span work names and business keys are compile-time constants | No |
+| [QYL0113](rules/QYL0113_DeniedAppTagKey.md) | Error | A business key must not contain a token the collector denies | No |
+| [QYL0120](rules/QYL0120_ContribInstrumentationWithAddQyl.md) | Error | No OpenTelemetry.Instrumentation.* package next to AddQyl | No |
+| [QYL0121](rules/QYL0121_CustomValueEqualsMember.md) | Error | Custom value equals a registry member | No |
+| [QYL0122](rules/QYL0122_StarterInsideAIFunction.md) | Error | No span starter inside an AIFunction | No |
 | [QYL0200](rules/QYL0200_TelemetryName.md) | Error | Telemetry name must come from the generated registry catalog | No |
 | [QYL0201](rules/QYL0201_InvalidMetricName.md) | Error | Metric descriptor name must be a well-formed catalog member | No |
 | [QYL0202](rules/QYL0202_HighCardinalityMetricTag.md) | Warning | High-cardinality tag on metric | No |
-| [QYL0300](rules/QYL0300_IncompleteServiceDefaults.md) | Warning | ServiceDefaults configuration incomplete | No |
 | [QYL0301](rules/QYL0301_NonOtlpCollectorEndpoint.md) | Warning | Collector endpoint should use OTLP protocol | No |
-| [QYL0302](rules/QYL0302_MissingOTelConfiguration.md) | Warning | Missing OpenTelemetry configuration | No |
-| [QYL0303](rules/QYL0303_MissingResourceAttributes.md) | Warning | Missing resource attributes | No |
 | [QYL0304](rules/QYL0304_EnableEventSourceSupport.md) | Warning | EventSource instrumentation is trimmed under Native AOT without EventSourceSupport | No |
 | [QYL0305](rules/QYL0305_LegacySemanticConventionsAccessor.md) | Warning | Replace legacy SemanticConventions accessor | No |
 | [QYL0400](rules/QYL0400_GenAiExecuteToolName.md) | Warning | Execute-tool span is missing its registry-required attribute | No |
 | [QYL0401](rules/QYL0401_GenAiMissingRequiredAttributes.md) | Warning | GenAI or MCP span missing required attributes | No |
 | [QYL0402](rules/QYL0402_UseTokenUsageHistogram.md) | Warning | Use a registry-defined GenAI token metric | No |
 | [QYL0403](rules/QYL0403_InvalidAttributeValue.md) | Warning | GenAI operation name uses non-canonical casing | No |
-| [QYL0405](rules/QYL0405_NonInterceptableAgentTraced.md) | Warning | Non-interceptable [AgentTraced] | Yes |
 | [QYL0406](rules/QYL0406_DirectGenAiSdkUsage.md) | Warning | Direct GenAI SDK call bypasses automatic OTel instrumentation | No |
-| [QYL0500](rules/QYL0500_MeterClassMustBePartialStatic.md) | Error | [Meter] class must be partial static | Yes |
-| [QYL0501](rules/QYL0501_MetricMethodMustBePartial.md) | Error | Metric method must be partial | Yes |
 | [QYL0600](rules/QYL0600_InsecureEndpoint.md) | Warning | Insecure endpoint | No |
 | [QYL0601](rules/QYL0601_SensitiveDataInAttribute.md) | Warning | Sensitive data in span attribute | No |
 | [QYL0700](rules/QYL0700_MissingOtlpConfiguration.md) | Warning | Missing OTLP configuration | No |

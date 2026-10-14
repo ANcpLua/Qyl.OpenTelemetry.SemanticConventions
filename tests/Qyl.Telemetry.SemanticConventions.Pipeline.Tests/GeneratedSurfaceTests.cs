@@ -33,6 +33,7 @@ public sealed class GeneratedSurfaceTests
     {
         "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvRegistryFacts.g.cs",
         "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvDeprecations.g.cs",
+        "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvTypedSurface.g.cs",
         "typescript/package.json",
         "typescript/LICENSE",
     };

@@ -600,3 +600,18 @@ global::Qyl.Telemetry.SemanticConventions.{{ "" if (a.stability == "stable" or a
 {%- endfor -%}
 {{ s.parts | join(" + ") }}
 {%- endmacro -%}
+
+{#- The keys of the attributes a span starter takes as parameters, comma-joined: every attribute
+    of the row except OptIn, `qyl.phase: end`, the group's fixed ones, template and deprecated
+    attributes. starters.cs.j2 and the analyzers' typed-surface table both read it. -#}
+{%- macro starter_keys(s, rule, policy) -%}
+{%- set k = namespace(keys = []) -%}
+{%- for a in s.attributes -%}
+{%- set level = requirement_level_name(a.requirement_level) -%}
+{%- set is_template = (a.type is string) and a.type[0:9] == "template[" -%}
+{%- if not (level == "OptIn" or a.key in policy.phase_end or a.key in rule.fixed or is_template or a.deprecated) -%}
+{%- set k.keys = k.keys + [a.key] -%}
+{%- endif -%}
+{%- endfor -%}
+{{ k.keys | join(",") }}
+{%- endmacro -%}

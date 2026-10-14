@@ -74,26 +74,6 @@
     <data name="QYL0006AnalyzerDescription" xml:space="preserve">
     <value>Setting the schema URL allows collectors and backends to understand which version of semantic conventions your telemetry uses.</value>
   </data>
-    <!-- AL0061: Activity/Span missing semantic convention attributes -->
-    <data name="QYL0100AnalyzerTitle" xml:space="preserve">
-        <value>Activity/Span missing semantic convention attributes</value>
-    </data>
-    <data name="QYL0100AnalyzerMessageFormat" xml:space="preserve">
-        <value>Activity '{0}' should have semantic convention attributes for '{1}' operations</value>
-    </data>
-    <data name="QYL0100AnalyzerDescription" xml:space="preserve">
-        <value>OpenTelemetry Activities (Spans) should include semantic convention attributes appropriate for their operation type. This enables correlation, filtering, and analysis in observability backends.</value>
-    </data>
-    <!-- AL0063: Unregistered ActivitySource -->
-    <data name="QYL0101AnalyzerTitle" xml:space="preserve">
-        <value>ActivitySource should be registered with AddSource()</value>
-    </data>
-    <data name="QYL0101AnalyzerMessageFormat" xml:space="preserve">
-        <value>ActivitySource '{0}' is not registered with AddSource() in the tracing configuration</value>
-    </data>
-    <data name="QYL0101AnalyzerDescription" xml:space="preserve">
-        <value>ActivitySources must be registered with AddSource() in the OpenTelemetry tracing configuration to be included in the trace pipeline. Unregistered sources will not emit spans. An instrumentation library whose sources are registered by a separate hosting package sets OtelSemConvInstrumentationLibrary=true and the rule does not report in that project.</value>
-    </data>
     <!-- AL0064: GenAI span missing required attributes -->
     <data name="QYL0401AnalyzerTitle" xml:space="preserve">
         <value>GenAI or MCP span missing required attributes</value>
@@ -144,16 +124,6 @@
     <data name="QYL0201AnalyzerDescription" xml:space="preserve">
         <value>Metric names declared on Counter/Histogram descriptor attributes must follow OpenTelemetry naming conventions and be members of the generated registry catalog, so the collector recognizes every metric qyl emits. Add qyl-owned metrics to registry/qyl/metrics.yaml and run scripts/generate.sh.</value>
     </data>
-    <!-- AL0069: Incomplete ServiceDefaults -->
-    <data name="QYL0300AnalyzerTitle" xml:space="preserve">
-        <value>ServiceDefaults configuration incomplete</value>
-    </data>
-    <data name="QYL0300AnalyzerMessageFormat" xml:space="preserve">
-        <value>ServiceDefaults configuration is missing '{0}'. Add {1} for complete observability setup.</value>
-    </data>
-    <data name="QYL0300AnalyzerDescription" xml:space="preserve">
-        <value>Complete ServiceDefaults configuration should include tracing, metrics, and logging setup. Missing components may result in incomplete observability data.</value>
-    </data>
     <!-- AL0070: Non-OTLP collector endpoint -->
     <data name="QYL0301AnalyzerTitle" xml:space="preserve">
         <value>Collector endpoint should use OTLP protocol</value>
@@ -164,36 +134,6 @@
     <data name="QYL0301AnalyzerDescription" xml:space="preserve">
         <value>Collector endpoints should use the OTLP protocol for standardized telemetry export. OTLP provides better performance and broader compatibility than proprietary protocols.</value>
     </data>
-    <!-- AL0071: [Meter] class must be partial static -->
-    <data name="QYL0500AnalyzerTitle" xml:space="preserve">
-        <value>[Meter] class must be partial static</value>
-    </data>
-    <data name="QYL0500AnalyzerMessageFormat" xml:space="preserve">
-        <value>Class '{0}' with [Meter] attribute must be declared as 'partial static' for source generator support</value>
-    </data>
-    <data name="QYL0500AnalyzerDescription" xml:space="preserve">
-        <value>Classes decorated with [Meter] attribute must be declared as 'partial static' to allow the source generator to implement the metric recording methods. The generator creates static fields for Meter and instrument instances.</value>
-    </data>
-    <!-- AL0072: [Counter]/[Histogram] method must be partial -->
-    <data name="QYL0501AnalyzerTitle" xml:space="preserve">
-        <value>Metric method must be partial</value>
-    </data>
-    <data name="QYL0501AnalyzerMessageFormat" xml:space="preserve">
-        <value>Method '{0}' with [{1}] attribute must be declared as 'partial' for source generator support</value>
-    </data>
-    <data name="QYL0501AnalyzerDescription" xml:space="preserve">
-        <value>Methods decorated with [Counter] or [Histogram] attributes must be declared as 'partial' to allow the source generator to implement the metric recording logic. The generator creates the method body that records values to the corresponding instrument.</value>
-    </data>
-    <!-- AL0073: [Traced] attribute must have non-empty ActivitySourceName -->
-    <data name="QYL0102AnalyzerTitle" xml:space="preserve">
-        <value>[Traced] attribute requires non-empty ActivitySourceName</value>
-    </data>
-    <data name="QYL0102AnalyzerMessageFormat" xml:space="preserve">
-        <value>[Traced] attribute on '{0}' has empty or null ActivitySourceName - provide a valid source name</value>
-    </data>
-    <data name="QYL0102AnalyzerDescription" xml:space="preserve">
-        <value>The [Traced] attribute requires a non-empty ActivitySourceName to identify the source of spans. This name should match a registered ActivitySource in your application's tracing configuration.</value>
-    </data>
     <!-- AL0075: High-cardinality tag on metrics -->
     <data name="QYL0202AnalyzerTitle" xml:space="preserve">
         <value>High-cardinality tag on metric</value>
@@ -203,46 +143,6 @@
     </data>
     <data name="QYL0202AnalyzerDescription" xml:space="preserve">
         <value>High-cardinality tags like user.id, request.id, or session.id create a unique time series for each distinct value. This can overwhelm metrics backends with memory and storage costs. Consider using these values as span attributes instead, or aggregate them into buckets.</value>
-    </data>
-    <!-- AL0076: Missing OTel configuration -->
-    <data name="QYL0302AnalyzerTitle" xml:space="preserve">
-        <value>Missing OpenTelemetry configuration</value>
-    </data>
-    <data name="QYL0302AnalyzerMessageFormat" xml:space="preserve">
-        <value>AddServiceDefaults() is called but AddOpenTelemetry() is missing. Telemetry will not be exported without OpenTelemetry configuration.</value>
-    </data>
-    <data name="QYL0302AnalyzerDescription" xml:space="preserve">
-        <value>When using AddServiceDefaults() or similar setup methods, ensure AddOpenTelemetry() is also called to configure telemetry export. Without OpenTelemetry configuration, traces, metrics, and logs will not be exported to observability backends.</value>
-    </data>
-    <!-- AL0077: Duplicate instrumentation -->
-    <data name="QYL0103AnalyzerTitle" xml:space="preserve">
-        <value>Duplicate instrumentation detected</value>
-    </data>
-    <data name="QYL0103AnalyzerMessageFormat" xml:space="preserve">
-        <value>Method '{0}' has both [Traced] attribute and manual Activity.StartActivity call. This creates duplicate nested spans.</value>
-    </data>
-    <data name="QYL0103AnalyzerDescription" xml:space="preserve">
-        <value>When a method is instrumented by both auto-instrumentation (e.g., [Traced] attribute or interceptor) AND manual Activity.StartActivity spans, it creates duplicate nested spans that increase telemetry volume and can cause confusion in trace visualization. Choose one instrumentation approach per method.</value>
-    </data>
-    <!-- AL0078: Invalid ActivitySource name -->
-    <data name="QYL0104AnalyzerTitle" xml:space="preserve">
-        <value>Invalid ActivitySource name</value>
-    </data>
-    <data name="QYL0104AnalyzerMessageFormat" xml:space="preserve">
-        <value>ActivitySource name '{0}' does not follow reverse-DNS naming convention. Use format like 'company.product.component'.</value>
-    </data>
-    <data name="QYL0104AnalyzerDescription" xml:space="preserve">
-        <value>ActivitySource names should follow the reverse-DNS naming convention (e.g., 'company.product.component'). Names must contain at least one dot, use only lowercase letters, digits, dots, and hyphens, and should not contain spaces. This ensures consistent identification across telemetry backends.</value>
-    </data>
-    <!-- AL0079: Manual span recommended for complex async flows -->
-    <data name="QYL0105AnalyzerTitle" xml:space="preserve">
-        <value>Manual span recommended</value>
-    </data>
-    <data name="QYL0105AnalyzerMessageFormat" xml:space="preserve">
-        <value>Method '{0}' has [Traced] but contains {1}; manual instrumentation may capture execution better</value>
-    </data>
-    <data name="QYL0105AnalyzerDescription" xml:space="preserve">
-        <value>Complex async patterns like Task.WhenAll, Parallel.ForEach, multiple awaits, or ConfigureAwait(false) may not be fully captured by auto-instrumentation. Consider using manual Activity.StartActivity() to create explicit child spans for parallel operations, ensuring each branch of execution is properly traced.</value>
     </data>
     <!-- AL0083: Insecure endpoint -->
     <data name="QYL0600AnalyzerTitle" xml:space="preserve">
@@ -314,16 +214,6 @@
     <data name="QYL0703AnalyzerDescription" xml:space="preserve">
         <value>High-volume services can generate excessive telemetry data without sampling configuration. AlwaysOnSampler captures every span, which may overwhelm backends and increase costs. Consider using ParentBasedSampler (respects parent decisions) or TraceIdRatioBasedSampler (probabilistic) for production environments. Tail-based sampling at the collector level is also recommended for capturing important traces like errors.</value>
     </data>
-    <!-- AL0093: Missing resource attributes -->
-    <data name="QYL0303AnalyzerTitle" xml:space="preserve">
-        <value>Missing resource attributes</value>
-    </data>
-    <data name="QYL0303AnalyzerMessageFormat" xml:space="preserve">
-        <value>OpenTelemetry resource is missing '{0}'. Add ResourceBuilder.CreateDefault().AddService() to configure service identification.</value>
-    </data>
-    <data name="QYL0303AnalyzerDescription" xml:space="preserve">
-        <value>Resource attributes 'service.name' and 'service.version' are required for proper service identification in observability backends. These attributes enable grouping traces by service and tracking version-specific behavior. Use ResourceBuilder.CreateDefault().AddService(serviceName, serviceVersion) to set them.</value>
-    </data>
     <!-- AL0091: Batch export disabled -->
     <data name="QYL0702AnalyzerTitle" xml:space="preserve">
         <value>Batch export disabled</value>
@@ -344,66 +234,6 @@
     <data name="QYL0304AnalyzerDescription" xml:space="preserve">
         <value>Under Native AOT with EventSourceSupport unset, the runtime trims EventSource/EventPipe to a no-op: any in-process EventSource, EventListener, or EventCounter — including OpenTelemetry.Instrumentation.EventCounters — silently stops emitting at runtime, with no build error. This rule fires only when such instrumentation is present in the compilation together with PublishAot=true and EventSourceSupport unset, so it does not flag the common OTLP-push app. OpenTelemetry's OTLP export (ActivitySource plus Meter/MeterListener) does not use EventSource and is unaffected; enabling EventSourceSupport increases Native AOT output size, so enable it only when you rely on EventPipe-based instrumentation. The out-of-process case (dotnet-trace/dotnet-counters) is not detectable at compile time and is out of scope.</value>
     </data>
-    <!-- AL0107: Orphaned [TracedTag] -->
-    <data name="QYL0106AnalyzerTitle" xml:space="preserve">
-        <value>Orphaned [TracedTag]</value>
-    </data>
-    <data name="QYL0106AnalyzerMessageFormat" xml:space="preserve">
-        <value>[TracedTag] on '{0}' has no effect because neither the method nor its declaring type has [Traced]</value>
-    </data>
-    <data name="QYL0106AnalyzerDescription" xml:space="preserve">
-        <value>The [TracedTag] attribute is only meaningful when used on parameters of methods that participate in tracing via [Traced]. When neither the method nor its declaring type has [Traced], the tag will be silently ignored and becomes dead metadata.</value>
-    </data>
-    <!-- AL0108: Redundant [NoTrace] -->
-    <data name="QYL0107AnalyzerTitle" xml:space="preserve">
-        <value>Redundant [NoTrace]</value>
-    </data>
-    <data name="QYL0107AnalyzerMessageFormat" xml:space="preserve">
-        <value>[NoTrace] on '{0}' has no effect because the declaring type has no class-level [Traced]</value>
-    </data>
-    <data name="QYL0107AnalyzerDescription" xml:space="preserve">
-        <value>The [NoTrace] attribute is used to opt a method out of class-level [Traced] auto-instrumentation. When the declaring type does not have [Traced], the [NoTrace] attribute has no effect and should be removed to avoid confusion.</value>
-    </data>
-    <!-- AL0109: Non-interceptable [Traced] -->
-    <data name="QYL0108AnalyzerTitle" xml:space="preserve">
-        <value>Non-interceptable [Traced]</value>
-    </data>
-    <data name="QYL0108AnalyzerMessageFormat" xml:space="preserve">
-        <value>[Traced] on '{0}' will be ignored because abstract, extern, and partial methods cannot be intercepted</value>
-    </data>
-    <data name="QYL0108AnalyzerDescription" xml:space="preserve">
-        <value>The [Traced] attribute triggers compile-time interception to create spans. Abstract, extern, and partial definition methods cannot be intercepted by the source generator, so [Traced] will be silently ignored.</value>
-    </data>
-    <!-- AL0110: [TracedTag] on out/ref parameter -->
-    <data name="QYL0109AnalyzerTitle" xml:space="preserve">
-        <value>[TracedTag] on out/ref parameter</value>
-    </data>
-    <data name="QYL0109AnalyzerMessageFormat" xml:space="preserve">
-        <value>[TracedTag] on '{0}' is not supported for out or ref parameters</value>
-    </data>
-    <data name="QYL0109AnalyzerDescription" xml:space="preserve">
-        <value>The [TracedTag] attribute records parameter values as span attributes at the start of method execution. Parameters with out or ref modifiers are not supported because out parameters have no value at method entry and ref parameters may be mutated during execution.</value>
-    </data>
-    <!-- AL0113: Missing exception recording on Activity error status -->
-    <data name="QYL0110AnalyzerTitle" xml:space="preserve">
-        <value>Missing exception recording on Activity error status</value>
-    </data>
-    <data name="QYL0110AnalyzerMessageFormat" xml:space="preserve">
-        <value>Activity.SetStatus(Error) without recording the exception; call AddEvent or RecordException to capture exception details</value>
-    </data>
-    <data name="QYL0110AnalyzerDescription" xml:space="preserve">
-        <value>When setting an Activity status to Error in a catch block, the exception should be recorded as an event on the span for proper observability. Use activity.AddEvent with exception details or a RecordException helper.</value>
-    </data>
-    <!-- AL0124: Non-interceptable AgentTraced -->
-    <data name="QYL0405AnalyzerTitle" xml:space="preserve">
-        <value>Non-interceptable [AgentTraced]</value>
-    </data>
-    <data name="QYL0405AnalyzerMessageFormat" xml:space="preserve">
-        <value>[AgentTraced] on '{0}' will be ignored because abstract, extern, and partial methods cannot be intercepted</value>
-    </data>
-    <data name="QYL0405AnalyzerDescription" xml:space="preserve">
-        <value>The [AgentTraced] attribute triggers compile-time interception to create agent spans. Abstract, extern, and partial definition methods cannot be intercepted by the source generator, so [AgentTraced] will be silently ignored.</value>
-    </data>
     <!-- AL0131: Direct GenAI SDK usage bypasses automatic OTel instrumentation -->
     <data name="QYL0406AnalyzerTitle" xml:space="preserve">
         <value>Direct GenAI SDK call bypasses automatic OTel instrumentation</value>
@@ -423,5 +253,68 @@
     </data>
     <data name="QYL0305AnalyzerDescription" xml:space="preserve">
         <value>The aggregated SemanticConventions / TraceSemanticConventions / ResourceSemanticConventions static classes are deprecated in favour of per-domain grouped attribute classes (HttpAttributes, ServerAttributes, DbAttributes, etc.). Per-domain grouping mirrors the upstream OpenTelemetry semantic conventions layout and produces smaller, more navigable diffs on convention upgrades.</value>
+    </data>
+    <data name="QYL0110AnalyzerTitle" xml:space="preserve">
+        <value>A catch that throws inside a span starter's scope must call RecordFailure</value>
+    </data>
+    <data name="QYL0110AnalyzerMessageFormat" xml:space="preserve">
+        <value>This catch throws inside the scope of '{0}' without RecordFailure; the span ends without its failure</value>
+    </data>
+    <data name="QYL0110AnalyzerDescription" xml:space="preserve">
+        <value>A span whose operation fails needs status Error with a description, error.type and the exception event, or the collector records a success with an empty failure message. Call span.RecordFailure(exception) in every catch that throws inside the scope of a Qyl.Spans or Qyl.IncubatingSpans starter.</value>
+    </data>
+    <data name="QYL0111AnalyzerTitle" xml:space="preserve">
+        <value>Start spans through the generated starters</value>
+    </data>
+    <data name="QYL0111AnalyzerMessageFormat" xml:space="preserve">
+        <value>'{0}' starts spans outside the generated starters; use Qyl.Spans (a starter or Spans.Work), whose application scope AddQyl subscribes</value>
+    </data>
+    <data name="QYL0111AnalyzerDescription" xml:space="preserve">
+        <value>A hand-made ActivitySource is unregistered until something subscribes it, and its StartActivity calls carry no registry kind, name or attributes. The generated starters on Qyl.Spans and Qyl.IncubatingSpans start every span on the registry-owned Qyl.Telemetry.Application scope that AddQyl subscribes. Instrumentation libraries that own their ActivitySources set the MSBuild property OtelSemConvInstrumentationLibrary to true.</value>
+    </data>
+    <data name="QYL0112AnalyzerTitle" xml:space="preserve">
+        <value>Span work names and business keys are compile-time constants</value>
+    </data>
+    <data name="QYL0112AnalyzerMessageFormat" xml:space="preserve">
+        <value>The {0} '{1}' is not a compile-time constant</value>
+    </data>
+    <data name="QYL0112AnalyzerDescription" xml:space="preserve">
+        <value>A Spans.Work name is the operation's identity in failure signatures and a SetAppTag key is a stored column, so both must stay low-cardinality. Use a constant and put the varying part into a SetAppTag value.</value>
+    </data>
+    <data name="QYL0113AnalyzerTitle" xml:space="preserve">
+        <value>A business key must not contain a token the collector denies</value>
+    </data>
+    <data name="QYL0113AnalyzerMessageFormat" xml:space="preserve">
+        <value>Business key '{0}' contains '{1}', a token the qyl collector denies; ingest drops it</value>
+    </data>
+    <data name="QYL0113AnalyzerDescription" xml:space="preserve">
+        <value>The qyl collector drops every key that contains one of the registry's denied tokens (RegistryPolicy.DeniedKeyTokens). A SetAppTag key, or a qyl.app.* key, that contains one compiles and runs but never arrives. Rename the key.</value>
+    </data>
+    <data name="QYL0120AnalyzerTitle" xml:space="preserve">
+        <value>No OpenTelemetry.Instrumentation.* package next to AddQyl</value>
+    </data>
+    <data name="QYL0120AnalyzerMessageFormat" xml:space="preserve">
+        <value>'{0}' from {1} records spans AddQyl already records; remove it</value>
+    </data>
+    <data name="QYL0120AnalyzerDescription" xml:space="preserve">
+        <value>AddQyl subscribes the HTTP server, HttpClient, Npgsql, Kafka and GenAI spans itself. A TracerProviderBuilder extension from an OpenTelemetry.Instrumentation.* assembly records the same operations a second time.</value>
+    </data>
+    <data name="QYL0121AnalyzerTitle" xml:space="preserve">
+        <value>Custom value equals a registry member</value>
+    </data>
+    <data name="QYL0121AnalyzerMessageFormat" xml:space="preserve">
+        <value>'{0}' is {1}; use the member instead of Custom</value>
+    </data>
+    <data name="QYL0121AnalyzerDescription" xml:space="preserve">
+        <value>Custom is the escape hatch for a value the registry does not list. A value a member already carries hides the member from readers and refactoring tools.</value>
+    </data>
+    <data name="QYL0122AnalyzerTitle" xml:space="preserve">
+        <value>No span starter inside an AIFunction</value>
+    </data>
+    <data name="QYL0122AnalyzerMessageFormat" xml:space="preserve">
+        <value>'{0}' starts a span inside a delegate passed to AIFunctionFactory.Create, whose execute_tool span FunctionInvokingChatClient already records</value>
+    </data>
+    <data name="QYL0122AnalyzerDescription" xml:space="preserve">
+        <value>FunctionInvokingChatClient records the execute_tool span of every AIFunction it invokes, and the registry says not to record two spans for one tool call. Inside the function, set business keys on Activity.Current with SetAppTag instead.</value>
     </data>
 </root>

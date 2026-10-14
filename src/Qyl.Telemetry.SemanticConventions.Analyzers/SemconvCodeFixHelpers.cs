@@ -47,47 +47,6 @@ internal static class SemconvCodeFixHelpers
         return IsExactReplacementCandidate(replacement);
     }
 
-    /// <summary>
-    /// Finds an attribute on <paramref name="node"/> by short name, tolerating namespace
-    /// qualification and the <c>Attribute</c> suffix.
-    /// </summary>
-    public static AttributeSyntax? FindAttributeByName(SyntaxNode node, string attributeShortName)
-    {
-        foreach (var attributeList in node.ChildNodes().OfType<AttributeListSyntax>())
-        {
-            foreach (var attribute in attributeList.Attributes)
-            {
-                var name = attribute.Name.ToString();
-                if (name == attributeShortName || name.EndsWithOrdinal("." + attributeShortName) ||
-                    name == attributeShortName + "Attribute" ||
-                    name.EndsWithOrdinal("." + attributeShortName + "Attribute"))
-                {
-                    return attribute;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /// <summary>
-    /// Removes the attribute — or its whole list when it is the only entry — and
-    /// returns the updated document.
-    /// </summary>
-    public static Document RemoveAttribute(Document document, SyntaxNode root, AttributeSyntax attribute)
-    {
-        if (attribute.Parent is not AttributeListSyntax attributeList)
-        {
-            return document;
-        }
-
-        var newRoot = attributeList.Attributes.Count == 1
-            ? root.RemoveNode(attributeList, SyntaxRemoveOptions.KeepNoTrivia)!
-            : root.ReplaceNode(attributeList, attributeList.WithAttributes(attributeList.Attributes.Remove(attribute)));
-
-        return document.WithSyntaxRoot(newRoot);
-    }
-
     private static bool TryExtractQuotedUseReplacement(string guidance, [NotNullWhen(true)] out string? replacement)
     {
         const string quotedPrefix = "Use '";
