@@ -285,7 +285,7 @@
         <value>A business key must not contain a token the collector denies</value>
     </data>
     <data name="QYL0113AnalyzerMessageFormat" xml:space="preserve">
-        <value>Business key '{0}' contains '{1}', a token the qyl collector denies; ingest drops it</value>
+        <value>Business key '{0}' contains '{1}', which the qyl collector denies; ingest drops it</value>
     </data>
     <data name="QYL0113AnalyzerDescription" xml:space="preserve">
         <value>The qyl collector drops every key that contains one of the registry's denied tokens (RegistryPolicy.DeniedKeyTokens). A SetAppTag key, or a qyl.app.* key, that contains one compiles and runs but never arrives. Rename the key.</value>

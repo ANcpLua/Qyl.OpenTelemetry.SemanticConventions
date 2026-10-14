@@ -35,6 +35,22 @@ internal static class SemconvTypedSurface
 {% endfor %}
     };
 
+    /// <summary>Keys the collector never persists; a template child (key + ".") is denied too (QYL0113 checks the part after qyl.app.).</summary>
+    internal static readonly string[] NotPersistedKeys =
+    {
+{% for k in policy.not_persisted %}
+        {{ lib.cs_string(k) }},
+{% endfor %}
+    };
+
+    /// <summary>Key prefixes the collector never persists (ordinal, case-insensitive).</summary>
+    internal static readonly string[] NotPersistedPrefixes =
+    {
+{% for p in policy.not_persisted_prefixes %}
+        {{ lib.cs_string(p) }},
+{% endfor %}
+    };
+
     /// <summary>Generated setter name to the key it writes; a template setter takes (segment, value).</summary>
     internal static readonly Dictionary<string, SemconvTypedSetter> Setters = new(StringComparer.Ordinal)
     {

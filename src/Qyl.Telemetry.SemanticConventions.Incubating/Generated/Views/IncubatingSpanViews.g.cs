@@ -117,7 +117,7 @@ public readonly struct GenAiInvokeAgentSpan
     /// <summary>
     /// The attribute keys this view reads, all of them persisted.
     /// </summary>
-    public static global::System.Collections.Generic.IReadOnlyList<string> Keys { get; } = new string[] { "error.type", "gen_ai.agent.name", "gen_ai.output.type", "gen_ai.request.choice.count", "gen_ai.request.frequency_penalty", "gen_ai.request.model", "gen_ai.request.presence_penalty", "gen_ai.request.seed", "gen_ai.request.stop_sequences", "gen_ai.request.temperature", "gen_ai.request.top_p", "gen_ai.response.finish_reasons", "gen_ai.usage.input_tokens", "gen_ai.usage.output_tokens" };
+    public static global::System.Collections.Generic.IReadOnlyList<string> Keys { get; } = new string[] { "error.type", "gen_ai.agent.name", "gen_ai.output.type", "gen_ai.request.choice.count", "gen_ai.request.frequency_penalty", "gen_ai.request.max_tokens", "gen_ai.request.model", "gen_ai.request.presence_penalty", "gen_ai.request.seed", "gen_ai.request.stop_sequences", "gen_ai.request.temperature", "gen_ai.request.top_p", "gen_ai.response.finish_reasons", "gen_ai.usage.input_tokens", "gen_ai.usage.output_tokens" };
 
     /// <summary>
     /// The span this view reads.
@@ -158,6 +158,11 @@ public readonly struct GenAiInvokeAgentSpan
     /// <c>gen_ai.request.frequency_penalty</c>: The frequency penalty setting for the GenAI request.
     /// </summary>
     public double? RequestFrequencyPenalty => Record.GetDouble("gen_ai.request.frequency_penalty");
+
+    /// <summary>
+    /// <c>gen_ai.request.max_tokens</c>: The maximum number of tokens the model generates for a request.
+    /// </summary>
+    public long? RequestMaxTokens => Record.GetInt64("gen_ai.request.max_tokens");
 
     /// <summary>
     /// <c>gen_ai.request.model</c>: The name of the GenAI model configured for the agent.

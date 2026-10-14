@@ -48,6 +48,64 @@ internal static class SemconvTypedSurface
         "token",
     };
 
+    /// <summary>Keys the collector never persists; a template child (key + ".") is denied too (QYL0113 checks the part after qyl.app.).</summary>
+    internal static readonly string[] NotPersistedKeys =
+    {
+        "build.error.message",
+        "code.file.path",
+        "code.stacktrace",
+        "db.odp.user.statement",
+        "db.query.text",
+        "exception.message",
+        "exception.stacktrace",
+        "executor.input",
+        "executor.output",
+        "gen_ai.agent.description",
+        "gen_ai.agent.id",
+        "gen_ai.conversation.id",
+        "gen_ai.data_source.id",
+        "gen_ai.evaluation.explanation",
+        "gen_ai.evaluation.name",
+        "gen_ai.input.messages",
+        "gen_ai.output.messages",
+        "gen_ai.prompt.name",
+        "gen_ai.response.id",
+        "gen_ai.retrieval.documents",
+        "gen_ai.retrieval.query.text",
+        "gen_ai.system_instructions",
+        "gen_ai.tool.call.arguments",
+        "gen_ai.tool.call.id",
+        "gen_ai.tool.call.result",
+        "gen_ai.tool.definitions",
+        "gen_ai.tool.description",
+        "gen_ai.workflow.name",
+        "host.id",
+        "host.ip",
+        "host.mac",
+        "host.name",
+        "http.request.header",
+        "http.response.header",
+        "mcp.resource.uri",
+        "mcp.session.id",
+        "message.content",
+        "nservicebus.originating_machine",
+        "nservicebus.processing_machine",
+        "rpc.request.metadata",
+        "rpc.response.metadata",
+        "service.instance.id",
+        "session.id",
+        "session.previous_id",
+        "url.full",
+        "url.query",
+    };
+
+    /// <summary>Key prefixes the collector never persists (ordinal, case-insensitive).</summary>
+    internal static readonly string[] NotPersistedPrefixes =
+    {
+        "enduser.",
+        "user.",
+    };
+
     /// <summary>Generated setter name to the key it writes; a template setter takes (segment, value).</summary>
     internal static readonly Dictionary<string, SemconvTypedSetter> Setters = new(StringComparer.Ordinal)
     {

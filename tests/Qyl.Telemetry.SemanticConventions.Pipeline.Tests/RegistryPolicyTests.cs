@@ -80,7 +80,13 @@ public sealed class RegistryPolicyTests
     [InlineData("user.email", false)]
     [InlineData("enduser.id", false)]
     [InlineData("qyl.app.order.message", false)]
-    [InlineData("gen_ai.request.max_tokens", false)]
+    [InlineData("gen_ai.request.max_tokens", true)]
+    [InlineData("gen_ai.usage.text.input_tokens", true)]
+    [InlineData("qyl.app.user.email", false)]
+    [InlineData("qyl.app.url.full", false)]
+    [InlineData("qyl.app.enduser.id", false)]
+    [InlineData("db.odp.user.statement", false)]
+    [InlineData("nservicebus.processing_machine", false)]
     [InlineData("qyl.app.API_KEY", false)]
     public void IsPersisted_applies_the_collectors_rule(string key, bool persisted)
     {

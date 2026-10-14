@@ -152,6 +152,36 @@ groups:
         annotations: {qyl: {token_exempt: true}}
       - ref: gen_ai.usage.reasoning.output_tokens
         annotations: {qyl: {token_exempt: true}}
+      # Plain token counts (numbers, not credentials): persisted although "token" is in their key.
+      - ref: gen_ai.request.max_tokens
+        annotations: {qyl: {token_exempt: true}}
+      - ref: gen_ai.usage.audio.cache_read.input_tokens
+        annotations: {qyl: {token_exempt: true}}
+      - ref: gen_ai.usage.audio.input_tokens
+        annotations: {qyl: {token_exempt: true}}
+      - ref: gen_ai.usage.audio.output_tokens
+        annotations: {qyl: {token_exempt: true}}
+      - ref: gen_ai.usage.image.cache_read.input_tokens
+        annotations: {qyl: {token_exempt: true}}
+      - ref: gen_ai.usage.image.input_tokens
+        annotations: {qyl: {token_exempt: true}}
+      - ref: gen_ai.usage.image.output_tokens
+        annotations: {qyl: {token_exempt: true}}
+      - ref: gen_ai.usage.text.cache_read.input_tokens
+        annotations: {qyl: {token_exempt: true}}
+      - ref: gen_ai.usage.text.input_tokens
+        annotations: {qyl: {token_exempt: true}}
+      - ref: gen_ai.usage.text.output_tokens
+        annotations: {qyl: {token_exempt: true}}
+      # Vendor keys whose content the registry denies elsewhere: error text, host names, statements.
+      - ref: build.error.message
+        annotations: {qyl: {persisted: false}}
+      - ref: nservicebus.originating_machine
+        annotations: {qyl: {persisted: false}}
+      - ref: nservicebus.processing_machine
+        annotations: {qyl: {persisted: false}}
+      - ref: db.odp.user.statement
+        annotations: {qyl: {persisted: false}}
 
   # Attributes known only when the operation ends. A starter takes no parameter for them; they
   # are set through the typed setters or RecordFailure before the span ends.

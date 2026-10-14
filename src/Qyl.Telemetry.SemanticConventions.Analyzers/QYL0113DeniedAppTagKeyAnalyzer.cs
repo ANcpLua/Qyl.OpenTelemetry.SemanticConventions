@@ -55,5 +55,22 @@ internal sealed class Qyl0113DeniedAppTagKeyAnalyzer : AlAnalyzer {
                 return;
             }
         }
+
+        // The part after qyl.app. is held to the registry's denied keys and prefixes: qyl.app.user.email is user.email.
+        var name = key.Substring(SemconvTypedSurface.AppKeyPrefix.Length);
+        foreach (var denied in SemconvTypedSurface.NotPersistedKeys) {
+            if (string.Equals(name, denied, StringComparison.Ordinal)
+                || (name.Length > denied.Length && name[denied.Length] == '.' && name.StartsWith(denied, StringComparison.Ordinal))) {
+                context.ReportDiagnostic(Diagnostic.Create(s_rule, anchor.Syntax.GetLocation(), key, denied));
+                return;
+            }
+        }
+
+        foreach (var prefix in SemconvTypedSurface.NotPersistedPrefixes) {
+            if (name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) {
+                context.ReportDiagnostic(Diagnostic.Create(s_rule, anchor.Syntax.GetLocation(), key, prefix));
+                return;
+            }
+        }
     }
 }

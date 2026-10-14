@@ -30,8 +30,10 @@ public static class RegistryPolicy
     /// </summary>
     public static global::System.Collections.Generic.IReadOnlyList<string> NotPersistedKeys { get; } = new string[]
     {
+        "build.error.message",
         "code.file.path",
         "code.stacktrace",
+        "db.odp.user.statement",
         "db.query.text",
         "exception.message",
         "exception.stacktrace",
@@ -65,6 +67,8 @@ public static class RegistryPolicy
         "mcp.resource.uri",
         "mcp.session.id",
         "message.content",
+        "nservicebus.originating_machine",
+        "nservicebus.processing_machine",
         "rpc.request.metadata",
         "rpc.response.metadata",
         "service.instance.id",
@@ -117,12 +121,22 @@ public static class RegistryPolicy
     public static global::System.Collections.Generic.IReadOnlyList<string> TokenExemptKeys { get; } = new string[]
     {
         "db.query.summary",
+        "gen_ai.request.max_tokens",
         "gen_ai.token.type",
+        "gen_ai.usage.audio.cache_read.input_tokens",
+        "gen_ai.usage.audio.input_tokens",
+        "gen_ai.usage.audio.output_tokens",
         "gen_ai.usage.cache_read.input_tokens",
         "gen_ai.usage.cache_write.input_tokens",
+        "gen_ai.usage.image.cache_read.input_tokens",
+        "gen_ai.usage.image.input_tokens",
+        "gen_ai.usage.image.output_tokens",
         "gen_ai.usage.input_tokens",
         "gen_ai.usage.output_tokens",
         "gen_ai.usage.reasoning.output_tokens",
+        "gen_ai.usage.text.cache_read.input_tokens",
+        "gen_ai.usage.text.input_tokens",
+        "gen_ai.usage.text.output_tokens",
         "messaging.kafka.message.offset",
         "messaging.message.body.size",
         "messaging.message.id",
@@ -284,6 +298,13 @@ public static class RegistryPolicy
     public static bool IsPersisted(string key)
     {
         if (key is null) throw new global::System.ArgumentNullException(nameof(key));
+        // A qyl.app. key is held to the same rule by the part after the prefix: qyl.app.user.email is user.email.
+        if (key.StartsWith("qyl.app.", global::System.StringComparison.Ordinal) && !IsPersistedName(key.Substring("qyl.app.".Length))) return false;
+        return IsPersistedName(key);
+    }
+
+    private static bool IsPersistedName(string key)
+    {
         foreach (var denied in NotPersistedKeys)
         {
             if (string.Equals(key, denied, global::System.StringComparison.Ordinal)) return false;

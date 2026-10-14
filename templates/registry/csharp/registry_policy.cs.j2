@@ -89,6 +89,13 @@ public static class RegistryPolicy
 {{ pad }}public static bool IsPersisted(string key)
 {{ pad }}{
 {{ pad }}    if (key is null) throw new global::System.ArgumentNullException(nameof(key));
+{{ pad }}    // A qyl.app. key is held to the same rule by the part after the prefix: qyl.app.user.email is user.email.
+{{ pad }}    if (key.StartsWith("qyl.app.", global::System.StringComparison.Ordinal) && !IsPersistedName(key.Substring("qyl.app.".Length))) return false;
+{{ pad }}    return IsPersistedName(key);
+{{ pad }}}
+
+{{ pad }}private static bool IsPersistedName(string key)
+{{ pad }}{
 {{ pad }}    foreach (var denied in NotPersistedKeys)
 {{ pad }}    {
 {{ pad }}        if (string.Equals(key, denied, global::System.StringComparison.Ordinal)) return false;

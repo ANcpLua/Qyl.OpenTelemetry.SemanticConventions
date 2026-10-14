@@ -37,6 +37,34 @@ public sealed class Qyl0113DeniedAppTagKeyAnalyzerTests
     }
 
     [Fact]
+    public async Task Reports_an_app_key_whose_name_the_registry_does_not_persist()
+    {
+        var diagnostics = await AnalyzerRun.DiagnosticsAsync(
+            new Qyl0113DeniedAppTagKeyAnalyzer(),
+            "QYL0113",
+            """
+            using System.Diagnostics;
+            using Qyl;
+
+            public static class Store
+            {
+                public static void Write(Activity span)
+                {
+                    span.SetAppTag("user.email", "x");
+                    span.SetAppTag("url.full", "x");
+                    span.SetTag("qyl.app.enduser.id", "x");
+                }
+            }
+            """);
+
+        diagnostics.Should().HaveCount(3);
+        diagnostics.Select(static d => d.GetMessage(CultureInfo.InvariantCulture)).Should()
+            .Contain(static m => m.Contains("qyl.app.user.email", StringComparison.Ordinal))
+            .And.Contain(static m => m.Contains("'url.full'", StringComparison.Ordinal))
+            .And.Contain(static m => m.Contains("qyl.app.enduser.id", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public async Task Is_silent_for_a_persisted_app_key_and_for_registry_keys()
     {
         var diagnostics = await AnalyzerRun.DiagnosticsAsync(
