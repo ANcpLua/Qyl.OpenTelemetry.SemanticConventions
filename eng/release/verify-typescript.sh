@@ -3,7 +3,8 @@
 set -euo pipefail
 version=${1:?usage: verify-typescript.sh version [tarball]}
 source=${2:-@ancplua/qyl-semantic-conventions@$version}
-expected_digest=$(node --input-type=module -e 'import {REGISTRY_SNAPSHOT_SHA256 as hash} from "./typescript/dist/index.js"; console.log(hash)')
+# VerifyRelease passes the fingerprint read from the release tag; otherwise the built tree's.
+expected_digest=${QYL_EXPECTED_REGISTRY_SHA256:-$(node --input-type=module -e 'import {REGISTRY_SNAPSHOT_SHA256 as hash} from "./typescript/dist/index.js"; console.log(hash)')}
 temp=$(mktemp -d)
 trap 'rm -rf "$temp"' EXIT
 npm install --prefix "$temp" --registry=https://registry.npmjs.org --ignore-scripts --no-audit --no-fund "$source" >/dev/null

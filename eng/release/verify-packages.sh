@@ -230,7 +230,8 @@ if [[ "${restored}" != true ]]; then
 fi
 
 dotnet build "${consumer_directory}/ReleaseSmoke.csproj" --configuration Release --no-restore -maxcpucount:4
-QYL_EXPECTED_REGISTRY_SHA256=$(node --input-type=module -e 'import {REGISTRY_SNAPSHOT_SHA256 as hash} from "./typescript/dist/index.js"; console.log(hash)') \
+# VerifyRelease passes the fingerprint read from the release tag; otherwise the built tree's.
+QYL_EXPECTED_REGISTRY_SHA256=${QYL_EXPECTED_REGISTRY_SHA256:-$(node --input-type=module -e 'import {REGISTRY_SNAPSHOT_SHA256 as hash} from "./typescript/dist/index.js"; console.log(hash)')} \
 dotnet run --project "${consumer_directory}/ReleaseSmoke.csproj" \
   --configuration Release \
   --no-build --no-restore

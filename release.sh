@@ -2,10 +2,23 @@
 # Publish the three NuGet packages and the shared TypeScript package from this
 # machine with the keys registered in Vitals. No workflow publishes.
 #
-#   ./release.sh <x.y.z>            build, pack exactly four artifacts, publish, tag v<x.y.z>, GitHub release
+#   ./release.sh <x.y.z>            build, pack exactly four artifacts, publish, tag v<x.y.z>, GitHub release;
+#                                   returns once NuGet and npm accepted the push and the tag and the GitHub
+#                                   release exist, and leaves the verification below running detached
 #   ./release.sh <x.y.z> --dry-run  every check, the real build and pack, a NuGet key probe for every package id
 #                                   and npm's publish --dry-run; nothing is pushed or published. Checks the real
-#                                   run enforces (tag, already on NuGet or npm) only warn.
+#                                   run enforces (tag, already on NuGet or npm) only warn. Prints what the
+#                                   detached job would do.
+#   ./release.sh --wait <x.y.z>     blocks until artifacts/release-<x.y.z>-verify.log ends in VERIFIED (exit 0)
+#                                   or FAILED (exit 1; exit 3 when not indexed in time), printing the log
+#   ./release.sh --verify <x.y.z>   starts the detached verification again for a released version
+#
+# The detached verification (own session, survives the caller's shell) runs
+# `./build.sh VerifyRelease --published-version <x.y.z>` (waits until nuget.org and npm serve all four
+# packages, up to 45 min, then the release smoke against the registries: eng/release/verify-packages.sh
+# and verify-typescript.sh), then qyl.at's scripts/refresh-published-versions.sh, and ends its log with
+# VERIFIED or FAILED. Registry versions are immutable: a failed smoke after the fact is a patch release,
+# and the log says so.
 #
 # To resume a partial release, preserve its artifacts and record, then use
 # QYL_RELEASE_ARTIFACTS=/path/to/original/artifacts ./release.sh <version> --resume [--dry-run].
@@ -28,20 +41,111 @@ NPM_TOKEN_FILE=$HOME/.config/vitals/npm-qyl-manual-publish-token
 OUT=${QYL_RELEASE_ARTIFACTS:-"$PWD/artifacts"}
 OUT=$(python3 -c 'from pathlib import Path; import sys; print(Path(sys.argv[1]).resolve())' "$OUT")
 PACKAGES=(Qyl.Telemetry.SemanticConventions Qyl.Telemetry.SemanticConventions.Analyzers Qyl.Telemetry.SemanticConventions.Incubating)
+QYL_AT_DIR=${QYL_AT_DIR:-$(cd .. && pwd)/qyl.at}
 
+RELEASE_NAME="Qyl.Telemetry.SemanticConventions (3 NuGet + npm)"
+VERIFY_COMMAND="./build.sh VerifyRelease"
+VERIFY_WHAT="nuget.org and npm index up to 45 min, then the release smoke against the registries"
+
+mode=release
+case ${1:-} in --wait | --verify | __verify) mode=${1#--}; shift ;; esac
 version=${1:-}
 dry=0; resume=0; browser_auth=0
-for flag in "${@:2}"; do
-  case "$flag" in
-    --dry-run) dry=1 ;;
-    --resume) resume=1 ;;
-    --browser-auth) browser_auth=1 ;;
-    *) echo "unknown option: $flag" >&2; exit 2 ;;
-  esac
-done
-[[ $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "usage: $0 <x.y.z> [--dry-run] [--resume] [--browser-auth]" >&2; exit 2; }
+if [[ $mode == release ]]; then
+  for flag in "${@:2}"; do
+    case "$flag" in
+      --dry-run) dry=1 ;;
+      --resume) resume=1 ;;
+      --browser-auth) browser_auth=1 ;;
+      *) echo "unknown option: $flag" >&2; exit 2 ;;
+    esac
+  done
+fi
+[[ $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "usage: $0 <x.y.z> [--dry-run] [--resume] [--browser-auth] | --wait <x.y.z> | --verify <x.y.z>" >&2; exit 2; }
 say() { printf '\n== %s\n' "$*"; }
 die() { echo "release: $*" >&2; exit 1; }
+utc() { date -u +%Y-%m-%dT%H:%M:%SZ; }
+verify_log="$PWD/artifacts/release-$version-verify.log"
+index_status="$PWD/artifacts/release-$version-index.status"  # "waiting|indexed|timed-out elapsed=<s>s at=<utc>"
+verify_pid() { sed -n '1s/.* pid \([0-9][0-9]*\) .*/\1/p' "$verify_log"; }
+index_state() { [[ -f $index_status ]] && cut -d' ' -f1 "$index_status"; }
+index_elapsed() { sed -n 's/.* elapsed=\([^ ]*\) .*/\1/p' "$index_status" 2>/dev/null; }
+
+# The detached job: VerifyRelease (index wait, then the registry consumers), then the snapshot
+# refresh. Its first log line names its pid, its last line is the verdict; exit 3 = not indexed in time.
+verify_published() {
+  local step="start" next_patch="${version%.*}.$(( ${version##*.} + 1 ))"
+  printf 'verify %s %s pid %s started %s\n' "$RELEASE_NAME" "$version" "$$" "$(utc)"
+  trap 'rc=$?; (( rc == 0 )) || printf "FAILED %s %s %s: %s stopped (exit %s); fix the cause, then ./release.sh --verify %s\n" "$RELEASE_NAME" "$version" "$(utc)" "$step" "$rc" "$version"' EXIT
+  fail() { local code=$1; shift; printf 'FAILED %s %s %s: %s\n' "$RELEASE_NAME" "$version" "$(utc)" "$*"; trap - EXIT; exit "$code"; }
+  rm -f "$index_status"
+
+  step="VerifyRelease"
+  say "$VERIFY_COMMAND --published-version $version ($VERIFY_WHAT)"
+  if ! $VERIFY_COMMAND --published-version "$version"; then
+    [[ $(index_state) == timed-out ]] &&
+      fail 3 "not indexed after $(index_elapsed); nothing is wrong with the release yet: ./release.sh --verify $version checks again"
+    fail 1 "a published package failed VerifyRelease (above; full log under artifacts/logs/); $version is immutable: fix the cause and ship $next_patch as a patch release (a transient network failure: ./release.sh --verify $version)"
+  fi
+
+  step="snapshot refresh"
+  [[ $(index_state) == indexed ]] || fail 1 "VerifyRelease passed but $index_status does not say indexed; the snapshot stays as it is"
+  say "refresh the published-versions snapshot in qyl.at"
+  "$QYL_AT_DIR/scripts/refresh-published-versions.sh" ||
+    fail 1 "$version is published and verified, but the snapshot refresh failed (above); ./release.sh --verify $version retries it"
+
+  trap - EXIT
+  printf 'VERIFIED %s %s %s: indexed after %s, registry consumers passed, snapshot refreshed\n' "$RELEASE_NAME" "$version" "$(utc)" "$(index_elapsed)"
+}
+
+# nohup plus a new session (python3's setsid; macOS has no setsid command): neither the end of the
+# caller's shell nor a signal to its process group reaches the job. It needs no registry credential.
+start_verification() {
+  local pid
+  mkdir -p artifacts
+  if [[ -f $verify_log ]] && ! tail -n 1 "$verify_log" | grep -Eq '^(VERIFIED|FAILED) '; then
+    pid=$(verify_pid)
+    [[ -n $pid ]] && kill -0 "$pid" 2>/dev/null && die "the verification of $version is still running (pid $pid): ./release.sh --wait $version"
+  fi
+  : >"$verify_log"
+  env -u NPM_CONFIG_USERCONFIG -u NPM_CONFIG_TOKEN nohup python3 -I -c 'import os, sys; os.setsid(); os.execv(sys.argv[1], sys.argv[1:])' \
+    "$PWD/release.sh" __verify "$version" </dev/null >>"$verify_log" 2>&1 &
+  disown
+  # Return only once the job has logged its pid, so a --wait right after this finds it.
+  for _ in $(seq 1 50); do [[ -n $(verify_pid) ]] && break; sleep 0.2; done
+  [[ -n $(verify_pid) ]] || die "the detached verification did not start; read $verify_log"
+  say "verification runs detached (pid $!)"
+  echo "log:  $verify_log"
+  echo "wait: ./release.sh --wait $version   (or: tail -f $verify_log)"
+}
+
+wait_for_verification() {
+  local printed=0 lines pid alive
+  [[ -f $verify_log ]] || die "no verification log for $version at $verify_log; ./release.sh --verify $version starts one"
+  while :; do
+    pid=$(verify_pid); alive=0
+    [[ -n $pid ]] && kill -0 "$pid" 2>/dev/null && alive=1
+    lines=$(wc -l <"$verify_log" | tr -d ' ')
+    (( lines > printed )) && { sed -n "$((printed + 1)),${lines}p" "$verify_log"; printed=$lines; }
+    case $(tail -n 1 "$verify_log") in
+      VERIFIED\ *) return 0 ;;
+      FAILED\ *) [[ $(index_state) == timed-out ]] && return 3; return 1 ;;
+    esac
+    (( alive )) || die "the verification job (pid ${pid:-unknown}) ended without VERIFIED or FAILED; read $verify_log, then ./release.sh --verify $version"
+    sleep 5
+  done
+}
+
+case $mode in
+  __verify) verify_published; exit 0 ;;
+  wait) wait_for_verification; exit ;;
+  verify)
+    [[ -n $(git ls-remote --tags origin "refs/tags/v$version") ]] || die "tag v$version is not on origin; release it first"
+    gh release view "v$version" >/dev/null 2>&1 || die "GitHub release v$version does not exist; release it first"
+    start_verification
+    exit 0 ;;
+esac
+
 publish_npm() {
   if (( browser_auth )); then
     python3 eng/release/publish-npm.py --browser-auth "$@"
@@ -121,7 +225,7 @@ poll_schema() { local i; for ((i = 0; i < $1; i++)); do schema_served && return 
 if poll_schema 2; then
   echo "qyl.at serves $schema_url"
 else
-  qyl_at=${QYL_AT_DIR:-$(cd .. && pwd)/qyl.at}
+  qyl_at=$QYL_AT_DIR
   if (( dry )); then
     echo "warning: $schema_url is not served yet; the real run adds public/schemas/$version in $qyl_at and deploys it"
   else
@@ -188,43 +292,31 @@ if (( dry )); then
   NPM_CONFIG_TOKEN=$(<"$NPM_TOKEN_FILE") publish_npm bun publish --cwd typescript "$OUT/ancplua-qyl-semantic-conventions-$version.tgz" --registry "$NPM_REGISTRY" --access public --dry-run </dev/null
   say "dry run finished: nothing published, nothing tagged"
   git status --short --untracked-files=no
+  echo "The real run then starts the detached verification ($verify_log, ./release.sh --wait $version):"
+  echo "  $VERIFY_COMMAND --published-version $version ($VERIFY_WHAT),"
+  echo "  then $QYL_AT_DIR/scripts/refresh-published-versions.sh; the log ends with VERIFIED or FAILED."
   exit 0
 fi
 if (( ! resume )); then
   python3 eng/release/artifact-record.py mark-started "$OUT" "$version"
   for id in "${PACKAGES[@]}"; do
-    dotnet nuget push "$OUT/$id.$version.nupkg" --api-key "$(<"$NUGET_KEY_FILE")" --source "$NUGET_SOURCE"
+    # --skip-duplicate: a rerun after a partial push (pushed, not indexed yet) goes on.
+    dotnet nuget push "$OUT/$id.$version.nupkg" --api-key "$(<"$NUGET_KEY_FILE")" --source "$NUGET_SOURCE" --skip-duplicate
   done
 fi
 
 # Publish the verified tarball itself; stop immediately on an interactive auth request.
 NPM_CONFIG_TOKEN=$(<"$NPM_TOKEN_FILE") publish_npm bun publish --cwd typescript "$OUT/ancplua-qyl-semantic-conventions-$version.tgz" --registry "$NPM_REGISTRY" --access public </dev/null || die "npm publication failed; if a token or OTP is requested, renew credentials before continuing"
 
-say "wait until every package is indexed"
-for id in "${PACKAGES[@]}"; do
-  for attempt in $(seq 1 120); do
-    indexed "$id" "$version" && break
-    echo "Waiting for $id $version ($attempt/120)"
-    sleep 10
-  done
-  indexed "$id" "$version" || die "$id $version did not index"
-done
-for attempt in $(seq 1 120); do
-  [[ $(npm view "$NPM_PACKAGE@$version" version --registry="$NPM_REGISTRY" 2>/dev/null || true) == "$version" ]] && break
-  echo "Waiting for $NPM_PACKAGE $version ($attempt/120)"
-  sleep 10
-done
-[[ $(npm view "$NPM_PACKAGE@$version" version --registry="$NPM_REGISTRY") == "$version" ]] || die "npm package did not index"
-printf 'INDEXED %s %s\n' "$version" "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-
-say "verify the published packages"
-./eng/release/verify-packages.sh "$version" "$NUGET_SOURCE" "$OUT"
-./eng/release/verify-typescript.sh "$version"
-
 say "tag and GitHub release (notes from CHANGELOG.md)"
 git show "$release_commit:CHANGELOG.md" | awk -v v="$version" 'index($0, "## [" v "]") == 1 {on=1; next} on && /^## \[/ {exit} on' >"$notes"
 git tag -a "v$version" "$release_commit" -m "v$version"
 git push -q origin "v$version"
-gh release create "v$version" --title "v$version" --notes-file "$notes" "$OUT"/Qyl.Telemetry.SemanticConventions*."$version".nupkg "$OUT/ancplua-qyl-semantic-conventions-$version.tgz"
+if gh release view "v$version" >/dev/null 2>&1; then
+  gh release upload "v$version" "$OUT"/Qyl.Telemetry.SemanticConventions*."$version".nupkg "$OUT/ancplua-qyl-semantic-conventions-$version.tgz" --clobber
+else
+  gh release create "v$version" --title "v$version" --notes-file "$notes" "$OUT"/Qyl.Telemetry.SemanticConventions*."$version".nupkg "$OUT/ancplua-qyl-semantic-conventions-$version.tgz"
+fi
 
-say "next (SKILL.md): once indexed, notify AutoInstrumentation (Directory.Packages.props, the single source; the registry ref derives from it), qyl (Version.props QylSemanticConventionsVersion), qyl.mcp (server/ and workbench/ package.json, bun.lock) and qyl.at (src/data/site.ts)"
+start_verification
+say "next (SKILL.md): ./release.sh --wait $version; once VERIFIED, notify AutoInstrumentation (Directory.Packages.props, the single source; the registry ref derives from it), qyl (Version.props QylSemanticConventionsVersion), qyl.mcp (server/ and workbench/ package.json, bun.lock) and qyl.at (src/data/site.ts)"
