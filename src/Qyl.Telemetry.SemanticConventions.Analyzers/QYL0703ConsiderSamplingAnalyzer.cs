@@ -131,9 +131,7 @@ internal sealed class Qyl0703ConsiderSamplingAnalyzer : AlAnalyzer {
             switch (descendant) {
                 case IdentifierNameSyntax identifier
                     when s_alwaysOnSamplerTypes.Contains(identifier.Identifier.Text):
-                    return true;
                 case ObjectCreationExpressionSyntax { Type: IdentifierNameSyntax typeName } when s_alwaysOnSamplerTypes.Contains(typeName.Identifier.Text):
-                    return true;
                 case ObjectCreationExpressionSyntax { Type: QualifiedNameSyntax qualifiedName } when s_alwaysOnSamplerTypes.Contains(qualifiedName.ToString()):
                     return true;
             }

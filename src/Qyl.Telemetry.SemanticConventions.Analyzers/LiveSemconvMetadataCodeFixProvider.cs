@@ -120,9 +120,9 @@ public sealed class LiveSemconvMetadataCodeFixProvider : CodeFixProvider
                     ? containingMemberAccess
                     : originalName);
 
-        var nodeToReplace = originalName.Parent is MemberAccessExpressionSyntax parentMemberAccess
+        SyntaxNode nodeToReplace = originalName.Parent is MemberAccessExpressionSyntax parentMemberAccess
             && parentMemberAccess.Name == originalName
-                ? (SyntaxNode)parentMemberAccess
+                ? parentMemberAccess
                 : originalName;
         return document.WithSyntaxRoot(root.ReplaceNode(nodeToReplace, qualified));
     }

@@ -30,8 +30,8 @@ internal sealed class Qyl0113DeniedAppTagKeyAnalyzer : AlAnalyzer {
         string? key = null;
         IOperation? anchor = null;
 
-        if (invocation.TargetMethod is { Name: "SetAppTag", ContainingType: { Name: "Spans" } type }
-            && type.ContainingNamespace is { Name: "Qyl" } ns && ns.ContainingNamespace.IsGlobalNamespace
+        if (invocation.TargetMethod is { Name: "SetAppTag", ContainingType: { Name: "Spans", ContainingNamespace: { Name: "Qyl" } ns } }
+            && ns.ContainingNamespace.IsGlobalNamespace
             && invocation.Arguments.FirstOrDefault(argument => argument.Parameter?.Name == "key") is { } keyArgument
             && TagSetterDetection.TryGetNonEmptyStringConstant(keyArgument.Value, out var appKey)) {
             key = SemconvTypedSurface.AppKeyPrefix + appKey;

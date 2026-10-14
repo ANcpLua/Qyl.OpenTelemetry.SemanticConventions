@@ -27,7 +27,7 @@ internal enum SemconvMigrationKind
     DeprecatedButGenerated,
 }
 
-internal readonly struct SemconvMigrationCatalogEntry
+internal readonly record struct SemconvMigrationCatalogEntry
 {
     public SemconvMigrationCatalogEntry(
         string oldName,
@@ -73,9 +73,7 @@ internal readonly struct SemconvMigrationCatalogEntry
     public string ChangelogEvidence { get; }
 
     public bool HasExactReplacement =>
-        (MigrationKind == SemconvMigrationKind.ExactRename
-            || MigrationKind == SemconvMigrationKind.ExactValueRename
-            || MigrationKind == SemconvMigrationKind.DeprecatedButGenerated)
+        MigrationKind is SemconvMigrationKind.ExactRename or SemconvMigrationKind.ExactValueRename or SemconvMigrationKind.DeprecatedButGenerated
         && ReplacementNames.Length == 1
         && !string.IsNullOrWhiteSpace(ReplacementNames[0]);
 }

@@ -244,9 +244,7 @@ public sealed class SupplementalSemconvMigrationAnalyzer : DiagnosticAnalyzer
             liveObsoleteAttributeNames,
             payload.IsProductionEmission);
 
-        if (payload.ValueIsBareLiteral
-            && payload.Value is not null
-            && payload.ValueSyntax is not null)
+        if (payload is { ValueIsBareLiteral: true, Value: not null, ValueSyntax: not null })
         {
             ReportValueIfCatalogOnly(
                 context,

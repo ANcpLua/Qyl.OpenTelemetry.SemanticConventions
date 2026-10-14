@@ -1,5 +1,3 @@
-using System.Collections.Concurrent;
-
 namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 
 /// <summary>
@@ -45,8 +43,7 @@ internal sealed class Qyl0120ContribInstrumentationWithAddQylAnalyzer : AlAnalyz
                     return;
                 }
 
-                if (method.IsExtensionMethod
-                    && method.ContainingAssembly?.Name is { } assembly
+                if (method is { IsExtensionMethod: true, ContainingAssembly.Name: { } assembly }
                     && assembly.StartsWith(InstrumentationAssemblyPrefix, StringComparison.Ordinal)
                     && method.Parameters.FirstOrDefault()?.Type is { } receiver
                     && (receiver.IsEqualTo(builderType) || receiver.InheritsFrom(builderType))) {

@@ -431,7 +431,7 @@ internal static class TelemetryAttributePayloadDetection
             return;
         }
 
-        TryGetValue(valueArgument.Value, out var value, out var valueSyntax, out var valueIsBareLiteral);
+        ReadValue(valueArgument.Value, out var value, out var valueSyntax, out var valueIsBareLiteral);
         report(new TelemetryAttributePayloadLiteral(
             key,
             keySyntax,
@@ -461,7 +461,7 @@ internal static class TelemetryAttributePayloadDetection
         var valueIsBareLiteral = false;
         if (TryGetArgumentByOrdinal(arguments, extensionMethod, 1, out var valueArgument))
         {
-            TryGetValue(valueArgument.Value, out value, out valueSyntax, out valueIsBareLiteral);
+            ReadValue(valueArgument.Value, out value, out valueSyntax, out valueIsBareLiteral);
         }
 
         report(new TelemetryAttributePayloadLiteral(
@@ -482,7 +482,7 @@ internal static class TelemetryAttributePayloadDetection
             return;
         }
 
-        TryGetValue(assignment.Value, out var value, out var valueSyntax, out var valueIsBareLiteral);
+        ReadValue(assignment.Value, out var value, out var valueSyntax, out var valueIsBareLiteral);
         report(new TelemetryAttributePayloadLiteral(
             key,
             keySyntax,
@@ -530,22 +530,15 @@ internal static class TelemetryAttributePayloadDetection
         return false;
     }
 
-    private static bool TryGetValue(
+    private static void ReadValue(
         IOperation operation,
-        [NotNullWhen(true)] out string? value,
-        [NotNullWhen(true)] out SyntaxNode? syntax,
+        out string? value,
+        out SyntaxNode? syntax,
         out bool isBareLiteral)
     {
         var unwrapped = operation.UnwrapImplicitConversions();
         isBareLiteral = unwrapped.Syntax is LiteralExpressionSyntax;
-        if (TagSetterDetection.TryGetStringConstant(unwrapped, out value))
-        {
-            syntax = unwrapped.Syntax;
-            return true;
-        }
-
-        syntax = null;
-        return false;
+        syntax = TagSetterDetection.TryGetStringConstant(unwrapped, out value) ? unwrapped.Syntax : null;
     }
 
     private static Action<TelemetryAttributePayloadLiteral> WithSink(
@@ -674,9 +667,8 @@ internal static class TelemetryAttributePayloadDetection
             return true;
         }
 
-        return invocation.TargetMethod.IsExtensionMethod
-            && invocation.TargetMethod.Parameters.Length > 0
-            && invocation.TargetMethod.Parameters[0].Type.Name == "ResourceBuilder";
+        return invocation.TargetMethod is { IsExtensionMethod: true, Parameters.Length: > 0 }
+               && invocation.TargetMethod.Parameters[0].Type.Name == "ResourceBuilder";
     }
 
     private static bool IsMetricMeasurementInvocation(IInvocationOperation invocation) =>
@@ -690,7 +682,7 @@ internal static class TelemetryAttributePayloadDetection
     /// </summary>
     private static bool IsInsideKnownTelemetryAttributePayload(IOperation operation, TelemetryPayloadFlowScope scope)
     {
-        if (TryGetEnclosingLocalSink(operation, scope, out _))
+        if (IsInitializerOfSinkLocal(operation, scope))
         {
             return true;
         }
@@ -706,21 +698,19 @@ internal static class TelemetryAttributePayloadDetection
         return false;
     }
 
-    private static bool TryGetEnclosingLocalSink(
+    private static bool IsInitializerOfSinkLocal(
         IOperation operation,
-        TelemetryPayloadFlowScope scope,
-        out TelemetryPayloadSink sink)
+        TelemetryPayloadFlowScope scope)
     {
         for (var current = operation.Parent; current is not null; current = current.Parent)
         {
             if (current is IVariableInitializerOperation
-                && current.Parent is IVariableDeclaratorOperation { Symbol: ILocalSymbol local })
+                && current.Parent is IVariableDeclaratorOperation { Symbol: { } local })
             {
-                return scope.TryGetSink(local, out sink);
+                return scope.TryGetSink(local, out _);
             }
         }
 
-        sink = TelemetryPayloadSink.None;
         return false;
     }
 

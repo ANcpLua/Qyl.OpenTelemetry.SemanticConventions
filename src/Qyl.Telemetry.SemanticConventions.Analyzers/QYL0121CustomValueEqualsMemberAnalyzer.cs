@@ -1,5 +1,3 @@
-using System.Globalization;
-
 namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 
 /// <summary>

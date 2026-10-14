@@ -1,8 +1,6 @@
 // Copyright The OpenTelemetry Authors
 // SPDX-License-Identifier: Apache-2.0
 
-using Qyl.Telemetry.SemanticConventions.Analyzers;
-
 namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 
 internal static class SemconvMigrationCatalog
@@ -91,12 +89,7 @@ internal static class SemconvMigrationCatalog
 
         for (var step = 0; step < MaxResolutionDepth; step++)
         {
-            if (!s_entriesByOldName.TryGetValue(current, out var entry))
-            {
-                return current;
-            }
-
-            if (!entry.HasExactReplacement)
+            if (!s_entriesByOldName.TryGetValue(current, out var entry) || !entry.HasExactReplacement)
             {
                 return current;
             }
@@ -261,8 +254,7 @@ internal static class SemconvMigrationCatalog
     }
 
     private static bool IsGeneratedMetadataEntry(SemconvMigrationCatalogEntry entry) =>
-        entry.Kind == SemconvMigrationItemKind.AttributeKey
-        && entry.MigrationKind == SemconvMigrationKind.ExactRename
+        entry is { Kind: SemconvMigrationItemKind.AttributeKey, MigrationKind: SemconvMigrationKind.ExactRename }
         && (entry.ChangelogEvidence.StartsWith("semantic-conventions/model deprecated", StringComparison.Ordinal)
             || entry.ChangelogEvidence.StartsWith("semantic-conventions/model deprecated GenAI", StringComparison.Ordinal));
 

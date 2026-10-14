@@ -27,7 +27,7 @@ internal static class ReleaseIndex
 {
     static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(30) };
 
-    internal sealed record Probe(string Name, Uri Url, Func<JsonElement, bool> Serves);
+    internal sealed record Probe(string Name, Uri Url, Func<JsonElement, bool> IsServed);
 
     internal static Probe NuGet(string id, string version) => new(
         $"{id} {version} (nuget.org)",
@@ -87,7 +87,7 @@ internal static class ReleaseIndex
             if (!response.IsSuccessStatusCode)
                 return false;
             using var document = JsonDocument.Parse(response.Content.ReadAsStream());
-            return probe.Serves(document.RootElement);
+            return probe.IsServed(document.RootElement);
         }
         catch (Exception exception) when (exception is HttpRequestException or TaskCanceledException or IOException
                                               or JsonException or KeyNotFoundException or InvalidOperationException)

@@ -7,7 +7,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers.DocsGenerator;
 ///   Owns the package-identity constants and every path the generator reads or writes.
 ///   Centralising path math here keeps the renderer/rewriter classes free of any
 ///   filesystem layout knowledge — they ask <see cref="RepoLayout"/> for what they need
-///   and stay testable as pure functions of <see cref="DiagnosticDescriptor"/> input.
+///   and stay testable as pure functions of <see cref="Microsoft.CodeAnalysis.DiagnosticDescriptor"/> input.
 /// </summary>
 internal static class RepoLayout
 {

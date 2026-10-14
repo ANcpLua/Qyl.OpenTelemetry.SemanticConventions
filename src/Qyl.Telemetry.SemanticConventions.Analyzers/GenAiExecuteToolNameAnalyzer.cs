@@ -41,8 +41,7 @@ public sealed class GenAiExecuteToolNameAnalyzer : DiagnosticAnalyzer
 
         foreach (var call in calls)
         {
-            if (call.Key == SemconvRegistryFacts.ExecuteToolOperationKey
-                && call.Value == SemconvRegistryFacts.ExecuteToolOperationValue)
+            if (call is { Key: SemconvRegistryFacts.ExecuteToolOperationKey, Value: SemconvRegistryFacts.ExecuteToolOperationValue })
             {
                 executeToolMarker = call;
                 hasMarker = true;

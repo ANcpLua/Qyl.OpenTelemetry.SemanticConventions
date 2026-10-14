@@ -40,7 +40,7 @@ public sealed class DeprecatedSemconvAnalyzer : DiagnosticAnalyzer
         var operation = (IFieldReferenceOperation)context.Operation;
         var field = operation.Field;
 
-        if (field.IsConst is false || field.Type.SpecialType != SpecialType.System_String)
+        if (!field.IsConst || field.Type.SpecialType != SpecialType.System_String)
         {
             return;
         }

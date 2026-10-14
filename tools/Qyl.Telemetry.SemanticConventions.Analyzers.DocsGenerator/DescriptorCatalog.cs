@@ -130,14 +130,14 @@ internal static class DescriptorCatalog
 
             if (typeof(DiagnosticAnalyzer).IsAssignableFrom(type))
             {
-                if (Activator.CreateInstance(type) is DiagnosticAnalyzer a && a.SupportedDiagnostics.Length > 0)
+                if (Activator.CreateInstance(type) is DiagnosticAnalyzer { SupportedDiagnostics.Length: > 0 } a)
                     analyzers[type.Name] = a.SupportedDiagnostics
                         .OrderBy(d => d.Id, StringComparer.Ordinal).First().Id;
             }
             else if (typeof(CodeFixProvider).IsAssignableFrom(type))
             {
                 {
-                    if (Activator.CreateInstance(type) is CodeFixProvider p && p.FixableDiagnosticIds.Length > 0)
+                    if (Activator.CreateInstance(type) is CodeFixProvider { FixableDiagnosticIds.Length: > 0 } p)
                         codeFixes[type.Name] = p.FixableDiagnosticIds
                             .OrderBy(s => s, StringComparer.Ordinal).First();
                 }

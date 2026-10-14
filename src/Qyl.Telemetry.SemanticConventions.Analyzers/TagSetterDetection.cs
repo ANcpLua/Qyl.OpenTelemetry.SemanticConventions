@@ -1,7 +1,6 @@
 // Copyright The OpenTelemetry Authors
 // SPDX-License-Identifier: Apache-2.0
 
-using System.Globalization;
 using MsOperationExtensions = Microsoft.CodeAnalysis.Operations.OperationExtensions;
 
 namespace Qyl.Telemetry.SemanticConventions.Analyzers;
@@ -162,8 +161,7 @@ internal static class TagSetterDetection
     public static bool TryGetStarter(IInvocationOperation invocation, [NotNullWhen(true)] out string? starter)
     {
         var method = invocation.TargetMethod;
-        if (method is { IsStatic: true, ContainingType: { } type }
-            && type.ContainingNamespace is { Name: "Qyl" } ns && ns.ContainingNamespace.IsGlobalNamespace)
+        if (method is { IsStatic: true, ContainingType: { ContainingNamespace: { Name: "Qyl" } ns } type } && ns.ContainingNamespace.IsGlobalNamespace)
         {
             var name = "Qyl." + type.Name + "." + method.Name;
             if (SemconvTypedSurface.StarterParameters.ContainsKey(name))
@@ -190,8 +188,7 @@ internal static class TagSetterDetection
 
     public static bool TryGetStringConstant(IOperation operation, [NotNullWhen(true)] out string? value)
     {
-        if (operation.UnwrapImplicitConversions().TryGetConstantValue<string>(out var constantValue)
-            && constantValue is not null)
+        if (operation.UnwrapImplicitConversions().TryGetConstantValue<string>(out var constantValue))
         {
             value = constantValue;
             return true;
@@ -256,8 +253,7 @@ internal static class TagSetterDetection
     private static bool TryGetTypedSetter(IInvocationOperation invocation, [NotNullWhen(true)] out SemconvTypedSetter? setter)
     {
         var method = invocation.TargetMethod;
-        if (method.IsExtensionMethod
-            && method.ContainingType is { } type
+        if (method is { IsExtensionMethod: true, ContainingType: { } type }
             && IsActivitiesNamespace(type.ContainingNamespace)
             && SemconvTypedSurface.Setters.TryGetValue(method.Name, out setter))
         {

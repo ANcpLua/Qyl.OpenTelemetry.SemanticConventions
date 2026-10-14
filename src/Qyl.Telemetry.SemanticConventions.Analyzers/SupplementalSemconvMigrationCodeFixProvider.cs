@@ -68,9 +68,7 @@ public sealed class SupplementalSemconvMigrationCodeFixProvider : CodeFixProvide
             return false;
         }
 
-        return migrationKind == SemconvMigrationKind.ExactRename.ToString()
-            || migrationKind == SemconvMigrationKind.ExactValueRename.ToString()
-            || migrationKind == SemconvMigrationKind.DeprecatedButGenerated.ToString();
+        return migrationKind is nameof(SemconvMigrationKind.ExactRename) or nameof(SemconvMigrationKind.ExactValueRename) or nameof(SemconvMigrationKind.DeprecatedButGenerated);
     }
 
     private static async Task<Document> ReplaceLiteralAsync(

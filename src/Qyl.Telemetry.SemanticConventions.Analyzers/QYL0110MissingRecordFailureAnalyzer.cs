@@ -52,8 +52,7 @@ internal sealed class Qyl0110MissingRecordFailureAnalyzer : AlAnalyzer {
 
     private static bool RecordsFailure(IOperation handler) =>
         OwnOperations(handler).Any(static operation =>
-            operation is IInvocationOperation { TargetMethod: { Name: "RecordFailure", ContainingType: { Name: "Spans" } type } }
-            && type.ContainingNamespace is { Name: "Qyl" } ns
+            operation is IInvocationOperation { TargetMethod: { Name: "RecordFailure", ContainingType: { Name: "Spans", ContainingNamespace: { Name: "Qyl" } ns } } }
             && ns.ContainingNamespace.IsGlobalNamespace);
 
     /// <summary>The operations of <paramref name="root"/> outside nested lambdas and local functions.</summary>

@@ -40,7 +40,7 @@ internal static class RuleDocs
     public static string SymbolicNameFromFile(string callerFilePath)
     {
         var name = Path.GetFileNameWithoutExtension(callerFilePath);
-        if (name.EndsWith("Analyzer", System.StringComparison.Ordinal))
+        if (name.EndsWith("Analyzer", StringComparison.Ordinal))
             name = name.Substring(0, name.Length - "Analyzer".Length);
         var prefix = Regex.Match(name, "^(?:QYL|Qyl|AL|Al)\\d{4}");
         if (prefix.Success)

@@ -46,8 +46,7 @@ internal sealed class Qyl0122StarterInsideAIFunctionAnalyzer : AlAnalyzer {
             current = current.Parent;
         }
 
-        return current is IArgumentOperation { Parent: IInvocationOperation create }
-               && create.TargetMethod.Name == "Create"
+        return current is IArgumentOperation { Parent: IInvocationOperation { TargetMethod.Name: "Create" } create }
                && create.TargetMethod.ContainingType?.ToDisplayString() == AIFunctionFactory;
     }
 }
