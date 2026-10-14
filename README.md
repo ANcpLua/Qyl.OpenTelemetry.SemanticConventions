@@ -290,7 +290,7 @@ Fetch the tag and materialise the core copy once:
 ```bash
 tag="$(git ls-remote --tags --refs --sort=-version:refname \
   https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions 'v*' | head -n1 | cut -f2)"
-tag="${tag#refs/tags/}"                    # the latest tag, e.g. v9.9.1
+tag="${tag#refs/tags/}"                    # the latest tag, e.g. v9.9.2
 curl -sSLo semconv.zip \
   "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/archive/refs/tags/${tag}.zip"
 unzip -q semconv.zip                       # -> Qyl.Telemetry.SemanticConventions-<version>/
