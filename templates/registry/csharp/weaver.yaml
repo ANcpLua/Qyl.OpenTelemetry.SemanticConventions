@@ -290,6 +290,31 @@ templates:
     application_mode: each
     file_name: "{{ ctx.out_dir }}/Starters/{{ ctx.class_name }}.g.cs"
 
+  # Typed views over SpanRecord for the starter span types, next to the starters (ADR D8).
+  - template: views.cs.j2
+    filter: >
+      . as $registry
+      | ($registry.schema_url) as $qyl
+      | ([($registry.dependencies | keys)[]
+           | select((($registry.dependency_graph[.]) | length) == 0)] | first) as $core
+      | ([($registry.dependencies | keys)[] | select(. != $core)] | first) as $genai
+      | {qyl_schema_url: $qyl, core_schema_url: $core, genai_schema_url: $genai} as $schema_urls
+      | $registry
+      | ([.refinements.spans[]
+          | select(((.type | startswith("gen_ai.")) | not) or (.id | startswith("gen_ai.")))]
+         | sort_by(.id)) as $all
+      | [ {tier: "incubating", class_name: "IncubatingSpanViews",
+           namespace: "Qyl.Telemetry.SemanticConventions.Incubating.Views",
+           spans: [$all[] | select((.stability == "stable" or (.deprecated != null)) | not)],
+           out_dir: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"},
+          {tier: "stable", class_name: "SpanViews",
+           namespace: "Qyl.Telemetry.SemanticConventions.Views",
+           spans: [$all[] | select(.stability == "stable" or (.deprecated != null))],
+           out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"} ]
+      | map(. + $schema_urls)
+    application_mode: each
+    file_name: "{{ ctx.out_dir }}/Views/{{ ctx.class_name }}.g.cs"
+
   - template: span_names.cs.j2
     filter: >
       . as $registry
