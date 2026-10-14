@@ -2,6 +2,14 @@
 
 Entries older than the newest three, which stay in [CHANGELOG.md](CHANGELOG.md).
 
+## [9.9.1] - 2026-10-12
+
+- Run analyzer documentation checks from the completed generator binary; remove nested `dotnet run` builds.
+- Define `qyl.gen_ai.tool.call.arguments_hash` once in the shared registry for producer-supplied, opaque argument fingerprints.
+- Generate matching C# and TypeScript constants; no raw argument capture or instrumentation behavior changes.
+
+Older entries: [CHANGELOG.archive.md](CHANGELOG.archive.md).
+
 ## [9.9.0] - 2026-10-12
 
 - Generate stable and incubating TypeScript bindings from the same resolved registry as C#.

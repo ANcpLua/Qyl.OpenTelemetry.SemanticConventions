@@ -6,6 +6,14 @@ Notable changes to the `Qyl.Telemetry.SemanticConventions` package family. `Vers
 (the three NuGet packages and the TypeScript npm package), then tagged `v<version>`;
 [`eng/release/verify-packages.sh`](eng/release/verify-packages.sh) proves the published packages against nuget.org.
 
+## [10.0.1] - 2026-10-15
+
+### Fixed
+
+- `RegistryPolicy.IsPersisted` and QYL0113 hold a `qyl.app.` key to the registry's denied keys and prefixes by the part after the prefix: `SetAppTag("user.email", ...)` is reported and not persisted, like `user.email`.
+- `gen_ai.request.max_tokens` and the `gen_ai.usage.{text,audio,image}.*_tokens` counts are token-exempt (numbers, not credentials).
+- `build.error.message`, `nservicebus.originating_machine`, `nservicebus.processing_machine` and `db.odp.user.statement` are `persisted: false`: error text, host names and statements the registry denies elsewhere.
+
 ## [10.0.0]
 
 The agent-first API of the qyl API DSL ADR (2026-10-14): a breaking release.
@@ -38,11 +46,3 @@ The agent-first API of the qyl API DSL ADR (2026-10-14): a breaking release.
 - Move ANcpLua.Roslyn.Utilities from 2.2.47 to 2.2.48: the analyzers embed `ANcpLua.Roslyn.Utilities.Sources` 2.2.48.
 - Replace the copied analyzer test harness with `ANcpLua.Roslyn.Utilities.Testing` 2.2.48 (`Compile`, `DictionaryAnalyzerConfigOptionsProvider`, `SourceFixture`, `RepositoryRoot`); the tests and their assertions are unchanged.
 - No public API, analyzer rule or generated vocabulary change.
-
-## [9.9.1] - 2026-10-12
-
-- Run analyzer documentation checks from the completed generator binary; remove nested `dotnet run` builds.
-- Define `qyl.gen_ai.tool.call.arguments_hash` once in the shared registry for producer-supplied, opaque argument fingerprints.
-- Generate matching C# and TypeScript constants; no raw argument capture or instrumentation behavior changes.
-
-Older entries: [CHANGELOG.archive.md](CHANGELOG.archive.md).
