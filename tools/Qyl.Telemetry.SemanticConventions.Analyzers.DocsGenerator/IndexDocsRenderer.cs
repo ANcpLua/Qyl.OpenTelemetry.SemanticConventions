@@ -125,7 +125,7 @@ internal static class IndexDocsRenderer
         sb.AppendLine("| Value | Behavior |");
         sb.AppendLine("| -- | -- |");
         sb.AppendLine("| `Default` | Every rule at its descriptor-declared default severity. Useful to override an ambient stricter config. |");
-        sb.AppendLine("| `AllAsErrors` | Every QYL rule promoted to error. Use for strict CI. |");
+        sb.AppendLine("| `AllAsErrors` | Every QYL rule promoted to error. Use for strict builds. |");
         sb.AppendLine("| `Disabled` | Every QYL rule silenced. |");
         sb.AppendLine("| _(unset)_ | No editorconfig injection; descriptor severities apply and any consumer-side editorconfig stays authoritative. |");
         sb.AppendLine();

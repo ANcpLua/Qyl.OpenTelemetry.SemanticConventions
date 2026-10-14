@@ -31,7 +31,7 @@ internal static class EditorconfigRenderer
                 d => SeverityToken(d.DefaultSeverity)));
 
         yield return (Path.Combine(dir, "AllRulesAsErrors.editorconfig"),
-            Render(descriptors, "Every QYL rule promoted to error. Use for strict CI.",
+            Render(descriptors, "Every QYL rule promoted to error. Use for strict builds.",
                 _ => "error"));
 
         yield return (Path.Combine(dir, "AllRulesDisabled.editorconfig"),

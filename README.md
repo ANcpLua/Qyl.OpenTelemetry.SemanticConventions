@@ -93,8 +93,8 @@ upstream pins. It names two dependencies:
 - **genai** — `open-telemetry/semantic-conventions-genai`, a git URL pinned to a commit.
 
 qyl's own YAML sits next to them under [`registry/`](registry). [`registry/qyl`](registry/qyl)
-carries the 16 `qyl.*` attributes, the two qyl-owned instruments, the one qyl-owned event
-name and the six scope names. [`registry/vendor`](registry/vendor) carries one file per
+carries the 17 `qyl.*` attributes, the two qyl-owned instruments, the two qyl-owned event
+names and the six scope names. [`registry/vendor`](registry/vendor) carries one file per
 pinned third-party library: the keys that library puts on its own `ActivitySource` or `Meter`
 and that upstream semantic conventions do not define. Weaver resolves all three layers
 itself; there is no merge step.
@@ -154,11 +154,11 @@ copied verbatim into the set — carries.
 
 The pins are exact by design: a moving input must not change generated constants without a
 commit here. [`scripts/check-pin-freshness.py`](scripts/check-pin-freshness.py) reports when
-one falls behind upstream and does not decide whether to move it; run it by hand, the
-scheduled workflow that ran it went with CI. The genai pin is a
-branch commit, and the manifest pins that repository's `model/` sub-folder only, so the check
-counts a commit against the pin only when it changes a file under `model/`; a lock-file or
-tooling commit on `main` leaves the pin current and is reported as distance without staleness.
+one falls behind upstream and does not decide whether to move it; run it by hand. The genai
+pin is a branch commit, and the manifest pins that repository's `model/` sub-folder only, so
+the check counts a commit against the pin only when it changes a file under `model/`; a
+lock-file or tooling commit on `main` leaves the pin current and is reported as distance
+without staleness.
 
 ```bash
 uv run scripts/check-pin-freshness.py   # 0 = every pin current, 10 = a pin is behind, 2 = unknown
@@ -212,12 +212,13 @@ refuses to run against any other. `mise run check` runs the whole sequence; run 
 every push:
 
 ```bash
-python3 -m unittest discover --start-directory tests/scripts --pattern 'test_*.py'
+uv run --no-project --with pyyaml python3 -m unittest discover --start-directory tests/scripts --pattern 'test_*.py'
 ./scripts/check-generated.sh
 npm test --prefix typescript
 ./scripts/check-live-check-policies.sh
-dotnet build Qyl.Telemetry.SemanticConventions.slnx -c Release
-dotnet run --project tests/Qyl.Telemetry.SemanticConventions.Pipeline.Tests -c Release
+dotnet restore Qyl.Telemetry.SemanticConventions.slnx
+dotnet build Qyl.Telemetry.SemanticConventions.slnx --no-restore --configuration Release
+dotnet run --project tests/Qyl.Telemetry.SemanticConventions.Pipeline.Tests/ --configuration Release --no-build
 ```
 
 `dotnet test` does not drive the test project: it is a Microsoft.Testing.Platform project and
@@ -289,7 +290,7 @@ Fetch the tag and materialise the core copy once:
 ```bash
 tag="$(git ls-remote --tags --refs --sort=-version:refname \
   https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions 'v*' | head -n1 | cut -f2)"
-tag="${tag#refs/tags/}"                    # the latest tag, e.g. v9.8.0
+tag="${tag#refs/tags/}"                    # the latest tag, e.g. v9.9.1
 curl -sSLo semconv.zip \
   "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/archive/refs/tags/${tag}.zip"
 unzip -q semconv.zip                       # -> Qyl.Telemetry.SemanticConventions-<version>/
@@ -308,7 +309,7 @@ flag stays, because a registry's `imports` block declares metrics, events and en
 this registry generates every attribute key its dependencies carry.
 
 `git clone --depth 1 --branch "${tag}"` followed by `./scripts/fetch-core.sh` is equivalent and
-is what `Qyl.Telemetry.AutoInstrumentation`'s live check (`make live-check`) needs in
+is what `Qyl.Telemetry.AutoInstrumentation`'s live check (`./eng/build.sh LiveCheck`) needs in
 `.semconv`.
 [`scripts/check-live-check-policies.sh`](scripts/check-live-check-policies.sh) pins the exact
 findings the set produces over

@@ -19,8 +19,11 @@
   </ItemGroup>
 
   <!-- The solution builds this project after the analyzer. Run the completed binary;
-       invoking dotnet run from the analyzer itself recursively built this project. -->
-  <Target Name="VerifyAnalyzerConsistency" AfterTargets="Build">
+       invoking dotnet run from the analyzer itself recursively built this project.
+       The Fallout GenerateDocs target sets _QylInsideConsistencyCheck while it builds this
+       project, because the documents it is about to rewrite would fail the check. -->
+  <Target Name="VerifyAnalyzerConsistency" AfterTargets="Build"
+          Condition="'$(_QylInsideConsistencyCheck)' != 'true'">
     <Exec Command="dotnet &quot;$(TargetPath)&quot; --enforce-ids"
           WorkingDirectory="$(MSBuildThisFileDirectory)../.."/>
     <Exec Command="dotnet &quot;$(TargetPath)&quot; --check"

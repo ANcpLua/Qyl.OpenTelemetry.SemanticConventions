@@ -1,4 +1,4 @@
-# Qyl.Telemetry.SemanticConventions: release, pins and agent hand-offs
+# Qyl.Telemetry.SemanticConventions: release and pins
 
 Who reads this: the one agent working on this repository's `main`. Agent, user and owner are
 the same word. There is one agent per repository, six in all (qyl, qyl.mcp, qyl-api-schema,
@@ -69,14 +69,12 @@ Weaver version pinned in `Version.props`.
    "Notify").
 7. Run
    `/Users/alexandernachtmann/Downloads/qyl-codex-claude/refresh-published-versions.sh`, which rewrites
-   `qyl-published-versions.yaml` beside it from the registries (the snapshot every agent reads first).
+   `qyl-published-versions.yaml` beside it from the registries.
 
 ## Notify
 
 One message per consumer repo, to its running agent through the session's agent-messaging
-tool when there is one (Claude Code: `ListAgents`, then `SendMessage`). If the consumer has
-no running agent, append the same text to the handoff file above under "Pending re-pins";
-the owner relays it. Two message types:
+tool when there is one (Claude Code: `ListAgents`, then `SendMessage`). Two message types:
 
 ```
 SCHEMA Qyl.Telemetry.SemanticConventions <version> needs https://qyl.at/schemas/<version>

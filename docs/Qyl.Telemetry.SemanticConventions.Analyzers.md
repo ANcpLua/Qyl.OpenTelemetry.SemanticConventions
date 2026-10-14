@@ -95,7 +95,7 @@ Set `<OtelSemConvAnalysisMode>` in your csproj to switch the whole `QYL00xx` ban
 | Value | Behavior |
 | -- | -- |
 | `Default` | Every rule at its descriptor-declared default severity. Useful to override an ambient stricter config. |
-| `AllAsErrors` | Every QYL rule promoted to error. Use for strict CI. |
+| `AllAsErrors` | Every QYL rule promoted to error. Use for strict builds. |
 | `Disabled` | Every QYL rule silenced. |
 | _(unset)_ | No editorconfig injection; descriptor severities apply and any consumer-side editorconfig stays authoritative. |
 
