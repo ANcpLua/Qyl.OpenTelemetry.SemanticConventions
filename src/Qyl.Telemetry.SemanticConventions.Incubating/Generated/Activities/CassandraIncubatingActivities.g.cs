@@ -22,8 +22,8 @@ public static class CassandraIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetCassandraConsistencyLevel(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("cassandra.consistency.level", value);
+        CassandraConsistencyLevel value)
+        => activity.SetTag("cassandra.consistency.level", value.Value);
 
     /// <summary>
     /// The data center of the coordinating node for a query.
@@ -64,70 +64,110 @@ public static class CassandraIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         long value)
         => activity.SetTag("cassandra.speculative_execution.count", value);
+}
+
+/// <summary>
+/// The consistency level of the query. Based on consistency values from <a href="https://docs.datastax.com/en/cassandra-oss/3.0/cassandra/dml/dmlConfigConsistency.html">CQL</a>.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>cassandra.consistency.level</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct CassandraConsistencyLevel : global::System.IEquatable<CassandraConsistencyLevel>
+{
+    /// <summary>
+    /// The attribute key, <c>cassandra.consistency.level</c>.
+    /// </summary>
+    public const string Key = "cassandra.consistency.level";
+
+    private readonly string? _value;
+
+    private CassandraConsistencyLevel(string value) => _value = value;
 
     /// <summary>
-    /// The consistency level of the query. Based on consistency values from <a href="https://docs.datastax.com/en/cassandra-oss/3.0/cassandra/dml/dmlConfigConsistency.html">CQL</a>.
+    /// All.
     /// </summary>
-    public static class CassandraConsistencyLevelValues
-    {
-        /// <summary>
-        /// All.
-        /// </summary>
-        public const string All = "all";
+    public static CassandraConsistencyLevel All { get; } = new("all");
 
-        /// <summary>
-        /// Each Quorum.
-        /// </summary>
-        public const string EachQuorum = "each_quorum";
+    /// <summary>
+    /// Each Quorum.
+    /// </summary>
+    public static CassandraConsistencyLevel EachQuorum { get; } = new("each_quorum");
 
-        /// <summary>
-        /// Quorum.
-        /// </summary>
-        public const string Quorum = "quorum";
+    /// <summary>
+    /// Quorum.
+    /// </summary>
+    public static CassandraConsistencyLevel Quorum { get; } = new("quorum");
 
-        /// <summary>
-        /// Local Quorum.
-        /// </summary>
-        public const string LocalQuorum = "local_quorum";
+    /// <summary>
+    /// Local Quorum.
+    /// </summary>
+    public static CassandraConsistencyLevel LocalQuorum { get; } = new("local_quorum");
 
-        /// <summary>
-        /// One.
-        /// </summary>
-        public const string One = "one";
+    /// <summary>
+    /// One.
+    /// </summary>
+    public static CassandraConsistencyLevel One { get; } = new("one");
 
-        /// <summary>
-        /// Two.
-        /// </summary>
-        public const string Two = "two";
+    /// <summary>
+    /// Two.
+    /// </summary>
+    public static CassandraConsistencyLevel Two { get; } = new("two");
 
-        /// <summary>
-        /// Three.
-        /// </summary>
-        public const string Three = "three";
+    /// <summary>
+    /// Three.
+    /// </summary>
+    public static CassandraConsistencyLevel Three { get; } = new("three");
 
-        /// <summary>
-        /// Local One.
-        /// </summary>
-        public const string LocalOne = "local_one";
+    /// <summary>
+    /// Local One.
+    /// </summary>
+    public static CassandraConsistencyLevel LocalOne { get; } = new("local_one");
 
-        /// <summary>
-        /// Any.
-        /// </summary>
-        public const string Any = "any";
+    /// <summary>
+    /// Any.
+    /// </summary>
+    public static CassandraConsistencyLevel Any { get; } = new("any");
 
-        /// <summary>
-        /// Serial.
-        /// </summary>
-        public const string Serial = "serial";
+    /// <summary>
+    /// Serial.
+    /// </summary>
+    public static CassandraConsistencyLevel Serial { get; } = new("serial");
 
-        /// <summary>
-        /// Local Serial.
-        /// </summary>
-        public const string LocalSerial = "local_serial";
+    /// <summary>
+    /// Local Serial.
+    /// </summary>
+    public static CassandraConsistencyLevel LocalSerial { get; } = new("local_serial");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "all", "each_quorum", "quorum", "local_quorum", "one", "two", "three", "local_one", "any", "serial", "local_serial" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static CassandraConsistencyLevel Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(CassandraConsistencyLevel other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is CassandraConsistencyLevel other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(CassandraConsistencyLevel left, CassandraConsistencyLevel right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(CassandraConsistencyLevel left, CassandraConsistencyLevel right) => !left.Equals(right);
 }

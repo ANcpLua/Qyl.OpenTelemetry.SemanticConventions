@@ -38,27 +38,67 @@ public static class DeploymentIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetDeploymentStatus(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("deployment.status", value);
+        DeploymentStatus value)
+        => activity.SetTag("deployment.status", value.Value);
+}
+
+/// <summary>
+/// The status of the deployment.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>deployment.status</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct DeploymentStatus : global::System.IEquatable<DeploymentStatus>
+{
+    /// <summary>
+    /// The attribute key, <c>deployment.status</c>.
+    /// </summary>
+    public const string Key = "deployment.status";
+
+    private readonly string? _value;
+
+    private DeploymentStatus(string value) => _value = value;
 
     /// <summary>
-    /// The status of the deployment.
+    /// failed.
     /// </summary>
-    public static class DeploymentStatusValues
-    {
-        /// <summary>
-        /// failed.
-        /// </summary>
-        public const string Failed = "failed";
+    public static DeploymentStatus Failed { get; } = new("failed");
 
-        /// <summary>
-        /// succeeded.
-        /// </summary>
-        public const string Succeeded = "succeeded";
+    /// <summary>
+    /// succeeded.
+    /// </summary>
+    public static DeploymentStatus Succeeded { get; } = new("succeeded");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "failed", "succeeded" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static DeploymentStatus Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(DeploymentStatus other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is DeploymentStatus other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(DeploymentStatus left, DeploymentStatus right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(DeploymentStatus left, DeploymentStatus right) => !left.Equals(right);
 }

@@ -22,8 +22,8 @@ public static class V8jsIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetV8jsGcType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("v8js.gc.type", value);
+        V8jsGcType value)
+        => activity.SetTag("v8js.gc.type", value.Value);
 
     /// <summary>
     /// The name of the space type of heap memory.
@@ -33,117 +33,237 @@ public static class V8jsIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetV8jsHeapSpaceName(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("v8js.heap.space.name", value);
+        V8jsHeapSpaceName value)
+        => activity.SetTag("v8js.heap.space.name", value.Value);
 
     /// <summary>
     /// The type of resource keeping the event loop active.
     /// </summary>
     public static global::System.Diagnostics.Activity SetV8jsResourceType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("v8js.resource.type", value);
+        V8jsResourceType value)
+        => activity.SetTag("v8js.resource.type", value.Value);
+}
+
+/// <summary>
+/// The type of garbage collection.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>v8js.gc.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct V8jsGcType : global::System.IEquatable<V8jsGcType>
+{
+    /// <summary>
+    /// The attribute key, <c>v8js.gc.type</c>.
+    /// </summary>
+    public const string Key = "v8js.gc.type";
+
+    private readonly string? _value;
+
+    private V8jsGcType(string value) => _value = value;
 
     /// <summary>
-    /// The type of garbage collection.
+    /// Major (Mark Sweep Compact).
     /// </summary>
-    public static class V8jsGcTypeValues
-    {
-        /// <summary>
-        /// Major (Mark Sweep Compact).
-        /// </summary>
-        public const string Major = "major";
-
-        /// <summary>
-        /// Minor (Scavenge).
-        /// </summary>
-        public const string Minor = "minor";
-
-        /// <summary>
-        /// Incremental (Incremental Marking).
-        /// </summary>
-        public const string Incremental = "incremental";
-
-        /// <summary>
-        /// Weak Callbacks (Process Weak Callbacks).
-        /// </summary>
-        public const string Weakcb = "weakcb";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "major", "minor", "incremental", "weakcb" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static V8jsGcType Major { get; } = new("major");
 
     /// <summary>
-    /// The name of the space type of heap memory.
+    /// Minor (Scavenge).
     /// </summary>
-    public static class V8jsHeapSpaceNameValues
-    {
-        /// <summary>
-        /// New memory space.
-        /// </summary>
-        public const string NewSpace = "new_space";
-
-        /// <summary>
-        /// Old memory space.
-        /// </summary>
-        public const string OldSpace = "old_space";
-
-        /// <summary>
-        /// Code memory space.
-        /// </summary>
-        public const string CodeSpace = "code_space";
-
-        /// <summary>
-        /// Map memory space.
-        /// </summary>
-        public const string MapSpace = "map_space";
-
-        /// <summary>
-        /// Large object memory space.
-        /// </summary>
-        public const string LargeObjectSpace = "large_object_space";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "new_space", "old_space", "code_space", "map_space", "large_object_space" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static V8jsGcType Minor { get; } = new("minor");
 
     /// <summary>
-    /// The type of resource keeping the event loop active.
+    /// Incremental (Incremental Marking).
     /// </summary>
-    public static class V8jsResourceTypeValues
-    {
-        /// <summary>
-        /// Active <c>setImmediate</c> callbacks.
-        /// </summary>
-        public const string Immediate = "Immediate";
+    public static V8jsGcType Incremental { get; } = new("incremental");
 
-        /// <summary>
-        /// Active TCP Servers.
-        /// </summary>
-        public const string Tcpserverwrap = "TCPServerWrap";
+    /// <summary>
+    /// Weak Callbacks (Process Weak Callbacks).
+    /// </summary>
+    public static V8jsGcType Weakcb { get; } = new("weakcb");
 
-        /// <summary>
-        /// Active TCP connections.
-        /// </summary>
-        public const string Tcpwrap = "TCPWrap";
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static V8jsGcType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
-        /// <summary>
-        /// Active <c>setTimeout</c> or <c>setInterval</c> timers.
-        /// </summary>
-        public const string Timeout = "Timeout";
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
 
-        /// <summary>
-        /// Active Terminal I/O (stdin/stdout).
-        /// </summary>
-        public const string Ttywrap = "TTYWrap";
+    /// <inheritdoc/>
+    public bool Equals(V8jsGcType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "Immediate", "TCPServerWrap", "TCPWrap", "Timeout", "TTYWrap" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is V8jsGcType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(V8jsGcType left, V8jsGcType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(V8jsGcType left, V8jsGcType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The name of the space type of heap memory.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>v8js.heap.space.name</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct V8jsHeapSpaceName : global::System.IEquatable<V8jsHeapSpaceName>
+{
+    /// <summary>
+    /// The attribute key, <c>v8js.heap.space.name</c>.
+    /// </summary>
+    public const string Key = "v8js.heap.space.name";
+
+    private readonly string? _value;
+
+    private V8jsHeapSpaceName(string value) => _value = value;
+
+    /// <summary>
+    /// New memory space.
+    /// </summary>
+    public static V8jsHeapSpaceName NewSpace { get; } = new("new_space");
+
+    /// <summary>
+    /// Old memory space.
+    /// </summary>
+    public static V8jsHeapSpaceName OldSpace { get; } = new("old_space");
+
+    /// <summary>
+    /// Code memory space.
+    /// </summary>
+    public static V8jsHeapSpaceName CodeSpace { get; } = new("code_space");
+
+    /// <summary>
+    /// Map memory space.
+    /// </summary>
+    public static V8jsHeapSpaceName MapSpace { get; } = new("map_space");
+
+    /// <summary>
+    /// Large object memory space.
+    /// </summary>
+    public static V8jsHeapSpaceName LargeObjectSpace { get; } = new("large_object_space");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static V8jsHeapSpaceName Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(V8jsHeapSpaceName other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is V8jsHeapSpaceName other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(V8jsHeapSpaceName left, V8jsHeapSpaceName right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(V8jsHeapSpaceName left, V8jsHeapSpaceName right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The type of resource keeping the event loop active.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>v8js.resource.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct V8jsResourceType : global::System.IEquatable<V8jsResourceType>
+{
+    /// <summary>
+    /// The attribute key, <c>v8js.resource.type</c>.
+    /// </summary>
+    public const string Key = "v8js.resource.type";
+
+    private readonly string? _value;
+
+    private V8jsResourceType(string value) => _value = value;
+
+    /// <summary>
+    /// Active <c>setImmediate</c> callbacks.
+    /// </summary>
+    public static V8jsResourceType Immediate { get; } = new("Immediate");
+
+    /// <summary>
+    /// Active TCP Servers.
+    /// </summary>
+    public static V8jsResourceType Tcpserverwrap { get; } = new("TCPServerWrap");
+
+    /// <summary>
+    /// Active TCP connections.
+    /// </summary>
+    public static V8jsResourceType Tcpwrap { get; } = new("TCPWrap");
+
+    /// <summary>
+    /// Active <c>setTimeout</c> or <c>setInterval</c> timers.
+    /// </summary>
+    public static V8jsResourceType Timeout { get; } = new("Timeout");
+
+    /// <summary>
+    /// Active Terminal I/O (stdin/stdout).
+    /// </summary>
+    public static V8jsResourceType Ttywrap { get; } = new("TTYWrap");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static V8jsResourceType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(V8jsResourceType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is V8jsResourceType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(V8jsResourceType left, V8jsResourceType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(V8jsResourceType left, V8jsResourceType right) => !left.Equals(right);
 }

@@ -25,32 +25,24 @@ public static class K8sIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetK8sContainerEphemeralStorageFsType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.container.ephemeral_storage.fs_type", value);
-
-    /// <summary>
-    /// Last terminated reason of the Container.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetK8sContainerStatusLastTerminatedReason(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.container.status.last_terminated_reason", value);
+        K8sContainerEphemeralStorageFsType value)
+        => activity.SetTag("k8s.container.ephemeral_storage.fs_type", value.Value);
 
     /// <summary>
     /// The reason for the container state. Corresponds to the <c>reason</c> field of the: <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatewaiting-v1-core">K8s ContainerStateWaiting</a> or <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstateterminated-v1-core">K8s ContainerStateTerminated</a>
     /// </summary>
     public static global::System.Diagnostics.Activity SetK8sContainerStatusReason(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.container.status.reason", value);
+        K8sContainerStatusReason value)
+        => activity.SetTag("k8s.container.status.reason", value.Value);
 
     /// <summary>
     /// The state of the container. <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstate-v1-core">K8s ContainerState</a>
     /// </summary>
     public static global::System.Diagnostics.Activity SetK8sContainerStatusState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.container.status.state", value);
+        K8sContainerStatusState value)
+        => activity.SetTag("k8s.container.status.state", value.Value);
 
     /// <summary>
     /// The type of metric source for the horizontal pod autoscaler.
@@ -62,55 +54,6 @@ public static class K8sIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("k8s.hpa.metric.type", value);
-
-    /// <summary>
-    /// The name of the horizontal pod autoscaler.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetK8sHpaName(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.hpa.name", value);
-
-    /// <summary>
-    /// The API version of the target resource to scale for the HorizontalPodAutoscaler.
-    /// </summary>
-    /// <remarks>
-    /// This maps to the <c>apiVersion</c> field in the <c>scaleTargetRef</c> of the HPA spec.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetK8sHpaScaletargetrefApiVersion(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.hpa.scaletargetref.api_version", value);
-
-    /// <summary>
-    /// The kind of the target resource to scale for the HorizontalPodAutoscaler.
-    /// </summary>
-    /// <remarks>
-    /// This maps to the <c>kind</c> field in the <c>scaleTargetRef</c> of the HPA spec.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetK8sHpaScaletargetrefKind(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.hpa.scaletargetref.kind", value);
-
-    /// <summary>
-    /// The name of the target resource to scale for the HorizontalPodAutoscaler.
-    /// </summary>
-    /// <remarks>
-    /// This maps to the <c>name</c> field in the <c>scaleTargetRef</c> of the HPA spec.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetK8sHpaScaletargetrefName(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.hpa.scaletargetref.name", value);
-
-    /// <summary>
-    /// The UID of the horizontal pod autoscaler.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetK8sHpaUid(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.hpa.uid", value);
 
     /// <summary>
     /// The size (identifier) of the K8s huge page.
@@ -129,8 +72,8 @@ public static class K8sIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetK8sNamespacePhase(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.namespace.phase", value);
+        K8sNamespacePhase value)
+        => activity.SetTag("k8s.namespace.phase", value.Value);
 
     /// <summary>
     /// The status of the condition, one of True, False, Unknown.
@@ -141,8 +84,8 @@ public static class K8sIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetK8sNodeConditionStatus(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.node.condition.status", value);
+        K8sNodeConditionStatus value)
+        => activity.SetTag("k8s.node.condition.status", value.Value);
 
     /// <summary>
     /// The condition type of a K8s Node.
@@ -160,70 +103,8 @@ public static class K8sIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetK8sNodeConditionType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.node.condition.type", value);
-
-    /// <summary>
-    /// The name of the system container running on the K8s Node.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetK8sNodeSystemContainerName(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.node.system_container.name", value);
-
-    /// <summary>
-    /// The annotation placed on the PersistentVolume, the <c>&lt;key&gt;</c> being the annotation name, the value being the annotation value, even if the value is empty.
-    /// </summary>
-    /// <remarks>
-    /// Examples:
-    /// <para/>
-    /// - An annotation <c>pv.kubernetes.io/provisioned-by</c> with value <c>kubernetes.io/aws-ebs</c> SHOULD be recorded as
-    ///   the <c>k8s.persistentvolume.annotation.pv.kubernetes.io/provisioned-by</c> attribute with value <c>"kubernetes.io/aws-ebs"</c>.
-    /// - An annotation <c>data</c> with empty string value SHOULD be recorded as
-    ///   the <c>k8s.persistentvolume.annotation.data</c> attribute with value <c>""</c>.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetK8sPersistentvolumeAnnotation(
-        this global::System.Diagnostics.Activity activity,
-        string segment,
-        string value)
-        => activity.SetTag($"k8s.persistentvolume.annotation.{segment}", value);
-
-    /// <summary>
-    /// The label placed on the PersistentVolume, the <c>&lt;key&gt;</c> being the label name, the value being the label value, even if the value is empty.
-    /// </summary>
-    /// <remarks>
-    /// Examples:
-    /// <para/>
-    /// - A label <c>type</c> with value <c>ssd</c> SHOULD be recorded as
-    ///   the <c>k8s.persistentvolume.label.type</c> attribute with value <c>"ssd"</c>.
-    /// - A label <c>data</c> with empty string value SHOULD be recorded as
-    ///   the <c>k8s.persistentvolume.label.data</c> attribute with value <c>""</c>.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetK8sPersistentvolumeLabel(
-        this global::System.Diagnostics.Activity activity,
-        string segment,
-        string value)
-        => activity.SetTag($"k8s.persistentvolume.label.{segment}", value);
-
-    /// <summary>
-    /// The name of the PersistentVolume.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetK8sPersistentvolumeName(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.persistentvolume.name", value);
-
-    /// <summary>
-    /// The reclaim policy of the PersistentVolume.
-    /// </summary>
-    /// <remarks>
-    /// This attribute aligns with the <c>persistentVolumeReclaimPolicy</c> field of the
-    /// <a href="https://kubernetes.io/docs/reference/kubernetes-api/config-and-storage-resources/persistent-volume-v1/#PersistentVolumeSpec">K8s PersistentVolumeSpec</a>.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetK8sPersistentvolumeReclaimPolicy(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.persistentvolume.reclaim_policy", value);
+        K8sNodeConditionType value)
+        => activity.SetTag("k8s.node.condition.type", value.Value);
 
     /// <summary>
     /// The phase of the PersistentVolume.
@@ -234,58 +115,8 @@ public static class K8sIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetK8sPersistentvolumeStatusPhase(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.persistentvolume.status.phase", value);
-
-    /// <summary>
-    /// The UID of the PersistentVolume.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetK8sPersistentvolumeUid(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.persistentvolume.uid", value);
-
-    /// <summary>
-    /// The annotation placed on the PersistentVolumeClaim, the <c>&lt;key&gt;</c> being the annotation name, the value being the annotation value, even if the value is empty.
-    /// </summary>
-    /// <remarks>
-    /// Examples:
-    /// <para/>
-    /// - An annotation <c>volume.beta.kubernetes.io/storage-provisioner</c> with value <c>kubernetes.io/aws-ebs</c> SHOULD be recorded as
-    ///   the <c>k8s.persistentvolumeclaim.annotation.volume.beta.kubernetes.io/storage-provisioner</c> attribute with value <c>"kubernetes.io/aws-ebs"</c>.
-    /// - An annotation <c>data</c> with empty string value SHOULD be recorded as
-    ///   the <c>k8s.persistentvolumeclaim.annotation.data</c> attribute with value <c>""</c>.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetK8sPersistentvolumeclaimAnnotation(
-        this global::System.Diagnostics.Activity activity,
-        string segment,
-        string value)
-        => activity.SetTag($"k8s.persistentvolumeclaim.annotation.{segment}", value);
-
-    /// <summary>
-    /// The label placed on the PersistentVolumeClaim, the <c>&lt;key&gt;</c> being the label name, the value being the label value, even if the value is empty.
-    /// </summary>
-    /// <remarks>
-    /// Examples:
-    /// <para/>
-    /// - A label <c>app</c> with value <c>my-app</c> SHOULD be recorded as
-    ///   the <c>k8s.persistentvolumeclaim.label.app</c> attribute with value <c>"my-app"</c>.
-    /// - A label <c>data</c> with empty string value SHOULD be recorded as
-    ///   the <c>k8s.persistentvolumeclaim.label.data</c> attribute with value <c>""</c>.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetK8sPersistentvolumeclaimLabel(
-        this global::System.Diagnostics.Activity activity,
-        string segment,
-        string value)
-        => activity.SetTag($"k8s.persistentvolumeclaim.label.{segment}", value);
-
-    /// <summary>
-    /// The name of the PersistentVolumeClaim.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetK8sPersistentvolumeclaimName(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.persistentvolumeclaim.name", value);
+        K8sPersistentvolumeStatusPhase value)
+        => activity.SetTag("k8s.persistentvolume.status.phase", value.Value);
 
     /// <summary>
     /// The phase of the PersistentVolumeClaim.
@@ -296,56 +127,24 @@ public static class K8sIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetK8sPersistentvolumeclaimStatusPhase(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.persistentvolumeclaim.status.phase", value);
-
-    /// <summary>
-    /// The UID of the PersistentVolumeClaim.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetK8sPersistentvolumeclaimUid(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.persistentvolumeclaim.uid", value);
+        K8sPersistentvolumeclaimStatusPhase value)
+        => activity.SetTag("k8s.persistentvolumeclaim.status.phase", value.Value);
 
     /// <summary>
     /// The phase for the pod. Corresponds to the <c>phase</c> field of the: <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.33/#podstatus-v1-core">K8s PodStatus</a>
     /// </summary>
     public static global::System.Diagnostics.Activity SetK8sPodStatusPhase(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.pod.status.phase", value);
+        K8sPodStatusPhase value)
+        => activity.SetTag("k8s.pod.status.phase", value.Value);
 
     /// <summary>
     /// The reason for the pod state. Corresponds to the <c>reason</c> field of the: <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.33/#podstatus-v1-core">K8s PodStatus</a>
     /// </summary>
     public static global::System.Diagnostics.Activity SetK8sPodStatusReason(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.pod.status.reason", value);
-
-    /// <summary>
-    /// The name of the replication controller.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetK8sReplicationcontrollerName(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.replicationcontroller.name", value);
-
-    /// <summary>
-    /// The UID of the replication controller.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetK8sReplicationcontrollerUid(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.replicationcontroller.uid", value);
-
-    /// <summary>
-    /// The name of the resource quota.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetK8sResourcequotaName(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.resourcequota.name", value);
+        K8sPodStatusReason value)
+        => activity.SetTag("k8s.pod.status.reason", value.Value);
 
     /// <summary>
     /// The name of the K8s resource a resource quota defines.
@@ -359,31 +158,6 @@ public static class K8sIncubatingActivityExtensions
         => activity.SetTag("k8s.resourcequota.resource_name", value);
 
     /// <summary>
-    /// The UID of the resource quota.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetK8sResourcequotaUid(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.resourcequota.uid", value);
-
-    /// <summary>
-    /// The annotation placed on the Service, the <c>&lt;key&gt;</c> being the annotation name, the value being the annotation value, even if the value is empty.
-    /// </summary>
-    /// <remarks>
-    /// Examples:
-    /// <para/>
-    /// - An annotation <c>prometheus.io/scrape</c> with value <c>true</c> SHOULD be recorded as
-    ///   the <c>k8s.service.annotation.prometheus.io/scrape</c> attribute with value <c>"true"</c>.
-    /// - An annotation <c>data</c> with empty string value SHOULD be recorded as
-    ///   the <c>k8s.service.annotation.data</c> attribute with value <c>""</c>.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetK8sServiceAnnotation(
-        this global::System.Diagnostics.Activity activity,
-        string segment,
-        string value)
-        => activity.SetTag($"k8s.service.annotation.{segment}", value);
-
-    /// <summary>
     /// The address type of the service endpoint.
     /// </summary>
     /// <remarks>
@@ -395,8 +169,8 @@ public static class K8sIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetK8sServiceEndpointAddressType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.service.endpoint.address_type", value);
+        K8sServiceEndpointAddressType value)
+        => activity.SetTag("k8s.service.endpoint.address_type", value.Value);
 
     /// <summary>
     /// The condition of the service endpoint.
@@ -408,8 +182,8 @@ public static class K8sIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetK8sServiceEndpointCondition(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.service.endpoint.condition", value);
+        K8sServiceEndpointCondition value)
+        => activity.SetTag("k8s.service.endpoint.condition", value.Value);
 
     /// <summary>
     /// The zone of the service endpoint.
@@ -428,102 +202,6 @@ public static class K8sIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("k8s.service.endpoint.zone", value);
-
-    /// <summary>
-    /// The label placed on the Service, the <c>&lt;key&gt;</c> being the label name, the value being the label value, even if the value is empty.
-    /// </summary>
-    /// <remarks>
-    /// Examples:
-    /// <para/>
-    /// - A label <c>app</c> with value <c>my-service</c> SHOULD be recorded as
-    ///   the <c>k8s.service.label.app</c> attribute with value <c>"my-service"</c>.
-    /// - A label <c>data</c> with empty string value SHOULD be recorded as
-    ///   the <c>k8s.service.label.data</c> attribute with value <c>""</c>.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetK8sServiceLabel(
-        this global::System.Diagnostics.Activity activity,
-        string segment,
-        string value)
-        => activity.SetTag($"k8s.service.label.{segment}", value);
-
-    /// <summary>
-    /// The name of the Service.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetK8sServiceName(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.service.name", value);
-
-    /// <summary>
-    /// Whether the Service publishes not-ready endpoints.
-    /// </summary>
-    /// <remarks>
-    /// Whether the Service is configured to publish endpoints before the pods are ready.
-    /// This attribute is typically used to indicate that a Service (such as a headless
-    /// Service for a StatefulSet) allows peer discovery before pods pass their readiness probes.
-    /// It aligns with the <c>publishNotReadyAddresses</c> field of the
-    /// <a href="https://kubernetes.io/docs/reference/kubernetes-api/service-resources/service-v1/#ServiceSpec">K8s ServiceSpec</a>.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetK8sServicePublishNotReadyAddresses(
-        this global::System.Diagnostics.Activity activity,
-        bool value)
-        => activity.SetTag("k8s.service.publish_not_ready_addresses", value);
-
-    /// <summary>
-    /// The selector key-value pair placed on the Service, the <c>&lt;key&gt;</c> being the selector key, the value being the selector value.
-    /// </summary>
-    /// <remarks>
-    /// These selectors are used to correlate with pod labels. Each selector key-value pair becomes a separate attribute.
-    /// <para/>
-    /// Examples:
-    /// <para/>
-    /// - A selector <c>app=my-app</c> SHOULD be recorded as
-    ///   the <c>k8s.service.selector.app</c> attribute with value <c>"my-app"</c>.
-    /// - A selector <c>version=v1</c> SHOULD be recorded as
-    ///   the <c>k8s.service.selector.version</c> attribute with value <c>"v1"</c>.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetK8sServiceSelector(
-        this global::System.Diagnostics.Activity activity,
-        string segment,
-        string value)
-        => activity.SetTag($"k8s.service.selector.{segment}", value);
-
-    /// <summary>
-    /// The traffic distribution policy for the Service.
-    /// </summary>
-    /// <remarks>
-    /// Specifies how traffic is distributed to endpoints for this Service.
-    /// This attribute aligns with the <c>trafficDistribution</c> field of the
-    /// <a href="https://kubernetes.io/docs/reference/networking/virtual-ips/#traffic-distribution">K8s ServiceSpec</a>.
-    /// Known values include <c>PreferSameZone</c> (prefer endpoints in the same zone as the client) and
-    /// <c>PreferSameNode</c> (prefer endpoints on the same node, fallback to same zone, then cluster-wide).
-    /// If this field is not set on the Service, the attribute SHOULD NOT be emitted.
-    /// When not set, Kubernetes distributes traffic evenly across all endpoints cluster-wide.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetK8sServiceTrafficDistribution(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.service.traffic_distribution", value);
-
-    /// <summary>
-    /// The type of the Kubernetes Service.
-    /// </summary>
-    /// <remarks>
-    /// This attribute aligns with the <c>type</c> field of the
-    /// <a href="https://kubernetes.io/docs/reference/kubernetes-api/service-resources/service-v1/#ServiceSpec">K8s ServiceSpec</a>.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetK8sServiceType(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.service.type", value);
-
-    /// <summary>
-    /// The UID of the Service.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetK8sServiceUid(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.service.uid", value);
 
     /// <summary>
     /// The name of K8s <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#storageclass-v1-storage-k8s-io">StorageClass</a> object.
@@ -546,476 +224,939 @@ public static class K8sIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetK8sVolumeType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("k8s.volume.type", value);
+        K8sVolumeType value)
+        => activity.SetTag("k8s.volume.type", value.Value);
+}
+
+/// <summary>
+/// The type of file system component for ephemeral storage.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>k8s.container.ephemeral_storage.fs_type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct K8sContainerEphemeralStorageFsType : global::System.IEquatable<K8sContainerEphemeralStorageFsType>
+{
+    /// <summary>
+    /// The attribute key, <c>k8s.container.ephemeral_storage.fs_type</c>.
+    /// </summary>
+    public const string Key = "k8s.container.ephemeral_storage.fs_type";
+
+    private readonly string? _value;
+
+    private K8sContainerEphemeralStorageFsType(string value) => _value = value;
 
     /// <summary>
-    /// The type of file system component for ephemeral storage.
+    /// For the container's writable layer usage.
     /// </summary>
-    public static class K8sContainerEphemeralStorageFsTypeValues
-    {
-        /// <summary>
-        /// For the container's writable layer usage.
-        /// </summary>
-        public const string Rootfs = "rootfs";
-
-        /// <summary>
-        /// For the container's log files usage (stdout/stderr).
-        /// </summary>
-        public const string Logs = "logs";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "rootfs", "logs" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static K8sContainerEphemeralStorageFsType Rootfs { get; } = new("rootfs");
 
     /// <summary>
-    /// The reason for the container state. Corresponds to the <c>reason</c> field of the: <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatewaiting-v1-core">K8s ContainerStateWaiting</a> or <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstateterminated-v1-core">K8s ContainerStateTerminated</a>
+    /// For the container's log files usage (stdout/stderr).
     /// </summary>
-    public static class K8sContainerStatusReasonValues
-    {
-        /// <summary>
-        /// The container is being created.
-        /// </summary>
-        public const string ContainerCreating = "ContainerCreating";
-
-        /// <summary>
-        /// The container is in a crash loop back off state.
-        /// </summary>
-        public const string CrashLoopBackOff = "CrashLoopBackOff";
-
-        /// <summary>
-        /// There was an error creating the container configuration.
-        /// </summary>
-        public const string CreateContainerConfigError = "CreateContainerConfigError";
-
-        /// <summary>
-        /// There was an error pulling the container image.
-        /// </summary>
-        public const string ErrImagePull = "ErrImagePull";
-
-        /// <summary>
-        /// The container image pull is in back off state.
-        /// </summary>
-        public const string ImagePullBackOff = "ImagePullBackOff";
-
-        /// <summary>
-        /// The container was killed due to out of memory.
-        /// </summary>
-        public const string OomKilled = "OOMKilled";
-
-        /// <summary>
-        /// The container has completed execution.
-        /// </summary>
-        public const string Completed = "Completed";
-
-        /// <summary>
-        /// There was an error with the container.
-        /// </summary>
-        public const string Error = "Error";
-
-        /// <summary>
-        /// The container cannot run.
-        /// </summary>
-        public const string ContainerCannotRun = "ContainerCannotRun";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "ContainerCreating", "CrashLoopBackOff", "CreateContainerConfigError", "ErrImagePull", "ImagePullBackOff", "OOMKilled", "Completed", "Error", "ContainerCannotRun" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static K8sContainerEphemeralStorageFsType Logs { get; } = new("logs");
 
     /// <summary>
-    /// The state of the container. <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstate-v1-core">K8s ContainerState</a>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
     /// </summary>
-    public static class K8sContainerStatusStateValues
-    {
-        /// <summary>
-        /// The container has terminated.
-        /// </summary>
-        public const string Terminated = "terminated";
-
-        /// <summary>
-        /// The container is running.
-        /// </summary>
-        public const string Running = "running";
-
-        /// <summary>
-        /// The container is waiting.
-        /// </summary>
-        public const string Waiting = "waiting";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "terminated", "running", "waiting" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static K8sContainerEphemeralStorageFsType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
     /// <summary>
-    /// The phase of the K8s namespace.
+    /// The attribute value.
     /// </summary>
-    public static class K8sNamespacePhaseValues
-    {
-        /// <summary>
-        /// Active namespace phase as described by <a href="https://pkg.go.dev/k8s.io/api@v0.31.3/core/v1#NamespacePhase">K8s API</a>.
-        /// </summary>
-        public const string Active = "active";
+    public string Value => _value ?? string.Empty;
 
-        /// <summary>
-        /// Terminating namespace phase as described by <a href="https://pkg.go.dev/k8s.io/api@v0.31.3/core/v1#NamespacePhase">K8s API</a>.
-        /// </summary>
-        public const string Terminating = "terminating";
+    /// <inheritdoc/>
+    public bool Equals(K8sContainerEphemeralStorageFsType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "active", "terminating" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is K8sContainerEphemeralStorageFsType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
 
     /// <summary>
-    /// The status of the condition, one of True, False, Unknown.
+    /// Whether two values are equal.
     /// </summary>
-    public static class K8sNodeConditionStatusValues
-    {
-        /// <summary>
-        /// condition_true.
-        /// </summary>
-        public const string ConditionTrue = "true";
-
-        /// <summary>
-        /// condition_false.
-        /// </summary>
-        public const string ConditionFalse = "false";
-
-        /// <summary>
-        /// condition_unknown.
-        /// </summary>
-        public const string ConditionUnknown = "unknown";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "true", "false", "unknown" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static bool operator ==(K8sContainerEphemeralStorageFsType left, K8sContainerEphemeralStorageFsType right) => left.Equals(right);
 
     /// <summary>
-    /// The condition type of a K8s Node.
+    /// Whether two values differ.
     /// </summary>
-    public static class K8sNodeConditionTypeValues
-    {
-        /// <summary>
-        /// The node is healthy and ready to accept pods.
-        /// </summary>
-        public const string Ready = "Ready";
+    public static bool operator !=(K8sContainerEphemeralStorageFsType left, K8sContainerEphemeralStorageFsType right) => !left.Equals(right);
+}
 
-        /// <summary>
-        /// Pressure exists on the disk size—that is, if the disk capacity is low.
-        /// </summary>
-        public const string DiskPressure = "DiskPressure";
+/// <summary>
+/// The reason for the container state. Corresponds to the <c>reason</c> field of the: <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstatewaiting-v1-core">K8s ContainerStateWaiting</a> or <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstateterminated-v1-core">K8s ContainerStateTerminated</a>
+/// </summary>
+/// <remarks>
+/// The open value set of <c>k8s.container.status.reason</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct K8sContainerStatusReason : global::System.IEquatable<K8sContainerStatusReason>
+{
+    /// <summary>
+    /// The attribute key, <c>k8s.container.status.reason</c>.
+    /// </summary>
+    public const string Key = "k8s.container.status.reason";
 
-        /// <summary>
-        /// Pressure exists on the node memory—that is, if the node memory is low.
-        /// </summary>
-        public const string MemoryPressure = "MemoryPressure";
+    private readonly string? _value;
 
-        /// <summary>
-        /// Pressure exists on the processes—that is, if there are too many processes on the node.
-        /// </summary>
-        public const string PidPressure = "PIDPressure";
-
-        /// <summary>
-        /// The network for the node is not correctly configured.
-        /// </summary>
-        public const string NetworkUnavailable = "NetworkUnavailable";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "Ready", "DiskPressure", "MemoryPressure", "PIDPressure", "NetworkUnavailable" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    private K8sContainerStatusReason(string value) => _value = value;
 
     /// <summary>
-    /// The reclaim policy of the PersistentVolume.
+    /// The container is being created.
     /// </summary>
-    public static class K8sPersistentvolumeReclaimPolicyValues
-    {
-        /// <summary>
-        /// The volume will be deleted when released from its claim.
-        /// </summary>
-        public const string Delete = "Delete";
-
-        /// <summary>
-        /// The volume will be recycled (basic scrub) when released from its claim.
-        /// </summary>
-        public const string Recycle = "Recycle";
-
-        /// <summary>
-        /// The volume will be retained when released from its claim.
-        /// </summary>
-        public const string Retain = "Retain";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "Delete", "Recycle", "Retain" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static K8sContainerStatusReason ContainerCreating { get; } = new("ContainerCreating");
 
     /// <summary>
-    /// The phase of the PersistentVolume.
+    /// The container is in a crash loop back off state.
     /// </summary>
-    public static class K8sPersistentvolumeStatusPhaseValues
-    {
-        /// <summary>
-        /// The volume is available and not yet bound to a claim.
-        /// </summary>
-        public const string Available = "Available";
-
-        /// <summary>
-        /// The volume is bound to a claim.
-        /// </summary>
-        public const string Bound = "Bound";
-
-        /// <summary>
-        /// The volume has failed its automatic reclamation.
-        /// </summary>
-        public const string Failed = "Failed";
-
-        /// <summary>
-        /// The volume is being provisioned.
-        /// </summary>
-        public const string Pending = "Pending";
-
-        /// <summary>
-        /// The claim has been deleted but the volume is not yet available.
-        /// </summary>
-        public const string Released = "Released";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "Available", "Bound", "Failed", "Pending", "Released" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static K8sContainerStatusReason CrashLoopBackOff { get; } = new("CrashLoopBackOff");
 
     /// <summary>
-    /// The phase of the PersistentVolumeClaim.
+    /// There was an error creating the container configuration.
     /// </summary>
-    public static class K8sPersistentvolumeclaimStatusPhaseValues
-    {
-        /// <summary>
-        /// The claim is bound to a volume.
-        /// </summary>
-        public const string Bound = "Bound";
-
-        /// <summary>
-        /// The claim has lost its underlying volume (the volume does not exist anymore).
-        /// </summary>
-        public const string Lost = "Lost";
-
-        /// <summary>
-        /// The claim has not yet been bound to a volume.
-        /// </summary>
-        public const string Pending = "Pending";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "Bound", "Lost", "Pending" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static K8sContainerStatusReason CreateContainerConfigError { get; } = new("CreateContainerConfigError");
 
     /// <summary>
-    /// The phase for the pod. Corresponds to the <c>phase</c> field of the: <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.33/#podstatus-v1-core">K8s PodStatus</a>
+    /// There was an error pulling the container image.
     /// </summary>
-    public static class K8sPodStatusPhaseValues
-    {
-        /// <summary>
-        /// The pod has been accepted by the system, but one or more of the containers has not been started. This includes time before being bound to a node, as well as time spent pulling images onto the host.
-        /// </summary>
-        public const string Pending = "Pending";
-
-        /// <summary>
-        /// The pod has been bound to a node and all of the containers have been started. At least one container is still running or is in the process of being restarted.
-        /// </summary>
-        public const string Running = "Running";
-
-        /// <summary>
-        /// All containers in the pod have voluntarily terminated with a container exit code of 0, and the system is not going to restart any of these containers.
-        /// </summary>
-        public const string Succeeded = "Succeeded";
-
-        /// <summary>
-        /// All containers in the pod have terminated, and at least one container has terminated in a failure (exited with a non-zero exit code or was stopped by the system).
-        /// </summary>
-        public const string Failed = "Failed";
-
-        /// <summary>
-        /// For some reason the state of the pod could not be obtained, typically due to an error in communicating with the host of the pod.
-        /// </summary>
-        public const string Unknown = "Unknown";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "Pending", "Running", "Succeeded", "Failed", "Unknown" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static K8sContainerStatusReason ErrImagePull { get; } = new("ErrImagePull");
 
     /// <summary>
-    /// The reason for the pod state. Corresponds to the <c>reason</c> field of the: <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.33/#podstatus-v1-core">K8s PodStatus</a>
+    /// The container image pull is in back off state.
     /// </summary>
-    public static class K8sPodStatusReasonValues
-    {
-        /// <summary>
-        /// The pod is evicted.
-        /// </summary>
-        public const string Evicted = "Evicted";
-
-        /// <summary>
-        /// The pod is in a status because of its node affinity.
-        /// </summary>
-        public const string NodeAffinity = "NodeAffinity";
-
-        /// <summary>
-        /// The reason on a pod when its state cannot be confirmed as kubelet is unresponsive on the node it is (was) running.
-        /// </summary>
-        public const string NodeLost = "NodeLost";
-
-        /// <summary>
-        /// The node is shutdown.
-        /// </summary>
-        public const string Shutdown = "Shutdown";
-
-        /// <summary>
-        /// The pod was rejected admission to the node because of an error during admission that could not be categorized.
-        /// </summary>
-        public const string UnexpectedAdmissionError = "UnexpectedAdmissionError";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "Evicted", "NodeAffinity", "NodeLost", "Shutdown", "UnexpectedAdmissionError" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static K8sContainerStatusReason ImagePullBackOff { get; } = new("ImagePullBackOff");
 
     /// <summary>
-    /// The address type of the service endpoint.
+    /// The container was killed due to out of memory.
     /// </summary>
-    public static class K8sServiceEndpointAddressTypeValues
-    {
-        /// <summary>
-        /// IPv4 address type.
-        /// </summary>
-        public const string Ipv4 = "IPv4";
-
-        /// <summary>
-        /// IPv6 address type.
-        /// </summary>
-        public const string Ipv6 = "IPv6";
-
-        /// <summary>
-        /// FQDN address type.
-        /// </summary>
-        public const string Fqdn = "FQDN";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "IPv4", "IPv6", "FQDN" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static K8sContainerStatusReason OomKilled { get; } = new("OOMKilled");
 
     /// <summary>
-    /// The condition of the service endpoint.
+    /// The container has completed execution.
     /// </summary>
-    public static class K8sServiceEndpointConditionValues
-    {
-        /// <summary>
-        /// The endpoint is ready to receive new connections.
-        /// </summary>
-        public const string Ready = "ready";
-
-        /// <summary>
-        /// The endpoint is currently handling traffic.
-        /// </summary>
-        public const string Serving = "serving";
-
-        /// <summary>
-        /// The endpoint is in the process of shutting down.
-        /// </summary>
-        public const string Terminating = "terminating";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "ready", "serving", "terminating" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static K8sContainerStatusReason Completed { get; } = new("Completed");
 
     /// <summary>
-    /// The type of the Kubernetes Service.
+    /// There was an error with the container.
     /// </summary>
-    public static class K8sServiceTypeValues
-    {
-        /// <summary>
-        /// ClusterIP service type.
-        /// </summary>
-        public const string ClusterIp = "ClusterIP";
-
-        /// <summary>
-        /// NodePort service type.
-        /// </summary>
-        public const string NodePort = "NodePort";
-
-        /// <summary>
-        /// LoadBalancer service type.
-        /// </summary>
-        public const string LoadBalancer = "LoadBalancer";
-
-        /// <summary>
-        /// ExternalName service type.
-        /// </summary>
-        public const string ExternalName = "ExternalName";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "ClusterIP", "NodePort", "LoadBalancer", "ExternalName" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static K8sContainerStatusReason Error { get; } = new("Error");
 
     /// <summary>
-    /// The type of the K8s volume.
+    /// The container cannot run.
     /// </summary>
-    public static class K8sVolumeTypeValues
-    {
-        /// <summary>
-        /// A <a href="https://kubernetes.io/docs/concepts/storage/volumes/#persistentvolumeclaim">persistentVolumeClaim</a> volume.
-        /// </summary>
-        public const string PersistentVolumeClaim = "persistentVolumeClaim";
+    public static K8sContainerStatusReason ContainerCannotRun { get; } = new("ContainerCannotRun");
 
-        /// <summary>
-        /// A <a href="https://kubernetes.io/docs/concepts/storage/volumes/#configmap">configMap</a> volume.
-        /// </summary>
-        public const string ConfigMap = "configMap";
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static K8sContainerStatusReason Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
-        /// <summary>
-        /// A <a href="https://kubernetes.io/docs/concepts/storage/volumes/#downwardapi">downwardAPI</a> volume.
-        /// </summary>
-        public const string DownwardApi = "downwardAPI";
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
 
-        /// <summary>
-        /// An <a href="https://kubernetes.io/docs/concepts/storage/volumes/#emptydir">emptyDir</a> volume.
-        /// </summary>
-        public const string EmptyDir = "emptyDir";
+    /// <inheritdoc/>
+    public bool Equals(K8sContainerStatusReason other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
 
-        /// <summary>
-        /// A <a href="https://kubernetes.io/docs/concepts/storage/volumes/#secret">secret</a> volume.
-        /// </summary>
-        public const string Secret = "secret";
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is K8sContainerStatusReason other && Equals(other);
 
-        /// <summary>
-        /// A <a href="https://kubernetes.io/docs/concepts/storage/volumes/#local">local</a> volume.
-        /// </summary>
-        public const string Local = "local";
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "persistentVolumeClaim", "configMap", "downwardAPI", "emptyDir", "secret", "local" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(K8sContainerStatusReason left, K8sContainerStatusReason right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(K8sContainerStatusReason left, K8sContainerStatusReason right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The state of the container. <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.34/#containerstate-v1-core">K8s ContainerState</a>
+/// </summary>
+/// <remarks>
+/// The open value set of <c>k8s.container.status.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct K8sContainerStatusState : global::System.IEquatable<K8sContainerStatusState>
+{
+    /// <summary>
+    /// The attribute key, <c>k8s.container.status.state</c>.
+    /// </summary>
+    public const string Key = "k8s.container.status.state";
+
+    private readonly string? _value;
+
+    private K8sContainerStatusState(string value) => _value = value;
+
+    /// <summary>
+    /// The container has terminated.
+    /// </summary>
+    public static K8sContainerStatusState Terminated { get; } = new("terminated");
+
+    /// <summary>
+    /// The container is running.
+    /// </summary>
+    public static K8sContainerStatusState Running { get; } = new("running");
+
+    /// <summary>
+    /// The container is waiting.
+    /// </summary>
+    public static K8sContainerStatusState Waiting { get; } = new("waiting");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static K8sContainerStatusState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(K8sContainerStatusState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is K8sContainerStatusState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(K8sContainerStatusState left, K8sContainerStatusState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(K8sContainerStatusState left, K8sContainerStatusState right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The phase of the K8s namespace.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>k8s.namespace.phase</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct K8sNamespacePhase : global::System.IEquatable<K8sNamespacePhase>
+{
+    /// <summary>
+    /// The attribute key, <c>k8s.namespace.phase</c>.
+    /// </summary>
+    public const string Key = "k8s.namespace.phase";
+
+    private readonly string? _value;
+
+    private K8sNamespacePhase(string value) => _value = value;
+
+    /// <summary>
+    /// Active namespace phase as described by <a href="https://pkg.go.dev/k8s.io/api@v0.31.3/core/v1#NamespacePhase">K8s API</a>.
+    /// </summary>
+    public static K8sNamespacePhase Active { get; } = new("active");
+
+    /// <summary>
+    /// Terminating namespace phase as described by <a href="https://pkg.go.dev/k8s.io/api@v0.31.3/core/v1#NamespacePhase">K8s API</a>.
+    /// </summary>
+    public static K8sNamespacePhase Terminating { get; } = new("terminating");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static K8sNamespacePhase Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(K8sNamespacePhase other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is K8sNamespacePhase other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(K8sNamespacePhase left, K8sNamespacePhase right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(K8sNamespacePhase left, K8sNamespacePhase right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The status of the condition, one of True, False, Unknown.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>k8s.node.condition.status</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct K8sNodeConditionStatus : global::System.IEquatable<K8sNodeConditionStatus>
+{
+    /// <summary>
+    /// The attribute key, <c>k8s.node.condition.status</c>.
+    /// </summary>
+    public const string Key = "k8s.node.condition.status";
+
+    private readonly string? _value;
+
+    private K8sNodeConditionStatus(string value) => _value = value;
+
+    /// <summary>
+    /// condition_true.
+    /// </summary>
+    public static K8sNodeConditionStatus ConditionTrue { get; } = new("true");
+
+    /// <summary>
+    /// condition_false.
+    /// </summary>
+    public static K8sNodeConditionStatus ConditionFalse { get; } = new("false");
+
+    /// <summary>
+    /// condition_unknown.
+    /// </summary>
+    public static K8sNodeConditionStatus ConditionUnknown { get; } = new("unknown");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static K8sNodeConditionStatus Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(K8sNodeConditionStatus other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is K8sNodeConditionStatus other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(K8sNodeConditionStatus left, K8sNodeConditionStatus right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(K8sNodeConditionStatus left, K8sNodeConditionStatus right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The condition type of a K8s Node.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>k8s.node.condition.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct K8sNodeConditionType : global::System.IEquatable<K8sNodeConditionType>
+{
+    /// <summary>
+    /// The attribute key, <c>k8s.node.condition.type</c>.
+    /// </summary>
+    public const string Key = "k8s.node.condition.type";
+
+    private readonly string? _value;
+
+    private K8sNodeConditionType(string value) => _value = value;
+
+    /// <summary>
+    /// The node is healthy and ready to accept pods.
+    /// </summary>
+    public static K8sNodeConditionType Ready { get; } = new("Ready");
+
+    /// <summary>
+    /// Pressure exists on the disk size—that is, if the disk capacity is low.
+    /// </summary>
+    public static K8sNodeConditionType DiskPressure { get; } = new("DiskPressure");
+
+    /// <summary>
+    /// Pressure exists on the node memory—that is, if the node memory is low.
+    /// </summary>
+    public static K8sNodeConditionType MemoryPressure { get; } = new("MemoryPressure");
+
+    /// <summary>
+    /// Pressure exists on the processes—that is, if there are too many processes on the node.
+    /// </summary>
+    public static K8sNodeConditionType PidPressure { get; } = new("PIDPressure");
+
+    /// <summary>
+    /// The network for the node is not correctly configured.
+    /// </summary>
+    public static K8sNodeConditionType NetworkUnavailable { get; } = new("NetworkUnavailable");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static K8sNodeConditionType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(K8sNodeConditionType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is K8sNodeConditionType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(K8sNodeConditionType left, K8sNodeConditionType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(K8sNodeConditionType left, K8sNodeConditionType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The phase of the PersistentVolume.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>k8s.persistentvolume.status.phase</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct K8sPersistentvolumeStatusPhase : global::System.IEquatable<K8sPersistentvolumeStatusPhase>
+{
+    /// <summary>
+    /// The attribute key, <c>k8s.persistentvolume.status.phase</c>.
+    /// </summary>
+    public const string Key = "k8s.persistentvolume.status.phase";
+
+    private readonly string? _value;
+
+    private K8sPersistentvolumeStatusPhase(string value) => _value = value;
+
+    /// <summary>
+    /// The volume is available and not yet bound to a claim.
+    /// </summary>
+    public static K8sPersistentvolumeStatusPhase Available { get; } = new("Available");
+
+    /// <summary>
+    /// The volume is bound to a claim.
+    /// </summary>
+    public static K8sPersistentvolumeStatusPhase Bound { get; } = new("Bound");
+
+    /// <summary>
+    /// The volume has failed its automatic reclamation.
+    /// </summary>
+    public static K8sPersistentvolumeStatusPhase Failed { get; } = new("Failed");
+
+    /// <summary>
+    /// The volume is being provisioned.
+    /// </summary>
+    public static K8sPersistentvolumeStatusPhase Pending { get; } = new("Pending");
+
+    /// <summary>
+    /// The claim has been deleted but the volume is not yet available.
+    /// </summary>
+    public static K8sPersistentvolumeStatusPhase Released { get; } = new("Released");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static K8sPersistentvolumeStatusPhase Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(K8sPersistentvolumeStatusPhase other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is K8sPersistentvolumeStatusPhase other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(K8sPersistentvolumeStatusPhase left, K8sPersistentvolumeStatusPhase right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(K8sPersistentvolumeStatusPhase left, K8sPersistentvolumeStatusPhase right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The phase of the PersistentVolumeClaim.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>k8s.persistentvolumeclaim.status.phase</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct K8sPersistentvolumeclaimStatusPhase : global::System.IEquatable<K8sPersistentvolumeclaimStatusPhase>
+{
+    /// <summary>
+    /// The attribute key, <c>k8s.persistentvolumeclaim.status.phase</c>.
+    /// </summary>
+    public const string Key = "k8s.persistentvolumeclaim.status.phase";
+
+    private readonly string? _value;
+
+    private K8sPersistentvolumeclaimStatusPhase(string value) => _value = value;
+
+    /// <summary>
+    /// The claim is bound to a volume.
+    /// </summary>
+    public static K8sPersistentvolumeclaimStatusPhase Bound { get; } = new("Bound");
+
+    /// <summary>
+    /// The claim has lost its underlying volume (the volume does not exist anymore).
+    /// </summary>
+    public static K8sPersistentvolumeclaimStatusPhase Lost { get; } = new("Lost");
+
+    /// <summary>
+    /// The claim has not yet been bound to a volume.
+    /// </summary>
+    public static K8sPersistentvolumeclaimStatusPhase Pending { get; } = new("Pending");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static K8sPersistentvolumeclaimStatusPhase Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(K8sPersistentvolumeclaimStatusPhase other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is K8sPersistentvolumeclaimStatusPhase other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(K8sPersistentvolumeclaimStatusPhase left, K8sPersistentvolumeclaimStatusPhase right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(K8sPersistentvolumeclaimStatusPhase left, K8sPersistentvolumeclaimStatusPhase right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The phase for the pod. Corresponds to the <c>phase</c> field of the: <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.33/#podstatus-v1-core">K8s PodStatus</a>
+/// </summary>
+/// <remarks>
+/// The open value set of <c>k8s.pod.status.phase</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct K8sPodStatusPhase : global::System.IEquatable<K8sPodStatusPhase>
+{
+    /// <summary>
+    /// The attribute key, <c>k8s.pod.status.phase</c>.
+    /// </summary>
+    public const string Key = "k8s.pod.status.phase";
+
+    private readonly string? _value;
+
+    private K8sPodStatusPhase(string value) => _value = value;
+
+    /// <summary>
+    /// The pod has been accepted by the system, but one or more of the containers has not been started. This includes time before being bound to a node, as well as time spent pulling images onto the host.
+    /// </summary>
+    public static K8sPodStatusPhase Pending { get; } = new("Pending");
+
+    /// <summary>
+    /// The pod has been bound to a node and all of the containers have been started. At least one container is still running or is in the process of being restarted.
+    /// </summary>
+    public static K8sPodStatusPhase Running { get; } = new("Running");
+
+    /// <summary>
+    /// All containers in the pod have voluntarily terminated with a container exit code of 0, and the system is not going to restart any of these containers.
+    /// </summary>
+    public static K8sPodStatusPhase Succeeded { get; } = new("Succeeded");
+
+    /// <summary>
+    /// All containers in the pod have terminated, and at least one container has terminated in a failure (exited with a non-zero exit code or was stopped by the system).
+    /// </summary>
+    public static K8sPodStatusPhase Failed { get; } = new("Failed");
+
+    /// <summary>
+    /// For some reason the state of the pod could not be obtained, typically due to an error in communicating with the host of the pod.
+    /// </summary>
+    public static K8sPodStatusPhase Unknown { get; } = new("Unknown");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static K8sPodStatusPhase Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(K8sPodStatusPhase other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is K8sPodStatusPhase other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(K8sPodStatusPhase left, K8sPodStatusPhase right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(K8sPodStatusPhase left, K8sPodStatusPhase right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The reason for the pod state. Corresponds to the <c>reason</c> field of the: <a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.33/#podstatus-v1-core">K8s PodStatus</a>
+/// </summary>
+/// <remarks>
+/// The open value set of <c>k8s.pod.status.reason</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct K8sPodStatusReason : global::System.IEquatable<K8sPodStatusReason>
+{
+    /// <summary>
+    /// The attribute key, <c>k8s.pod.status.reason</c>.
+    /// </summary>
+    public const string Key = "k8s.pod.status.reason";
+
+    private readonly string? _value;
+
+    private K8sPodStatusReason(string value) => _value = value;
+
+    /// <summary>
+    /// The pod is evicted.
+    /// </summary>
+    public static K8sPodStatusReason Evicted { get; } = new("Evicted");
+
+    /// <summary>
+    /// The pod is in a status because of its node affinity.
+    /// </summary>
+    public static K8sPodStatusReason NodeAffinity { get; } = new("NodeAffinity");
+
+    /// <summary>
+    /// The reason on a pod when its state cannot be confirmed as kubelet is unresponsive on the node it is (was) running.
+    /// </summary>
+    public static K8sPodStatusReason NodeLost { get; } = new("NodeLost");
+
+    /// <summary>
+    /// The node is shutdown.
+    /// </summary>
+    public static K8sPodStatusReason Shutdown { get; } = new("Shutdown");
+
+    /// <summary>
+    /// The pod was rejected admission to the node because of an error during admission that could not be categorized.
+    /// </summary>
+    public static K8sPodStatusReason UnexpectedAdmissionError { get; } = new("UnexpectedAdmissionError");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static K8sPodStatusReason Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(K8sPodStatusReason other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is K8sPodStatusReason other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(K8sPodStatusReason left, K8sPodStatusReason right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(K8sPodStatusReason left, K8sPodStatusReason right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The address type of the service endpoint.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>k8s.service.endpoint.address_type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct K8sServiceEndpointAddressType : global::System.IEquatable<K8sServiceEndpointAddressType>
+{
+    /// <summary>
+    /// The attribute key, <c>k8s.service.endpoint.address_type</c>.
+    /// </summary>
+    public const string Key = "k8s.service.endpoint.address_type";
+
+    private readonly string? _value;
+
+    private K8sServiceEndpointAddressType(string value) => _value = value;
+
+    /// <summary>
+    /// IPv4 address type.
+    /// </summary>
+    public static K8sServiceEndpointAddressType Ipv4 { get; } = new("IPv4");
+
+    /// <summary>
+    /// IPv6 address type.
+    /// </summary>
+    public static K8sServiceEndpointAddressType Ipv6 { get; } = new("IPv6");
+
+    /// <summary>
+    /// FQDN address type.
+    /// </summary>
+    public static K8sServiceEndpointAddressType Fqdn { get; } = new("FQDN");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static K8sServiceEndpointAddressType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(K8sServiceEndpointAddressType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is K8sServiceEndpointAddressType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(K8sServiceEndpointAddressType left, K8sServiceEndpointAddressType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(K8sServiceEndpointAddressType left, K8sServiceEndpointAddressType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The condition of the service endpoint.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>k8s.service.endpoint.condition</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct K8sServiceEndpointCondition : global::System.IEquatable<K8sServiceEndpointCondition>
+{
+    /// <summary>
+    /// The attribute key, <c>k8s.service.endpoint.condition</c>.
+    /// </summary>
+    public const string Key = "k8s.service.endpoint.condition";
+
+    private readonly string? _value;
+
+    private K8sServiceEndpointCondition(string value) => _value = value;
+
+    /// <summary>
+    /// The endpoint is ready to receive new connections.
+    /// </summary>
+    public static K8sServiceEndpointCondition Ready { get; } = new("ready");
+
+    /// <summary>
+    /// The endpoint is currently handling traffic.
+    /// </summary>
+    public static K8sServiceEndpointCondition Serving { get; } = new("serving");
+
+    /// <summary>
+    /// The endpoint is in the process of shutting down.
+    /// </summary>
+    public static K8sServiceEndpointCondition Terminating { get; } = new("terminating");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static K8sServiceEndpointCondition Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(K8sServiceEndpointCondition other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is K8sServiceEndpointCondition other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(K8sServiceEndpointCondition left, K8sServiceEndpointCondition right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(K8sServiceEndpointCondition left, K8sServiceEndpointCondition right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The type of the K8s volume.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>k8s.volume.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct K8sVolumeType : global::System.IEquatable<K8sVolumeType>
+{
+    /// <summary>
+    /// The attribute key, <c>k8s.volume.type</c>.
+    /// </summary>
+    public const string Key = "k8s.volume.type";
+
+    private readonly string? _value;
+
+    private K8sVolumeType(string value) => _value = value;
+
+    /// <summary>
+    /// A <a href="https://kubernetes.io/docs/concepts/storage/volumes/#persistentvolumeclaim">persistentVolumeClaim</a> volume.
+    /// </summary>
+    public static K8sVolumeType PersistentVolumeClaim { get; } = new("persistentVolumeClaim");
+
+    /// <summary>
+    /// A <a href="https://kubernetes.io/docs/concepts/storage/volumes/#configmap">configMap</a> volume.
+    /// </summary>
+    public static K8sVolumeType ConfigMap { get; } = new("configMap");
+
+    /// <summary>
+    /// A <a href="https://kubernetes.io/docs/concepts/storage/volumes/#downwardapi">downwardAPI</a> volume.
+    /// </summary>
+    public static K8sVolumeType DownwardApi { get; } = new("downwardAPI");
+
+    /// <summary>
+    /// An <a href="https://kubernetes.io/docs/concepts/storage/volumes/#emptydir">emptyDir</a> volume.
+    /// </summary>
+    public static K8sVolumeType EmptyDir { get; } = new("emptyDir");
+
+    /// <summary>
+    /// A <a href="https://kubernetes.io/docs/concepts/storage/volumes/#secret">secret</a> volume.
+    /// </summary>
+    public static K8sVolumeType Secret { get; } = new("secret");
+
+    /// <summary>
+    /// A <a href="https://kubernetes.io/docs/concepts/storage/volumes/#local">local</a> volume.
+    /// </summary>
+    public static K8sVolumeType Local { get; } = new("local");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static K8sVolumeType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(K8sVolumeType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is K8sVolumeType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(K8sVolumeType left, K8sVolumeType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(K8sVolumeType left, K8sVolumeType right) => !left.Equals(right);
 }

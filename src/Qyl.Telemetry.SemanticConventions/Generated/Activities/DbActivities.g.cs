@@ -23,8 +23,8 @@ public static class DbActivityExtensions
     [global::System.Obsolete("Replaced by cassandra.consistency.level.", false)]
     public static global::System.Diagnostics.Activity SetDbCassandraConsistencyLevel(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("db.cassandra.consistency_level", value);
+        DbCassandraConsistencyLevel value)
+        => activity.SetTag("db.cassandra.consistency_level", value.Value);
 
     /// <summary>
     /// Deprecated, use <c>cassandra.coordinator.dc</c> instead.
@@ -95,8 +95,8 @@ public static class DbActivityExtensions
     [global::System.Obsolete("Replaced by db.client.connection.state.", false)]
     public static global::System.Diagnostics.Activity SetDbClientConnectionsState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("db.client.connections.state", value);
+        DbClientConnectionsState value)
+        => activity.SetTag("db.client.connections.state", value.Value);
 
     /// <summary>
     /// The name of a collection (table, container) within the database.
@@ -141,8 +141,8 @@ public static class DbActivityExtensions
     [global::System.Obsolete("Replaced by azure.cosmosdb.connection.mode.", false)]
     public static global::System.Diagnostics.Activity SetDbCosmosdbConnectionMode(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("db.cosmosdb.connection_mode", value);
+        DbCosmosdbConnectionMode value)
+        => activity.SetTag("db.cosmosdb.connection_mode", value.Value);
 
     /// <summary>
     /// Deprecated, use <c>cosmosdb.consistency.level</c> instead.
@@ -150,8 +150,8 @@ public static class DbActivityExtensions
     [global::System.Obsolete("Replaced by azure.cosmosdb.consistency.level.", false)]
     public static global::System.Diagnostics.Activity SetDbCosmosdbConsistencyLevel(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("db.cosmosdb.consistency_level", value);
+        DbCosmosdbConsistencyLevel value)
+        => activity.SetTag("db.cosmosdb.consistency_level", value.Value);
 
     /// <summary>
     /// Deprecated, use <c>db.collection.name</c> instead.
@@ -168,8 +168,8 @@ public static class DbActivityExtensions
     [global::System.Obsolete("Removed, no replacement.", false)]
     public static global::System.Diagnostics.Activity SetDbCosmosdbOperationType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("db.cosmosdb.operation_type", value);
+        DbCosmosdbOperationType value)
+        => activity.SetTag("db.cosmosdb.operation_type", value.Value);
 
     /// <summary>
     /// Deprecated, use <c>azure.cosmosdb.operation.contacted_regions</c> instead.
@@ -464,8 +464,8 @@ public static class DbActivityExtensions
     [global::System.Obsolete("Replaced by db.system.name.", false)]
     public static global::System.Diagnostics.Activity SetDbSystem(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("db.system", value);
+        DbSystem value)
+        => activity.SetTag("db.system", value.Value);
 
     /// <summary>
     /// The database management system (DBMS) product as identified by the client instrumentation.
@@ -475,8 +475,8 @@ public static class DbActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetDbSystemName(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("db.system.name", value);
+        DbSystemName value)
+        => activity.SetTag("db.system.name", value.Value);
 
     /// <summary>
     /// Deprecated, no replacement at this time.
@@ -486,551 +486,837 @@ public static class DbActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("db.user", value);
+}
+
+/// <summary>
+/// Deprecated, use <c>cassandra.consistency.level</c> instead.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>db.cassandra.consistency_level</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+[global::System.Obsolete("Replaced by cassandra.consistency.level.", false)]
+public readonly struct DbCassandraConsistencyLevel : global::System.IEquatable<DbCassandraConsistencyLevel>
+{
+    /// <summary>
+    /// The attribute key, <c>db.cassandra.consistency_level</c>.
+    /// </summary>
+    public const string Key = "db.cassandra.consistency_level";
+
+    private readonly string? _value;
+
+    private DbCassandraConsistencyLevel(string value) => _value = value;
 
     /// <summary>
-    /// Deprecated, use <c>cassandra.consistency.level</c> instead.
+    /// all.
     /// </summary>
-    public static class DbCassandraConsistencyLevelValues
-    {
-        /// <summary>
-        /// all.
-        /// </summary>
-        public const string All = "all";
-
-        /// <summary>
-        /// each_quorum.
-        /// </summary>
-        public const string EachQuorum = "each_quorum";
-
-        /// <summary>
-        /// quorum.
-        /// </summary>
-        public const string Quorum = "quorum";
-
-        /// <summary>
-        /// local_quorum.
-        /// </summary>
-        public const string LocalQuorum = "local_quorum";
-
-        /// <summary>
-        /// one.
-        /// </summary>
-        public const string One = "one";
-
-        /// <summary>
-        /// two.
-        /// </summary>
-        public const string Two = "two";
-
-        /// <summary>
-        /// three.
-        /// </summary>
-        public const string Three = "three";
-
-        /// <summary>
-        /// local_one.
-        /// </summary>
-        public const string LocalOne = "local_one";
-
-        /// <summary>
-        /// any.
-        /// </summary>
-        public const string Any = "any";
-
-        /// <summary>
-        /// serial.
-        /// </summary>
-        public const string Serial = "serial";
-
-        /// <summary>
-        /// local_serial.
-        /// </summary>
-        public const string LocalSerial = "local_serial";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "all", "each_quorum", "quorum", "local_quorum", "one", "two", "three", "local_one", "any", "serial", "local_serial" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static DbCassandraConsistencyLevel All { get; } = new("all");
 
     /// <summary>
-    /// Deprecated, use <c>db.client.connection.state</c> instead.
+    /// each_quorum.
     /// </summary>
-    public static class DbClientConnectionsStateValues
-    {
-        /// <summary>
-        /// idle.
-        /// </summary>
-        public const string Idle = "idle";
-
-        /// <summary>
-        /// used.
-        /// </summary>
-        public const string Used = "used";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "idle", "used" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static DbCassandraConsistencyLevel EachQuorum { get; } = new("each_quorum");
 
     /// <summary>
-    /// Deprecated, use <c>azure.cosmosdb.connection.mode</c> instead.
+    /// quorum.
     /// </summary>
-    public static class DbCosmosdbConnectionModeValues
-    {
-        /// <summary>
-        /// Gateway (HTTP) connection.
-        /// </summary>
-        public const string Gateway = "gateway";
-
-        /// <summary>
-        /// Direct connection.
-        /// </summary>
-        public const string Direct = "direct";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "gateway", "direct" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static DbCassandraConsistencyLevel Quorum { get; } = new("quorum");
 
     /// <summary>
-    /// Deprecated, use <c>cosmosdb.consistency.level</c> instead.
+    /// local_quorum.
     /// </summary>
-    public static class DbCosmosdbConsistencyLevelValues
-    {
-        /// <summary>
-        /// strong.
-        /// </summary>
-        public const string Strong = "Strong";
+    public static DbCassandraConsistencyLevel LocalQuorum { get; } = new("local_quorum");
 
-        /// <summary>
-        /// bounded_staleness.
-        /// </summary>
-        public const string BoundedStaleness = "BoundedStaleness";
+    /// <summary>
+    /// one.
+    /// </summary>
+    public static DbCassandraConsistencyLevel One { get; } = new("one");
 
-        /// <summary>
-        /// session.
-        /// </summary>
-        public const string Session = "Session";
+    /// <summary>
+    /// two.
+    /// </summary>
+    public static DbCassandraConsistencyLevel Two { get; } = new("two");
 
-        /// <summary>
-        /// eventual.
-        /// </summary>
-        public const string Eventual = "Eventual";
+    /// <summary>
+    /// three.
+    /// </summary>
+    public static DbCassandraConsistencyLevel Three { get; } = new("three");
 
-        /// <summary>
-        /// consistent_prefix.
-        /// </summary>
-        public const string ConsistentPrefix = "ConsistentPrefix";
+    /// <summary>
+    /// local_one.
+    /// </summary>
+    public static DbCassandraConsistencyLevel LocalOne { get; } = new("local_one");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "Strong", "BoundedStaleness", "Session", "Eventual", "ConsistentPrefix" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// any.
+    /// </summary>
+    public static DbCassandraConsistencyLevel Any { get; } = new("any");
+
+    /// <summary>
+    /// serial.
+    /// </summary>
+    public static DbCassandraConsistencyLevel Serial { get; } = new("serial");
+
+    /// <summary>
+    /// local_serial.
+    /// </summary>
+    public static DbCassandraConsistencyLevel LocalSerial { get; } = new("local_serial");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static DbCassandraConsistencyLevel Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(DbCassandraConsistencyLevel other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is DbCassandraConsistencyLevel other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(DbCassandraConsistencyLevel left, DbCassandraConsistencyLevel right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(DbCassandraConsistencyLevel left, DbCassandraConsistencyLevel right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Deprecated, use <c>db.client.connection.state</c> instead.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>db.client.connections.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+[global::System.Obsolete("Replaced by db.client.connection.state.", false)]
+public readonly struct DbClientConnectionsState : global::System.IEquatable<DbClientConnectionsState>
+{
+    /// <summary>
+    /// The attribute key, <c>db.client.connections.state</c>.
+    /// </summary>
+    public const string Key = "db.client.connections.state";
+
+    private readonly string? _value;
+
+    private DbClientConnectionsState(string value) => _value = value;
+
+    /// <summary>
+    /// idle.
+    /// </summary>
+    public static DbClientConnectionsState Idle { get; } = new("idle");
+
+    /// <summary>
+    /// used.
+    /// </summary>
+    public static DbClientConnectionsState Used { get; } = new("used");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static DbClientConnectionsState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(DbClientConnectionsState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is DbClientConnectionsState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(DbClientConnectionsState left, DbClientConnectionsState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(DbClientConnectionsState left, DbClientConnectionsState right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Deprecated, use <c>azure.cosmosdb.connection.mode</c> instead.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>db.cosmosdb.connection_mode</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+[global::System.Obsolete("Replaced by azure.cosmosdb.connection.mode.", false)]
+public readonly struct DbCosmosdbConnectionMode : global::System.IEquatable<DbCosmosdbConnectionMode>
+{
+    /// <summary>
+    /// The attribute key, <c>db.cosmosdb.connection_mode</c>.
+    /// </summary>
+    public const string Key = "db.cosmosdb.connection_mode";
+
+    private readonly string? _value;
+
+    private DbCosmosdbConnectionMode(string value) => _value = value;
+
+    /// <summary>
+    /// Gateway (HTTP) connection.
+    /// </summary>
+    public static DbCosmosdbConnectionMode Gateway { get; } = new("gateway");
+
+    /// <summary>
+    /// Direct connection.
+    /// </summary>
+    public static DbCosmosdbConnectionMode Direct { get; } = new("direct");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static DbCosmosdbConnectionMode Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(DbCosmosdbConnectionMode other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is DbCosmosdbConnectionMode other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(DbCosmosdbConnectionMode left, DbCosmosdbConnectionMode right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(DbCosmosdbConnectionMode left, DbCosmosdbConnectionMode right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Deprecated, use <c>cosmosdb.consistency.level</c> instead.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>db.cosmosdb.consistency_level</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+[global::System.Obsolete("Replaced by azure.cosmosdb.consistency.level.", false)]
+public readonly struct DbCosmosdbConsistencyLevel : global::System.IEquatable<DbCosmosdbConsistencyLevel>
+{
+    /// <summary>
+    /// The attribute key, <c>db.cosmosdb.consistency_level</c>.
+    /// </summary>
+    public const string Key = "db.cosmosdb.consistency_level";
+
+    private readonly string? _value;
+
+    private DbCosmosdbConsistencyLevel(string value) => _value = value;
+
+    /// <summary>
+    /// strong.
+    /// </summary>
+    public static DbCosmosdbConsistencyLevel Strong { get; } = new("Strong");
+
+    /// <summary>
+    /// bounded_staleness.
+    /// </summary>
+    public static DbCosmosdbConsistencyLevel BoundedStaleness { get; } = new("BoundedStaleness");
+
+    /// <summary>
+    /// session.
+    /// </summary>
+    public static DbCosmosdbConsistencyLevel Session { get; } = new("Session");
+
+    /// <summary>
+    /// eventual.
+    /// </summary>
+    public static DbCosmosdbConsistencyLevel Eventual { get; } = new("Eventual");
+
+    /// <summary>
+    /// consistent_prefix.
+    /// </summary>
+    public static DbCosmosdbConsistencyLevel ConsistentPrefix { get; } = new("ConsistentPrefix");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static DbCosmosdbConsistencyLevel Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(DbCosmosdbConsistencyLevel other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is DbCosmosdbConsistencyLevel other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(DbCosmosdbConsistencyLevel left, DbCosmosdbConsistencyLevel right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(DbCosmosdbConsistencyLevel left, DbCosmosdbConsistencyLevel right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Deprecated, no replacement at this time.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>db.cosmosdb.operation_type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+[global::System.Obsolete("Removed, no replacement.", false)]
+public readonly struct DbCosmosdbOperationType : global::System.IEquatable<DbCosmosdbOperationType>
+{
+    /// <summary>
+    /// The attribute key, <c>db.cosmosdb.operation_type</c>.
+    /// </summary>
+    public const string Key = "db.cosmosdb.operation_type";
+
+    private readonly string? _value;
+
+    private DbCosmosdbOperationType(string value) => _value = value;
+
+    /// <summary>
+    /// batch.
+    /// </summary>
+    public static DbCosmosdbOperationType Batch { get; } = new("batch");
+
+    /// <summary>
+    /// create.
+    /// </summary>
+    public static DbCosmosdbOperationType Create { get; } = new("create");
+
+    /// <summary>
+    /// delete.
+    /// </summary>
+    public static DbCosmosdbOperationType Delete { get; } = new("delete");
+
+    /// <summary>
+    /// execute.
+    /// </summary>
+    public static DbCosmosdbOperationType Execute { get; } = new("execute");
+
+    /// <summary>
+    /// execute_javascript.
+    /// </summary>
+    public static DbCosmosdbOperationType ExecuteJavascript { get; } = new("execute_javascript");
+
+    /// <summary>
+    /// invalid.
+    /// </summary>
+    public static DbCosmosdbOperationType Invalid { get; } = new("invalid");
+
+    /// <summary>
+    /// head.
+    /// </summary>
+    public static DbCosmosdbOperationType Head { get; } = new("head");
+
+    /// <summary>
+    /// head_feed.
+    /// </summary>
+    public static DbCosmosdbOperationType HeadFeed { get; } = new("head_feed");
+
+    /// <summary>
+    /// patch.
+    /// </summary>
+    public static DbCosmosdbOperationType Patch { get; } = new("patch");
+
+    /// <summary>
+    /// query.
+    /// </summary>
+    public static DbCosmosdbOperationType Query { get; } = new("query");
+
+    /// <summary>
+    /// query_plan.
+    /// </summary>
+    public static DbCosmosdbOperationType QueryPlan { get; } = new("query_plan");
+
+    /// <summary>
+    /// read.
+    /// </summary>
+    public static DbCosmosdbOperationType Read { get; } = new("read");
+
+    /// <summary>
+    /// read_feed.
+    /// </summary>
+    public static DbCosmosdbOperationType ReadFeed { get; } = new("read_feed");
+
+    /// <summary>
+    /// replace.
+    /// </summary>
+    public static DbCosmosdbOperationType Replace { get; } = new("replace");
+
+    /// <summary>
+    /// upsert.
+    /// </summary>
+    public static DbCosmosdbOperationType Upsert { get; } = new("upsert");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static DbCosmosdbOperationType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(DbCosmosdbOperationType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is DbCosmosdbOperationType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(DbCosmosdbOperationType left, DbCosmosdbOperationType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(DbCosmosdbOperationType left, DbCosmosdbOperationType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Deprecated, use <c>db.system.name</c> instead.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>db.system</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+[global::System.Obsolete("Replaced by db.system.name.", false)]
+public readonly struct DbSystem : global::System.IEquatable<DbSystem>
+{
+    /// <summary>
+    /// The attribute key, <c>db.system</c>.
+    /// </summary>
+    public const string Key = "db.system";
+
+    private readonly string? _value;
+
+    private DbSystem(string value) => _value = value;
+
+    /// <summary>
+    /// Some other SQL database. Fallback only. See notes.
+    /// </summary>
+    public static DbSystem OtherSql { get; } = new("other_sql");
+
+    /// <summary>
+    /// Adabas (Adaptable Database System).
+    /// </summary>
+    public static DbSystem Adabas { get; } = new("adabas");
+
+    /// <summary>
+    /// Deprecated, use <c>intersystems_cache</c> instead.
+    /// </summary>
+    [global::System.Obsolete("Replaced by intersystems_cache.", false)]
+    public static DbSystem Cache { get; } = new("cache");
+
+    /// <summary>
+    /// InterSystems Caché.
+    /// </summary>
+    public static DbSystem IntersystemsCache { get; } = new("intersystems_cache");
+
+    /// <summary>
+    /// Apache Cassandra.
+    /// </summary>
+    public static DbSystem Cassandra { get; } = new("cassandra");
+
+    /// <summary>
+    /// ClickHouse.
+    /// </summary>
+    public static DbSystem Clickhouse { get; } = new("clickhouse");
+
+    /// <summary>
+    /// Deprecated, use <c>other_sql</c> instead.
+    /// </summary>
+    [global::System.Obsolete("Replaced by other_sql.", false)]
+    public static DbSystem Cloudscape { get; } = new("cloudscape");
+
+    /// <summary>
+    /// CockroachDB.
+    /// </summary>
+    public static DbSystem Cockroachdb { get; } = new("cockroachdb");
 
     /// <summary>
     /// Deprecated, no replacement at this time.
     /// </summary>
-    public static class DbCosmosdbOperationTypeValues
-    {
-        /// <summary>
-        /// batch.
-        /// </summary>
-        public const string Batch = "batch";
-
-        /// <summary>
-        /// create.
-        /// </summary>
-        public const string Create = "create";
-
-        /// <summary>
-        /// delete.
-        /// </summary>
-        public const string Delete = "delete";
-
-        /// <summary>
-        /// execute.
-        /// </summary>
-        public const string Execute = "execute";
-
-        /// <summary>
-        /// execute_javascript.
-        /// </summary>
-        public const string ExecuteJavascript = "execute_javascript";
-
-        /// <summary>
-        /// invalid.
-        /// </summary>
-        public const string Invalid = "invalid";
-
-        /// <summary>
-        /// head.
-        /// </summary>
-        public const string Head = "head";
-
-        /// <summary>
-        /// head_feed.
-        /// </summary>
-        public const string HeadFeed = "head_feed";
-
-        /// <summary>
-        /// patch.
-        /// </summary>
-        public const string Patch = "patch";
-
-        /// <summary>
-        /// query.
-        /// </summary>
-        public const string Query = "query";
-
-        /// <summary>
-        /// query_plan.
-        /// </summary>
-        public const string QueryPlan = "query_plan";
-
-        /// <summary>
-        /// read.
-        /// </summary>
-        public const string Read = "read";
-
-        /// <summary>
-        /// read_feed.
-        /// </summary>
-        public const string ReadFeed = "read_feed";
-
-        /// <summary>
-        /// replace.
-        /// </summary>
-        public const string Replace = "replace";
-
-        /// <summary>
-        /// upsert.
-        /// </summary>
-        public const string Upsert = "upsert";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "batch", "create", "delete", "execute", "execute_javascript", "invalid", "head", "head_feed", "patch", "query", "query_plan", "read", "read_feed", "replace", "upsert" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    [global::System.Obsolete("Removed, no replacement.", false)]
+    public static DbSystem Coldfusion { get; } = new("coldfusion");
 
     /// <summary>
-    /// Deprecated, use <c>db.system.name</c> instead.
+    /// Microsoft Azure Cosmos DB.
     /// </summary>
-    public static class DbSystemValues
-    {
-        /// <summary>
-        /// Some other SQL database. Fallback only. See notes.
-        /// </summary>
-        public const string OtherSql = "other_sql";
-
-        /// <summary>
-        /// Adabas (Adaptable Database System).
-        /// </summary>
-        public const string Adabas = "adabas";
-
-        /// <summary>
-        /// Deprecated, use <c>intersystems_cache</c> instead.
-        /// </summary>
-        [global::System.Obsolete("Replaced by intersystems_cache.", false)]
-        public const string Cache = "cache";
-
-        /// <summary>
-        /// InterSystems Caché.
-        /// </summary>
-        public const string IntersystemsCache = "intersystems_cache";
-
-        /// <summary>
-        /// Apache Cassandra.
-        /// </summary>
-        public const string Cassandra = "cassandra";
-
-        /// <summary>
-        /// ClickHouse.
-        /// </summary>
-        public const string Clickhouse = "clickhouse";
-
-        /// <summary>
-        /// Deprecated, use <c>other_sql</c> instead.
-        /// </summary>
-        [global::System.Obsolete("Replaced by other_sql.", false)]
-        public const string Cloudscape = "cloudscape";
-
-        /// <summary>
-        /// CockroachDB.
-        /// </summary>
-        public const string Cockroachdb = "cockroachdb";
-
-        /// <summary>
-        /// Deprecated, no replacement at this time.
-        /// </summary>
-        [global::System.Obsolete("Removed, no replacement.", false)]
-        public const string Coldfusion = "coldfusion";
-
-        /// <summary>
-        /// Microsoft Azure Cosmos DB.
-        /// </summary>
-        public const string Cosmosdb = "cosmosdb";
-
-        /// <summary>
-        /// Couchbase.
-        /// </summary>
-        public const string Couchbase = "couchbase";
-
-        /// <summary>
-        /// CouchDB.
-        /// </summary>
-        public const string Couchdb = "couchdb";
-
-        /// <summary>
-        /// IBM Db2.
-        /// </summary>
-        public const string Db2 = "db2";
-
-        /// <summary>
-        /// Apache Derby.
-        /// </summary>
-        public const string Derby = "derby";
-
-        /// <summary>
-        /// Amazon DynamoDB.
-        /// </summary>
-        public const string Dynamodb = "dynamodb";
-
-        /// <summary>
-        /// EnterpriseDB.
-        /// </summary>
-        public const string Edb = "edb";
-
-        /// <summary>
-        /// Elasticsearch.
-        /// </summary>
-        public const string Elasticsearch = "elasticsearch";
-
-        /// <summary>
-        /// FileMaker.
-        /// </summary>
-        public const string Filemaker = "filemaker";
-
-        /// <summary>
-        /// Firebird.
-        /// </summary>
-        public const string Firebird = "firebird";
-
-        /// <summary>
-        /// Deprecated, use <c>other_sql</c> instead.
-        /// </summary>
-        [global::System.Obsolete("Replaced by other_sql.", false)]
-        public const string Firstsql = "firstsql";
-
-        /// <summary>
-        /// Apache Geode.
-        /// </summary>
-        public const string Geode = "geode";
-
-        /// <summary>
-        /// H2.
-        /// </summary>
-        public const string H2 = "h2";
-
-        /// <summary>
-        /// SAP HANA.
-        /// </summary>
-        public const string Hanadb = "hanadb";
-
-        /// <summary>
-        /// Apache HBase.
-        /// </summary>
-        public const string Hbase = "hbase";
-
-        /// <summary>
-        /// Apache Hive.
-        /// </summary>
-        public const string Hive = "hive";
-
-        /// <summary>
-        /// HyperSQL DataBase.
-        /// </summary>
-        public const string Hsqldb = "hsqldb";
-
-        /// <summary>
-        /// InfluxDB.
-        /// </summary>
-        public const string Influxdb = "influxdb";
-
-        /// <summary>
-        /// Informix.
-        /// </summary>
-        public const string Informix = "informix";
-
-        /// <summary>
-        /// Ingres.
-        /// </summary>
-        public const string Ingres = "ingres";
-
-        /// <summary>
-        /// InstantDB.
-        /// </summary>
-        public const string Instantdb = "instantdb";
-
-        /// <summary>
-        /// InterBase.
-        /// </summary>
-        public const string Interbase = "interbase";
-
-        /// <summary>
-        /// MariaDB.
-        /// </summary>
-        public const string Mariadb = "mariadb";
-
-        /// <summary>
-        /// SAP MaxDB.
-        /// </summary>
-        public const string Maxdb = "maxdb";
-
-        /// <summary>
-        /// Memcached.
-        /// </summary>
-        public const string Memcached = "memcached";
-
-        /// <summary>
-        /// MongoDB.
-        /// </summary>
-        public const string Mongodb = "mongodb";
-
-        /// <summary>
-        /// Microsoft SQL Server.
-        /// </summary>
-        public const string Mssql = "mssql";
-
-        /// <summary>
-        /// Deprecated, Microsoft SQL Server Compact is discontinued.
-        /// </summary>
-        [global::System.Obsolete("Replaced by other_sql.", false)]
-        public const string Mssqlcompact = "mssqlcompact";
-
-        /// <summary>
-        /// MySQL.
-        /// </summary>
-        public const string Mysql = "mysql";
-
-        /// <summary>
-        /// Neo4j.
-        /// </summary>
-        public const string Neo4j = "neo4j";
-
-        /// <summary>
-        /// Netezza.
-        /// </summary>
-        public const string Netezza = "netezza";
-
-        /// <summary>
-        /// OpenSearch.
-        /// </summary>
-        public const string Opensearch = "opensearch";
-
-        /// <summary>
-        /// Oracle Database.
-        /// </summary>
-        public const string Oracle = "oracle";
-
-        /// <summary>
-        /// Pervasive PSQL.
-        /// </summary>
-        public const string Pervasive = "pervasive";
-
-        /// <summary>
-        /// PointBase.
-        /// </summary>
-        public const string Pointbase = "pointbase";
-
-        /// <summary>
-        /// PostgreSQL.
-        /// </summary>
-        public const string Postgresql = "postgresql";
-
-        /// <summary>
-        /// Progress Database.
-        /// </summary>
-        public const string Progress = "progress";
-
-        /// <summary>
-        /// Redis.
-        /// </summary>
-        public const string Redis = "redis";
-
-        /// <summary>
-        /// Amazon Redshift.
-        /// </summary>
-        public const string Redshift = "redshift";
-
-        /// <summary>
-        /// Cloud Spanner.
-        /// </summary>
-        public const string Spanner = "spanner";
-
-        /// <summary>
-        /// SQLite.
-        /// </summary>
-        public const string Sqlite = "sqlite";
-
-        /// <summary>
-        /// Sybase.
-        /// </summary>
-        public const string Sybase = "sybase";
-
-        /// <summary>
-        /// Teradata.
-        /// </summary>
-        public const string Teradata = "teradata";
-
-        /// <summary>
-        /// Trino.
-        /// </summary>
-        public const string Trino = "trino";
-
-        /// <summary>
-        /// Vertica.
-        /// </summary>
-        public const string Vertica = "vertica";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "other_sql", "adabas", "cache", "intersystems_cache", "cassandra", "clickhouse", "cloudscape", "cockroachdb", "coldfusion", "cosmosdb", "couchbase", "couchdb", "db2", "derby", "dynamodb", "edb", "elasticsearch", "filemaker", "firebird", "firstsql", "geode", "h2", "hanadb", "hbase", "hive", "hsqldb", "influxdb", "informix", "ingres", "instantdb", "interbase", "mariadb", "maxdb", "memcached", "mongodb", "mssql", "mssqlcompact", "mysql", "neo4j", "netezza", "opensearch", "oracle", "pervasive", "pointbase", "postgresql", "progress", "redis", "redshift", "spanner", "sqlite", "sybase", "teradata", "trino", "vertica" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static DbSystem Cosmosdb { get; } = new("cosmosdb");
 
     /// <summary>
-    /// The database management system (DBMS) product as identified by the client instrumentation.
+    /// Couchbase.
     /// </summary>
-    public static class DbSystemNameValues
-    {
-        /// <summary>
-        /// <a href="https://mariadb.org/">MariaDB</a>.
-        /// </summary>
-        public const string Mariadb = "mariadb";
+    public static DbSystem Couchbase { get; } = new("couchbase");
 
-        /// <summary>
-        /// <a href="https://www.microsoft.com/sql-server">Microsoft SQL Server</a>.
-        /// </summary>
-        public const string MicrosoftSqlServer = "microsoft.sql_server";
+    /// <summary>
+    /// CouchDB.
+    /// </summary>
+    public static DbSystem Couchdb { get; } = new("couchdb");
 
-        /// <summary>
-        /// <a href="https://www.mysql.com/">MySQL</a>.
-        /// </summary>
-        public const string Mysql = "mysql";
+    /// <summary>
+    /// IBM Db2.
+    /// </summary>
+    public static DbSystem Db2 { get; } = new("db2");
 
-        /// <summary>
-        /// <a href="https://www.postgresql.org/">PostgreSQL</a>.
-        /// </summary>
-        public const string Postgresql = "postgresql";
+    /// <summary>
+    /// Apache Derby.
+    /// </summary>
+    public static DbSystem Derby { get; } = new("derby");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "mariadb", "microsoft.sql_server", "mysql", "postgresql" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// Amazon DynamoDB.
+    /// </summary>
+    public static DbSystem Dynamodb { get; } = new("dynamodb");
+
+    /// <summary>
+    /// EnterpriseDB.
+    /// </summary>
+    public static DbSystem Edb { get; } = new("edb");
+
+    /// <summary>
+    /// Elasticsearch.
+    /// </summary>
+    public static DbSystem Elasticsearch { get; } = new("elasticsearch");
+
+    /// <summary>
+    /// FileMaker.
+    /// </summary>
+    public static DbSystem Filemaker { get; } = new("filemaker");
+
+    /// <summary>
+    /// Firebird.
+    /// </summary>
+    public static DbSystem Firebird { get; } = new("firebird");
+
+    /// <summary>
+    /// Deprecated, use <c>other_sql</c> instead.
+    /// </summary>
+    [global::System.Obsolete("Replaced by other_sql.", false)]
+    public static DbSystem Firstsql { get; } = new("firstsql");
+
+    /// <summary>
+    /// Apache Geode.
+    /// </summary>
+    public static DbSystem Geode { get; } = new("geode");
+
+    /// <summary>
+    /// H2.
+    /// </summary>
+    public static DbSystem H2 { get; } = new("h2");
+
+    /// <summary>
+    /// SAP HANA.
+    /// </summary>
+    public static DbSystem Hanadb { get; } = new("hanadb");
+
+    /// <summary>
+    /// Apache HBase.
+    /// </summary>
+    public static DbSystem Hbase { get; } = new("hbase");
+
+    /// <summary>
+    /// Apache Hive.
+    /// </summary>
+    public static DbSystem Hive { get; } = new("hive");
+
+    /// <summary>
+    /// HyperSQL DataBase.
+    /// </summary>
+    public static DbSystem Hsqldb { get; } = new("hsqldb");
+
+    /// <summary>
+    /// InfluxDB.
+    /// </summary>
+    public static DbSystem Influxdb { get; } = new("influxdb");
+
+    /// <summary>
+    /// Informix.
+    /// </summary>
+    public static DbSystem Informix { get; } = new("informix");
+
+    /// <summary>
+    /// Ingres.
+    /// </summary>
+    public static DbSystem Ingres { get; } = new("ingres");
+
+    /// <summary>
+    /// InstantDB.
+    /// </summary>
+    public static DbSystem Instantdb { get; } = new("instantdb");
+
+    /// <summary>
+    /// InterBase.
+    /// </summary>
+    public static DbSystem Interbase { get; } = new("interbase");
+
+    /// <summary>
+    /// MariaDB.
+    /// </summary>
+    public static DbSystem Mariadb { get; } = new("mariadb");
+
+    /// <summary>
+    /// SAP MaxDB.
+    /// </summary>
+    public static DbSystem Maxdb { get; } = new("maxdb");
+
+    /// <summary>
+    /// Memcached.
+    /// </summary>
+    public static DbSystem Memcached { get; } = new("memcached");
+
+    /// <summary>
+    /// MongoDB.
+    /// </summary>
+    public static DbSystem Mongodb { get; } = new("mongodb");
+
+    /// <summary>
+    /// Microsoft SQL Server.
+    /// </summary>
+    public static DbSystem Mssql { get; } = new("mssql");
+
+    /// <summary>
+    /// Deprecated, Microsoft SQL Server Compact is discontinued.
+    /// </summary>
+    [global::System.Obsolete("Replaced by other_sql.", false)]
+    public static DbSystem Mssqlcompact { get; } = new("mssqlcompact");
+
+    /// <summary>
+    /// MySQL.
+    /// </summary>
+    public static DbSystem Mysql { get; } = new("mysql");
+
+    /// <summary>
+    /// Neo4j.
+    /// </summary>
+    public static DbSystem Neo4j { get; } = new("neo4j");
+
+    /// <summary>
+    /// Netezza.
+    /// </summary>
+    public static DbSystem Netezza { get; } = new("netezza");
+
+    /// <summary>
+    /// OpenSearch.
+    /// </summary>
+    public static DbSystem Opensearch { get; } = new("opensearch");
+
+    /// <summary>
+    /// Oracle Database.
+    /// </summary>
+    public static DbSystem Oracle { get; } = new("oracle");
+
+    /// <summary>
+    /// Pervasive PSQL.
+    /// </summary>
+    public static DbSystem Pervasive { get; } = new("pervasive");
+
+    /// <summary>
+    /// PointBase.
+    /// </summary>
+    public static DbSystem Pointbase { get; } = new("pointbase");
+
+    /// <summary>
+    /// PostgreSQL.
+    /// </summary>
+    public static DbSystem Postgresql { get; } = new("postgresql");
+
+    /// <summary>
+    /// Progress Database.
+    /// </summary>
+    public static DbSystem Progress { get; } = new("progress");
+
+    /// <summary>
+    /// Redis.
+    /// </summary>
+    public static DbSystem Redis { get; } = new("redis");
+
+    /// <summary>
+    /// Amazon Redshift.
+    /// </summary>
+    public static DbSystem Redshift { get; } = new("redshift");
+
+    /// <summary>
+    /// Cloud Spanner.
+    /// </summary>
+    public static DbSystem Spanner { get; } = new("spanner");
+
+    /// <summary>
+    /// SQLite.
+    /// </summary>
+    public static DbSystem Sqlite { get; } = new("sqlite");
+
+    /// <summary>
+    /// Sybase.
+    /// </summary>
+    public static DbSystem Sybase { get; } = new("sybase");
+
+    /// <summary>
+    /// Teradata.
+    /// </summary>
+    public static DbSystem Teradata { get; } = new("teradata");
+
+    /// <summary>
+    /// Trino.
+    /// </summary>
+    public static DbSystem Trino { get; } = new("trino");
+
+    /// <summary>
+    /// Vertica.
+    /// </summary>
+    public static DbSystem Vertica { get; } = new("vertica");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static DbSystem Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(DbSystem other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is DbSystem other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(DbSystem left, DbSystem right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(DbSystem left, DbSystem right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The database management system (DBMS) product as identified by the client instrumentation.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>db.system.name</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct DbSystemName : global::System.IEquatable<DbSystemName>
+{
+    /// <summary>
+    /// The attribute key, <c>db.system.name</c>.
+    /// </summary>
+    public const string Key = "db.system.name";
+
+    private readonly string? _value;
+
+    private DbSystemName(string value) => _value = value;
+
+    /// <summary>
+    /// <a href="https://mariadb.org/">MariaDB</a>.
+    /// </summary>
+    public static DbSystemName Mariadb { get; } = new("mariadb");
+
+    /// <summary>
+    /// <a href="https://www.microsoft.com/sql-server">Microsoft SQL Server</a>.
+    /// </summary>
+    public static DbSystemName MicrosoftSqlServer { get; } = new("microsoft.sql_server");
+
+    /// <summary>
+    /// <a href="https://www.mysql.com/">MySQL</a>.
+    /// </summary>
+    public static DbSystemName Mysql { get; } = new("mysql");
+
+    /// <summary>
+    /// <a href="https://www.postgresql.org/">PostgreSQL</a>.
+    /// </summary>
+    public static DbSystemName Postgresql { get; } = new("postgresql");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static DbSystemName Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(DbSystemName other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is DbSystemName other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(DbSystemName left, DbSystemName right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(DbSystemName left, DbSystemName right) => !left.Equals(right);
 }

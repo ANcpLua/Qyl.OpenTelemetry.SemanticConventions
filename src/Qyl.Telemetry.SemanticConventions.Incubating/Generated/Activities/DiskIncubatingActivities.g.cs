@@ -22,27 +22,67 @@ public static class DiskIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetDiskIoDirection(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("disk.io.direction", value);
+        DiskIoDirection value)
+        => activity.SetTag("disk.io.direction", value.Value);
+}
+
+/// <summary>
+/// The disk IO operation direction.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>disk.io.direction</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct DiskIoDirection : global::System.IEquatable<DiskIoDirection>
+{
+    /// <summary>
+    /// The attribute key, <c>disk.io.direction</c>.
+    /// </summary>
+    public const string Key = "disk.io.direction";
+
+    private readonly string? _value;
+
+    private DiskIoDirection(string value) => _value = value;
 
     /// <summary>
-    /// The disk IO operation direction.
+    /// read.
     /// </summary>
-    public static class DiskIoDirectionValues
-    {
-        /// <summary>
-        /// read.
-        /// </summary>
-        public const string Read = "read";
+    public static DiskIoDirection Read { get; } = new("read");
 
-        /// <summary>
-        /// write.
-        /// </summary>
-        public const string Write = "write";
+    /// <summary>
+    /// write.
+    /// </summary>
+    public static DiskIoDirection Write { get; } = new("write");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "read", "write" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static DiskIoDirection Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(DiskIoDirection other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is DiskIoDirection other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(DiskIoDirection left, DiskIoDirection right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(DiskIoDirection left, DiskIoDirection right) => !left.Equals(right);
 }

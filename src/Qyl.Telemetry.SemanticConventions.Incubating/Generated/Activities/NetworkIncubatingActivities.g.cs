@@ -57,24 +57,24 @@ public static class NetworkIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetNetworkConnectionState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("network.connection.state", value);
+        NetworkConnectionState value)
+        => activity.SetTag("network.connection.state", value.Value);
 
     /// <summary>
     /// This describes more details regarding the connection.type. It may be the type of cell technology connection, but it could be used for describing details about a Wi-Fi connection.
     /// </summary>
     public static global::System.Diagnostics.Activity SetNetworkConnectionSubtype(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("network.connection.subtype", value);
+        NetworkConnectionSubtype value)
+        => activity.SetTag("network.connection.subtype", value.Value);
 
     /// <summary>
     /// The internet connection type.
     /// </summary>
     public static global::System.Diagnostics.Activity SetNetworkConnectionType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("network.connection.type", value);
+        NetworkConnectionType value)
+        => activity.SetTag("network.connection.type", value.Value);
 
     /// <summary>
     /// The network interface name.
@@ -89,245 +89,405 @@ public static class NetworkIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetNetworkIoDirection(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("network.io.direction", value);
+        NetworkIoDirection value)
+        => activity.SetTag("network.io.direction", value.Value);
+}
+
+/// <summary>
+/// The state of network connection
+/// </summary>
+/// <remarks>
+/// The open value set of <c>network.connection.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct NetworkConnectionState : global::System.IEquatable<NetworkConnectionState>
+{
+    /// <summary>
+    /// The attribute key, <c>network.connection.state</c>.
+    /// </summary>
+    public const string Key = "network.connection.state";
+
+    private readonly string? _value;
+
+    private NetworkConnectionState(string value) => _value = value;
 
     /// <summary>
-    /// The state of network connection
+    /// closed.
     /// </summary>
-    public static class NetworkConnectionStateValues
-    {
-        /// <summary>
-        /// closed.
-        /// </summary>
-        public const string Closed = "closed";
-
-        /// <summary>
-        /// close_wait.
-        /// </summary>
-        public const string CloseWait = "close_wait";
-
-        /// <summary>
-        /// closing.
-        /// </summary>
-        public const string Closing = "closing";
-
-        /// <summary>
-        /// established.
-        /// </summary>
-        public const string Established = "established";
-
-        /// <summary>
-        /// fin_wait_1.
-        /// </summary>
-        public const string FinWait1 = "fin_wait_1";
-
-        /// <summary>
-        /// fin_wait_2.
-        /// </summary>
-        public const string FinWait2 = "fin_wait_2";
-
-        /// <summary>
-        /// last_ack.
-        /// </summary>
-        public const string LastAck = "last_ack";
-
-        /// <summary>
-        /// listen.
-        /// </summary>
-        public const string Listen = "listen";
-
-        /// <summary>
-        /// syn_received.
-        /// </summary>
-        public const string SynReceived = "syn_received";
-
-        /// <summary>
-        /// syn_sent.
-        /// </summary>
-        public const string SynSent = "syn_sent";
-
-        /// <summary>
-        /// time_wait.
-        /// </summary>
-        public const string TimeWait = "time_wait";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "closed", "close_wait", "closing", "established", "fin_wait_1", "fin_wait_2", "last_ack", "listen", "syn_received", "syn_sent", "time_wait" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static NetworkConnectionState Closed { get; } = new("closed");
 
     /// <summary>
-    /// This describes more details regarding the connection.type. It may be the type of cell technology connection, but it could be used for describing details about a Wi-Fi connection.
+    /// close_wait.
     /// </summary>
-    public static class NetworkConnectionSubtypeValues
-    {
-        /// <summary>
-        /// GPRS.
-        /// </summary>
-        public const string Gprs = "gprs";
-
-        /// <summary>
-        /// EDGE.
-        /// </summary>
-        public const string Edge = "edge";
-
-        /// <summary>
-        /// UMTS.
-        /// </summary>
-        public const string Umts = "umts";
-
-        /// <summary>
-        /// CDMA.
-        /// </summary>
-        public const string Cdma = "cdma";
-
-        /// <summary>
-        /// EVDO Rel. 0.
-        /// </summary>
-        public const string Evdo0 = "evdo_0";
-
-        /// <summary>
-        /// EVDO Rev. A.
-        /// </summary>
-        public const string EvdoA = "evdo_a";
-
-        /// <summary>
-        /// CDMA2000 1XRTT.
-        /// </summary>
-        public const string Cdma20001xrtt = "cdma2000_1xrtt";
-
-        /// <summary>
-        /// HSDPA.
-        /// </summary>
-        public const string Hsdpa = "hsdpa";
-
-        /// <summary>
-        /// HSUPA.
-        /// </summary>
-        public const string Hsupa = "hsupa";
-
-        /// <summary>
-        /// HSPA.
-        /// </summary>
-        public const string Hspa = "hspa";
-
-        /// <summary>
-        /// IDEN.
-        /// </summary>
-        public const string Iden = "iden";
-
-        /// <summary>
-        /// EVDO Rev. B.
-        /// </summary>
-        public const string EvdoB = "evdo_b";
-
-        /// <summary>
-        /// LTE.
-        /// </summary>
-        public const string Lte = "lte";
-
-        /// <summary>
-        /// EHRPD.
-        /// </summary>
-        public const string Ehrpd = "ehrpd";
-
-        /// <summary>
-        /// HSPAP.
-        /// </summary>
-        public const string Hspap = "hspap";
-
-        /// <summary>
-        /// GSM.
-        /// </summary>
-        public const string Gsm = "gsm";
-
-        /// <summary>
-        /// TD-SCDMA.
-        /// </summary>
-        public const string TdScdma = "td_scdma";
-
-        /// <summary>
-        /// IWLAN.
-        /// </summary>
-        public const string Iwlan = "iwlan";
-
-        /// <summary>
-        /// 5G NR (New Radio).
-        /// </summary>
-        public const string Nr = "nr";
-
-        /// <summary>
-        /// 5G NRNSA (New Radio Non-Standalone).
-        /// </summary>
-        public const string Nrnsa = "nrnsa";
-
-        /// <summary>
-        /// LTE CA.
-        /// </summary>
-        public const string LteCa = "lte_ca";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "gprs", "edge", "umts", "cdma", "evdo_0", "evdo_a", "cdma2000_1xrtt", "hsdpa", "hsupa", "hspa", "iden", "evdo_b", "lte", "ehrpd", "hspap", "gsm", "td_scdma", "iwlan", "nr", "nrnsa", "lte_ca" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static NetworkConnectionState CloseWait { get; } = new("close_wait");
 
     /// <summary>
-    /// The internet connection type.
+    /// closing.
     /// </summary>
-    public static class NetworkConnectionTypeValues
-    {
-        /// <summary>
-        /// Wi-Fi.
-        /// </summary>
-        public const string Wifi = "wifi";
-
-        /// <summary>
-        /// wired.
-        /// </summary>
-        public const string Wired = "wired";
-
-        /// <summary>
-        /// cell.
-        /// </summary>
-        public const string Cell = "cell";
-
-        /// <summary>
-        /// unavailable.
-        /// </summary>
-        public const string Unavailable = "unavailable";
-
-        /// <summary>
-        /// unknown.
-        /// </summary>
-        public const string Unknown = "unknown";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "wifi", "wired", "cell", "unavailable", "unknown" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static NetworkConnectionState Closing { get; } = new("closing");
 
     /// <summary>
-    /// The direction of traffic from the perspective of the observing host's physical or virtual network interface. It should not be used to represent the logical direction of a stateful connection or network flow.
+    /// established.
     /// </summary>
-    public static class NetworkIoDirectionValues
-    {
-        /// <summary>
-        /// transmit.
-        /// </summary>
-        public const string Transmit = "transmit";
+    public static NetworkConnectionState Established { get; } = new("established");
 
-        /// <summary>
-        /// receive.
-        /// </summary>
-        public const string Receive = "receive";
+    /// <summary>
+    /// fin_wait_1.
+    /// </summary>
+    public static NetworkConnectionState FinWait1 { get; } = new("fin_wait_1");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "transmit", "receive" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// fin_wait_2.
+    /// </summary>
+    public static NetworkConnectionState FinWait2 { get; } = new("fin_wait_2");
+
+    /// <summary>
+    /// last_ack.
+    /// </summary>
+    public static NetworkConnectionState LastAck { get; } = new("last_ack");
+
+    /// <summary>
+    /// listen.
+    /// </summary>
+    public static NetworkConnectionState Listen { get; } = new("listen");
+
+    /// <summary>
+    /// syn_received.
+    /// </summary>
+    public static NetworkConnectionState SynReceived { get; } = new("syn_received");
+
+    /// <summary>
+    /// syn_sent.
+    /// </summary>
+    public static NetworkConnectionState SynSent { get; } = new("syn_sent");
+
+    /// <summary>
+    /// time_wait.
+    /// </summary>
+    public static NetworkConnectionState TimeWait { get; } = new("time_wait");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static NetworkConnectionState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(NetworkConnectionState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is NetworkConnectionState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(NetworkConnectionState left, NetworkConnectionState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(NetworkConnectionState left, NetworkConnectionState right) => !left.Equals(right);
+}
+
+/// <summary>
+/// This describes more details regarding the connection.type. It may be the type of cell technology connection, but it could be used for describing details about a Wi-Fi connection.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>network.connection.subtype</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct NetworkConnectionSubtype : global::System.IEquatable<NetworkConnectionSubtype>
+{
+    /// <summary>
+    /// The attribute key, <c>network.connection.subtype</c>.
+    /// </summary>
+    public const string Key = "network.connection.subtype";
+
+    private readonly string? _value;
+
+    private NetworkConnectionSubtype(string value) => _value = value;
+
+    /// <summary>
+    /// GPRS.
+    /// </summary>
+    public static NetworkConnectionSubtype Gprs { get; } = new("gprs");
+
+    /// <summary>
+    /// EDGE.
+    /// </summary>
+    public static NetworkConnectionSubtype Edge { get; } = new("edge");
+
+    /// <summary>
+    /// UMTS.
+    /// </summary>
+    public static NetworkConnectionSubtype Umts { get; } = new("umts");
+
+    /// <summary>
+    /// CDMA.
+    /// </summary>
+    public static NetworkConnectionSubtype Cdma { get; } = new("cdma");
+
+    /// <summary>
+    /// EVDO Rel. 0.
+    /// </summary>
+    public static NetworkConnectionSubtype Evdo0 { get; } = new("evdo_0");
+
+    /// <summary>
+    /// EVDO Rev. A.
+    /// </summary>
+    public static NetworkConnectionSubtype EvdoA { get; } = new("evdo_a");
+
+    /// <summary>
+    /// CDMA2000 1XRTT.
+    /// </summary>
+    public static NetworkConnectionSubtype Cdma20001xrtt { get; } = new("cdma2000_1xrtt");
+
+    /// <summary>
+    /// HSDPA.
+    /// </summary>
+    public static NetworkConnectionSubtype Hsdpa { get; } = new("hsdpa");
+
+    /// <summary>
+    /// HSUPA.
+    /// </summary>
+    public static NetworkConnectionSubtype Hsupa { get; } = new("hsupa");
+
+    /// <summary>
+    /// HSPA.
+    /// </summary>
+    public static NetworkConnectionSubtype Hspa { get; } = new("hspa");
+
+    /// <summary>
+    /// IDEN.
+    /// </summary>
+    public static NetworkConnectionSubtype Iden { get; } = new("iden");
+
+    /// <summary>
+    /// EVDO Rev. B.
+    /// </summary>
+    public static NetworkConnectionSubtype EvdoB { get; } = new("evdo_b");
+
+    /// <summary>
+    /// LTE.
+    /// </summary>
+    public static NetworkConnectionSubtype Lte { get; } = new("lte");
+
+    /// <summary>
+    /// EHRPD.
+    /// </summary>
+    public static NetworkConnectionSubtype Ehrpd { get; } = new("ehrpd");
+
+    /// <summary>
+    /// HSPAP.
+    /// </summary>
+    public static NetworkConnectionSubtype Hspap { get; } = new("hspap");
+
+    /// <summary>
+    /// GSM.
+    /// </summary>
+    public static NetworkConnectionSubtype Gsm { get; } = new("gsm");
+
+    /// <summary>
+    /// TD-SCDMA.
+    /// </summary>
+    public static NetworkConnectionSubtype TdScdma { get; } = new("td_scdma");
+
+    /// <summary>
+    /// IWLAN.
+    /// </summary>
+    public static NetworkConnectionSubtype Iwlan { get; } = new("iwlan");
+
+    /// <summary>
+    /// 5G NR (New Radio).
+    /// </summary>
+    public static NetworkConnectionSubtype Nr { get; } = new("nr");
+
+    /// <summary>
+    /// 5G NRNSA (New Radio Non-Standalone).
+    /// </summary>
+    public static NetworkConnectionSubtype Nrnsa { get; } = new("nrnsa");
+
+    /// <summary>
+    /// LTE CA.
+    /// </summary>
+    public static NetworkConnectionSubtype LteCa { get; } = new("lte_ca");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static NetworkConnectionSubtype Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(NetworkConnectionSubtype other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is NetworkConnectionSubtype other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(NetworkConnectionSubtype left, NetworkConnectionSubtype right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(NetworkConnectionSubtype left, NetworkConnectionSubtype right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The internet connection type.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>network.connection.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct NetworkConnectionType : global::System.IEquatable<NetworkConnectionType>
+{
+    /// <summary>
+    /// The attribute key, <c>network.connection.type</c>.
+    /// </summary>
+    public const string Key = "network.connection.type";
+
+    private readonly string? _value;
+
+    private NetworkConnectionType(string value) => _value = value;
+
+    /// <summary>
+    /// Wi-Fi.
+    /// </summary>
+    public static NetworkConnectionType Wifi { get; } = new("wifi");
+
+    /// <summary>
+    /// wired.
+    /// </summary>
+    public static NetworkConnectionType Wired { get; } = new("wired");
+
+    /// <summary>
+    /// cell.
+    /// </summary>
+    public static NetworkConnectionType Cell { get; } = new("cell");
+
+    /// <summary>
+    /// unavailable.
+    /// </summary>
+    public static NetworkConnectionType Unavailable { get; } = new("unavailable");
+
+    /// <summary>
+    /// unknown.
+    /// </summary>
+    public static NetworkConnectionType Unknown { get; } = new("unknown");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static NetworkConnectionType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(NetworkConnectionType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is NetworkConnectionType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(NetworkConnectionType left, NetworkConnectionType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(NetworkConnectionType left, NetworkConnectionType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The direction of traffic from the perspective of the observing host's physical or virtual network interface. It should not be used to represent the logical direction of a stateful connection or network flow.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>network.io.direction</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct NetworkIoDirection : global::System.IEquatable<NetworkIoDirection>
+{
+    /// <summary>
+    /// The attribute key, <c>network.io.direction</c>.
+    /// </summary>
+    public const string Key = "network.io.direction";
+
+    private readonly string? _value;
+
+    private NetworkIoDirection(string value) => _value = value;
+
+    /// <summary>
+    /// transmit.
+    /// </summary>
+    public static NetworkIoDirection Transmit { get; } = new("transmit");
+
+    /// <summary>
+    /// receive.
+    /// </summary>
+    public static NetworkIoDirection Receive { get; } = new("receive");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static NetworkIoDirection Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(NetworkIoDirection other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is NetworkIoDirection other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(NetworkIoDirection left, NetworkIoDirection right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(NetworkIoDirection left, NetworkIoDirection right) => !left.Equals(right);
 }

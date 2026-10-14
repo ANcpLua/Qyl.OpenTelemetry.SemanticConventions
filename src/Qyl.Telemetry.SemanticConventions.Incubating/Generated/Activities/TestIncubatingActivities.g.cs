@@ -30,8 +30,8 @@ public static class TestIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetTestCaseResultStatus(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("test.case.result.status", value);
+        TestCaseResultStatus value)
+        => activity.SetTag("test.case.result.status", value.Value);
 
     /// <summary>
     /// The human readable name of a <a href="https://wikipedia.org/wiki/Test_suite">test suite</a>.
@@ -46,68 +46,148 @@ public static class TestIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetTestSuiteRunStatus(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("test.suite.run.status", value);
+        TestSuiteRunStatus value)
+        => activity.SetTag("test.suite.run.status", value.Value);
+}
+
+/// <summary>
+/// The status of the actual test case result from test execution.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>test.case.result.status</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct TestCaseResultStatus : global::System.IEquatable<TestCaseResultStatus>
+{
+    /// <summary>
+    /// The attribute key, <c>test.case.result.status</c>.
+    /// </summary>
+    public const string Key = "test.case.result.status";
+
+    private readonly string? _value;
+
+    private TestCaseResultStatus(string value) => _value = value;
 
     /// <summary>
-    /// The status of the actual test case result from test execution.
+    /// pass.
     /// </summary>
-    public static class TestCaseResultStatusValues
-    {
-        /// <summary>
-        /// pass.
-        /// </summary>
-        public const string Pass = "pass";
-
-        /// <summary>
-        /// fail.
-        /// </summary>
-        public const string Fail = "fail";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "pass", "fail" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static TestCaseResultStatus Pass { get; } = new("pass");
 
     /// <summary>
-    /// The status of the test suite run.
+    /// fail.
     /// </summary>
-    public static class TestSuiteRunStatusValues
-    {
-        /// <summary>
-        /// success.
-        /// </summary>
-        public const string Success = "success";
+    public static TestCaseResultStatus Fail { get; } = new("fail");
 
-        /// <summary>
-        /// failure.
-        /// </summary>
-        public const string Failure = "failure";
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static TestCaseResultStatus Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
-        /// <summary>
-        /// skipped.
-        /// </summary>
-        public const string Skipped = "skipped";
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
 
-        /// <summary>
-        /// aborted.
-        /// </summary>
-        public const string Aborted = "aborted";
+    /// <inheritdoc/>
+    public bool Equals(TestCaseResultStatus other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
 
-        /// <summary>
-        /// timed_out.
-        /// </summary>
-        public const string TimedOut = "timed_out";
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is TestCaseResultStatus other && Equals(other);
 
-        /// <summary>
-        /// in_progress.
-        /// </summary>
-        public const string InProgress = "in_progress";
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "success", "failure", "skipped", "aborted", "timed_out", "in_progress" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(TestCaseResultStatus left, TestCaseResultStatus right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(TestCaseResultStatus left, TestCaseResultStatus right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The status of the test suite run.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>test.suite.run.status</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct TestSuiteRunStatus : global::System.IEquatable<TestSuiteRunStatus>
+{
+    /// <summary>
+    /// The attribute key, <c>test.suite.run.status</c>.
+    /// </summary>
+    public const string Key = "test.suite.run.status";
+
+    private readonly string? _value;
+
+    private TestSuiteRunStatus(string value) => _value = value;
+
+    /// <summary>
+    /// success.
+    /// </summary>
+    public static TestSuiteRunStatus Success { get; } = new("success");
+
+    /// <summary>
+    /// failure.
+    /// </summary>
+    public static TestSuiteRunStatus Failure { get; } = new("failure");
+
+    /// <summary>
+    /// skipped.
+    /// </summary>
+    public static TestSuiteRunStatus Skipped { get; } = new("skipped");
+
+    /// <summary>
+    /// aborted.
+    /// </summary>
+    public static TestSuiteRunStatus Aborted { get; } = new("aborted");
+
+    /// <summary>
+    /// timed_out.
+    /// </summary>
+    public static TestSuiteRunStatus TimedOut { get; } = new("timed_out");
+
+    /// <summary>
+    /// in_progress.
+    /// </summary>
+    public static TestSuiteRunStatus InProgress { get; } = new("in_progress");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static TestSuiteRunStatus Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(TestSuiteRunStatus other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is TestSuiteRunStatus other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(TestSuiteRunStatus left, TestSuiteRunStatus right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(TestSuiteRunStatus left, TestSuiteRunStatus right) => !left.Equals(right);
 }

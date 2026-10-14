@@ -41,32 +41,72 @@ public static class GraphqlIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetGraphqlOperationType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("graphql.operation.type", value);
+        GraphqlOperationType value)
+        => activity.SetTag("graphql.operation.type", value.Value);
+}
+
+/// <summary>
+/// The type of the operation being executed.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>graphql.operation.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct GraphqlOperationType : global::System.IEquatable<GraphqlOperationType>
+{
+    /// <summary>
+    /// The attribute key, <c>graphql.operation.type</c>.
+    /// </summary>
+    public const string Key = "graphql.operation.type";
+
+    private readonly string? _value;
+
+    private GraphqlOperationType(string value) => _value = value;
 
     /// <summary>
-    /// The type of the operation being executed.
+    /// GraphQL query.
     /// </summary>
-    public static class GraphqlOperationTypeValues
-    {
-        /// <summary>
-        /// GraphQL query.
-        /// </summary>
-        public const string Query = "query";
+    public static GraphqlOperationType Query { get; } = new("query");
 
-        /// <summary>
-        /// GraphQL mutation.
-        /// </summary>
-        public const string Mutation = "mutation";
+    /// <summary>
+    /// GraphQL mutation.
+    /// </summary>
+    public static GraphqlOperationType Mutation { get; } = new("mutation");
 
-        /// <summary>
-        /// GraphQL subscription.
-        /// </summary>
-        public const string Subscription = "subscription";
+    /// <summary>
+    /// GraphQL subscription.
+    /// </summary>
+    public static GraphqlOperationType Subscription { get; } = new("subscription");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "query", "mutation", "subscription" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static GraphqlOperationType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(GraphqlOperationType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is GraphqlOperationType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(GraphqlOperationType left, GraphqlOperationType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(GraphqlOperationType left, GraphqlOperationType right) => !left.Equals(right);
 }

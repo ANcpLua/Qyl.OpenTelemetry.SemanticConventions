@@ -32,8 +32,8 @@ public static class HttpActivityExtensions
     [global::System.Obsolete("Split into `network.protocol.name` and `network.protocol.version`", false)]
     public static global::System.Diagnostics.Activity SetHttpFlavor(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("http.flavor", value);
+        HttpFlavor value)
+        => activity.SetTag("http.flavor", value.Value);
 
     /// <summary>
     /// Deprecated, use one of <c>server.address</c>, <c>client.address</c> or <c>http.request.header.host</c> instead, depending on the usage.
@@ -109,8 +109,8 @@ public static class HttpActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetHttpRequestMethod(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("http.request.method", value);
+        HttpRequestMethod value)
+        => activity.SetTag("http.request.method", value.Value);
 
     /// <summary>
     /// Original HTTP method sent by the client in the request line.
@@ -274,106 +274,187 @@ public static class HttpActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("http.user_agent", value);
+}
+
+/// <summary>
+/// Deprecated, use <c>network.protocol.name</c> and <c>network.protocol.version</c> instead.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>http.flavor</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+[global::System.Obsolete("Split into `network.protocol.name` and `network.protocol.version`", false)]
+public readonly struct HttpFlavor : global::System.IEquatable<HttpFlavor>
+{
+    /// <summary>
+    /// The attribute key, <c>http.flavor</c>.
+    /// </summary>
+    public const string Key = "http.flavor";
+
+    private readonly string? _value;
+
+    private HttpFlavor(string value) => _value = value;
 
     /// <summary>
-    /// Deprecated, use <c>network.protocol.name</c> and <c>network.protocol.version</c> instead.
+    /// HTTP/1.0.
     /// </summary>
-    public static class HttpFlavorValues
-    {
-        /// <summary>
-        /// HTTP/1.0.
-        /// </summary>
-        public const string Http10 = "1.0";
-
-        /// <summary>
-        /// HTTP/1.1.
-        /// </summary>
-        public const string Http11 = "1.1";
-
-        /// <summary>
-        /// HTTP/2.
-        /// </summary>
-        public const string Http20 = "2.0";
-
-        /// <summary>
-        /// HTTP/3.
-        /// </summary>
-        public const string Http30 = "3.0";
-
-        /// <summary>
-        /// SPDY protocol.
-        /// </summary>
-        public const string Spdy = "SPDY";
-
-        /// <summary>
-        /// QUIC protocol.
-        /// </summary>
-        public const string Quic = "QUIC";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "1.0", "1.1", "2.0", "3.0", "SPDY", "QUIC" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static HttpFlavor Http10 { get; } = new("1.0");
 
     /// <summary>
-    /// HTTP request method.
+    /// HTTP/1.1.
     /// </summary>
-    public static class HttpRequestMethodValues
-    {
-        /// <summary>
-        /// CONNECT method.
-        /// </summary>
-        public const string Connect = "CONNECT";
+    public static HttpFlavor Http11 { get; } = new("1.1");
 
-        /// <summary>
-        /// DELETE method.
-        /// </summary>
-        public const string Delete = "DELETE";
+    /// <summary>
+    /// HTTP/2.
+    /// </summary>
+    public static HttpFlavor Http20 { get; } = new("2.0");
 
-        /// <summary>
-        /// GET method.
-        /// </summary>
-        public const string Get = "GET";
+    /// <summary>
+    /// HTTP/3.
+    /// </summary>
+    public static HttpFlavor Http30 { get; } = new("3.0");
 
-        /// <summary>
-        /// HEAD method.
-        /// </summary>
-        public const string Head = "HEAD";
+    /// <summary>
+    /// SPDY protocol.
+    /// </summary>
+    public static HttpFlavor Spdy { get; } = new("SPDY");
 
-        /// <summary>
-        /// OPTIONS method.
-        /// </summary>
-        public const string Options = "OPTIONS";
+    /// <summary>
+    /// QUIC protocol.
+    /// </summary>
+    public static HttpFlavor Quic { get; } = new("QUIC");
 
-        /// <summary>
-        /// PATCH method.
-        /// </summary>
-        public const string Patch = "PATCH";
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static HttpFlavor Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
-        /// <summary>
-        /// POST method.
-        /// </summary>
-        public const string Post = "POST";
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
 
-        /// <summary>
-        /// PUT method.
-        /// </summary>
-        public const string Put = "PUT";
+    /// <inheritdoc/>
+    public bool Equals(HttpFlavor other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
 
-        /// <summary>
-        /// TRACE method.
-        /// </summary>
-        public const string Trace = "TRACE";
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is HttpFlavor other && Equals(other);
 
-        /// <summary>
-        /// Any HTTP method that the instrumentation has no prior knowledge of.
-        /// </summary>
-        public const string Other = "_OTHER";
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "CONNECT", "DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT", "TRACE", "_OTHER" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(HttpFlavor left, HttpFlavor right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(HttpFlavor left, HttpFlavor right) => !left.Equals(right);
+}
+
+/// <summary>
+/// HTTP request method.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>http.request.method</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct HttpRequestMethod : global::System.IEquatable<HttpRequestMethod>
+{
+    /// <summary>
+    /// The attribute key, <c>http.request.method</c>.
+    /// </summary>
+    public const string Key = "http.request.method";
+
+    private readonly string? _value;
+
+    private HttpRequestMethod(string value) => _value = value;
+
+    /// <summary>
+    /// CONNECT method.
+    /// </summary>
+    public static HttpRequestMethod Connect { get; } = new("CONNECT");
+
+    /// <summary>
+    /// DELETE method.
+    /// </summary>
+    public static HttpRequestMethod Delete { get; } = new("DELETE");
+
+    /// <summary>
+    /// GET method.
+    /// </summary>
+    public static HttpRequestMethod Get { get; } = new("GET");
+
+    /// <summary>
+    /// HEAD method.
+    /// </summary>
+    public static HttpRequestMethod Head { get; } = new("HEAD");
+
+    /// <summary>
+    /// OPTIONS method.
+    /// </summary>
+    public static HttpRequestMethod Options { get; } = new("OPTIONS");
+
+    /// <summary>
+    /// PATCH method.
+    /// </summary>
+    public static HttpRequestMethod Patch { get; } = new("PATCH");
+
+    /// <summary>
+    /// POST method.
+    /// </summary>
+    public static HttpRequestMethod Post { get; } = new("POST");
+
+    /// <summary>
+    /// PUT method.
+    /// </summary>
+    public static HttpRequestMethod Put { get; } = new("PUT");
+
+    /// <summary>
+    /// TRACE method.
+    /// </summary>
+    public static HttpRequestMethod Trace { get; } = new("TRACE");
+
+    /// <summary>
+    /// Any HTTP method that the instrumentation has no prior knowledge of.
+    /// </summary>
+    public static HttpRequestMethod Other { get; } = new("_OTHER");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static HttpRequestMethod Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(HttpRequestMethod other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is HttpRequestMethod other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(HttpRequestMethod left, HttpRequestMethod right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(HttpRequestMethod left, HttpRequestMethod right) => !left.Equals(right);
 }

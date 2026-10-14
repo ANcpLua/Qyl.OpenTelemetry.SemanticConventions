@@ -29,18 +29,6 @@ public static class QylIncubatingActivityExtensions
         => activity.SetTag("qyl.api.contract.revision", value);
 
     /// <summary>
-    /// An application-defined business attribute, <c>qyl.app.&lt;key&gt;</c>, written by <c>SetAppTag</c>; the caller never types the prefix.
-    /// </summary>
-    /// <remarks>
-    /// The one sanctioned place for a business key such as <c>qyl.app.order.id</c>; upstream owns <c>app.*</c>. The key is a compile-time constant (QYL0112) and contains no token the collector denies (QYL0113). The collector keeps at most 16 <c>qyl.app.*</c> keys per span and drops a value longer than 256 characters. Values are strings, 64-bit integers, doubles or booleans.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetQylApp(
-        this global::System.Diagnostics.Activity activity,
-        string segment,
-        string value)
-        => activity.SetTag($"qyl.app.{segment}", value);
-
-    /// <summary>
     /// First dot-segment of the attribute key a collector measurement is about.
     /// </summary>
     /// <remarks>
@@ -48,8 +36,8 @@ public static class QylIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetQylAttributeNamespace(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("qyl.attribute.namespace", value);
+        QylAttributeNamespace value)
+        => activity.SetTag("qyl.attribute.namespace", value.Value);
 
     /// <summary>
     /// Stable identifier of the qyl capability that produced the telemetry.
@@ -91,8 +79,8 @@ public static class QylIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetQylInstrumentationDomain(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("qyl.instrumentation.domain", value);
+        QylInstrumentationDomain value)
+        => activity.SetTag("qyl.instrumentation.domain", value.Value);
 
     /// <summary>
     /// Identifier of the MCP evaluation run. Staging: upstream semconv has no equivalent yet.
@@ -173,651 +161,731 @@ public static class QylIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("qyl.workspace.id", value);
+}
+
+/// <summary>
+/// First dot-segment of the attribute key a collector measurement is about.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>qyl.attribute.namespace</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct QylAttributeNamespace : global::System.IEquatable<QylAttributeNamespace>
+{
+    /// <summary>
+    /// The attribute key, <c>qyl.attribute.namespace</c>.
+    /// </summary>
+    public const string Key = "qyl.attribute.namespace";
+
+    private readonly string? _value;
+
+    private QylAttributeNamespace(string value) => _value = value;
 
     /// <summary>
-    /// First dot-segment of the attribute key a collector measurement is about.
+    /// The <c>android</c> attribute namespace.
     /// </summary>
-    public static class QylAttributeNamespaceValues
-    {
-        /// <summary>
-        /// The <c>android</c> attribute namespace.
-        /// </summary>
-        public const string Android = "android";
-
-        /// <summary>
-        /// The <c>app</c> attribute namespace.
-        /// </summary>
-        public const string App = "app";
-
-        /// <summary>
-        /// The <c>artifact</c> attribute namespace.
-        /// </summary>
-        public const string Artifact = "artifact";
-
-        /// <summary>
-        /// The <c>aspnetcore</c> attribute namespace.
-        /// </summary>
-        public const string Aspnetcore = "aspnetcore";
-
-        /// <summary>
-        /// The <c>aws</c> attribute namespace.
-        /// </summary>
-        public const string Aws = "aws";
-
-        /// <summary>
-        /// The <c>az</c> attribute namespace.
-        /// </summary>
-        public const string Az = "az";
-
-        /// <summary>
-        /// The <c>azure</c> attribute namespace.
-        /// </summary>
-        public const string Azure = "azure";
-
-        /// <summary>
-        /// The <c>browser</c> attribute namespace.
-        /// </summary>
-        public const string Browser = "browser";
-
-        /// <summary>
-        /// The <c>build</c> attribute namespace.
-        /// </summary>
-        public const string Build = "build";
-
-        /// <summary>
-        /// The <c>cassandra</c> attribute namespace.
-        /// </summary>
-        public const string Cassandra = "cassandra";
-
-        /// <summary>
-        /// The <c>cicd</c> attribute namespace.
-        /// </summary>
-        public const string Cicd = "cicd";
-
-        /// <summary>
-        /// The <c>client</c> attribute namespace.
-        /// </summary>
-        public const string Client = "client";
-
-        /// <summary>
-        /// The <c>cloud</c> attribute namespace.
-        /// </summary>
-        public const string Cloud = "cloud";
-
-        /// <summary>
-        /// The <c>cloudevents</c> attribute namespace.
-        /// </summary>
-        public const string Cloudevents = "cloudevents";
-
-        /// <summary>
-        /// The <c>cloudfoundry</c> attribute namespace.
-        /// </summary>
-        public const string Cloudfoundry = "cloudfoundry";
-
-        /// <summary>
-        /// The <c>code</c> attribute namespace.
-        /// </summary>
-        public const string Code = "code";
-
-        /// <summary>
-        /// The <c>container</c> attribute namespace.
-        /// </summary>
-        public const string Container = "container";
-
-        /// <summary>
-        /// The <c>cpu</c> attribute namespace.
-        /// </summary>
-        public const string Cpu = "cpu";
-
-        /// <summary>
-        /// The <c>cpython</c> attribute namespace.
-        /// </summary>
-        public const string Cpython = "cpython";
-
-        /// <summary>
-        /// The <c>db</c> attribute namespace.
-        /// </summary>
-        public const string Db = "db";
-
-        /// <summary>
-        /// The <c>deployment</c> attribute namespace.
-        /// </summary>
-        public const string Deployment = "deployment";
-
-        /// <summary>
-        /// The <c>destination</c> attribute namespace.
-        /// </summary>
-        public const string Destination = "destination";
-
-        /// <summary>
-        /// The <c>device</c> attribute namespace.
-        /// </summary>
-        public const string Device = "device";
-
-        /// <summary>
-        /// The <c>disk</c> attribute namespace.
-        /// </summary>
-        public const string Disk = "disk";
-
-        /// <summary>
-        /// The <c>dns</c> attribute namespace.
-        /// </summary>
-        public const string Dns = "dns";
-
-        /// <summary>
-        /// The <c>dotnet</c> attribute namespace.
-        /// </summary>
-        public const string Dotnet = "dotnet";
-
-        /// <summary>
-        /// The <c>edge_group</c> attribute namespace.
-        /// </summary>
-        public const string EdgeGroup = "edge_group";
-
-        /// <summary>
-        /// The <c>elastic</c> attribute namespace.
-        /// </summary>
-        public const string Elastic = "elastic";
-
-        /// <summary>
-        /// The <c>elasticsearch</c> attribute namespace.
-        /// </summary>
-        public const string Elasticsearch = "elasticsearch";
-
-        /// <summary>
-        /// The <c>enduser</c> attribute namespace.
-        /// </summary>
-        public const string Enduser = "enduser";
-
-        /// <summary>
-        /// The <c>error</c> attribute namespace.
-        /// </summary>
-        public const string Error = "error";
-
-        /// <summary>
-        /// The <c>event</c> attribute namespace.
-        /// </summary>
-        public const string Event = "event";
-
-        /// <summary>
-        /// The <c>exception</c> attribute namespace.
-        /// </summary>
-        public const string Exception = "exception";
-
-        /// <summary>
-        /// The <c>execution</c> attribute namespace.
-        /// </summary>
-        public const string Execution = "execution";
-
-        /// <summary>
-        /// The <c>executor</c> attribute namespace.
-        /// </summary>
-        public const string Executor = "executor";
-
-        /// <summary>
-        /// The <c>faas</c> attribute namespace.
-        /// </summary>
-        public const string Faas = "faas";
-
-        /// <summary>
-        /// The <c>feature_flag</c> attribute namespace.
-        /// </summary>
-        public const string FeatureFlag = "feature_flag";
-
-        /// <summary>
-        /// The <c>file</c> attribute namespace.
-        /// </summary>
-        public const string File = "file";
-
-        /// <summary>
-        /// The <c>gcp</c> attribute namespace.
-        /// </summary>
-        public const string Gcp = "gcp";
-
-        /// <summary>
-        /// The <c>gen_ai</c> attribute namespace.
-        /// </summary>
-        public const string GenAi = "gen_ai";
-
-        /// <summary>
-        /// The <c>geo</c> attribute namespace.
-        /// </summary>
-        public const string Geo = "geo";
-
-        /// <summary>
-        /// The <c>go</c> attribute namespace.
-        /// </summary>
-        public const string Go = "go";
-
-        /// <summary>
-        /// The <c>graphql</c> attribute namespace.
-        /// </summary>
-        public const string Graphql = "graphql";
-
-        /// <summary>
-        /// The <c>grpc</c> attribute namespace.
-        /// </summary>
-        public const string Grpc = "grpc";
-
-        /// <summary>
-        /// The <c>heroku</c> attribute namespace.
-        /// </summary>
-        public const string Heroku = "heroku";
-
-        /// <summary>
-        /// The <c>host</c> attribute namespace.
-        /// </summary>
-        public const string Host = "host";
-
-        /// <summary>
-        /// The <c>http</c> attribute namespace.
-        /// </summary>
-        public const string Http = "http";
-
-        /// <summary>
-        /// The <c>hw</c> attribute namespace.
-        /// </summary>
-        public const string Hw = "hw";
-
-        /// <summary>
-        /// The <c>ios</c> attribute namespace.
-        /// </summary>
-        public const string Ios = "ios";
-
-        /// <summary>
-        /// The <c>jsonrpc</c> attribute namespace.
-        /// </summary>
-        public const string Jsonrpc = "jsonrpc";
-
-        /// <summary>
-        /// The <c>jvm</c> attribute namespace.
-        /// </summary>
-        public const string Jvm = "jvm";
-
-        /// <summary>
-        /// The <c>k8s</c> attribute namespace.
-        /// </summary>
-        public const string K8s = "k8s";
-
-        /// <summary>
-        /// The <c>linux</c> attribute namespace.
-        /// </summary>
-        public const string Linux = "linux";
-
-        /// <summary>
-        /// The <c>log</c> attribute namespace.
-        /// </summary>
-        public const string Log = "log";
-
-        /// <summary>
-        /// The <c>mainframe</c> attribute namespace.
-        /// </summary>
-        public const string Mainframe = "mainframe";
-
-        /// <summary>
-        /// The <c>mcp</c> attribute namespace.
-        /// </summary>
-        public const string Mcp = "mcp";
-
-        /// <summary>
-        /// The <c>message</c> attribute namespace.
-        /// </summary>
-        public const string Message = "message";
-
-        /// <summary>
-        /// The <c>messaging</c> attribute namespace.
-        /// </summary>
-        public const string Messaging = "messaging";
-
-        /// <summary>
-        /// The <c>net</c> attribute namespace.
-        /// </summary>
-        public const string Net = "net";
-
-        /// <summary>
-        /// The <c>network</c> attribute namespace.
-        /// </summary>
-        public const string Network = "network";
-
-        /// <summary>
-        /// The <c>nfs</c> attribute namespace.
-        /// </summary>
-        public const string Nfs = "nfs";
-
-        /// <summary>
-        /// The <c>nodejs</c> attribute namespace.
-        /// </summary>
-        public const string Nodejs = "nodejs";
-
-        /// <summary>
-        /// The <c>nservicebus</c> attribute namespace.
-        /// </summary>
-        public const string Nservicebus = "nservicebus";
-
-        /// <summary>
-        /// The <c>oci</c> attribute namespace.
-        /// </summary>
-        public const string Oci = "oci";
-
-        /// <summary>
-        /// The <c>onc_rpc</c> attribute namespace.
-        /// </summary>
-        public const string OncRpc = "onc_rpc";
-
-        /// <summary>
-        /// The <c>openai</c> attribute namespace.
-        /// </summary>
-        public const string Openai = "openai";
-
-        /// <summary>
-        /// The <c>openshift</c> attribute namespace.
-        /// </summary>
-        public const string Openshift = "openshift";
-
-        /// <summary>
-        /// The <c>opentracing</c> attribute namespace.
-        /// </summary>
-        public const string Opentracing = "opentracing";
-
-        /// <summary>
-        /// The <c>oracle</c> attribute namespace.
-        /// </summary>
-        public const string Oracle = "oracle";
-
-        /// <summary>
-        /// The <c>oracle_cloud</c> attribute namespace.
-        /// </summary>
-        public const string OracleCloud = "oracle_cloud";
-
-        /// <summary>
-        /// The <c>os</c> attribute namespace.
-        /// </summary>
-        public const string Os = "os";
-
-        /// <summary>
-        /// The <c>otel</c> attribute namespace.
-        /// </summary>
-        public const string Otel = "otel";
-
-        /// <summary>
-        /// Any attribute namespace outside the pinned registry.
-        /// </summary>
-        public const string Other = "other";
-
-        /// <summary>
-        /// The <c>peer</c> attribute namespace.
-        /// </summary>
-        public const string Peer = "peer";
-
-        /// <summary>
-        /// The <c>pool</c> attribute namespace.
-        /// </summary>
-        public const string Pool = "pool";
-
-        /// <summary>
-        /// The <c>pprof</c> attribute namespace.
-        /// </summary>
-        public const string Pprof = "pprof";
-
-        /// <summary>
-        /// The <c>process</c> attribute namespace.
-        /// </summary>
-        public const string Process = "process";
-
-        /// <summary>
-        /// The <c>profile</c> attribute namespace.
-        /// </summary>
-        public const string Profile = "profile";
-
-        /// <summary>
-        /// The <c>quartz</c> attribute namespace.
-        /// </summary>
-        public const string Quartz = "quartz";
-
-        /// <summary>
-        /// The <c>qyl</c> attribute namespace.
-        /// </summary>
-        public const string Qyl = "qyl";
-
-        /// <summary>
-        /// The <c>rpc</c> attribute namespace.
-        /// </summary>
-        public const string Rpc = "rpc";
-
-        /// <summary>
-        /// The <c>security_rule</c> attribute namespace.
-        /// </summary>
-        public const string SecurityRule = "security_rule";
-
-        /// <summary>
-        /// The <c>server</c> attribute namespace.
-        /// </summary>
-        public const string Server = "server";
-
-        /// <summary>
-        /// The <c>service</c> attribute namespace.
-        /// </summary>
-        public const string Service = "service";
-
-        /// <summary>
-        /// The <c>session</c> attribute namespace.
-        /// </summary>
-        public const string Session = "session";
-
-        /// <summary>
-        /// The <c>signalr</c> attribute namespace.
-        /// </summary>
-        public const string Signalr = "signalr";
-
-        /// <summary>
-        /// The <c>soap</c> attribute namespace.
-        /// </summary>
-        public const string Soap = "soap";
-
-        /// <summary>
-        /// The <c>source</c> attribute namespace.
-        /// </summary>
-        public const string Source = "source";
-
-        /// <summary>
-        /// The <c>state</c> attribute namespace.
-        /// </summary>
-        public const string State = "state";
-
-        /// <summary>
-        /// The <c>system</c> attribute namespace.
-        /// </summary>
-        public const string System = "system";
-
-        /// <summary>
-        /// The <c>telemetry</c> attribute namespace.
-        /// </summary>
-        public const string Telemetry = "telemetry";
-
-        /// <summary>
-        /// The <c>test</c> attribute namespace.
-        /// </summary>
-        public const string Test = "test";
-
-        /// <summary>
-        /// The <c>thread</c> attribute namespace.
-        /// </summary>
-        public const string Thread = "thread";
-
-        /// <summary>
-        /// The <c>tls</c> attribute namespace.
-        /// </summary>
-        public const string Tls = "tls";
-
-        /// <summary>
-        /// The <c>url</c> attribute namespace.
-        /// </summary>
-        public const string Url = "url";
-
-        /// <summary>
-        /// The <c>user</c> attribute namespace.
-        /// </summary>
-        public const string User = "user";
-
-        /// <summary>
-        /// The <c>user_agent</c> attribute namespace.
-        /// </summary>
-        public const string UserAgent = "user_agent";
-
-        /// <summary>
-        /// The <c>v8js</c> attribute namespace.
-        /// </summary>
-        public const string V8js = "v8js";
-
-        /// <summary>
-        /// The <c>vcs</c> attribute namespace.
-        /// </summary>
-        public const string Vcs = "vcs";
-
-        /// <summary>
-        /// The <c>wcf</c> attribute namespace.
-        /// </summary>
-        public const string Wcf = "wcf";
-
-        /// <summary>
-        /// The <c>webengine</c> attribute namespace.
-        /// </summary>
-        public const string Webengine = "webengine";
-
-        /// <summary>
-        /// The <c>workflow</c> attribute namespace.
-        /// </summary>
-        public const string Workflow = "workflow";
-
-        /// <summary>
-        /// The <c>zos</c> attribute namespace.
-        /// </summary>
-        public const string Zos = "zos";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "android", "app", "artifact", "aspnetcore", "aws", "az", "azure", "browser", "build", "cassandra", "cicd", "client", "cloud", "cloudevents", "cloudfoundry", "code", "container", "cpu", "cpython", "db", "deployment", "destination", "device", "disk", "dns", "dotnet", "edge_group", "elastic", "elasticsearch", "enduser", "error", "event", "exception", "execution", "executor", "faas", "feature_flag", "file", "gcp", "gen_ai", "geo", "go", "graphql", "grpc", "heroku", "host", "http", "hw", "ios", "jsonrpc", "jvm", "k8s", "linux", "log", "mainframe", "mcp", "message", "messaging", "net", "network", "nfs", "nodejs", "nservicebus", "oci", "onc_rpc", "openai", "openshift", "opentracing", "oracle", "oracle_cloud", "os", "otel", "other", "peer", "pool", "pprof", "process", "profile", "quartz", "qyl", "rpc", "security_rule", "server", "service", "session", "signalr", "soap", "source", "state", "system", "telemetry", "test", "thread", "tls", "url", "user", "user_agent", "v8js", "vcs", "wcf", "webengine", "workflow", "zos" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static QylAttributeNamespace Android { get; } = new("android");
 
     /// <summary>
-    /// qyl auto-instrumentation domain that emitted the span or metric.
+    /// The <c>app</c> attribute namespace.
     /// </summary>
-    public static class QylInstrumentationDomainValues
-    {
-        /// <summary>
-        /// Application work started through the generated <c>Spans.Work</c> starter.
-        /// </summary>
-        public const string App = "app";
+    public static QylAttributeNamespace App { get; } = new("app");
 
-        /// <summary>
-        /// qyl aspnetcore.server instrumentation domain.
-        /// </summary>
-        public const string AspNetCoreServer = "aspnetcore.server";
+    /// <summary>
+    /// The <c>artifact</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Artifact { get; } = new("artifact");
 
-        /// <summary>
-        /// qyl azure.sdk instrumentation domain.
-        /// </summary>
-        public const string AzureSdk = "azure.sdk";
+    /// <summary>
+    /// The <c>aspnetcore</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Aspnetcore { get; } = new("aspnetcore");
 
-        /// <summary>
-        /// qyl db.client instrumentation domain.
-        /// </summary>
-        public const string DbClient = "db.client";
+    /// <summary>
+    /// The <c>aws</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Aws { get; } = new("aws");
 
-        /// <summary>
-        /// qyl db.efcore instrumentation domain.
-        /// </summary>
-        public const string DbEfCore = "db.efcore";
+    /// <summary>
+    /// The <c>az</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Az { get; } = new("az");
 
-        /// <summary>
-        /// qyl db.elasticsearch instrumentation domain.
-        /// </summary>
-        public const string DbElasticsearch = "db.elasticsearch";
+    /// <summary>
+    /// The <c>azure</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Azure { get; } = new("azure");
 
-        /// <summary>
-        /// qyl db.mongodb instrumentation domain.
-        /// </summary>
-        public const string DbMongoDb = "db.mongodb";
+    /// <summary>
+    /// The <c>browser</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Browser { get; } = new("browser");
 
-        /// <summary>
-        /// qyl db.redis instrumentation domain.
-        /// </summary>
-        public const string DbRedis = "db.redis";
+    /// <summary>
+    /// The <c>build</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Build { get; } = new("build");
 
-        /// <summary>
-        /// qyl db.sqlclient instrumentation domain.
-        /// </summary>
-        public const string DbSqlClient = "db.sqlclient";
+    /// <summary>
+    /// The <c>cassandra</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Cassandra { get; } = new("cassandra");
 
-        /// <summary>
-        /// qyl elastic.transport instrumentation domain.
-        /// </summary>
-        public const string ElasticTransport = "elastic.transport";
+    /// <summary>
+    /// The <c>cicd</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Cicd { get; } = new("cicd");
 
-        /// <summary>
-        /// A tool execution started through a generated execute_tool starter.
-        /// </summary>
-        public const string GenAiExecuteTool = "gen_ai.execute_tool";
+    /// <summary>
+    /// The <c>client</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Client { get; } = new("client");
 
-        /// <summary>
-        /// An agent invocation started through the generated invoke_agent starter.
-        /// </summary>
-        public const string GenAiInvokeAgent = "gen_ai.invoke_agent";
+    /// <summary>
+    /// The <c>cloud</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Cloud { get; } = new("cloud");
 
-        /// <summary>
-        /// qyl graphql instrumentation domain.
-        /// </summary>
-        public const string GraphQl = "graphql";
+    /// <summary>
+    /// The <c>cloudevents</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Cloudevents { get; } = new("cloudevents");
 
-        /// <summary>
-        /// qyl http.client instrumentation domain.
-        /// </summary>
-        public const string HttpClient = "http.client";
+    /// <summary>
+    /// The <c>cloudfoundry</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Cloudfoundry { get; } = new("cloudfoundry");
 
-        /// <summary>
-        /// qyl job.quartz instrumentation domain.
-        /// </summary>
-        public const string JobQuartz = "job.quartz";
+    /// <summary>
+    /// The <c>code</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Code { get; } = new("code");
 
-        /// <summary>
-        /// qyl messaging.kafka instrumentation domain.
-        /// </summary>
-        public const string MessagingKafka = "messaging.kafka";
+    /// <summary>
+    /// The <c>container</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Container { get; } = new("container");
 
-        /// <summary>
-        /// qyl messaging.masstransit instrumentation domain.
-        /// </summary>
-        public const string MessagingMassTransit = "messaging.masstransit";
+    /// <summary>
+    /// The <c>cpu</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Cpu { get; } = new("cpu");
 
-        /// <summary>
-        /// qyl messaging.nservicebus instrumentation domain.
-        /// </summary>
-        public const string MessagingNServiceBus = "messaging.nservicebus";
+    /// <summary>
+    /// The <c>cpython</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Cpython { get; } = new("cpython");
 
-        /// <summary>
-        /// Message processing started through the generated process-consumer starter.
-        /// </summary>
-        public const string MessagingProcess = "messaging.process";
+    /// <summary>
+    /// The <c>db</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Db { get; } = new("db");
 
-        /// <summary>
-        /// qyl messaging.rabbitmq instrumentation domain.
-        /// </summary>
-        public const string MessagingRabbitMq = "messaging.rabbitmq";
+    /// <summary>
+    /// The <c>deployment</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Deployment { get; } = new("deployment");
 
-        /// <summary>
-        /// qyl rpc.grpc instrumentation domain.
-        /// </summary>
-        public const string RpcGrpc = "rpc.grpc";
+    /// <summary>
+    /// The <c>destination</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Destination { get; } = new("destination");
 
-        /// <summary>
-        /// qyl rpc.wcf.client instrumentation domain.
-        /// </summary>
-        public const string RpcWcfClient = "rpc.wcf.client";
+    /// <summary>
+    /// The <c>device</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Device { get; } = new("device");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "app", "aspnetcore.server", "azure.sdk", "db.client", "db.efcore", "db.elasticsearch", "db.mongodb", "db.redis", "db.sqlclient", "elastic.transport", "gen_ai.execute_tool", "gen_ai.invoke_agent", "graphql", "http.client", "job.quartz", "messaging.kafka", "messaging.masstransit", "messaging.nservicebus", "messaging.process", "messaging.rabbitmq", "rpc.grpc", "rpc.wcf.client" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// The <c>disk</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Disk { get; } = new("disk");
+
+    /// <summary>
+    /// The <c>dns</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Dns { get; } = new("dns");
+
+    /// <summary>
+    /// The <c>dotnet</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Dotnet { get; } = new("dotnet");
+
+    /// <summary>
+    /// The <c>edge_group</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace EdgeGroup { get; } = new("edge_group");
+
+    /// <summary>
+    /// The <c>elastic</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Elastic { get; } = new("elastic");
+
+    /// <summary>
+    /// The <c>elasticsearch</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Elasticsearch { get; } = new("elasticsearch");
+
+    /// <summary>
+    /// The <c>enduser</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Enduser { get; } = new("enduser");
+
+    /// <summary>
+    /// The <c>error</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Error { get; } = new("error");
+
+    /// <summary>
+    /// The <c>event</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Event { get; } = new("event");
+
+    /// <summary>
+    /// The <c>exception</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Exception { get; } = new("exception");
+
+    /// <summary>
+    /// The <c>execution</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Execution { get; } = new("execution");
+
+    /// <summary>
+    /// The <c>executor</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Executor { get; } = new("executor");
+
+    /// <summary>
+    /// The <c>faas</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Faas { get; } = new("faas");
+
+    /// <summary>
+    /// The <c>feature_flag</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace FeatureFlag { get; } = new("feature_flag");
+
+    /// <summary>
+    /// The <c>file</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace File { get; } = new("file");
+
+    /// <summary>
+    /// The <c>gcp</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Gcp { get; } = new("gcp");
+
+    /// <summary>
+    /// The <c>gen_ai</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace GenAi { get; } = new("gen_ai");
+
+    /// <summary>
+    /// The <c>geo</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Geo { get; } = new("geo");
+
+    /// <summary>
+    /// The <c>go</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Go { get; } = new("go");
+
+    /// <summary>
+    /// The <c>graphql</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Graphql { get; } = new("graphql");
+
+    /// <summary>
+    /// The <c>grpc</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Grpc { get; } = new("grpc");
+
+    /// <summary>
+    /// The <c>heroku</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Heroku { get; } = new("heroku");
+
+    /// <summary>
+    /// The <c>host</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Host { get; } = new("host");
+
+    /// <summary>
+    /// The <c>http</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Http { get; } = new("http");
+
+    /// <summary>
+    /// The <c>hw</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Hw { get; } = new("hw");
+
+    /// <summary>
+    /// The <c>ios</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Ios { get; } = new("ios");
+
+    /// <summary>
+    /// The <c>jsonrpc</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Jsonrpc { get; } = new("jsonrpc");
+
+    /// <summary>
+    /// The <c>jvm</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Jvm { get; } = new("jvm");
+
+    /// <summary>
+    /// The <c>k8s</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace K8s { get; } = new("k8s");
+
+    /// <summary>
+    /// The <c>linux</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Linux { get; } = new("linux");
+
+    /// <summary>
+    /// The <c>log</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Log { get; } = new("log");
+
+    /// <summary>
+    /// The <c>mainframe</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Mainframe { get; } = new("mainframe");
+
+    /// <summary>
+    /// The <c>mcp</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Mcp { get; } = new("mcp");
+
+    /// <summary>
+    /// The <c>message</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Message { get; } = new("message");
+
+    /// <summary>
+    /// The <c>messaging</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Messaging { get; } = new("messaging");
+
+    /// <summary>
+    /// The <c>net</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Net { get; } = new("net");
+
+    /// <summary>
+    /// The <c>network</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Network { get; } = new("network");
+
+    /// <summary>
+    /// The <c>nfs</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Nfs { get; } = new("nfs");
+
+    /// <summary>
+    /// The <c>nodejs</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Nodejs { get; } = new("nodejs");
+
+    /// <summary>
+    /// The <c>nservicebus</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Nservicebus { get; } = new("nservicebus");
+
+    /// <summary>
+    /// The <c>oci</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Oci { get; } = new("oci");
+
+    /// <summary>
+    /// The <c>onc_rpc</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace OncRpc { get; } = new("onc_rpc");
+
+    /// <summary>
+    /// The <c>openai</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Openai { get; } = new("openai");
+
+    /// <summary>
+    /// The <c>openshift</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Openshift { get; } = new("openshift");
+
+    /// <summary>
+    /// The <c>opentracing</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Opentracing { get; } = new("opentracing");
+
+    /// <summary>
+    /// The <c>oracle</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Oracle { get; } = new("oracle");
+
+    /// <summary>
+    /// The <c>oracle_cloud</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace OracleCloud { get; } = new("oracle_cloud");
+
+    /// <summary>
+    /// The <c>os</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Os { get; } = new("os");
+
+    /// <summary>
+    /// The <c>otel</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Otel { get; } = new("otel");
+
+    /// <summary>
+    /// Any attribute namespace outside the pinned registry.
+    /// </summary>
+    public static QylAttributeNamespace Other { get; } = new("other");
+
+    /// <summary>
+    /// The <c>peer</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Peer { get; } = new("peer");
+
+    /// <summary>
+    /// The <c>pool</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Pool { get; } = new("pool");
+
+    /// <summary>
+    /// The <c>pprof</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Pprof { get; } = new("pprof");
+
+    /// <summary>
+    /// The <c>process</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Process { get; } = new("process");
+
+    /// <summary>
+    /// The <c>profile</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Profile { get; } = new("profile");
+
+    /// <summary>
+    /// The <c>quartz</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Quartz { get; } = new("quartz");
+
+    /// <summary>
+    /// The <c>qyl</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Qyl { get; } = new("qyl");
+
+    /// <summary>
+    /// The <c>rpc</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Rpc { get; } = new("rpc");
+
+    /// <summary>
+    /// The <c>security_rule</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace SecurityRule { get; } = new("security_rule");
+
+    /// <summary>
+    /// The <c>server</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Server { get; } = new("server");
+
+    /// <summary>
+    /// The <c>service</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Service { get; } = new("service");
+
+    /// <summary>
+    /// The <c>session</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Session { get; } = new("session");
+
+    /// <summary>
+    /// The <c>signalr</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Signalr { get; } = new("signalr");
+
+    /// <summary>
+    /// The <c>soap</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Soap { get; } = new("soap");
+
+    /// <summary>
+    /// The <c>source</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Source { get; } = new("source");
+
+    /// <summary>
+    /// The <c>state</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace State { get; } = new("state");
+
+    /// <summary>
+    /// The <c>system</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace System { get; } = new("system");
+
+    /// <summary>
+    /// The <c>telemetry</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Telemetry { get; } = new("telemetry");
+
+    /// <summary>
+    /// The <c>test</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Test { get; } = new("test");
+
+    /// <summary>
+    /// The <c>thread</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Thread { get; } = new("thread");
+
+    /// <summary>
+    /// The <c>tls</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Tls { get; } = new("tls");
+
+    /// <summary>
+    /// The <c>url</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Url { get; } = new("url");
+
+    /// <summary>
+    /// The <c>user</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace User { get; } = new("user");
+
+    /// <summary>
+    /// The <c>user_agent</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace UserAgent { get; } = new("user_agent");
+
+    /// <summary>
+    /// The <c>v8js</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace V8js { get; } = new("v8js");
+
+    /// <summary>
+    /// The <c>vcs</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Vcs { get; } = new("vcs");
+
+    /// <summary>
+    /// The <c>wcf</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Wcf { get; } = new("wcf");
+
+    /// <summary>
+    /// The <c>webengine</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Webengine { get; } = new("webengine");
+
+    /// <summary>
+    /// The <c>workflow</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Workflow { get; } = new("workflow");
+
+    /// <summary>
+    /// The <c>zos</c> attribute namespace.
+    /// </summary>
+    public static QylAttributeNamespace Zos { get; } = new("zos");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static QylAttributeNamespace Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(QylAttributeNamespace other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is QylAttributeNamespace other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(QylAttributeNamespace left, QylAttributeNamespace right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(QylAttributeNamespace left, QylAttributeNamespace right) => !left.Equals(right);
+}
+
+/// <summary>
+/// qyl auto-instrumentation domain that emitted the span or metric.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>qyl.instrumentation.domain</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct QylInstrumentationDomain : global::System.IEquatable<QylInstrumentationDomain>
+{
+    /// <summary>
+    /// The attribute key, <c>qyl.instrumentation.domain</c>.
+    /// </summary>
+    public const string Key = "qyl.instrumentation.domain";
+
+    private readonly string? _value;
+
+    private QylInstrumentationDomain(string value) => _value = value;
+
+    /// <summary>
+    /// Application work started through the generated <c>Spans.Work</c> starter.
+    /// </summary>
+    public static QylInstrumentationDomain App { get; } = new("app");
+
+    /// <summary>
+    /// qyl aspnetcore.server instrumentation domain.
+    /// </summary>
+    public static QylInstrumentationDomain AspNetCoreServer { get; } = new("aspnetcore.server");
+
+    /// <summary>
+    /// qyl azure.sdk instrumentation domain.
+    /// </summary>
+    public static QylInstrumentationDomain AzureSdk { get; } = new("azure.sdk");
+
+    /// <summary>
+    /// qyl db.client instrumentation domain.
+    /// </summary>
+    public static QylInstrumentationDomain DbClient { get; } = new("db.client");
+
+    /// <summary>
+    /// qyl db.efcore instrumentation domain.
+    /// </summary>
+    public static QylInstrumentationDomain DbEfCore { get; } = new("db.efcore");
+
+    /// <summary>
+    /// qyl db.elasticsearch instrumentation domain.
+    /// </summary>
+    public static QylInstrumentationDomain DbElasticsearch { get; } = new("db.elasticsearch");
+
+    /// <summary>
+    /// qyl db.mongodb instrumentation domain.
+    /// </summary>
+    public static QylInstrumentationDomain DbMongoDb { get; } = new("db.mongodb");
+
+    /// <summary>
+    /// qyl db.redis instrumentation domain.
+    /// </summary>
+    public static QylInstrumentationDomain DbRedis { get; } = new("db.redis");
+
+    /// <summary>
+    /// qyl db.sqlclient instrumentation domain.
+    /// </summary>
+    public static QylInstrumentationDomain DbSqlClient { get; } = new("db.sqlclient");
+
+    /// <summary>
+    /// qyl elastic.transport instrumentation domain.
+    /// </summary>
+    public static QylInstrumentationDomain ElasticTransport { get; } = new("elastic.transport");
+
+    /// <summary>
+    /// A tool execution started through a generated execute_tool starter.
+    /// </summary>
+    public static QylInstrumentationDomain GenAiExecuteTool { get; } = new("gen_ai.execute_tool");
+
+    /// <summary>
+    /// An agent invocation started through the generated invoke_agent starter.
+    /// </summary>
+    public static QylInstrumentationDomain GenAiInvokeAgent { get; } = new("gen_ai.invoke_agent");
+
+    /// <summary>
+    /// qyl graphql instrumentation domain.
+    /// </summary>
+    public static QylInstrumentationDomain GraphQl { get; } = new("graphql");
+
+    /// <summary>
+    /// qyl http.client instrumentation domain.
+    /// </summary>
+    public static QylInstrumentationDomain HttpClient { get; } = new("http.client");
+
+    /// <summary>
+    /// qyl job.quartz instrumentation domain.
+    /// </summary>
+    public static QylInstrumentationDomain JobQuartz { get; } = new("job.quartz");
+
+    /// <summary>
+    /// qyl messaging.kafka instrumentation domain.
+    /// </summary>
+    public static QylInstrumentationDomain MessagingKafka { get; } = new("messaging.kafka");
+
+    /// <summary>
+    /// qyl messaging.masstransit instrumentation domain.
+    /// </summary>
+    public static QylInstrumentationDomain MessagingMassTransit { get; } = new("messaging.masstransit");
+
+    /// <summary>
+    /// qyl messaging.nservicebus instrumentation domain.
+    /// </summary>
+    public static QylInstrumentationDomain MessagingNServiceBus { get; } = new("messaging.nservicebus");
+
+    /// <summary>
+    /// Message processing started through the generated process-consumer starter.
+    /// </summary>
+    public static QylInstrumentationDomain MessagingProcess { get; } = new("messaging.process");
+
+    /// <summary>
+    /// qyl messaging.rabbitmq instrumentation domain.
+    /// </summary>
+    public static QylInstrumentationDomain MessagingRabbitMq { get; } = new("messaging.rabbitmq");
+
+    /// <summary>
+    /// qyl rpc.grpc instrumentation domain.
+    /// </summary>
+    public static QylInstrumentationDomain RpcGrpc { get; } = new("rpc.grpc");
+
+    /// <summary>
+    /// qyl rpc.wcf.client instrumentation domain.
+    /// </summary>
+    public static QylInstrumentationDomain RpcWcfClient { get; } = new("rpc.wcf.client");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static QylInstrumentationDomain Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(QylInstrumentationDomain other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is QylInstrumentationDomain other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(QylInstrumentationDomain left, QylInstrumentationDomain right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(QylInstrumentationDomain left, QylInstrumentationDomain right) => !left.Equals(right);
 }

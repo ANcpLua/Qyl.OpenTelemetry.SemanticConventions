@@ -22,16 +22,16 @@ public static class OpenaiIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetOpenaiApiType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("openai.api.type", value);
+        OpenaiApiType value)
+        => activity.SetTag("openai.api.type", value.Value);
 
     /// <summary>
     /// The service tier requested. May be a specific tier, default, or auto.
     /// </summary>
     public static global::System.Diagnostics.Activity SetOpenaiRequestServiceTier(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("openai.request.service_tier", value);
+        OpenaiRequestServiceTier value)
+        => activity.SetTag("openai.request.service_tier", value.Value);
 
     /// <summary>
     /// The service tier used for the response.
@@ -48,46 +48,126 @@ public static class OpenaiIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("openai.response.system_fingerprint", value);
+}
+
+/// <summary>
+/// The type of OpenAI API being used.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>openai.api.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct OpenaiApiType : global::System.IEquatable<OpenaiApiType>
+{
+    /// <summary>
+    /// The attribute key, <c>openai.api.type</c>.
+    /// </summary>
+    public const string Key = "openai.api.type";
+
+    private readonly string? _value;
+
+    private OpenaiApiType(string value) => _value = value;
 
     /// <summary>
-    /// The type of OpenAI API being used.
+    /// The OpenAI <a href="https://developers.openai.com/api/reference/chat-completions/overview">Chat Completions API</a>.
     /// </summary>
-    public static class OpenaiApiTypeValues
-    {
-        /// <summary>
-        /// The OpenAI <a href="https://developers.openai.com/api/reference/chat-completions/overview">Chat Completions API</a>.
-        /// </summary>
-        public const string ChatCompletions = "chat_completions";
-
-        /// <summary>
-        /// The OpenAI <a href="https://developers.openai.com/api/reference/responses/overview">Responses API</a>.
-        /// </summary>
-        public const string Responses = "responses";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "chat_completions", "responses" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static OpenaiApiType ChatCompletions { get; } = new("chat_completions");
 
     /// <summary>
-    /// The service tier requested. May be a specific tier, default, or auto.
+    /// The OpenAI <a href="https://developers.openai.com/api/reference/responses/overview">Responses API</a>.
     /// </summary>
-    public static class OpenaiRequestServiceTierValues
-    {
-        /// <summary>
-        /// The system will utilize scale tier credits until they are exhausted.
-        /// </summary>
-        public const string Auto = "auto";
+    public static OpenaiApiType Responses { get; } = new("responses");
 
-        /// <summary>
-        /// The system will utilize the default scale tier.
-        /// </summary>
-        public const string Default = "default";
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static OpenaiApiType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "auto", "default" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(OpenaiApiType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is OpenaiApiType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(OpenaiApiType left, OpenaiApiType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(OpenaiApiType left, OpenaiApiType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The service tier requested. May be a specific tier, default, or auto.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>openai.request.service_tier</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct OpenaiRequestServiceTier : global::System.IEquatable<OpenaiRequestServiceTier>
+{
+    /// <summary>
+    /// The attribute key, <c>openai.request.service_tier</c>.
+    /// </summary>
+    public const string Key = "openai.request.service_tier";
+
+    private readonly string? _value;
+
+    private OpenaiRequestServiceTier(string value) => _value = value;
+
+    /// <summary>
+    /// The system will utilize scale tier credits until they are exhausted.
+    /// </summary>
+    public static OpenaiRequestServiceTier Auto { get; } = new("auto");
+
+    /// <summary>
+    /// The system will utilize the default scale tier.
+    /// </summary>
+    public static OpenaiRequestServiceTier Default { get; } = new("default");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static OpenaiRequestServiceTier Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(OpenaiRequestServiceTier other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is OpenaiRequestServiceTier other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(OpenaiRequestServiceTier left, OpenaiRequestServiceTier right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(OpenaiRequestServiceTier left, OpenaiRequestServiceTier right) => !left.Equals(right);
 }

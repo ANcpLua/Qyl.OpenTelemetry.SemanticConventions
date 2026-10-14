@@ -54,8 +54,8 @@ public static class FaasIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetFaasDocumentOperation(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("faas.document.operation", value);
+        FaasDocumentOperation value)
+        => activity.SetTag("faas.document.operation", value.Value);
 
     /// <summary>
     /// A string containing the time when the data was accessed in the <a href="https://www.iso.org/iso-8601-date-and-time-format.html">ISO 8601</a> format expressed in <a href="https://www.w3.org/TR/NOTE-datetime">UTC</a>.
@@ -64,17 +64,6 @@ public static class FaasIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("faas.document.time", value);
-
-    /// <summary>
-    /// The execution environment ID as a string, that will be potentially reused for other invocations to the same function/function version.
-    /// </summary>
-    /// <remarks>
-    /// - **AWS Lambda:** Use the (full) log stream name.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetFaasInstance(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("faas.instance", value);
 
     /// <summary>
     /// The invocation ID of the current function invocation.
@@ -103,8 +92,8 @@ public static class FaasIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetFaasInvokedProvider(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("faas.invoked_provider", value);
+        FaasInvokedProvider value)
+        => activity.SetTag("faas.invoked_provider", value.Value);
 
     /// <summary>
     /// The cloud region of the invoked function.
@@ -116,43 +105,6 @@ public static class FaasIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("faas.invoked_region", value);
-
-    /// <summary>
-    /// The amount of memory available to the serverless function converted to Bytes.
-    /// </summary>
-    /// <remarks>
-    /// It's recommended to set this attribute since e.g. too little memory can easily stop a Java AWS Lambda function from working correctly. On AWS Lambda, the environment variable <c>AWS_LAMBDA_FUNCTION_MEMORY_SIZE</c> provides this information (which must be multiplied by 1,048,576).
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetFaasMaxMemory(
-        this global::System.Diagnostics.Activity activity,
-        long value)
-        => activity.SetTag("faas.max_memory", value);
-
-    /// <summary>
-    /// The name of the single function that this runtime instance executes.
-    /// </summary>
-    /// <remarks>
-    /// This is the name of the function as configured/deployed on the FaaS
-    /// platform and is usually different from the name of the callback
-    /// function (which may be stored in the
-    /// <a href="/docs/general/attributes.md#source-code-attributes">`code.namespace`/`code.function.name`</a>
-    /// span attributes).
-    /// <para/>
-    /// For some cloud providers, the above definition is ambiguous. The following
-    /// definition of function name MUST be used for this attribute
-    /// (and consequently the span name) for the listed cloud providers/products:
-    /// <para/>
-    /// - **Azure:**  The full name <c>&lt;FUNCAPP&gt;/&lt;FUNC&gt;</c>, i.e., function app name
-    ///   followed by a forward slash followed by the function name (this form
-    ///   can also be seen in the resource JSON for the function).
-    ///   This means that a span attribute MUST be used, as an Azure function
-    ///   app can host multiple functions that would usually share
-    ///   a TracerProvider (see also the <c>cloud.resource_id</c> attribute).
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetFaasName(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("faas.name", value);
 
     /// <summary>
     /// A string containing the function invocation time in the <a href="https://www.iso.org/iso-8601-date-and-time-format.html">ISO 8601</a> format expressed in <a href="https://www.w3.org/TR/NOTE-datetime">UTC</a>.
@@ -167,123 +119,224 @@ public static class FaasIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetFaasTrigger(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("faas.trigger", value);
+        FaasTrigger value)
+        => activity.SetTag("faas.trigger", value.Value);
+}
+
+/// <summary>
+/// Describes the type of the operation that was performed on the data.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>faas.document.operation</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct FaasDocumentOperation : global::System.IEquatable<FaasDocumentOperation>
+{
+    /// <summary>
+    /// The attribute key, <c>faas.document.operation</c>.
+    /// </summary>
+    public const string Key = "faas.document.operation";
+
+    private readonly string? _value;
+
+    private FaasDocumentOperation(string value) => _value = value;
 
     /// <summary>
-    /// The immutable version of the function being executed.
+    /// When a new object is created.
     /// </summary>
-    /// <remarks>
-    /// Depending on the cloud provider and platform, use:
-    /// <para/>
-    /// - **AWS Lambda:** The <a href="https://docs.aws.amazon.com/lambda/latest/dg/configuration-versions.html">function version</a>
-    ///   (an integer represented as a decimal string).
-    /// - **Google Cloud Run (Services):** The <a href="https://cloud.google.com/run/docs/managing/revisions">revision</a>
-    ///   (i.e., the function name plus the revision suffix).
-    /// - **Google Cloud Functions:** The value of the
-    ///   <a href="https://cloud.google.com/run/docs/container-contract#services-env-vars">`K_REVISION` environment variable</a>.
-    /// - **Azure Functions:** Not applicable. Do not set this attribute.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetFaasVersion(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("faas.version", value);
+    public static FaasDocumentOperation Insert { get; } = new("insert");
 
     /// <summary>
-    /// Describes the type of the operation that was performed on the data.
+    /// When an object is modified.
     /// </summary>
-    public static class FaasDocumentOperationValues
-    {
-        /// <summary>
-        /// When a new object is created.
-        /// </summary>
-        public const string Insert = "insert";
-
-        /// <summary>
-        /// When an object is modified.
-        /// </summary>
-        public const string Edit = "edit";
-
-        /// <summary>
-        /// When an object is deleted.
-        /// </summary>
-        public const string Delete = "delete";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "insert", "edit", "delete" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static FaasDocumentOperation Edit { get; } = new("edit");
 
     /// <summary>
-    /// The cloud provider of the invoked function.
+    /// When an object is deleted.
     /// </summary>
-    public static class FaasInvokedProviderValues
-    {
-        /// <summary>
-        /// Alibaba Cloud.
-        /// </summary>
-        public const string AlibabaCloud = "alibaba_cloud";
-
-        /// <summary>
-        /// Amazon Web Services.
-        /// </summary>
-        public const string Aws = "aws";
-
-        /// <summary>
-        /// Microsoft Azure.
-        /// </summary>
-        public const string Azure = "azure";
-
-        /// <summary>
-        /// Google Cloud Platform.
-        /// </summary>
-        public const string Gcp = "gcp";
-
-        /// <summary>
-        /// Tencent Cloud.
-        /// </summary>
-        public const string TencentCloud = "tencent_cloud";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "alibaba_cloud", "aws", "azure", "gcp", "tencent_cloud" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static FaasDocumentOperation Delete { get; } = new("delete");
 
     /// <summary>
-    /// Type of the trigger which caused this function invocation.
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
     /// </summary>
-    public static class FaasTriggerValues
-    {
-        /// <summary>
-        /// A response to some data source operation such as a database or filesystem read/write.
-        /// </summary>
-        public const string Datasource = "datasource";
+    public static FaasDocumentOperation Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
-        /// <summary>
-        /// To provide an answer to an inbound HTTP request.
-        /// </summary>
-        public const string Http = "http";
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
 
-        /// <summary>
-        /// A function is set to be executed when messages are sent to a messaging system.
-        /// </summary>
-        public const string Pubsub = "pubsub";
+    /// <inheritdoc/>
+    public bool Equals(FaasDocumentOperation other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
 
-        /// <summary>
-        /// A function is scheduled to be executed regularly.
-        /// </summary>
-        public const string Timer = "timer";
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is FaasDocumentOperation other && Equals(other);
 
-        /// <summary>
-        /// If none of the others apply.
-        /// </summary>
-        public const string Other = "other";
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "datasource", "http", "pubsub", "timer", "other" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(FaasDocumentOperation left, FaasDocumentOperation right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(FaasDocumentOperation left, FaasDocumentOperation right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The cloud provider of the invoked function.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>faas.invoked_provider</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct FaasInvokedProvider : global::System.IEquatable<FaasInvokedProvider>
+{
+    /// <summary>
+    /// The attribute key, <c>faas.invoked_provider</c>.
+    /// </summary>
+    public const string Key = "faas.invoked_provider";
+
+    private readonly string? _value;
+
+    private FaasInvokedProvider(string value) => _value = value;
+
+    /// <summary>
+    /// Alibaba Cloud.
+    /// </summary>
+    public static FaasInvokedProvider AlibabaCloud { get; } = new("alibaba_cloud");
+
+    /// <summary>
+    /// Amazon Web Services.
+    /// </summary>
+    public static FaasInvokedProvider Aws { get; } = new("aws");
+
+    /// <summary>
+    /// Microsoft Azure.
+    /// </summary>
+    public static FaasInvokedProvider Azure { get; } = new("azure");
+
+    /// <summary>
+    /// Google Cloud Platform.
+    /// </summary>
+    public static FaasInvokedProvider Gcp { get; } = new("gcp");
+
+    /// <summary>
+    /// Tencent Cloud.
+    /// </summary>
+    public static FaasInvokedProvider TencentCloud { get; } = new("tencent_cloud");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static FaasInvokedProvider Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(FaasInvokedProvider other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is FaasInvokedProvider other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(FaasInvokedProvider left, FaasInvokedProvider right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(FaasInvokedProvider left, FaasInvokedProvider right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Type of the trigger which caused this function invocation.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>faas.trigger</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct FaasTrigger : global::System.IEquatable<FaasTrigger>
+{
+    /// <summary>
+    /// The attribute key, <c>faas.trigger</c>.
+    /// </summary>
+    public const string Key = "faas.trigger";
+
+    private readonly string? _value;
+
+    private FaasTrigger(string value) => _value = value;
+
+    /// <summary>
+    /// A response to some data source operation such as a database or filesystem read/write.
+    /// </summary>
+    public static FaasTrigger Datasource { get; } = new("datasource");
+
+    /// <summary>
+    /// To provide an answer to an inbound HTTP request.
+    /// </summary>
+    public static FaasTrigger Http { get; } = new("http");
+
+    /// <summary>
+    /// A function is set to be executed when messages are sent to a messaging system.
+    /// </summary>
+    public static FaasTrigger Pubsub { get; } = new("pubsub");
+
+    /// <summary>
+    /// A function is scheduled to be executed regularly.
+    /// </summary>
+    public static FaasTrigger Timer { get; } = new("timer");
+
+    /// <summary>
+    /// If none of the others apply.
+    /// </summary>
+    public static FaasTrigger Other { get; } = new("other");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static FaasTrigger Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(FaasTrigger other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is FaasTrigger other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(FaasTrigger left, FaasTrigger right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(FaasTrigger left, FaasTrigger right) => !left.Equals(right);
 }

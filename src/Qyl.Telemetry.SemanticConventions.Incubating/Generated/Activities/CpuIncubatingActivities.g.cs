@@ -30,58 +30,98 @@ public static class CpuIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetCpuMode(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("cpu.mode", value);
+        CpuMode value)
+        => activity.SetTag("cpu.mode", value.Value);
+}
+
+/// <summary>
+/// The mode of the CPU
+/// </summary>
+/// <remarks>
+/// The open value set of <c>cpu.mode</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct CpuMode : global::System.IEquatable<CpuMode>
+{
+    /// <summary>
+    /// The attribute key, <c>cpu.mode</c>.
+    /// </summary>
+    public const string Key = "cpu.mode";
+
+    private readonly string? _value;
+
+    private CpuMode(string value) => _value = value;
 
     /// <summary>
-    /// The mode of the CPU
+    /// User.
     /// </summary>
-    public static class CpuModeValues
-    {
-        /// <summary>
-        /// User.
-        /// </summary>
-        public const string User = "user";
+    public static CpuMode User { get; } = new("user");
 
-        /// <summary>
-        /// System.
-        /// </summary>
-        public const string System = "system";
+    /// <summary>
+    /// System.
+    /// </summary>
+    public static CpuMode System { get; } = new("system");
 
-        /// <summary>
-        /// Nice.
-        /// </summary>
-        public const string Nice = "nice";
+    /// <summary>
+    /// Nice.
+    /// </summary>
+    public static CpuMode Nice { get; } = new("nice");
 
-        /// <summary>
-        /// Idle.
-        /// </summary>
-        public const string Idle = "idle";
+    /// <summary>
+    /// Idle.
+    /// </summary>
+    public static CpuMode Idle { get; } = new("idle");
 
-        /// <summary>
-        /// IO Wait.
-        /// </summary>
-        public const string Iowait = "iowait";
+    /// <summary>
+    /// IO Wait.
+    /// </summary>
+    public static CpuMode Iowait { get; } = new("iowait");
 
-        /// <summary>
-        /// Interrupt.
-        /// </summary>
-        public const string Interrupt = "interrupt";
+    /// <summary>
+    /// Interrupt.
+    /// </summary>
+    public static CpuMode Interrupt { get; } = new("interrupt");
 
-        /// <summary>
-        /// Steal.
-        /// </summary>
-        public const string Steal = "steal";
+    /// <summary>
+    /// Steal.
+    /// </summary>
+    public static CpuMode Steal { get; } = new("steal");
 
-        /// <summary>
-        /// Deprecated. Use <c>system</c> instead.
-        /// </summary>
-        [global::System.Obsolete("Replaced by system.", false)]
-        public const string Kernel = "kernel";
+    /// <summary>
+    /// Deprecated. Use <c>system</c> instead.
+    /// </summary>
+    [global::System.Obsolete("Replaced by system.", false)]
+    public static CpuMode Kernel { get; } = new("kernel");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "user", "system", "nice", "idle", "iowait", "interrupt", "steal", "kernel" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static CpuMode Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(CpuMode other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is CpuMode other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(CpuMode left, CpuMode right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(CpuMode left, CpuMode right) => !left.Equals(right);
 }

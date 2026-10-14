@@ -22,8 +22,8 @@ public static class McpIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetMcpMethodName(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("mcp.method.name", value);
+        McpMethodName value)
+        => activity.SetTag("mcp.method.name", value.Value);
 
     /// <summary>
     /// The <a href="https://modelcontextprotocol.io/specification/versioning">version</a> of the Model Context Protocol used.
@@ -51,140 +51,180 @@ public static class McpIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("mcp.session.id", value);
+}
+
+/// <summary>
+/// The name of the request or notification method.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>mcp.method.name</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct McpMethodName : global::System.IEquatable<McpMethodName>
+{
+    /// <summary>
+    /// The attribute key, <c>mcp.method.name</c>.
+    /// </summary>
+    public const string Key = "mcp.method.name";
+
+    private readonly string? _value;
+
+    private McpMethodName(string value) => _value = value;
 
     /// <summary>
-    /// The name of the request or notification method.
+    /// Notification cancelling a previously-issued request.
     /// </summary>
-    public static class McpMethodNameValues
-    {
-        /// <summary>
-        /// Notification cancelling a previously-issued request.
-        /// </summary>
-        public const string NotificationsCancelled = "notifications/cancelled";
+    public static McpMethodName NotificationsCancelled { get; } = new("notifications/cancelled");
 
-        /// <summary>
-        /// Request to initialize the MCP client.
-        /// </summary>
-        public const string Initialize = "initialize";
+    /// <summary>
+    /// Request to initialize the MCP client.
+    /// </summary>
+    public static McpMethodName Initialize { get; } = new("initialize");
 
-        /// <summary>
-        /// Notification indicating that the MCP client has been initialized.
-        /// </summary>
-        public const string NotificationsInitialized = "notifications/initialized";
+    /// <summary>
+    /// Notification indicating that the MCP client has been initialized.
+    /// </summary>
+    public static McpMethodName NotificationsInitialized { get; } = new("notifications/initialized");
 
-        /// <summary>
-        /// Notification indicating the progress for a long-running operation.
-        /// </summary>
-        public const string NotificationsProgress = "notifications/progress";
+    /// <summary>
+    /// Notification indicating the progress for a long-running operation.
+    /// </summary>
+    public static McpMethodName NotificationsProgress { get; } = new("notifications/progress");
 
-        /// <summary>
-        /// Request to check that the other party is still alive.
-        /// </summary>
-        public const string Ping = "ping";
+    /// <summary>
+    /// Request to check that the other party is still alive.
+    /// </summary>
+    public static McpMethodName Ping { get; } = new("ping");
 
-        /// <summary>
-        /// Request to list resources available on server.
-        /// </summary>
-        public const string ResourcesList = "resources/list";
+    /// <summary>
+    /// Request to list resources available on server.
+    /// </summary>
+    public static McpMethodName ResourcesList { get; } = new("resources/list");
 
-        /// <summary>
-        /// Request to list resource templates available on server.
-        /// </summary>
-        public const string ResourcesTemplatesList = "resources/templates/list";
+    /// <summary>
+    /// Request to list resource templates available on server.
+    /// </summary>
+    public static McpMethodName ResourcesTemplatesList { get; } = new("resources/templates/list");
 
-        /// <summary>
-        /// Request to read a resource.
-        /// </summary>
-        public const string ResourcesRead = "resources/read";
+    /// <summary>
+    /// Request to read a resource.
+    /// </summary>
+    public static McpMethodName ResourcesRead { get; } = new("resources/read");
 
-        /// <summary>
-        /// Notification indicating that the list of resources has changed.
-        /// </summary>
-        public const string NotificationsResourcesListChanged = "notifications/resources/list_changed";
+    /// <summary>
+    /// Notification indicating that the list of resources has changed.
+    /// </summary>
+    public static McpMethodName NotificationsResourcesListChanged { get; } = new("notifications/resources/list_changed");
 
-        /// <summary>
-        /// Request to subscribe to a resource.
-        /// </summary>
-        public const string ResourcesSubscribe = "resources/subscribe";
+    /// <summary>
+    /// Request to subscribe to a resource.
+    /// </summary>
+    public static McpMethodName ResourcesSubscribe { get; } = new("resources/subscribe");
 
-        /// <summary>
-        /// Request to unsubscribe from resource updates.
-        /// </summary>
-        public const string ResourcesUnsubscribe = "resources/unsubscribe";
+    /// <summary>
+    /// Request to unsubscribe from resource updates.
+    /// </summary>
+    public static McpMethodName ResourcesUnsubscribe { get; } = new("resources/unsubscribe");
 
-        /// <summary>
-        /// Notification indicating that a resource has been updated.
-        /// </summary>
-        public const string NotificationsResourcesUpdated = "notifications/resources/updated";
+    /// <summary>
+    /// Notification indicating that a resource has been updated.
+    /// </summary>
+    public static McpMethodName NotificationsResourcesUpdated { get; } = new("notifications/resources/updated");
 
-        /// <summary>
-        /// Request to list prompts available on server.
-        /// </summary>
-        public const string PromptsList = "prompts/list";
+    /// <summary>
+    /// Request to list prompts available on server.
+    /// </summary>
+    public static McpMethodName PromptsList { get; } = new("prompts/list");
 
-        /// <summary>
-        /// Request to get a prompt.
-        /// </summary>
-        public const string PromptsGet = "prompts/get";
+    /// <summary>
+    /// Request to get a prompt.
+    /// </summary>
+    public static McpMethodName PromptsGet { get; } = new("prompts/get");
 
-        /// <summary>
-        /// Notification indicating that the list of prompts has changed.
-        /// </summary>
-        public const string NotificationsPromptsListChanged = "notifications/prompts/list_changed";
+    /// <summary>
+    /// Notification indicating that the list of prompts has changed.
+    /// </summary>
+    public static McpMethodName NotificationsPromptsListChanged { get; } = new("notifications/prompts/list_changed");
 
-        /// <summary>
-        /// Request to list tools available on server.
-        /// </summary>
-        public const string ToolsList = "tools/list";
+    /// <summary>
+    /// Request to list tools available on server.
+    /// </summary>
+    public static McpMethodName ToolsList { get; } = new("tools/list");
 
-        /// <summary>
-        /// Request to call a tool.
-        /// </summary>
-        public const string ToolsCall = "tools/call";
+    /// <summary>
+    /// Request to call a tool.
+    /// </summary>
+    public static McpMethodName ToolsCall { get; } = new("tools/call");
 
-        /// <summary>
-        /// Notification indicating that the list of tools has changed.
-        /// </summary>
-        public const string NotificationsToolsListChanged = "notifications/tools/list_changed";
+    /// <summary>
+    /// Notification indicating that the list of tools has changed.
+    /// </summary>
+    public static McpMethodName NotificationsToolsListChanged { get; } = new("notifications/tools/list_changed");
 
-        /// <summary>
-        /// Request to set the logging level.
-        /// </summary>
-        public const string LoggingSetLevel = "logging/setLevel";
+    /// <summary>
+    /// Request to set the logging level.
+    /// </summary>
+    public static McpMethodName LoggingSetLevel { get; } = new("logging/setLevel");
 
-        /// <summary>
-        /// Notification indicating that a message has been received.
-        /// </summary>
-        public const string NotificationsMessage = "notifications/message";
+    /// <summary>
+    /// Notification indicating that a message has been received.
+    /// </summary>
+    public static McpMethodName NotificationsMessage { get; } = new("notifications/message");
 
-        /// <summary>
-        /// Request to create a sampling message.
-        /// </summary>
-        public const string SamplingCreateMessage = "sampling/createMessage";
+    /// <summary>
+    /// Request to create a sampling message.
+    /// </summary>
+    public static McpMethodName SamplingCreateMessage { get; } = new("sampling/createMessage");
 
-        /// <summary>
-        /// Request to complete a prompt.
-        /// </summary>
-        public const string CompletionComplete = "completion/complete";
+    /// <summary>
+    /// Request to complete a prompt.
+    /// </summary>
+    public static McpMethodName CompletionComplete { get; } = new("completion/complete");
 
-        /// <summary>
-        /// Request to list roots available on server.
-        /// </summary>
-        public const string RootsList = "roots/list";
+    /// <summary>
+    /// Request to list roots available on server.
+    /// </summary>
+    public static McpMethodName RootsList { get; } = new("roots/list");
 
-        /// <summary>
-        /// Notification indicating that the list of roots has changed.
-        /// </summary>
-        public const string NotificationsRootsListChanged = "notifications/roots/list_changed";
+    /// <summary>
+    /// Notification indicating that the list of roots has changed.
+    /// </summary>
+    public static McpMethodName NotificationsRootsListChanged { get; } = new("notifications/roots/list_changed");
 
-        /// <summary>
-        /// Request from the server to elicit additional information from the user via the client.
-        /// </summary>
-        public const string ElicitationCreate = "elicitation/create";
+    /// <summary>
+    /// Request from the server to elicit additional information from the user via the client.
+    /// </summary>
+    public static McpMethodName ElicitationCreate { get; } = new("elicitation/create");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "notifications/cancelled", "initialize", "notifications/initialized", "notifications/progress", "ping", "resources/list", "resources/templates/list", "resources/read", "notifications/resources/list_changed", "resources/subscribe", "resources/unsubscribe", "notifications/resources/updated", "prompts/list", "prompts/get", "notifications/prompts/list_changed", "tools/list", "tools/call", "notifications/tools/list_changed", "logging/setLevel", "notifications/message", "sampling/createMessage", "completion/complete", "roots/list", "notifications/roots/list_changed", "elicitation/create" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static McpMethodName Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(McpMethodName other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is McpMethodName other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(McpMethodName left, McpMethodName right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(McpMethodName left, McpMethodName right) => !left.Equals(right);
 }

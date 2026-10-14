@@ -18,17 +18,6 @@ namespace Qyl.Telemetry.SemanticConventions.Incubating.Activities;
 public static class ServiceIncubatingActivityExtensions
 {
     /// <summary>
-    /// The operational criticality of the service.
-    /// </summary>
-    /// <remarks>
-    /// Application developers are encouraged to set <c>service.criticality</c> to express the operational importance of their services. Telemetry consumers MAY use this attribute to optimize telemetry collection or improve user experience.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetServiceCriticality(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("service.criticality", value);
-
-    /// <summary>
     /// Logical name of the service on the other side of the connection. SHOULD be equal to the actual <a href="/docs/resource/README.md#service">`service.name`</a> resource attribute of the remote service if any.
     /// </summary>
     public static global::System.Diagnostics.Activity SetServicePeerName(
@@ -43,35 +32,4 @@ public static class ServiceIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("service.peer.namespace", value);
-
-    /// <summary>
-    /// The operational criticality of the service.
-    /// </summary>
-    public static class ServiceCriticalityValues
-    {
-        /// <summary>
-        /// Service is business-critical; downtime directly impacts revenue, user experience, or core functionality.
-        /// </summary>
-        public const string Critical = "critical";
-
-        /// <summary>
-        /// Service is important but has degradation tolerance or fallback mechanisms.
-        /// </summary>
-        public const string High = "high";
-
-        /// <summary>
-        /// Service provides supplementary functionality; degradation has limited user impact.
-        /// </summary>
-        public const string Medium = "medium";
-
-        /// <summary>
-        /// Service is non-essential to core operations; used for background tasks or internal tools.
-        /// </summary>
-        public const string Low = "low";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "critical", "high", "medium", "low" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
 }

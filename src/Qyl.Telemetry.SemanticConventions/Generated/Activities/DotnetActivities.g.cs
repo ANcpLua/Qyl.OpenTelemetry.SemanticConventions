@@ -22,42 +22,82 @@ public static class DotnetActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetDotnetGcHeapGeneration(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("dotnet.gc.heap.generation", value);
+        DotnetGcHeapGeneration value)
+        => activity.SetTag("dotnet.gc.heap.generation", value.Value);
+}
+
+/// <summary>
+/// Name of the garbage collector managed heap generation.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>dotnet.gc.heap.generation</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct DotnetGcHeapGeneration : global::System.IEquatable<DotnetGcHeapGeneration>
+{
+    /// <summary>
+    /// The attribute key, <c>dotnet.gc.heap.generation</c>.
+    /// </summary>
+    public const string Key = "dotnet.gc.heap.generation";
+
+    private readonly string? _value;
+
+    private DotnetGcHeapGeneration(string value) => _value = value;
 
     /// <summary>
-    /// Name of the garbage collector managed heap generation.
+    /// Generation 0.
     /// </summary>
-    public static class DotnetGcHeapGenerationValues
-    {
-        /// <summary>
-        /// Generation 0.
-        /// </summary>
-        public const string Gen0 = "gen0";
+    public static DotnetGcHeapGeneration Gen0 { get; } = new("gen0");
 
-        /// <summary>
-        /// Generation 1.
-        /// </summary>
-        public const string Gen1 = "gen1";
+    /// <summary>
+    /// Generation 1.
+    /// </summary>
+    public static DotnetGcHeapGeneration Gen1 { get; } = new("gen1");
 
-        /// <summary>
-        /// Generation 2.
-        /// </summary>
-        public const string Gen2 = "gen2";
+    /// <summary>
+    /// Generation 2.
+    /// </summary>
+    public static DotnetGcHeapGeneration Gen2 { get; } = new("gen2");
 
-        /// <summary>
-        /// Large Object Heap.
-        /// </summary>
-        public const string Loh = "loh";
+    /// <summary>
+    /// Large Object Heap.
+    /// </summary>
+    public static DotnetGcHeapGeneration Loh { get; } = new("loh");
 
-        /// <summary>
-        /// Pinned Object Heap.
-        /// </summary>
-        public const string Poh = "poh";
+    /// <summary>
+    /// Pinned Object Heap.
+    /// </summary>
+    public static DotnetGcHeapGeneration Poh { get; } = new("poh");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "gen0", "gen1", "gen2", "loh", "poh" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static DotnetGcHeapGeneration Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(DotnetGcHeapGeneration other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is DotnetGcHeapGeneration other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(DotnetGcHeapGeneration left, DotnetGcHeapGeneration right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(DotnetGcHeapGeneration left, DotnetGcHeapGeneration right) => !left.Equals(right);
 }

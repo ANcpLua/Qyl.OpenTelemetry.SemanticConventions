@@ -1,10 +1,15 @@
 {%- import "lib.j2" as lib -%}
 {#-
-  Typed System.Diagnostics.Activity setter extensions, one class per registry root. Each
-  method calls Activity.SetTag with the registry-defined key and a strongly-typed value; for
-  `template[...]` attributes the setter takes a `segment` parameter to compose the runtime
-  key. Enum-typed attributes get a nested `{Key}Values` class of typed constants so call sites
-  are discoverable, with the same AllValues/Contains value set the attribute classes carry.
+  Typed System.Diagnostics.Activity setter extensions, one class per registry root, and one
+  value-set struct per enum attribute. Each setter calls Activity.SetTag with the
+  registry-defined key and a strongly-typed value; for `template[...]` attributes the setter
+  takes a `segment` parameter to compose the runtime key.
+
+  Registry enums are open value sets, so an enum attribute's type is a readonly struct with one
+  static member per value and an explicit `Custom` escape hatch (QYL0121 reports a Custom value
+  equal to a member). There is no conversion from a literal: a string has to name a member or go
+  through Custom on purpose. The const-string `…Values` classes live under Generated/Attributes
+  only, where switch and pattern matching use them.
 -#}
 {%- set root = ctx.root -%}
 {%- set pad = "    " -%}
@@ -42,17 +47,22 @@ public static class {{ ctx.type_root }}ActivityExtensions
 {{ lib.obsolete_line(pad, a.deprecated) }}
 {% endif %}
 {% set is_template = (a.type is string) and a.type[0:9] == "template[" %}
+{% set is_enum = a.type is mapping and a.type.members is defined %}
 {{ pad }}public static global::System.Diagnostics.Activity Set{{ lib.pascal(a.key) }}(
 {{ pad }}    this global::System.Diagnostics.Activity activity,
 {% if is_template %}
 {{ pad }}    string segment,
 {{ pad }}    {{ lib.parameter_type(a.type) }} value)
 {{ pad }}    => activity.SetTag($"{{ a.key }}.{segment}", value);
+{% elif is_enum %}
+{{ pad }}    {{ lib.pascal(a.key) }} value)
+{{ pad }}    => activity.SetTag("{{ a.key }}", value.Value);
 {% else %}
 {{ pad }}    {{ lib.parameter_type(a.type) }} value)
 {{ pad }}    => activity.SetTag("{{ a.key }}", value);
 {% endif %}
 {% endfor %}
+}
 {% for a in ctx.attributes %}
 {% if a.type is mapping and a.type.members is defined %}
 {% set e = namespace(kept = []) %}
@@ -75,32 +85,89 @@ public static class {{ ctx.type_root }}ActivityExtensions
 {% set g.vals = g.vals[:pos.p] + [m] + g.vals[pos.p + 1:] %}
 {% endif %}
 {% endfor %}
-{% if (g.vals | length) > 0 %}
-
+{% set name = lib.pascal(a.key) %}
+{% set numeric = lib.parameter_type(a.type) == "long" %}
+{% set cs_type = "long" if numeric else "string" %}
 {% set brief = lib.trim_end_newlines(a.brief | default("", true)) %}
-{{ lib.doc_block(pad, "summary", lib.render_inline(brief) if (brief | length) > 0 else "") }}
-{{ pad }}public static class {{ lib.pascal(a.key) }}Values
-{{ pad }}{
-{% for m in g.vals %}
-{% if not loop.first %}
 
+{{ lib.doc_block("", "summary", lib.render_inline(brief) if (brief | length) > 0 else "") }}
+/// <remarks>
+/// The open value set of <c>{{ a.key }}</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+{% if a.deprecated %}
+{{ lib.obsolete_line("", a.deprecated) }}
 {% endif %}
+public readonly struct {{ name }} : global::System.IEquatable<{{ name }}>
+{
+{{ lib.doc_block(pad, "summary", "The attribute key, <c>" ~ a.key ~ "</c>.") }}
+{{ pad }}public const string Key = "{{ a.key }}";
+
+{% if numeric %}
+{{ pad }}private {{ name }}(long value) => Value = value;
+{% else %}
+{{ pad }}private readonly string? _value;
+
+{{ pad }}private {{ name }}(string value) => _value = value;
+{% endif %}
+{% for m in g.vals %}
+
 {% set mb = lib.trim_end_newlines(m.brief) %}
 {% if (mb | trim | length) > 0 %}
 {% set rendered = lib.render_inline(mb) %}
-{{ lib.doc_block(inner, "summary", rendered if rendered[-1:] == "." else rendered ~ ".") }}
+{{ lib.doc_block(pad, "summary", rendered if rendered[-1:] == "." else rendered ~ ".") }}
 {% else %}
-{{ lib.doc_block(inner, "summary", m.raw_id ~ ".") }}
+{{ lib.doc_block(pad, "summary", m.raw_id ~ ".") }}
 {% endif %}
 {% if m.dep %}
-{{ lib.obsolete_line(inner, m.dep) }}
+{{ lib.obsolete_line(pad, m.dep) }}
 {% endif %}
-{{ inner }}public const {{ lib.parameter_type(a.type) }} {{ m.id }} = {% if m.value is string %}{{ lib.cs_string(m.value) }}{% else %}{{ m.value }}{% endif %};
+{{ pad }}public static {{ name }} {{ m.id }} { get; } = new({% if m.value is string %}{{ lib.cs_string(m.value) }}{% else %}{{ m.value }}{% endif %});
 {% endfor %}
 
-{{ lib.value_set(inner, g.vals | map(attribute="value") | list, "Every catalogued value, in registry order.") }}
-{{ pad }}}
+{{ lib.doc_block(pad, "summary", "A value the registry does not list. A value a member carries is that member (QYL0121).") }}
+{% if numeric %}
+{{ pad }}public static {{ name }} Custom(long value) => new(value);
+{% else %}
+{{ pad }}public static {{ name }} Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 {% endif %}
+
+{{ lib.doc_block(pad, "summary", "The attribute value.") }}
+{% if numeric %}
+{{ pad }}public long Value { get; }
+{% else %}
+{{ pad }}public string Value => _value ?? string.Empty;
+{% endif %}
+
+{{ pad }}/// <inheritdoc/>
+{% if numeric %}
+{{ pad }}public bool Equals({{ name }} other) => Value == other.Value;
+{% else %}
+{{ pad }}public bool Equals({{ name }} other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+{% endif %}
+
+{{ pad }}/// <inheritdoc/>
+{{ pad }}public override bool Equals(object? obj) => obj is {{ name }} other && Equals(other);
+
+{{ pad }}/// <inheritdoc/>
+{% if numeric %}
+{{ pad }}public override int GetHashCode() => Value.GetHashCode();
+{% else %}
+{{ pad }}public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+{% endif %}
+
+{{ pad }}/// <inheritdoc/>
+{% if numeric %}
+{{ pad }}public override string ToString() => Value.ToString(global::System.Globalization.CultureInfo.InvariantCulture);
+{% else %}
+{{ pad }}public override string ToString() => Value;
+{% endif %}
+
+{{ lib.doc_block(pad, "summary", "Whether two values are equal.") }}
+{{ pad }}public static bool operator ==({{ name }} left, {{ name }} right) => left.Equals(right);
+
+{{ lib.doc_block(pad, "summary", "Whether two values differ.") }}
+{{ pad }}public static bool operator !=({{ name }} left, {{ name }} right) => !left.Equals(right);
+}
 {% endif %}
 {% endfor %}
-}

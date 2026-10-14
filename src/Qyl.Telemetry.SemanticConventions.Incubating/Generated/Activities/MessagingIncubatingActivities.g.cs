@@ -382,8 +382,8 @@ public static class MessagingIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetMessagingOperationType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("messaging.operation.type", value);
+        MessagingOperationType value)
+        => activity.SetTag("messaging.operation.type", value.Value);
 
     /// <summary>
     /// Delivery tag of the message, as RabbitMQ.Client 7.2.2 spells it.
@@ -417,8 +417,8 @@ public static class MessagingIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetMessagingRocketmqConsumptionModel(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("messaging.rocketmq.consumption_model", value);
+        MessagingRocketmqConsumptionModel value)
+        => activity.SetTag("messaging.rocketmq.consumption_model", value.Value);
 
     /// <summary>
     /// The delay time level for delay message, which determines the message delay time.
@@ -465,8 +465,8 @@ public static class MessagingIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetMessagingRocketmqMessageType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("messaging.rocketmq.message.type", value);
+        MessagingRocketmqMessageType value)
+        => activity.SetTag("messaging.rocketmq.message.type", value.Value);
 
     /// <summary>
     /// Namespace of RocketMQ resources, resources in different namespaces are individual.
@@ -481,8 +481,8 @@ public static class MessagingIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetMessagingServicebusDispositionStatus(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("messaging.servicebus.disposition_status", value);
+        MessagingServicebusDispositionStatus value)
+        => activity.SetTag("messaging.servicebus.disposition_status", value.Value);
 
     /// <summary>
     /// Number of deliveries that have been attempted for this message.
@@ -508,208 +508,408 @@ public static class MessagingIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetMessagingSystem(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("messaging.system", value);
+        MessagingSystem value)
+        => activity.SetTag("messaging.system", value.Value);
+}
+
+/// <summary>
+/// A string identifying the type of the messaging operation.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>messaging.operation.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct MessagingOperationType : global::System.IEquatable<MessagingOperationType>
+{
+    /// <summary>
+    /// The attribute key, <c>messaging.operation.type</c>.
+    /// </summary>
+    public const string Key = "messaging.operation.type";
+
+    private readonly string? _value;
+
+    private MessagingOperationType(string value) => _value = value;
 
     /// <summary>
-    /// A string identifying the type of the messaging operation.
+    /// A message is created. "Create" spans always refer to a single message and are used to provide a unique creation context for messages in batch sending scenarios.
     /// </summary>
-    public static class MessagingOperationTypeValues
-    {
-        /// <summary>
-        /// A message is created. "Create" spans always refer to a single message and are used to provide a unique creation context for messages in batch sending scenarios.
-        /// </summary>
-        public const string Create = "create";
-
-        /// <summary>
-        /// One or more messages are provided for sending to an intermediary. If a single message is sent, the context of the "Send" span can be used as the creation context and no "Create" span needs to be created.
-        /// </summary>
-        public const string Send = "send";
-
-        /// <summary>
-        /// One or more messages are requested by a consumer. This operation refers to pull-based scenarios, where consumers explicitly call methods of messaging SDKs to receive messages.
-        /// </summary>
-        public const string Receive = "receive";
-
-        /// <summary>
-        /// One or more messages are processed by a consumer.
-        /// </summary>
-        public const string Process = "process";
-
-        /// <summary>
-        /// One or more messages are settled.
-        /// </summary>
-        public const string Settle = "settle";
-
-        /// <summary>
-        /// Deprecated. Use <c>process</c> instead.
-        /// </summary>
-        [global::System.Obsolete("Replaced by process.", false)]
-        public const string Deliver = "deliver";
-
-        /// <summary>
-        /// Deprecated. Use <c>send</c> instead.
-        /// </summary>
-        [global::System.Obsolete("Replaced by send.", false)]
-        public const string Publish = "publish";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "create", "send", "receive", "process", "settle", "deliver", "publish" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static MessagingOperationType Create { get; } = new("create");
 
     /// <summary>
-    /// Model of message consumption. This only applies to consumer spans.
+    /// One or more messages are provided for sending to an intermediary. If a single message is sent, the context of the "Send" span can be used as the creation context and no "Create" span needs to be created.
     /// </summary>
-    public static class MessagingRocketmqConsumptionModelValues
-    {
-        /// <summary>
-        /// Clustering consumption model.
-        /// </summary>
-        public const string Clustering = "clustering";
-
-        /// <summary>
-        /// Broadcasting consumption model.
-        /// </summary>
-        public const string Broadcasting = "broadcasting";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "clustering", "broadcasting" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static MessagingOperationType Send { get; } = new("send");
 
     /// <summary>
-    /// Type of message.
+    /// One or more messages are requested by a consumer. This operation refers to pull-based scenarios, where consumers explicitly call methods of messaging SDKs to receive messages.
     /// </summary>
-    public static class MessagingRocketmqMessageTypeValues
-    {
-        /// <summary>
-        /// Normal message.
-        /// </summary>
-        public const string Normal = "normal";
-
-        /// <summary>
-        /// FIFO message.
-        /// </summary>
-        public const string Fifo = "fifo";
-
-        /// <summary>
-        /// Delay message.
-        /// </summary>
-        public const string Delay = "delay";
-
-        /// <summary>
-        /// Transaction message.
-        /// </summary>
-        public const string Transaction = "transaction";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "normal", "fifo", "delay", "transaction" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static MessagingOperationType Receive { get; } = new("receive");
 
     /// <summary>
-    /// Describes the <a href="https://learn.microsoft.com/azure/service-bus-messaging/message-transfers-locks-settlement#peeklock">settlement type</a>.
+    /// One or more messages are processed by a consumer.
     /// </summary>
-    public static class MessagingServicebusDispositionStatusValues
-    {
-        /// <summary>
-        /// Message is completed.
-        /// </summary>
-        public const string Complete = "complete";
-
-        /// <summary>
-        /// Message is abandoned.
-        /// </summary>
-        public const string Abandon = "abandon";
-
-        /// <summary>
-        /// Message is sent to dead letter queue.
-        /// </summary>
-        public const string DeadLetter = "dead_letter";
-
-        /// <summary>
-        /// Message is deferred.
-        /// </summary>
-        public const string Defer = "defer";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "complete", "abandon", "dead_letter", "defer" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static MessagingOperationType Process { get; } = new("process");
 
     /// <summary>
-    /// The messaging system as identified by the client instrumentation.
+    /// One or more messages are settled.
     /// </summary>
-    public static class MessagingSystemValues
-    {
-        /// <summary>
-        /// Apache ActiveMQ.
-        /// </summary>
-        public const string Activemq = "activemq";
+    public static MessagingOperationType Settle { get; } = new("settle");
 
-        /// <summary>
-        /// Amazon Simple Notification Service (SNS).
-        /// </summary>
-        public const string AwsSns = "aws.sns";
+    /// <summary>
+    /// Deprecated. Use <c>process</c> instead.
+    /// </summary>
+    [global::System.Obsolete("Replaced by process.", false)]
+    public static MessagingOperationType Deliver { get; } = new("deliver");
 
-        /// <summary>
-        /// Amazon Simple Queue Service (SQS).
-        /// </summary>
-        public const string AwsSqs = "aws_sqs";
+    /// <summary>
+    /// Deprecated. Use <c>send</c> instead.
+    /// </summary>
+    [global::System.Obsolete("Replaced by send.", false)]
+    public static MessagingOperationType Publish { get; } = new("publish");
 
-        /// <summary>
-        /// Azure Event Grid.
-        /// </summary>
-        public const string Eventgrid = "eventgrid";
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static MessagingOperationType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
-        /// <summary>
-        /// Azure Event Hubs.
-        /// </summary>
-        public const string Eventhubs = "eventhubs";
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
 
-        /// <summary>
-        /// Azure Service Bus.
-        /// </summary>
-        public const string Servicebus = "servicebus";
+    /// <inheritdoc/>
+    public bool Equals(MessagingOperationType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
 
-        /// <summary>
-        /// Google Cloud Pub/Sub.
-        /// </summary>
-        public const string GcpPubsub = "gcp_pubsub";
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is MessagingOperationType other && Equals(other);
 
-        /// <summary>
-        /// Java Message Service.
-        /// </summary>
-        public const string Jms = "jms";
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
 
-        /// <summary>
-        /// Apache Kafka.
-        /// </summary>
-        public const string Kafka = "kafka";
+    /// <inheritdoc/>
+    public override string ToString() => Value;
 
-        /// <summary>
-        /// RabbitMQ.
-        /// </summary>
-        public const string Rabbitmq = "rabbitmq";
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(MessagingOperationType left, MessagingOperationType right) => left.Equals(right);
 
-        /// <summary>
-        /// Apache RocketMQ.
-        /// </summary>
-        public const string Rocketmq = "rocketmq";
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(MessagingOperationType left, MessagingOperationType right) => !left.Equals(right);
+}
 
-        /// <summary>
-        /// Apache Pulsar.
-        /// </summary>
-        public const string Pulsar = "pulsar";
+/// <summary>
+/// Model of message consumption. This only applies to consumer spans.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>messaging.rocketmq.consumption_model</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct MessagingRocketmqConsumptionModel : global::System.IEquatable<MessagingRocketmqConsumptionModel>
+{
+    /// <summary>
+    /// The attribute key, <c>messaging.rocketmq.consumption_model</c>.
+    /// </summary>
+    public const string Key = "messaging.rocketmq.consumption_model";
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "activemq", "aws.sns", "aws_sqs", "eventgrid", "eventhubs", "servicebus", "gcp_pubsub", "jms", "kafka", "rabbitmq", "rocketmq", "pulsar" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    private readonly string? _value;
+
+    private MessagingRocketmqConsumptionModel(string value) => _value = value;
+
+    /// <summary>
+    /// Clustering consumption model.
+    /// </summary>
+    public static MessagingRocketmqConsumptionModel Clustering { get; } = new("clustering");
+
+    /// <summary>
+    /// Broadcasting consumption model.
+    /// </summary>
+    public static MessagingRocketmqConsumptionModel Broadcasting { get; } = new("broadcasting");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static MessagingRocketmqConsumptionModel Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(MessagingRocketmqConsumptionModel other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is MessagingRocketmqConsumptionModel other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(MessagingRocketmqConsumptionModel left, MessagingRocketmqConsumptionModel right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(MessagingRocketmqConsumptionModel left, MessagingRocketmqConsumptionModel right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Type of message.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>messaging.rocketmq.message.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct MessagingRocketmqMessageType : global::System.IEquatable<MessagingRocketmqMessageType>
+{
+    /// <summary>
+    /// The attribute key, <c>messaging.rocketmq.message.type</c>.
+    /// </summary>
+    public const string Key = "messaging.rocketmq.message.type";
+
+    private readonly string? _value;
+
+    private MessagingRocketmqMessageType(string value) => _value = value;
+
+    /// <summary>
+    /// Normal message.
+    /// </summary>
+    public static MessagingRocketmqMessageType Normal { get; } = new("normal");
+
+    /// <summary>
+    /// FIFO message.
+    /// </summary>
+    public static MessagingRocketmqMessageType Fifo { get; } = new("fifo");
+
+    /// <summary>
+    /// Delay message.
+    /// </summary>
+    public static MessagingRocketmqMessageType Delay { get; } = new("delay");
+
+    /// <summary>
+    /// Transaction message.
+    /// </summary>
+    public static MessagingRocketmqMessageType Transaction { get; } = new("transaction");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static MessagingRocketmqMessageType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(MessagingRocketmqMessageType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is MessagingRocketmqMessageType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(MessagingRocketmqMessageType left, MessagingRocketmqMessageType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(MessagingRocketmqMessageType left, MessagingRocketmqMessageType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Describes the <a href="https://learn.microsoft.com/azure/service-bus-messaging/message-transfers-locks-settlement#peeklock">settlement type</a>.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>messaging.servicebus.disposition_status</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct MessagingServicebusDispositionStatus : global::System.IEquatable<MessagingServicebusDispositionStatus>
+{
+    /// <summary>
+    /// The attribute key, <c>messaging.servicebus.disposition_status</c>.
+    /// </summary>
+    public const string Key = "messaging.servicebus.disposition_status";
+
+    private readonly string? _value;
+
+    private MessagingServicebusDispositionStatus(string value) => _value = value;
+
+    /// <summary>
+    /// Message is completed.
+    /// </summary>
+    public static MessagingServicebusDispositionStatus Complete { get; } = new("complete");
+
+    /// <summary>
+    /// Message is abandoned.
+    /// </summary>
+    public static MessagingServicebusDispositionStatus Abandon { get; } = new("abandon");
+
+    /// <summary>
+    /// Message is sent to dead letter queue.
+    /// </summary>
+    public static MessagingServicebusDispositionStatus DeadLetter { get; } = new("dead_letter");
+
+    /// <summary>
+    /// Message is deferred.
+    /// </summary>
+    public static MessagingServicebusDispositionStatus Defer { get; } = new("defer");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static MessagingServicebusDispositionStatus Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(MessagingServicebusDispositionStatus other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is MessagingServicebusDispositionStatus other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(MessagingServicebusDispositionStatus left, MessagingServicebusDispositionStatus right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(MessagingServicebusDispositionStatus left, MessagingServicebusDispositionStatus right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The messaging system as identified by the client instrumentation.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>messaging.system</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct MessagingSystem : global::System.IEquatable<MessagingSystem>
+{
+    /// <summary>
+    /// The attribute key, <c>messaging.system</c>.
+    /// </summary>
+    public const string Key = "messaging.system";
+
+    private readonly string? _value;
+
+    private MessagingSystem(string value) => _value = value;
+
+    /// <summary>
+    /// Apache ActiveMQ.
+    /// </summary>
+    public static MessagingSystem Activemq { get; } = new("activemq");
+
+    /// <summary>
+    /// Amazon Simple Notification Service (SNS).
+    /// </summary>
+    public static MessagingSystem AwsSns { get; } = new("aws.sns");
+
+    /// <summary>
+    /// Amazon Simple Queue Service (SQS).
+    /// </summary>
+    public static MessagingSystem AwsSqs { get; } = new("aws_sqs");
+
+    /// <summary>
+    /// Azure Event Grid.
+    /// </summary>
+    public static MessagingSystem Eventgrid { get; } = new("eventgrid");
+
+    /// <summary>
+    /// Azure Event Hubs.
+    /// </summary>
+    public static MessagingSystem Eventhubs { get; } = new("eventhubs");
+
+    /// <summary>
+    /// Azure Service Bus.
+    /// </summary>
+    public static MessagingSystem Servicebus { get; } = new("servicebus");
+
+    /// <summary>
+    /// Google Cloud Pub/Sub.
+    /// </summary>
+    public static MessagingSystem GcpPubsub { get; } = new("gcp_pubsub");
+
+    /// <summary>
+    /// Java Message Service.
+    /// </summary>
+    public static MessagingSystem Jms { get; } = new("jms");
+
+    /// <summary>
+    /// Apache Kafka.
+    /// </summary>
+    public static MessagingSystem Kafka { get; } = new("kafka");
+
+    /// <summary>
+    /// RabbitMQ.
+    /// </summary>
+    public static MessagingSystem Rabbitmq { get; } = new("rabbitmq");
+
+    /// <summary>
+    /// Apache RocketMQ.
+    /// </summary>
+    public static MessagingSystem Rocketmq { get; } = new("rocketmq");
+
+    /// <summary>
+    /// Apache Pulsar.
+    /// </summary>
+    public static MessagingSystem Pulsar { get; } = new("pulsar");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static MessagingSystem Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(MessagingSystem other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is MessagingSystem other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(MessagingSystem left, MessagingSystem right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(MessagingSystem left, MessagingSystem right) => !left.Equals(right);
 }

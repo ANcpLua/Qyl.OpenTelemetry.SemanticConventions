@@ -32,8 +32,8 @@ public static class FeatureFlagActivityExtensions
     [global::System.Obsolete("Replaced by feature_flag.result.reason.", false)]
     public static global::System.Diagnostics.Activity SetFeatureFlagEvaluationReason(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("feature_flag.evaluation.reason", value);
+        FeatureFlagEvaluationReason value)
+        => activity.SetTag("feature_flag.evaluation.reason", value.Value);
 
     /// <summary>
     /// Deprecated, use <c>feature_flag.provider.name</c> instead.
@@ -52,60 +52,101 @@ public static class FeatureFlagActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("feature_flag.variant", value);
+}
+
+/// <summary>
+/// Deprecated, use <c>feature_flag.result.reason</c> instead.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>feature_flag.evaluation.reason</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+[global::System.Obsolete("Replaced by feature_flag.result.reason.", false)]
+public readonly struct FeatureFlagEvaluationReason : global::System.IEquatable<FeatureFlagEvaluationReason>
+{
+    /// <summary>
+    /// The attribute key, <c>feature_flag.evaluation.reason</c>.
+    /// </summary>
+    public const string Key = "feature_flag.evaluation.reason";
+
+    private readonly string? _value;
+
+    private FeatureFlagEvaluationReason(string value) => _value = value;
 
     /// <summary>
-    /// Deprecated, use <c>feature_flag.result.reason</c> instead.
+    /// The resolved value is static (no dynamic evaluation).
     /// </summary>
-    public static class FeatureFlagEvaluationReasonValues
-    {
-        /// <summary>
-        /// The resolved value is static (no dynamic evaluation).
-        /// </summary>
-        public const string Static = "static";
+    public static FeatureFlagEvaluationReason Static { get; } = new("static");
 
-        /// <summary>
-        /// The resolved value fell back to a pre-configured value (no dynamic evaluation occurred or dynamic evaluation yielded no result).
-        /// </summary>
-        public const string Default = "default";
+    /// <summary>
+    /// The resolved value fell back to a pre-configured value (no dynamic evaluation occurred or dynamic evaluation yielded no result).
+    /// </summary>
+    public static FeatureFlagEvaluationReason Default { get; } = new("default");
 
-        /// <summary>
-        /// The resolved value was the result of a dynamic evaluation, such as a rule or specific user-targeting.
-        /// </summary>
-        public const string TargetingMatch = "targeting_match";
+    /// <summary>
+    /// The resolved value was the result of a dynamic evaluation, such as a rule or specific user-targeting.
+    /// </summary>
+    public static FeatureFlagEvaluationReason TargetingMatch { get; } = new("targeting_match");
 
-        /// <summary>
-        /// The resolved value was the result of pseudorandom assignment.
-        /// </summary>
-        public const string Split = "split";
+    /// <summary>
+    /// The resolved value was the result of pseudorandom assignment.
+    /// </summary>
+    public static FeatureFlagEvaluationReason Split { get; } = new("split");
 
-        /// <summary>
-        /// The resolved value was retrieved from cache.
-        /// </summary>
-        public const string Cached = "cached";
+    /// <summary>
+    /// The resolved value was retrieved from cache.
+    /// </summary>
+    public static FeatureFlagEvaluationReason Cached { get; } = new("cached");
 
-        /// <summary>
-        /// The resolved value was the result of the flag being disabled in the management system.
-        /// </summary>
-        public const string Disabled = "disabled";
+    /// <summary>
+    /// The resolved value was the result of the flag being disabled in the management system.
+    /// </summary>
+    public static FeatureFlagEvaluationReason Disabled { get; } = new("disabled");
 
-        /// <summary>
-        /// The reason for the resolved value could not be determined.
-        /// </summary>
-        public const string Unknown = "unknown";
+    /// <summary>
+    /// The reason for the resolved value could not be determined.
+    /// </summary>
+    public static FeatureFlagEvaluationReason Unknown { get; } = new("unknown");
 
-        /// <summary>
-        /// The resolved value is non-authoritative or possibly out of date.
-        /// </summary>
-        public const string Stale = "stale";
+    /// <summary>
+    /// The resolved value is non-authoritative or possibly out of date.
+    /// </summary>
+    public static FeatureFlagEvaluationReason Stale { get; } = new("stale");
 
-        /// <summary>
-        /// The resolved value was the result of an error.
-        /// </summary>
-        public const string Error = "error";
+    /// <summary>
+    /// The resolved value was the result of an error.
+    /// </summary>
+    public static FeatureFlagEvaluationReason Error { get; } = new("error");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "static", "default", "targeting_match", "split", "cached", "disabled", "unknown", "stale", "error" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static FeatureFlagEvaluationReason Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(FeatureFlagEvaluationReason other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is FeatureFlagEvaluationReason other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(FeatureFlagEvaluationReason left, FeatureFlagEvaluationReason right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(FeatureFlagEvaluationReason left, FeatureFlagEvaluationReason right) => !left.Equals(right);
 }

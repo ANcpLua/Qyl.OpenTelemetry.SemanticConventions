@@ -18,90 +18,6 @@ namespace Qyl.Telemetry.SemanticConventions.Incubating.Activities;
 public static class GcpIncubatingActivityExtensions
 {
     /// <summary>
-    /// The container within GCP where the AppHub application is defined.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetGcpApphubApplicationContainer(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gcp.apphub.application.container", value);
-
-    /// <summary>
-    /// The name of the application as configured in AppHub.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetGcpApphubApplicationId(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gcp.apphub.application.id", value);
-
-    /// <summary>
-    /// The GCP zone or region where the application is defined.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetGcpApphubApplicationLocation(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gcp.apphub.application.location", value);
-
-    /// <summary>
-    /// Criticality of a service indicates its importance to the business.
-    /// </summary>
-    /// <remarks>
-    /// <a href="https://cloud.google.com/app-hub/docs/reference/rest/v1/Attributes#type">See AppHub type enum</a>
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetGcpApphubServiceCriticalityType(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gcp.apphub.service.criticality_type", value);
-
-    /// <summary>
-    /// Environment of a service is the stage of a software lifecycle.
-    /// </summary>
-    /// <remarks>
-    /// <a href="https://cloud.google.com/app-hub/docs/reference/rest/v1/Attributes#type_1">See AppHub environment type</a>
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetGcpApphubServiceEnvironmentType(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gcp.apphub.service.environment_type", value);
-
-    /// <summary>
-    /// The name of the service as configured in AppHub.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetGcpApphubServiceId(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gcp.apphub.service.id", value);
-
-    /// <summary>
-    /// Criticality of a workload indicates its importance to the business.
-    /// </summary>
-    /// <remarks>
-    /// <a href="https://cloud.google.com/app-hub/docs/reference/rest/v1/Attributes#type">See AppHub type enum</a>
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetGcpApphubWorkloadCriticalityType(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gcp.apphub.workload.criticality_type", value);
-
-    /// <summary>
-    /// Environment of a workload is the stage of a software lifecycle.
-    /// </summary>
-    /// <remarks>
-    /// <a href="https://cloud.google.com/app-hub/docs/reference/rest/v1/Attributes#type_1">See AppHub environment type</a>
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetGcpApphubWorkloadEnvironmentType(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gcp.apphub.workload.environment_type", value);
-
-    /// <summary>
-    /// The name of the workload as configured in AppHub.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetGcpApphubWorkloadId(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gcp.apphub.workload.id", value);
-
-    /// <summary>
     /// The container within GCP where the AppHub destination application is defined.
     /// </summary>
     public static global::System.Diagnostics.Activity SetGcpApphubDestinationApplicationContainer(
@@ -130,16 +46,16 @@ public static class GcpIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetGcpApphubDestinationServiceCriticalityType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gcp.apphub_destination.service.criticality_type", value);
+        GcpApphubDestinationServiceCriticalityType value)
+        => activity.SetTag("gcp.apphub_destination.service.criticality_type", value.Value);
 
     /// <summary>
     /// Software lifecycle stage of a destination service as defined <a href="https://cloud.google.com/app-hub/docs/reference/rest/v1/Attributes#type_1">AppHub environment type</a>
     /// </summary>
     public static global::System.Diagnostics.Activity SetGcpApphubDestinationServiceEnvironmentType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gcp.apphub_destination.service.environment_type", value);
+        GcpApphubDestinationServiceEnvironmentType value)
+        => activity.SetTag("gcp.apphub_destination.service.environment_type", value.Value);
 
     /// <summary>
     /// The name of the destination service as configured in AppHub.
@@ -154,16 +70,16 @@ public static class GcpIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetGcpApphubDestinationWorkloadCriticalityType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gcp.apphub_destination.workload.criticality_type", value);
+        GcpApphubDestinationWorkloadCriticalityType value)
+        => activity.SetTag("gcp.apphub_destination.workload.criticality_type", value.Value);
 
     /// <summary>
     /// Environment of a destination workload is the stage of a software lifecycle as provided in the <a href="https://cloud.google.com/app-hub/docs/reference/rest/v1/Attributes#type_1">AppHub environment type</a>
     /// </summary>
     public static global::System.Diagnostics.Activity SetGcpApphubDestinationWorkloadEnvironmentType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gcp.apphub_destination.workload.environment_type", value);
+        GcpApphubDestinationWorkloadEnvironmentType value)
+        => activity.SetTag("gcp.apphub_destination.workload.environment_type", value.Value);
 
     /// <summary>
     /// The name of the destination workload as configured in AppHub.
@@ -183,320 +99,288 @@ public static class GcpIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("gcp.client.service", value);
+}
+
+/// <summary>
+/// Criticality of a destination workload indicates its importance to the business as specified in <a href="https://cloud.google.com/app-hub/docs/reference/rest/v1/Attributes#type">AppHub type enum</a>
+/// </summary>
+/// <remarks>
+/// The open value set of <c>gcp.apphub_destination.service.criticality_type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct GcpApphubDestinationServiceCriticalityType : global::System.IEquatable<GcpApphubDestinationServiceCriticalityType>
+{
+    /// <summary>
+    /// The attribute key, <c>gcp.apphub_destination.service.criticality_type</c>.
+    /// </summary>
+    public const string Key = "gcp.apphub_destination.service.criticality_type";
+
+    private readonly string? _value;
+
+    private GcpApphubDestinationServiceCriticalityType(string value) => _value = value;
 
     /// <summary>
-    /// The name of the Cloud Run <a href="https://cloud.google.com/run/docs/managing/job-executions">execution</a> being run for the Job, as set by the <a href="https://cloud.google.com/run/docs/container-contract#jobs-env-vars">`CLOUD_RUN_EXECUTION`</a> environment variable.
+    /// Mission critical service.
     /// </summary>
-    public static global::System.Diagnostics.Activity SetGcpCloudRunJobExecution(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gcp.cloud_run.job.execution", value);
+    public static GcpApphubDestinationServiceCriticalityType MissionCritical { get; } = new("MISSION_CRITICAL");
 
     /// <summary>
-    /// The index for a task within an execution as provided by the <a href="https://cloud.google.com/run/docs/container-contract#jobs-env-vars">`CLOUD_RUN_TASK_INDEX`</a> environment variable.
+    /// High impact.
     /// </summary>
-    public static global::System.Diagnostics.Activity SetGcpCloudRunJobTaskIndex(
-        this global::System.Diagnostics.Activity activity,
-        long value)
-        => activity.SetTag("gcp.cloud_run.job.task_index", value);
+    public static GcpApphubDestinationServiceCriticalityType High { get; } = new("HIGH");
 
     /// <summary>
-    /// The hostname of a GCE instance. This is the full value of the default or <a href="https://cloud.google.com/compute/docs/instances/custom-hostname-vm">custom hostname</a>.
+    /// Medium impact.
     /// </summary>
-    public static global::System.Diagnostics.Activity SetGcpGceInstanceHostname(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gcp.gce.instance.hostname", value);
+    public static GcpApphubDestinationServiceCriticalityType Medium { get; } = new("MEDIUM");
 
     /// <summary>
-    /// GCE instance labels, <c>&lt;key&gt;</c> being the label name and the value being the label value.
+    /// Low impact.
     /// </summary>
-    /// <remarks>
-    /// For example, a GCE instance label <c>team</c> with value <c>observability</c> SHOULD be recorded as the <c>gcp.gce.instance.labels.team</c> attribute with value <c>"observability"</c>. The <c>&lt;key&gt;</c> MUST be the exact GCE instance label key.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetGcpGceInstanceLabels(
-        this global::System.Diagnostics.Activity activity,
-        string segment,
-        string value)
-        => activity.SetTag($"gcp.gce.instance.labels.{segment}", value);
+    public static GcpApphubDestinationServiceCriticalityType Low { get; } = new("LOW");
 
     /// <summary>
-    /// The instance name of a GCE instance. This is the value provided by <c>host.name</c>, the visible name of the instance in the Cloud Console UI, and the prefix for the default hostname of the instance as defined by the <a href="https://cloud.google.com/compute/docs/internal-dns#instance-fully-qualified-domain-names">default internal DNS name</a>.
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
     /// </summary>
-    public static global::System.Diagnostics.Activity SetGcpGceInstanceName(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gcp.gce.instance.name", value);
+    public static GcpApphubDestinationServiceCriticalityType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
     /// <summary>
-    /// The name of the Instance Group Manager (IGM) that manages this VM, if any.
+    /// The attribute value.
     /// </summary>
-    public static global::System.Diagnostics.Activity SetGcpGceInstanceGroupManagerName(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gcp.gce.instance_group_manager.name", value);
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(GcpApphubDestinationServiceCriticalityType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is GcpApphubDestinationServiceCriticalityType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
 
     /// <summary>
-    /// The region of a **regional** Instance Group Manager (e.g., <c>us-central1</c>). Set this **only** when the IGM is regional.
+    /// Whether two values are equal.
     /// </summary>
-    public static global::System.Diagnostics.Activity SetGcpGceInstanceGroupManagerRegion(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gcp.gce.instance_group_manager.region", value);
+    public static bool operator ==(GcpApphubDestinationServiceCriticalityType left, GcpApphubDestinationServiceCriticalityType right) => left.Equals(right);
 
     /// <summary>
-    /// The zone of a **zonal** Instance Group Manager (e.g., <c>us-central1-a</c>). Set this **only** when the IGM is zonal.
+    /// Whether two values differ.
     /// </summary>
-    public static global::System.Diagnostics.Activity SetGcpGceInstanceGroupManagerZone(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gcp.gce.instance_group_manager.zone", value);
+    public static bool operator !=(GcpApphubDestinationServiceCriticalityType left, GcpApphubDestinationServiceCriticalityType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Software lifecycle stage of a destination service as defined <a href="https://cloud.google.com/app-hub/docs/reference/rest/v1/Attributes#type_1">AppHub environment type</a>
+/// </summary>
+/// <remarks>
+/// The open value set of <c>gcp.apphub_destination.service.environment_type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct GcpApphubDestinationServiceEnvironmentType : global::System.IEquatable<GcpApphubDestinationServiceEnvironmentType>
+{
+    /// <summary>
+    /// The attribute key, <c>gcp.apphub_destination.service.environment_type</c>.
+    /// </summary>
+    public const string Key = "gcp.apphub_destination.service.environment_type";
+
+    private readonly string? _value;
+
+    private GcpApphubDestinationServiceEnvironmentType(string value) => _value = value;
 
     /// <summary>
-    /// Criticality of a service indicates its importance to the business.
+    /// Production environment.
     /// </summary>
-    public static class GcpApphubServiceCriticalityTypeValues
-    {
-        /// <summary>
-        /// Mission critical service.
-        /// </summary>
-        public const string MissionCritical = "MISSION_CRITICAL";
-
-        /// <summary>
-        /// High impact.
-        /// </summary>
-        public const string High = "HIGH";
-
-        /// <summary>
-        /// Medium impact.
-        /// </summary>
-        public const string Medium = "MEDIUM";
-
-        /// <summary>
-        /// Low impact.
-        /// </summary>
-        public const string Low = "LOW";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "MISSION_CRITICAL", "HIGH", "MEDIUM", "LOW" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static GcpApphubDestinationServiceEnvironmentType Production { get; } = new("PRODUCTION");
 
     /// <summary>
-    /// Environment of a service is the stage of a software lifecycle.
+    /// Staging environment.
     /// </summary>
-    public static class GcpApphubServiceEnvironmentTypeValues
-    {
-        /// <summary>
-        /// Production environment.
-        /// </summary>
-        public const string Production = "PRODUCTION";
-
-        /// <summary>
-        /// Staging environment.
-        /// </summary>
-        public const string Staging = "STAGING";
-
-        /// <summary>
-        /// Test environment.
-        /// </summary>
-        public const string Test = "TEST";
-
-        /// <summary>
-        /// Development environment.
-        /// </summary>
-        public const string Development = "DEVELOPMENT";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "PRODUCTION", "STAGING", "TEST", "DEVELOPMENT" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static GcpApphubDestinationServiceEnvironmentType Staging { get; } = new("STAGING");
 
     /// <summary>
-    /// Criticality of a workload indicates its importance to the business.
+    /// Test environment.
     /// </summary>
-    public static class GcpApphubWorkloadCriticalityTypeValues
-    {
-        /// <summary>
-        /// Mission critical service.
-        /// </summary>
-        public const string MissionCritical = "MISSION_CRITICAL";
-
-        /// <summary>
-        /// High impact.
-        /// </summary>
-        public const string High = "HIGH";
-
-        /// <summary>
-        /// Medium impact.
-        /// </summary>
-        public const string Medium = "MEDIUM";
-
-        /// <summary>
-        /// Low impact.
-        /// </summary>
-        public const string Low = "LOW";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "MISSION_CRITICAL", "HIGH", "MEDIUM", "LOW" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static GcpApphubDestinationServiceEnvironmentType Test { get; } = new("TEST");
 
     /// <summary>
-    /// Environment of a workload is the stage of a software lifecycle.
+    /// Development environment.
     /// </summary>
-    public static class GcpApphubWorkloadEnvironmentTypeValues
-    {
-        /// <summary>
-        /// Production environment.
-        /// </summary>
-        public const string Production = "PRODUCTION";
-
-        /// <summary>
-        /// Staging environment.
-        /// </summary>
-        public const string Staging = "STAGING";
-
-        /// <summary>
-        /// Test environment.
-        /// </summary>
-        public const string Test = "TEST";
-
-        /// <summary>
-        /// Development environment.
-        /// </summary>
-        public const string Development = "DEVELOPMENT";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "PRODUCTION", "STAGING", "TEST", "DEVELOPMENT" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static GcpApphubDestinationServiceEnvironmentType Development { get; } = new("DEVELOPMENT");
 
     /// <summary>
-    /// Criticality of a destination workload indicates its importance to the business as specified in <a href="https://cloud.google.com/app-hub/docs/reference/rest/v1/Attributes#type">AppHub type enum</a>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
     /// </summary>
-    public static class GcpApphubDestinationServiceCriticalityTypeValues
-    {
-        /// <summary>
-        /// Mission critical service.
-        /// </summary>
-        public const string MissionCritical = "MISSION_CRITICAL";
-
-        /// <summary>
-        /// High impact.
-        /// </summary>
-        public const string High = "HIGH";
-
-        /// <summary>
-        /// Medium impact.
-        /// </summary>
-        public const string Medium = "MEDIUM";
-
-        /// <summary>
-        /// Low impact.
-        /// </summary>
-        public const string Low = "LOW";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "MISSION_CRITICAL", "HIGH", "MEDIUM", "LOW" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static GcpApphubDestinationServiceEnvironmentType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
     /// <summary>
-    /// Software lifecycle stage of a destination service as defined <a href="https://cloud.google.com/app-hub/docs/reference/rest/v1/Attributes#type_1">AppHub environment type</a>
+    /// The attribute value.
     /// </summary>
-    public static class GcpApphubDestinationServiceEnvironmentTypeValues
-    {
-        /// <summary>
-        /// Production environment.
-        /// </summary>
-        public const string Production = "PRODUCTION";
+    public string Value => _value ?? string.Empty;
 
-        /// <summary>
-        /// Staging environment.
-        /// </summary>
-        public const string Staging = "STAGING";
+    /// <inheritdoc/>
+    public bool Equals(GcpApphubDestinationServiceEnvironmentType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
 
-        /// <summary>
-        /// Test environment.
-        /// </summary>
-        public const string Test = "TEST";
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is GcpApphubDestinationServiceEnvironmentType other && Equals(other);
 
-        /// <summary>
-        /// Development environment.
-        /// </summary>
-        public const string Development = "DEVELOPMENT";
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "PRODUCTION", "STAGING", "TEST", "DEVELOPMENT" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <inheritdoc/>
+    public override string ToString() => Value;
 
     /// <summary>
-    /// Criticality of a destination workload indicates its importance to the business as specified in <a href="https://cloud.google.com/app-hub/docs/reference/rest/v1/Attributes#type">AppHub type enum</a>
+    /// Whether two values are equal.
     /// </summary>
-    public static class GcpApphubDestinationWorkloadCriticalityTypeValues
-    {
-        /// <summary>
-        /// Mission critical service.
-        /// </summary>
-        public const string MissionCritical = "MISSION_CRITICAL";
-
-        /// <summary>
-        /// High impact.
-        /// </summary>
-        public const string High = "HIGH";
-
-        /// <summary>
-        /// Medium impact.
-        /// </summary>
-        public const string Medium = "MEDIUM";
-
-        /// <summary>
-        /// Low impact.
-        /// </summary>
-        public const string Low = "LOW";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "MISSION_CRITICAL", "HIGH", "MEDIUM", "LOW" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static bool operator ==(GcpApphubDestinationServiceEnvironmentType left, GcpApphubDestinationServiceEnvironmentType right) => left.Equals(right);
 
     /// <summary>
-    /// Environment of a destination workload is the stage of a software lifecycle as provided in the <a href="https://cloud.google.com/app-hub/docs/reference/rest/v1/Attributes#type_1">AppHub environment type</a>
+    /// Whether two values differ.
     /// </summary>
-    public static class GcpApphubDestinationWorkloadEnvironmentTypeValues
-    {
-        /// <summary>
-        /// Production environment.
-        /// </summary>
-        public const string Production = "PRODUCTION";
+    public static bool operator !=(GcpApphubDestinationServiceEnvironmentType left, GcpApphubDestinationServiceEnvironmentType right) => !left.Equals(right);
+}
 
-        /// <summary>
-        /// Staging environment.
-        /// </summary>
-        public const string Staging = "STAGING";
+/// <summary>
+/// Criticality of a destination workload indicates its importance to the business as specified in <a href="https://cloud.google.com/app-hub/docs/reference/rest/v1/Attributes#type">AppHub type enum</a>
+/// </summary>
+/// <remarks>
+/// The open value set of <c>gcp.apphub_destination.workload.criticality_type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct GcpApphubDestinationWorkloadCriticalityType : global::System.IEquatable<GcpApphubDestinationWorkloadCriticalityType>
+{
+    /// <summary>
+    /// The attribute key, <c>gcp.apphub_destination.workload.criticality_type</c>.
+    /// </summary>
+    public const string Key = "gcp.apphub_destination.workload.criticality_type";
 
-        /// <summary>
-        /// Test environment.
-        /// </summary>
-        public const string Test = "TEST";
+    private readonly string? _value;
 
-        /// <summary>
-        /// Development environment.
-        /// </summary>
-        public const string Development = "DEVELOPMENT";
+    private GcpApphubDestinationWorkloadCriticalityType(string value) => _value = value;
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "PRODUCTION", "STAGING", "TEST", "DEVELOPMENT" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// Mission critical service.
+    /// </summary>
+    public static GcpApphubDestinationWorkloadCriticalityType MissionCritical { get; } = new("MISSION_CRITICAL");
+
+    /// <summary>
+    /// High impact.
+    /// </summary>
+    public static GcpApphubDestinationWorkloadCriticalityType High { get; } = new("HIGH");
+
+    /// <summary>
+    /// Medium impact.
+    /// </summary>
+    public static GcpApphubDestinationWorkloadCriticalityType Medium { get; } = new("MEDIUM");
+
+    /// <summary>
+    /// Low impact.
+    /// </summary>
+    public static GcpApphubDestinationWorkloadCriticalityType Low { get; } = new("LOW");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static GcpApphubDestinationWorkloadCriticalityType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(GcpApphubDestinationWorkloadCriticalityType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is GcpApphubDestinationWorkloadCriticalityType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(GcpApphubDestinationWorkloadCriticalityType left, GcpApphubDestinationWorkloadCriticalityType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(GcpApphubDestinationWorkloadCriticalityType left, GcpApphubDestinationWorkloadCriticalityType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Environment of a destination workload is the stage of a software lifecycle as provided in the <a href="https://cloud.google.com/app-hub/docs/reference/rest/v1/Attributes#type_1">AppHub environment type</a>
+/// </summary>
+/// <remarks>
+/// The open value set of <c>gcp.apphub_destination.workload.environment_type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct GcpApphubDestinationWorkloadEnvironmentType : global::System.IEquatable<GcpApphubDestinationWorkloadEnvironmentType>
+{
+    /// <summary>
+    /// The attribute key, <c>gcp.apphub_destination.workload.environment_type</c>.
+    /// </summary>
+    public const string Key = "gcp.apphub_destination.workload.environment_type";
+
+    private readonly string? _value;
+
+    private GcpApphubDestinationWorkloadEnvironmentType(string value) => _value = value;
+
+    /// <summary>
+    /// Production environment.
+    /// </summary>
+    public static GcpApphubDestinationWorkloadEnvironmentType Production { get; } = new("PRODUCTION");
+
+    /// <summary>
+    /// Staging environment.
+    /// </summary>
+    public static GcpApphubDestinationWorkloadEnvironmentType Staging { get; } = new("STAGING");
+
+    /// <summary>
+    /// Test environment.
+    /// </summary>
+    public static GcpApphubDestinationWorkloadEnvironmentType Test { get; } = new("TEST");
+
+    /// <summary>
+    /// Development environment.
+    /// </summary>
+    public static GcpApphubDestinationWorkloadEnvironmentType Development { get; } = new("DEVELOPMENT");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static GcpApphubDestinationWorkloadEnvironmentType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(GcpApphubDestinationWorkloadEnvironmentType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is GcpApphubDestinationWorkloadEnvironmentType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(GcpApphubDestinationWorkloadEnvironmentType left, GcpApphubDestinationWorkloadEnvironmentType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(GcpApphubDestinationWorkloadEnvironmentType left, GcpApphubDestinationWorkloadEnvironmentType right) => !left.Equals(right);
 }

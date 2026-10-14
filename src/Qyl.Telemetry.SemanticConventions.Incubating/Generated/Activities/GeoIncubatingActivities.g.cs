@@ -22,8 +22,8 @@ public static class GeoIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetGeoContinentCode(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("geo.continent.code", value);
+        GeoContinentCode value)
+        => activity.SetTag("geo.continent.code", value.Value);
 
     /// <summary>
     /// Two-letter ISO Country Code (<a href="https://wikipedia.org/wiki/ISO_3166-1#Codes">ISO 3166-1 alpha2</a>).
@@ -72,50 +72,90 @@ public static class GeoIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("geo.region.iso_code", value);
+}
+
+/// <summary>
+/// Two-letter code representing continent’s name.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>geo.continent.code</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct GeoContinentCode : global::System.IEquatable<GeoContinentCode>
+{
+    /// <summary>
+    /// The attribute key, <c>geo.continent.code</c>.
+    /// </summary>
+    public const string Key = "geo.continent.code";
+
+    private readonly string? _value;
+
+    private GeoContinentCode(string value) => _value = value;
 
     /// <summary>
-    /// Two-letter code representing continent’s name.
+    /// Africa.
     /// </summary>
-    public static class GeoContinentCodeValues
-    {
-        /// <summary>
-        /// Africa.
-        /// </summary>
-        public const string Af = "AF";
+    public static GeoContinentCode Af { get; } = new("AF");
 
-        /// <summary>
-        /// Antarctica.
-        /// </summary>
-        public const string An = "AN";
+    /// <summary>
+    /// Antarctica.
+    /// </summary>
+    public static GeoContinentCode An { get; } = new("AN");
 
-        /// <summary>
-        /// Asia.
-        /// </summary>
-        public const string As = "AS";
+    /// <summary>
+    /// Asia.
+    /// </summary>
+    public static GeoContinentCode As { get; } = new("AS");
 
-        /// <summary>
-        /// Europe.
-        /// </summary>
-        public const string Eu = "EU";
+    /// <summary>
+    /// Europe.
+    /// </summary>
+    public static GeoContinentCode Eu { get; } = new("EU");
 
-        /// <summary>
-        /// North America.
-        /// </summary>
-        public const string Na = "NA";
+    /// <summary>
+    /// North America.
+    /// </summary>
+    public static GeoContinentCode Na { get; } = new("NA");
 
-        /// <summary>
-        /// Oceania.
-        /// </summary>
-        public const string Oc = "OC";
+    /// <summary>
+    /// Oceania.
+    /// </summary>
+    public static GeoContinentCode Oc { get; } = new("OC");
 
-        /// <summary>
-        /// South America.
-        /// </summary>
-        public const string Sa = "SA";
+    /// <summary>
+    /// South America.
+    /// </summary>
+    public static GeoContinentCode Sa { get; } = new("SA");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "AF", "AN", "AS", "EU", "NA", "OC", "SA" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static GeoContinentCode Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(GeoContinentCode other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is GeoContinentCode other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(GeoContinentCode left, GeoContinentCode right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(GeoContinentCode left, GeoContinentCode right) => !left.Equals(right);
 }

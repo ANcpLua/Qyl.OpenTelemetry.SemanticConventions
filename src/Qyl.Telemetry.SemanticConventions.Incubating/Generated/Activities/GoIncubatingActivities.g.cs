@@ -33,8 +33,8 @@ public static class GoIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetGoCpuState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("go.cpu.state", value);
+        GoCpuState value)
+        => activity.SetTag("go.cpu.state", value.Value);
 
     /// <summary>
     /// The detailed type of memory.
@@ -52,58 +52,138 @@ public static class GoIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetGoMemoryType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("go.memory.type", value);
+        GoMemoryType value)
+        => activity.SetTag("go.memory.type", value.Value);
+}
+
+/// <summary>
+/// The state of the CPU.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>go.cpu.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct GoCpuState : global::System.IEquatable<GoCpuState>
+{
+    /// <summary>
+    /// The attribute key, <c>go.cpu.state</c>.
+    /// </summary>
+    public const string Key = "go.cpu.state";
+
+    private readonly string? _value;
+
+    private GoCpuState(string value) => _value = value;
 
     /// <summary>
-    /// The state of the CPU.
+    /// CPU time spent running user Go code.
     /// </summary>
-    public static class GoCpuStateValues
-    {
-        /// <summary>
-        /// CPU time spent running user Go code.
-        /// </summary>
-        public const string User = "user";
-
-        /// <summary>
-        /// CPU time spent performing garbage collection tasks.
-        /// </summary>
-        public const string Gc = "gc";
-
-        /// <summary>
-        /// CPU time spent returning unused memory to the underlying platform.
-        /// </summary>
-        public const string Scavenge = "scavenge";
-
-        /// <summary>
-        /// Available CPU time not spent executing any Go or Go runtime code.
-        /// </summary>
-        public const string Idle = "idle";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "user", "gc", "scavenge", "idle" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static GoCpuState User { get; } = new("user");
 
     /// <summary>
-    /// The type of memory.
+    /// CPU time spent performing garbage collection tasks.
     /// </summary>
-    public static class GoMemoryTypeValues
-    {
-        /// <summary>
-        /// Memory allocated from the heap that is reserved for stack space, whether or not it is currently in-use.
-        /// </summary>
-        public const string Stack = "stack";
+    public static GoCpuState Gc { get; } = new("gc");
 
-        /// <summary>
-        /// Memory used by the Go runtime, excluding other categories of memory usage described in this enumeration.
-        /// </summary>
-        public const string Other = "other";
+    /// <summary>
+    /// CPU time spent returning unused memory to the underlying platform.
+    /// </summary>
+    public static GoCpuState Scavenge { get; } = new("scavenge");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "stack", "other" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// Available CPU time not spent executing any Go or Go runtime code.
+    /// </summary>
+    public static GoCpuState Idle { get; } = new("idle");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static GoCpuState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(GoCpuState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is GoCpuState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(GoCpuState left, GoCpuState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(GoCpuState left, GoCpuState right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The type of memory.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>go.memory.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct GoMemoryType : global::System.IEquatable<GoMemoryType>
+{
+    /// <summary>
+    /// The attribute key, <c>go.memory.type</c>.
+    /// </summary>
+    public const string Key = "go.memory.type";
+
+    private readonly string? _value;
+
+    private GoMemoryType(string value) => _value = value;
+
+    /// <summary>
+    /// Memory allocated from the heap that is reserved for stack space, whether or not it is currently in-use.
+    /// </summary>
+    public static GoMemoryType Stack { get; } = new("stack");
+
+    /// <summary>
+    /// Memory used by the Go runtime, excluding other categories of memory usage described in this enumeration.
+    /// </summary>
+    public static GoMemoryType Other { get; } = new("other");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static GoMemoryType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(GoMemoryType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is GoMemoryType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(GoMemoryType left, GoMemoryType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(GoMemoryType left, GoMemoryType right) => !left.Equals(right);
 }

@@ -38,8 +38,8 @@ public static class HwIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetHwBatteryState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("hw.battery.state", value);
+        HwBatteryState value)
+        => activity.SetTag("hw.battery.state", value.Value);
 
     /// <summary>
     /// BIOS version of the hardware component
@@ -78,8 +78,8 @@ public static class HwIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetHwGpuTask(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("hw.gpu.task", value);
+        HwGpuTask value)
+        => activity.SetTag("hw.gpu.task", value.Value);
 
     /// <summary>
     /// An identifier for the hardware component, unique within the monitored host
@@ -94,8 +94,8 @@ public static class HwIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetHwLimitType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("hw.limit_type", value);
+        HwLimitType value)
+        => activity.SetTag("hw.limit_type", value.Value);
 
     /// <summary>
     /// RAID Level of the logical disk
@@ -110,8 +110,8 @@ public static class HwIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetHwLogicalDiskState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("hw.logical_disk.state", value);
+        HwLogicalDiskState value)
+        => activity.SetTag("hw.logical_disk.state", value.Value);
 
     /// <summary>
     /// Type of the memory module
@@ -174,8 +174,8 @@ public static class HwIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetHwPhysicalDiskState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("hw.physical_disk.state", value);
+        HwPhysicalDiskState value)
+        => activity.SetTag("hw.physical_disk.state", value.Value);
 
     /// <summary>
     /// Type of the physical disk
@@ -206,16 +206,16 @@ public static class HwIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetHwState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("hw.state", value);
+        HwState value)
+        => activity.SetTag("hw.state", value.Value);
 
     /// <summary>
     /// Type of tape drive operation
     /// </summary>
     public static global::System.Diagnostics.Activity SetHwTapeDriveOperationType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("hw.tape_drive.operation_type", value);
+        HwTapeDriveOperationType value)
+        => activity.SetTag("hw.tape_drive.operation_type", value.Value);
 
     /// <summary>
     /// Type of the component
@@ -225,8 +225,8 @@ public static class HwIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetHwType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("hw.type", value);
+        HwType value)
+        => activity.SetTag("hw.type", value.Value);
 
     /// <summary>
     /// Vendor name of the hardware component
@@ -235,287 +235,607 @@ public static class HwIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("hw.vendor", value);
+}
+
+/// <summary>
+/// The current state of the battery
+/// </summary>
+/// <remarks>
+/// The open value set of <c>hw.battery.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct HwBatteryState : global::System.IEquatable<HwBatteryState>
+{
+    /// <summary>
+    /// The attribute key, <c>hw.battery.state</c>.
+    /// </summary>
+    public const string Key = "hw.battery.state";
+
+    private readonly string? _value;
+
+    private HwBatteryState(string value) => _value = value;
 
     /// <summary>
-    /// The current state of the battery
+    /// Charging.
     /// </summary>
-    public static class HwBatteryStateValues
-    {
-        /// <summary>
-        /// Charging.
-        /// </summary>
-        public const string Charging = "charging";
-
-        /// <summary>
-        /// Discharging.
-        /// </summary>
-        public const string Discharging = "discharging";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "charging", "discharging" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static HwBatteryState Charging { get; } = new("charging");
 
     /// <summary>
-    /// Type of task the GPU is performing
+    /// Discharging.
     /// </summary>
-    public static class HwGpuTaskValues
-    {
-        /// <summary>
-        /// Decoder.
-        /// </summary>
-        public const string Decoder = "decoder";
-
-        /// <summary>
-        /// Encoder.
-        /// </summary>
-        public const string Encoder = "encoder";
-
-        /// <summary>
-        /// General.
-        /// </summary>
-        public const string General = "general";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "decoder", "encoder", "general" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static HwBatteryState Discharging { get; } = new("discharging");
 
     /// <summary>
-    /// Type of limit for hardware components
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
     /// </summary>
-    public static class HwLimitTypeValues
-    {
-        /// <summary>
-        /// Critical.
-        /// </summary>
-        public const string Critical = "critical";
-
-        /// <summary>
-        /// Degraded.
-        /// </summary>
-        public const string Degraded = "degraded";
-
-        /// <summary>
-        /// High Critical.
-        /// </summary>
-        public const string HighCritical = "high.critical";
-
-        /// <summary>
-        /// High Degraded.
-        /// </summary>
-        public const string HighDegraded = "high.degraded";
-
-        /// <summary>
-        /// Low Critical.
-        /// </summary>
-        public const string LowCritical = "low.critical";
-
-        /// <summary>
-        /// Low Degraded.
-        /// </summary>
-        public const string LowDegraded = "low.degraded";
-
-        /// <summary>
-        /// Maximum.
-        /// </summary>
-        public const string Max = "max";
-
-        /// <summary>
-        /// Throttled.
-        /// </summary>
-        public const string Throttled = "throttled";
-
-        /// <summary>
-        /// Turbo.
-        /// </summary>
-        public const string Turbo = "turbo";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "critical", "degraded", "high.critical", "high.degraded", "low.critical", "low.degraded", "max", "throttled", "turbo" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static HwBatteryState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
     /// <summary>
-    /// State of the logical disk space usage
+    /// The attribute value.
     /// </summary>
-    public static class HwLogicalDiskStateValues
-    {
-        /// <summary>
-        /// Used.
-        /// </summary>
-        public const string Used = "used";
+    public string Value => _value ?? string.Empty;
 
-        /// <summary>
-        /// Free.
-        /// </summary>
-        public const string Free = "free";
+    /// <inheritdoc/>
+    public bool Equals(HwBatteryState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "used", "free" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is HwBatteryState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
 
     /// <summary>
-    /// State of the physical disk endurance utilization
+    /// Whether two values are equal.
     /// </summary>
-    public static class HwPhysicalDiskStateValues
-    {
-        /// <summary>
-        /// Remaining.
-        /// </summary>
-        public const string Remaining = "remaining";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "remaining" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static bool operator ==(HwBatteryState left, HwBatteryState right) => left.Equals(right);
 
     /// <summary>
-    /// The current state of the component
+    /// Whether two values differ.
     /// </summary>
-    public static class HwStateValues
-    {
-        /// <summary>
-        /// Degraded.
-        /// </summary>
-        public const string Degraded = "degraded";
+    public static bool operator !=(HwBatteryState left, HwBatteryState right) => !left.Equals(right);
+}
 
-        /// <summary>
-        /// Failed.
-        /// </summary>
-        public const string Failed = "failed";
+/// <summary>
+/// Type of task the GPU is performing
+/// </summary>
+/// <remarks>
+/// The open value set of <c>hw.gpu.task</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct HwGpuTask : global::System.IEquatable<HwGpuTask>
+{
+    /// <summary>
+    /// The attribute key, <c>hw.gpu.task</c>.
+    /// </summary>
+    public const string Key = "hw.gpu.task";
 
-        /// <summary>
-        /// Needs Cleaning.
-        /// </summary>
-        public const string NeedsCleaning = "needs_cleaning";
+    private readonly string? _value;
 
-        /// <summary>
-        /// OK.
-        /// </summary>
-        public const string Ok = "ok";
-
-        /// <summary>
-        /// Predicted Failure.
-        /// </summary>
-        public const string PredictedFailure = "predicted_failure";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "degraded", "failed", "needs_cleaning", "ok", "predicted_failure" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    private HwGpuTask(string value) => _value = value;
 
     /// <summary>
-    /// Type of tape drive operation
+    /// Decoder.
     /// </summary>
-    public static class HwTapeDriveOperationTypeValues
-    {
-        /// <summary>
-        /// Mount.
-        /// </summary>
-        public const string Mount = "mount";
-
-        /// <summary>
-        /// Unmount.
-        /// </summary>
-        public const string Unmount = "unmount";
-
-        /// <summary>
-        /// Clean.
-        /// </summary>
-        public const string Clean = "clean";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "mount", "unmount", "clean" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static HwGpuTask Decoder { get; } = new("decoder");
 
     /// <summary>
-    /// Type of the component
+    /// Encoder.
     /// </summary>
-    public static class HwTypeValues
-    {
-        /// <summary>
-        /// Battery.
-        /// </summary>
-        public const string Battery = "battery";
+    public static HwGpuTask Encoder { get; } = new("encoder");
 
-        /// <summary>
-        /// CPU.
-        /// </summary>
-        public const string Cpu = "cpu";
+    /// <summary>
+    /// General.
+    /// </summary>
+    public static HwGpuTask General { get; } = new("general");
 
-        /// <summary>
-        /// Disk controller.
-        /// </summary>
-        public const string DiskController = "disk_controller";
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static HwGpuTask Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
-        /// <summary>
-        /// Enclosure.
-        /// </summary>
-        public const string Enclosure = "enclosure";
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
 
-        /// <summary>
-        /// Fan.
-        /// </summary>
-        public const string Fan = "fan";
+    /// <inheritdoc/>
+    public bool Equals(HwGpuTask other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
 
-        /// <summary>
-        /// GPU.
-        /// </summary>
-        public const string Gpu = "gpu";
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is HwGpuTask other && Equals(other);
 
-        /// <summary>
-        /// Logical disk.
-        /// </summary>
-        public const string LogicalDisk = "logical_disk";
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
 
-        /// <summary>
-        /// Memory.
-        /// </summary>
-        public const string Memory = "memory";
+    /// <inheritdoc/>
+    public override string ToString() => Value;
 
-        /// <summary>
-        /// Network.
-        /// </summary>
-        public const string Network = "network";
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(HwGpuTask left, HwGpuTask right) => left.Equals(right);
 
-        /// <summary>
-        /// Physical disk.
-        /// </summary>
-        public const string PhysicalDisk = "physical_disk";
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(HwGpuTask left, HwGpuTask right) => !left.Equals(right);
+}
 
-        /// <summary>
-        /// Power supply.
-        /// </summary>
-        public const string PowerSupply = "power_supply";
+/// <summary>
+/// Type of limit for hardware components
+/// </summary>
+/// <remarks>
+/// The open value set of <c>hw.limit_type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct HwLimitType : global::System.IEquatable<HwLimitType>
+{
+    /// <summary>
+    /// The attribute key, <c>hw.limit_type</c>.
+    /// </summary>
+    public const string Key = "hw.limit_type";
 
-        /// <summary>
-        /// Tape drive.
-        /// </summary>
-        public const string TapeDrive = "tape_drive";
+    private readonly string? _value;
 
-        /// <summary>
-        /// Temperature.
-        /// </summary>
-        public const string Temperature = "temperature";
+    private HwLimitType(string value) => _value = value;
 
-        /// <summary>
-        /// Voltage.
-        /// </summary>
-        public const string Voltage = "voltage";
+    /// <summary>
+    /// Critical.
+    /// </summary>
+    public static HwLimitType Critical { get; } = new("critical");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "battery", "cpu", "disk_controller", "enclosure", "fan", "gpu", "logical_disk", "memory", "network", "physical_disk", "power_supply", "tape_drive", "temperature", "voltage" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// Degraded.
+    /// </summary>
+    public static HwLimitType Degraded { get; } = new("degraded");
+
+    /// <summary>
+    /// High Critical.
+    /// </summary>
+    public static HwLimitType HighCritical { get; } = new("high.critical");
+
+    /// <summary>
+    /// High Degraded.
+    /// </summary>
+    public static HwLimitType HighDegraded { get; } = new("high.degraded");
+
+    /// <summary>
+    /// Low Critical.
+    /// </summary>
+    public static HwLimitType LowCritical { get; } = new("low.critical");
+
+    /// <summary>
+    /// Low Degraded.
+    /// </summary>
+    public static HwLimitType LowDegraded { get; } = new("low.degraded");
+
+    /// <summary>
+    /// Maximum.
+    /// </summary>
+    public static HwLimitType Max { get; } = new("max");
+
+    /// <summary>
+    /// Throttled.
+    /// </summary>
+    public static HwLimitType Throttled { get; } = new("throttled");
+
+    /// <summary>
+    /// Turbo.
+    /// </summary>
+    public static HwLimitType Turbo { get; } = new("turbo");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static HwLimitType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(HwLimitType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is HwLimitType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(HwLimitType left, HwLimitType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(HwLimitType left, HwLimitType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// State of the logical disk space usage
+/// </summary>
+/// <remarks>
+/// The open value set of <c>hw.logical_disk.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct HwLogicalDiskState : global::System.IEquatable<HwLogicalDiskState>
+{
+    /// <summary>
+    /// The attribute key, <c>hw.logical_disk.state</c>.
+    /// </summary>
+    public const string Key = "hw.logical_disk.state";
+
+    private readonly string? _value;
+
+    private HwLogicalDiskState(string value) => _value = value;
+
+    /// <summary>
+    /// Used.
+    /// </summary>
+    public static HwLogicalDiskState Used { get; } = new("used");
+
+    /// <summary>
+    /// Free.
+    /// </summary>
+    public static HwLogicalDiskState Free { get; } = new("free");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static HwLogicalDiskState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(HwLogicalDiskState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is HwLogicalDiskState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(HwLogicalDiskState left, HwLogicalDiskState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(HwLogicalDiskState left, HwLogicalDiskState right) => !left.Equals(right);
+}
+
+/// <summary>
+/// State of the physical disk endurance utilization
+/// </summary>
+/// <remarks>
+/// The open value set of <c>hw.physical_disk.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct HwPhysicalDiskState : global::System.IEquatable<HwPhysicalDiskState>
+{
+    /// <summary>
+    /// The attribute key, <c>hw.physical_disk.state</c>.
+    /// </summary>
+    public const string Key = "hw.physical_disk.state";
+
+    private readonly string? _value;
+
+    private HwPhysicalDiskState(string value) => _value = value;
+
+    /// <summary>
+    /// Remaining.
+    /// </summary>
+    public static HwPhysicalDiskState Remaining { get; } = new("remaining");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static HwPhysicalDiskState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(HwPhysicalDiskState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is HwPhysicalDiskState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(HwPhysicalDiskState left, HwPhysicalDiskState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(HwPhysicalDiskState left, HwPhysicalDiskState right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The current state of the component
+/// </summary>
+/// <remarks>
+/// The open value set of <c>hw.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct HwState : global::System.IEquatable<HwState>
+{
+    /// <summary>
+    /// The attribute key, <c>hw.state</c>.
+    /// </summary>
+    public const string Key = "hw.state";
+
+    private readonly string? _value;
+
+    private HwState(string value) => _value = value;
+
+    /// <summary>
+    /// Degraded.
+    /// </summary>
+    public static HwState Degraded { get; } = new("degraded");
+
+    /// <summary>
+    /// Failed.
+    /// </summary>
+    public static HwState Failed { get; } = new("failed");
+
+    /// <summary>
+    /// Needs Cleaning.
+    /// </summary>
+    public static HwState NeedsCleaning { get; } = new("needs_cleaning");
+
+    /// <summary>
+    /// OK.
+    /// </summary>
+    public static HwState Ok { get; } = new("ok");
+
+    /// <summary>
+    /// Predicted Failure.
+    /// </summary>
+    public static HwState PredictedFailure { get; } = new("predicted_failure");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static HwState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(HwState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is HwState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(HwState left, HwState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(HwState left, HwState right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Type of tape drive operation
+/// </summary>
+/// <remarks>
+/// The open value set of <c>hw.tape_drive.operation_type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct HwTapeDriveOperationType : global::System.IEquatable<HwTapeDriveOperationType>
+{
+    /// <summary>
+    /// The attribute key, <c>hw.tape_drive.operation_type</c>.
+    /// </summary>
+    public const string Key = "hw.tape_drive.operation_type";
+
+    private readonly string? _value;
+
+    private HwTapeDriveOperationType(string value) => _value = value;
+
+    /// <summary>
+    /// Mount.
+    /// </summary>
+    public static HwTapeDriveOperationType Mount { get; } = new("mount");
+
+    /// <summary>
+    /// Unmount.
+    /// </summary>
+    public static HwTapeDriveOperationType Unmount { get; } = new("unmount");
+
+    /// <summary>
+    /// Clean.
+    /// </summary>
+    public static HwTapeDriveOperationType Clean { get; } = new("clean");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static HwTapeDriveOperationType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(HwTapeDriveOperationType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is HwTapeDriveOperationType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(HwTapeDriveOperationType left, HwTapeDriveOperationType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(HwTapeDriveOperationType left, HwTapeDriveOperationType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Type of the component
+/// </summary>
+/// <remarks>
+/// The open value set of <c>hw.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct HwType : global::System.IEquatable<HwType>
+{
+    /// <summary>
+    /// The attribute key, <c>hw.type</c>.
+    /// </summary>
+    public const string Key = "hw.type";
+
+    private readonly string? _value;
+
+    private HwType(string value) => _value = value;
+
+    /// <summary>
+    /// Battery.
+    /// </summary>
+    public static HwType Battery { get; } = new("battery");
+
+    /// <summary>
+    /// CPU.
+    /// </summary>
+    public static HwType Cpu { get; } = new("cpu");
+
+    /// <summary>
+    /// Disk controller.
+    /// </summary>
+    public static HwType DiskController { get; } = new("disk_controller");
+
+    /// <summary>
+    /// Enclosure.
+    /// </summary>
+    public static HwType Enclosure { get; } = new("enclosure");
+
+    /// <summary>
+    /// Fan.
+    /// </summary>
+    public static HwType Fan { get; } = new("fan");
+
+    /// <summary>
+    /// GPU.
+    /// </summary>
+    public static HwType Gpu { get; } = new("gpu");
+
+    /// <summary>
+    /// Logical disk.
+    /// </summary>
+    public static HwType LogicalDisk { get; } = new("logical_disk");
+
+    /// <summary>
+    /// Memory.
+    /// </summary>
+    public static HwType Memory { get; } = new("memory");
+
+    /// <summary>
+    /// Network.
+    /// </summary>
+    public static HwType Network { get; } = new("network");
+
+    /// <summary>
+    /// Physical disk.
+    /// </summary>
+    public static HwType PhysicalDisk { get; } = new("physical_disk");
+
+    /// <summary>
+    /// Power supply.
+    /// </summary>
+    public static HwType PowerSupply { get; } = new("power_supply");
+
+    /// <summary>
+    /// Tape drive.
+    /// </summary>
+    public static HwType TapeDrive { get; } = new("tape_drive");
+
+    /// <summary>
+    /// Temperature.
+    /// </summary>
+    public static HwType Temperature { get; } = new("temperature");
+
+    /// <summary>
+    /// Voltage.
+    /// </summary>
+    public static HwType Voltage { get; } = new("voltage");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static HwType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(HwType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is HwType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(HwType left, HwType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(HwType left, HwType right) => !left.Equals(right);
 }

@@ -23,43 +23,8 @@ public static class ContainerActivityExtensions
     [global::System.Obsolete("Replaced by cpu.mode.", false)]
     public static global::System.Diagnostics.Activity SetContainerCpuState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("container.cpu.state", value);
-
-    /// <summary>
-    /// Container ID. Usually a UUID, as for example used to <a href="https://docs.docker.com/engine/containers/run/#container-identification">identify Docker containers</a>. The UUID might be abbreviated.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetContainerId(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("container.id", value);
-
-    /// <summary>
-    /// Name of the image the container was built on.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetContainerImageName(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("container.image.name", value);
-
-    /// <summary>
-    /// Repository digests of the container image as provided by the container runtime.
-    /// </summary>
-    /// <remarks>
-    /// <a href="https://docs.docker.com/reference/api/engine/version/v1.52/#tag/Image/operation/ImageInspect">Docker</a> and <a href="https://github.com/kubernetes/cri-api/blob/c75ef5b473bbe2d0a4fc92f82235efd665ea8e9f/pkg/apis/runtime/v1/api.proto#L1237-L1238">CRI</a> report those under the <c>RepoDigests</c> field.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetContainerImageRepoDigests(
-        this global::System.Diagnostics.Activity activity,
-        string[] value)
-        => activity.SetTag("container.image.repo_digests", value);
-
-    /// <summary>
-    /// Container image tags. An example can be found in <a href="https://docs.docker.com/reference/api/engine/version/v1.52/#tag/Image/operation/ImageInspect">Docker Image Inspect</a>. Should be only the <c>&lt;tag&gt;</c> section of the full name for example from <c>registry.example.com/my-org/my-image:&lt;tag&gt;</c>.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetContainerImageTags(
-        this global::System.Diagnostics.Activity activity,
-        string[] value)
-        => activity.SetTag("container.image.tags", value);
+        ContainerCpuState value)
+        => activity.SetTag("container.cpu.state", value.Value);
 
     /// <summary>
     /// Deprecated, use <c>container.label</c> instead.
@@ -79,30 +44,71 @@ public static class ContainerActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("container.runtime", value);
+}
+
+/// <summary>
+/// Deprecated, use <c>cpu.mode</c> instead.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>container.cpu.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+[global::System.Obsolete("Replaced by cpu.mode.", false)]
+public readonly struct ContainerCpuState : global::System.IEquatable<ContainerCpuState>
+{
+    /// <summary>
+    /// The attribute key, <c>container.cpu.state</c>.
+    /// </summary>
+    public const string Key = "container.cpu.state";
+
+    private readonly string? _value;
+
+    private ContainerCpuState(string value) => _value = value;
 
     /// <summary>
-    /// Deprecated, use <c>cpu.mode</c> instead.
+    /// When tasks of the cgroup are in user mode (Linux). When all container processes are in user mode (Windows).
     /// </summary>
-    public static class ContainerCpuStateValues
-    {
-        /// <summary>
-        /// When tasks of the cgroup are in user mode (Linux). When all container processes are in user mode (Windows).
-        /// </summary>
-        public const string User = "user";
+    public static ContainerCpuState User { get; } = new("user");
 
-        /// <summary>
-        /// When CPU is used by the system (host OS).
-        /// </summary>
-        public const string System = "system";
+    /// <summary>
+    /// When CPU is used by the system (host OS).
+    /// </summary>
+    public static ContainerCpuState System { get; } = new("system");
 
-        /// <summary>
-        /// When tasks of the cgroup are in kernel mode (Linux). When all container processes are in kernel mode (Windows).
-        /// </summary>
-        public const string Kernel = "kernel";
+    /// <summary>
+    /// When tasks of the cgroup are in kernel mode (Linux). When all container processes are in kernel mode (Windows).
+    /// </summary>
+    public static ContainerCpuState Kernel { get; } = new("kernel");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "user", "system", "kernel" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static ContainerCpuState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(ContainerCpuState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is ContainerCpuState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(ContainerCpuState left, ContainerCpuState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(ContainerCpuState left, ContainerCpuState right) => !left.Equals(right);
 }

@@ -22,32 +22,70 @@ public static class CpythonIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetCpythonGcGeneration(
         this global::System.Diagnostics.Activity activity,
-        long value)
-        => activity.SetTag("cpython.gc.generation", value);
+        CpythonGcGeneration value)
+        => activity.SetTag("cpython.gc.generation", value.Value);
+}
+
+/// <summary>
+/// Value of the garbage collector collection generation.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>cpython.gc.generation</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct CpythonGcGeneration : global::System.IEquatable<CpythonGcGeneration>
+{
+    /// <summary>
+    /// The attribute key, <c>cpython.gc.generation</c>.
+    /// </summary>
+    public const string Key = "cpython.gc.generation";
+
+    private CpythonGcGeneration(long value) => Value = value;
 
     /// <summary>
-    /// Value of the garbage collector collection generation.
+    /// Generation 0.
     /// </summary>
-    public static class CpythonGcGenerationValues
-    {
-        /// <summary>
-        /// Generation 0.
-        /// </summary>
-        public const long Generation0 = 0;
+    public static CpythonGcGeneration Generation0 { get; } = new(0);
 
-        /// <summary>
-        /// Generation 1.
-        /// </summary>
-        public const long Generation1 = 1;
+    /// <summary>
+    /// Generation 1.
+    /// </summary>
+    public static CpythonGcGeneration Generation1 { get; } = new(1);
 
-        /// <summary>
-        /// Generation 2.
-        /// </summary>
-        public const long Generation2 = 2;
+    /// <summary>
+    /// Generation 2.
+    /// </summary>
+    public static CpythonGcGeneration Generation2 { get; } = new(2);
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<long> AllValues { get; } = new long[] { 0, 1, 2 };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value.</summary>
-        public static bool Contains(long value) { foreach (var candidate in AllValues) if (candidate == value) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static CpythonGcGeneration Custom(long value) => new(value);
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public long Value { get; }
+
+    /// <inheritdoc/>
+    public bool Equals(CpythonGcGeneration other) => Value == other.Value;
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is CpythonGcGeneration other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => Value.GetHashCode();
+
+    /// <inheritdoc/>
+    public override string ToString() => Value.ToString(global::System.Globalization.CultureInfo.InvariantCulture);
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(CpythonGcGeneration left, CpythonGcGeneration right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(CpythonGcGeneration left, CpythonGcGeneration right) => !left.Equals(right);
 }

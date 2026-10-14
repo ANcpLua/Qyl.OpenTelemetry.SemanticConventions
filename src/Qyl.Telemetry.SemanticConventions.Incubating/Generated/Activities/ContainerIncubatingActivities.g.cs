@@ -18,33 +18,6 @@ namespace Qyl.Telemetry.SemanticConventions.Incubating.Activities;
 public static class ContainerIncubatingActivityExtensions
 {
     /// <summary>
-    /// The command used to run the container (i.e. the command name).
-    /// </summary>
-    /// <remarks>
-    /// If using embedded credentials or sensitive data, it is recommended to remove them to prevent potential leakage.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetContainerCommand(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("container.command", value);
-
-    /// <summary>
-    /// All the command arguments (including the command/executable itself) run by the container.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetContainerCommandArgs(
-        this global::System.Diagnostics.Activity activity,
-        string[] value)
-        => activity.SetTag("container.command_args", value);
-
-    /// <summary>
-    /// The full command run by the container as a single string representing the full command.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetContainerCommandLine(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("container.command_line", value);
-
-    /// <summary>
     /// The name of the CSI (<a href="https://github.com/container-storage-interface/spec">Container Storage Interface</a>) plugin used by the volume.
     /// </summary>
     /// <remarks>
@@ -65,61 +38,4 @@ public static class ContainerIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("container.csi.volume.id", value);
-
-    /// <summary>
-    /// Runtime specific image identifier. Usually a hash algorithm followed by a UUID.
-    /// </summary>
-    /// <remarks>
-    /// Docker defines a sha256 of the image ID; <c>container.image.id</c> corresponds to the <c>Image</c> field from the Docker container inspect <a href="https://docs.docker.com/reference/api/engine/version/v1.52/#tag/Container/operation/ContainerInspect">API</a> endpoint.
-    /// K8s defines a link to the container registry repository with digest <c>"imageID": "registry.azurecr.io /namespace/service/dockerfile@sha256:bdeabd40c3a8a492eaf9e8e44d0ebbb84bac7ee25ac0cf8a7159d25f62555625"</c>.
-    /// The ID is assigned by the container runtime and can vary in different environments. Consider using <c>oci.manifest.digest</c> if it is important to identify the same image in different environments/runtimes.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetContainerImageId(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("container.image.id", value);
-
-    /// <summary>
-    /// Container labels, <c>&lt;key&gt;</c> being the label name, the value being the label value.
-    /// </summary>
-    /// <remarks>
-    /// For example, a Docker container label <c>app</c> with value <c>nginx</c> SHOULD be recorded as the <c>container.label.app</c> attribute with value <c>"nginx"</c>.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetContainerLabel(
-        this global::System.Diagnostics.Activity activity,
-        string segment,
-        string value)
-        => activity.SetTag($"container.label.{segment}", value);
-
-    /// <summary>
-    /// Container name used by container runtime.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetContainerName(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("container.name", value);
-
-    /// <summary>
-    /// A description about the runtime which could include, for example details about the CRI/API version being used or other customizations.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetContainerRuntimeDescription(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("container.runtime.description", value);
-
-    /// <summary>
-    /// The container runtime managing this container.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetContainerRuntimeName(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("container.runtime.name", value);
-
-    /// <summary>
-    /// The version of the runtime of this process, as returned by the runtime without modification.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetContainerRuntimeVersion(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("container.runtime.version", value);
 }

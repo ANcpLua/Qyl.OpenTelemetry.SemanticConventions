@@ -95,8 +95,8 @@ public static class NetActivityExtensions
     [global::System.Obsolete("Split to `network.transport` and `network.type`.", false)]
     public static global::System.Diagnostics.Activity SetNetSockFamily(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("net.sock.family", value);
+        NetSockFamily value)
+        => activity.SetTag("net.sock.family", value.Value);
 
     /// <summary>
     /// Deprecated, use <c>network.local.address</c>.
@@ -149,68 +149,150 @@ public static class NetActivityExtensions
     [global::System.Obsolete("Replaced by network.transport.", false)]
     public static global::System.Diagnostics.Activity SetNetTransport(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("net.transport", value);
+        NetTransport value)
+        => activity.SetTag("net.transport", value.Value);
+}
+
+/// <summary>
+/// Deprecated, use <c>network.transport</c> and <c>network.type</c>.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>net.sock.family</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+[global::System.Obsolete("Split to `network.transport` and `network.type`.", false)]
+public readonly struct NetSockFamily : global::System.IEquatable<NetSockFamily>
+{
+    /// <summary>
+    /// The attribute key, <c>net.sock.family</c>.
+    /// </summary>
+    public const string Key = "net.sock.family";
+
+    private readonly string? _value;
+
+    private NetSockFamily(string value) => _value = value;
 
     /// <summary>
-    /// Deprecated, use <c>network.transport</c> and <c>network.type</c>.
+    /// IPv4 address.
     /// </summary>
-    public static class NetSockFamilyValues
-    {
-        /// <summary>
-        /// IPv4 address.
-        /// </summary>
-        public const string Inet = "inet";
-
-        /// <summary>
-        /// IPv6 address.
-        /// </summary>
-        public const string Inet6 = "inet6";
-
-        /// <summary>
-        /// UNIX domain socket path.
-        /// </summary>
-        public const string Unix = "unix";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "inet", "inet6", "unix" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static NetSockFamily Inet { get; } = new("inet");
 
     /// <summary>
-    /// Deprecated, use <c>network.transport</c>.
+    /// IPv6 address.
     /// </summary>
-    public static class NetTransportValues
-    {
-        /// <summary>
-        /// ip_tcp.
-        /// </summary>
-        public const string IpTcp = "ip_tcp";
+    public static NetSockFamily Inet6 { get; } = new("inet6");
 
-        /// <summary>
-        /// ip_udp.
-        /// </summary>
-        public const string IpUdp = "ip_udp";
+    /// <summary>
+    /// UNIX domain socket path.
+    /// </summary>
+    public static NetSockFamily Unix { get; } = new("unix");
 
-        /// <summary>
-        /// Named or anonymous pipe.
-        /// </summary>
-        public const string Pipe = "pipe";
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static NetSockFamily Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
-        /// <summary>
-        /// In-process communication.
-        /// </summary>
-        public const string Inproc = "inproc";
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
 
-        /// <summary>
-        /// Something else (non IP-based).
-        /// </summary>
-        public const string Other = "other";
+    /// <inheritdoc/>
+    public bool Equals(NetSockFamily other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "ip_tcp", "ip_udp", "pipe", "inproc", "other" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is NetSockFamily other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(NetSockFamily left, NetSockFamily right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(NetSockFamily left, NetSockFamily right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Deprecated, use <c>network.transport</c>.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>net.transport</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+[global::System.Obsolete("Replaced by network.transport.", false)]
+public readonly struct NetTransport : global::System.IEquatable<NetTransport>
+{
+    /// <summary>
+    /// The attribute key, <c>net.transport</c>.
+    /// </summary>
+    public const string Key = "net.transport";
+
+    private readonly string? _value;
+
+    private NetTransport(string value) => _value = value;
+
+    /// <summary>
+    /// ip_tcp.
+    /// </summary>
+    public static NetTransport IpTcp { get; } = new("ip_tcp");
+
+    /// <summary>
+    /// ip_udp.
+    /// </summary>
+    public static NetTransport IpUdp { get; } = new("ip_udp");
+
+    /// <summary>
+    /// Named or anonymous pipe.
+    /// </summary>
+    public static NetTransport Pipe { get; } = new("pipe");
+
+    /// <summary>
+    /// In-process communication.
+    /// </summary>
+    public static NetTransport Inproc { get; } = new("inproc");
+
+    /// <summary>
+    /// Something else (non IP-based).
+    /// </summary>
+    public static NetTransport Other { get; } = new("other");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static NetTransport Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(NetTransport other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is NetTransport other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(NetTransport left, NetTransport right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(NetTransport left, NetTransport right) => !left.Equals(right);
 }

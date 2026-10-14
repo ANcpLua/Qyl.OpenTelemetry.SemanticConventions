@@ -40,33 +40,6 @@ public static class AppIncubatingActivityExtensions
         => activity.SetTag("app.crash.id", value);
 
     /// <summary>
-    /// A unique identifier representing the installation of an application on a specific device
-    /// </summary>
-    /// <remarks>
-    /// Its value SHOULD persist across launches of the same application installation, including through application upgrades.
-    /// It SHOULD change if the application is uninstalled or if all applications of the vendor are uninstalled.
-    /// Additionally, users might be able to reset this value (e.g. by clearing application data).
-    /// If an app is installed multiple times on the same device (e.g. in different accounts on Android), each <c>app.installation.id</c> SHOULD have a different value.
-    /// If multiple OpenTelemetry SDKs are used within the same application, they SHOULD use the same value for <c>app.installation.id</c>.
-    /// Hardware IDs (e.g. serial number, IMEI, MAC address) MUST NOT be used as the <c>app.installation.id</c>.
-    /// <para/>
-    /// For iOS, this value SHOULD be equal to the <a href="https://developer.apple.com/documentation/uikit/uidevice/identifierforvendor">vendor identifier</a>.
-    /// <para/>
-    /// For Android, examples of <c>app.installation.id</c> implementations include:
-    /// <para/>
-    /// - <a href="https://firebase.google.com/docs/projects/manage-installations">Firebase Installation ID</a>.
-    /// - A globally unique UUID which is persisted across sessions in your application.
-    /// - <a href="https://developer.android.com/identity/app-set-id">App set ID</a>.
-    /// - <a href="https://developer.android.com/reference/android/provider/Settings.Secure#ANDROID_ID">`Settings.getString(Settings.Secure.ANDROID_ID)`</a>.
-    /// <para/>
-    /// More information about Android identifier best practices can be found in the <a href="https://developer.android.com/training/articles/user-data-ids">Android user data IDs guide</a>.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetAppInstallationId(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("app.installation.id", value);
-
-    /// <summary>
     /// A number of frame renders that experienced jank.
     /// </summary>
     /// <remarks>

@@ -23,8 +23,8 @@ public static class ProcessActivityExtensions
     [global::System.Obsolete("Replaced by process.context_switch.type.", false)]
     public static global::System.Diagnostics.Activity SetProcessContextSwitchType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("process.context_switch_type", value);
+        ProcessContextSwitchType value)
+        => activity.SetTag("process.context_switch_type", value.Value);
 
     /// <summary>
     /// Deprecated, use <c>cpu.mode</c> instead.
@@ -32,8 +32,8 @@ public static class ProcessActivityExtensions
     [global::System.Obsolete("Replaced by cpu.mode.", false)]
     public static global::System.Diagnostics.Activity SetProcessCpuState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("process.cpu.state", value);
+        ProcessCpuState value)
+        => activity.SetTag("process.cpu.state", value.Value);
 
     /// <summary>
     /// "Deprecated, use <c>process.executable.build_id.htlhash</c> instead."
@@ -50,74 +50,197 @@ public static class ProcessActivityExtensions
     [global::System.Obsolete("Replaced by system.paging.fault.type.", false)]
     public static global::System.Diagnostics.Activity SetProcessPagingFaultType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("process.paging.fault_type", value);
+        ProcessPagingFaultType value)
+        => activity.SetTag("process.paging.fault_type", value.Value);
+}
+
+/// <summary>
+/// "Deprecated, use <c>process.context_switch.type</c> instead."
+/// </summary>
+/// <remarks>
+/// The open value set of <c>process.context_switch_type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+[global::System.Obsolete("Replaced by process.context_switch.type.", false)]
+public readonly struct ProcessContextSwitchType : global::System.IEquatable<ProcessContextSwitchType>
+{
+    /// <summary>
+    /// The attribute key, <c>process.context_switch_type</c>.
+    /// </summary>
+    public const string Key = "process.context_switch_type";
+
+    private readonly string? _value;
+
+    private ProcessContextSwitchType(string value) => _value = value;
 
     /// <summary>
-    /// "Deprecated, use <c>process.context_switch.type</c> instead."
+    /// voluntary.
     /// </summary>
-    public static class ProcessContextSwitchTypeValues
-    {
-        /// <summary>
-        /// voluntary.
-        /// </summary>
-        public const string Voluntary = "voluntary";
-
-        /// <summary>
-        /// involuntary.
-        /// </summary>
-        public const string Involuntary = "involuntary";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "voluntary", "involuntary" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static ProcessContextSwitchType Voluntary { get; } = new("voluntary");
 
     /// <summary>
-    /// Deprecated, use <c>cpu.mode</c> instead.
+    /// involuntary.
     /// </summary>
-    public static class ProcessCpuStateValues
-    {
-        /// <summary>
-        /// system.
-        /// </summary>
-        public const string System = "system";
-
-        /// <summary>
-        /// user.
-        /// </summary>
-        public const string User = "user";
-
-        /// <summary>
-        /// wait.
-        /// </summary>
-        public const string Wait = "wait";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "system", "user", "wait" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static ProcessContextSwitchType Involuntary { get; } = new("involuntary");
 
     /// <summary>
-    /// Deprecated, use <c>system.paging.fault.type</c> instead.
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
     /// </summary>
-    public static class ProcessPagingFaultTypeValues
-    {
-        /// <summary>
-        /// major.
-        /// </summary>
-        public const string Major = "major";
+    public static ProcessContextSwitchType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
-        /// <summary>
-        /// minor.
-        /// </summary>
-        public const string Minor = "minor";
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "major", "minor" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <inheritdoc/>
+    public bool Equals(ProcessContextSwitchType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is ProcessContextSwitchType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(ProcessContextSwitchType left, ProcessContextSwitchType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(ProcessContextSwitchType left, ProcessContextSwitchType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Deprecated, use <c>cpu.mode</c> instead.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>process.cpu.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+[global::System.Obsolete("Replaced by cpu.mode.", false)]
+public readonly struct ProcessCpuState : global::System.IEquatable<ProcessCpuState>
+{
+    /// <summary>
+    /// The attribute key, <c>process.cpu.state</c>.
+    /// </summary>
+    public const string Key = "process.cpu.state";
+
+    private readonly string? _value;
+
+    private ProcessCpuState(string value) => _value = value;
+
+    /// <summary>
+    /// system.
+    /// </summary>
+    public static ProcessCpuState System { get; } = new("system");
+
+    /// <summary>
+    /// user.
+    /// </summary>
+    public static ProcessCpuState User { get; } = new("user");
+
+    /// <summary>
+    /// wait.
+    /// </summary>
+    public static ProcessCpuState Wait { get; } = new("wait");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static ProcessCpuState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(ProcessCpuState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is ProcessCpuState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(ProcessCpuState left, ProcessCpuState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(ProcessCpuState left, ProcessCpuState right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Deprecated, use <c>system.paging.fault.type</c> instead.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>process.paging.fault_type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+[global::System.Obsolete("Replaced by system.paging.fault.type.", false)]
+public readonly struct ProcessPagingFaultType : global::System.IEquatable<ProcessPagingFaultType>
+{
+    /// <summary>
+    /// The attribute key, <c>process.paging.fault_type</c>.
+    /// </summary>
+    public const string Key = "process.paging.fault_type";
+
+    private readonly string? _value;
+
+    private ProcessPagingFaultType(string value) => _value = value;
+
+    /// <summary>
+    /// major.
+    /// </summary>
+    public static ProcessPagingFaultType Major { get; } = new("major");
+
+    /// <summary>
+    /// minor.
+    /// </summary>
+    public static ProcessPagingFaultType Minor { get; } = new("minor");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static ProcessPagingFaultType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(ProcessPagingFaultType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is ProcessPagingFaultType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(ProcessPagingFaultType left, ProcessPagingFaultType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(ProcessPagingFaultType left, ProcessPagingFaultType right) => !left.Equals(right);
 }

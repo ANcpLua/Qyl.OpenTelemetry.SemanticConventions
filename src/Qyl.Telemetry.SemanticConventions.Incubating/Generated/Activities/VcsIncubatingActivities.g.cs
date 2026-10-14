@@ -30,8 +30,8 @@ public static class VcsIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetVcsChangeState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("vcs.change.state", value);
+        VcsChangeState value)
+        => activity.SetTag("vcs.change.state", value.Value);
 
     /// <summary>
     /// The human readable title of the change (pull request/merge request/changelist). This title is often a brief summary of the change and may get merged in to a ref as the commit summary.
@@ -46,8 +46,8 @@ public static class VcsIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetVcsLineChangeType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("vcs.line_change.type", value);
+        VcsLineChangeType value)
+        => activity.SetTag("vcs.line_change.type", value.Value);
 
     /// <summary>
     /// The group owner within the version control system.
@@ -62,8 +62,8 @@ public static class VcsIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetVcsProviderName(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("vcs.provider.name", value);
+        VcsProviderName value)
+        => activity.SetTag("vcs.provider.name", value.Value);
 
     /// <summary>
     /// The name of the <a href="https://git-scm.com/docs/gitglossary#def_ref">reference</a> such as **branch** or **tag** in the repository.
@@ -109,8 +109,8 @@ public static class VcsIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetVcsRefBaseType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("vcs.ref.base.type", value);
+        VcsRefBaseType value)
+        => activity.SetTag("vcs.ref.base.type", value.Value);
 
     /// <summary>
     /// The name of the <a href="https://git-scm.com/docs/gitglossary#def_ref">reference</a> such as **branch** or **tag** in the repository.
@@ -152,16 +152,16 @@ public static class VcsIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetVcsRefHeadType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("vcs.ref.head.type", value);
+        VcsRefHeadType value)
+        => activity.SetTag("vcs.ref.head.type", value.Value);
 
     /// <summary>
     /// The type of the <a href="https://git-scm.com/docs/gitglossary#def_ref">reference</a> in the repository.
     /// </summary>
     public static global::System.Diagnostics.Activity SetVcsRefType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("vcs.ref.type", value);
+        VcsRefType value)
+        => activity.SetTag("vcs.ref.type", value.Value);
 
     /// <summary>
     /// The human readable name of the repository. It SHOULD NOT include any additional identifier like Group/SubGroup in GitLab or organization in GitHub.
@@ -193,179 +193,459 @@ public static class VcsIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetVcsRevisionDeltaDirection(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("vcs.revision_delta.direction", value);
+        VcsRevisionDeltaDirection value)
+        => activity.SetTag("vcs.revision_delta.direction", value.Value);
+}
+
+/// <summary>
+/// The state of the change (pull request/merge request/changelist).
+/// </summary>
+/// <remarks>
+/// The open value set of <c>vcs.change.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct VcsChangeState : global::System.IEquatable<VcsChangeState>
+{
+    /// <summary>
+    /// The attribute key, <c>vcs.change.state</c>.
+    /// </summary>
+    public const string Key = "vcs.change.state";
+
+    private readonly string? _value;
+
+    private VcsChangeState(string value) => _value = value;
 
     /// <summary>
-    /// The state of the change (pull request/merge request/changelist).
+    /// Open means the change is currently active and under review. It hasn't been merged into the target branch yet, and it's still possible to make changes or add comments.
     /// </summary>
-    public static class VcsChangeStateValues
-    {
-        /// <summary>
-        /// Open means the change is currently active and under review. It hasn't been merged into the target branch yet, and it's still possible to make changes or add comments.
-        /// </summary>
-        public const string Open = "open";
-
-        /// <summary>
-        /// WIP (work-in-progress, draft) means the change is still in progress and not yet ready for a full review. It might still undergo significant changes.
-        /// </summary>
-        public const string Wip = "wip";
-
-        /// <summary>
-        /// Closed means the merge request has been closed without merging. This can happen for various reasons, such as the changes being deemed unnecessary, the issue being resolved in another way, or the author deciding to withdraw the request.
-        /// </summary>
-        public const string Closed = "closed";
-
-        /// <summary>
-        /// Merged indicates that the change has been successfully integrated into the target codebase.
-        /// </summary>
-        public const string Merged = "merged";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "open", "wip", "closed", "merged" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static VcsChangeState Open { get; } = new("open");
 
     /// <summary>
-    /// The type of line change being measured on a branch or change.
+    /// WIP (work-in-progress, draft) means the change is still in progress and not yet ready for a full review. It might still undergo significant changes.
     /// </summary>
-    public static class VcsLineChangeTypeValues
-    {
-        /// <summary>
-        /// How many lines were added.
-        /// </summary>
-        public const string Added = "added";
-
-        /// <summary>
-        /// How many lines were removed.
-        /// </summary>
-        public const string Removed = "removed";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "added", "removed" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static VcsChangeState Wip { get; } = new("wip");
 
     /// <summary>
-    /// The name of the version control system provider.
+    /// Closed means the merge request has been closed without merging. This can happen for various reasons, such as the changes being deemed unnecessary, the issue being resolved in another way, or the author deciding to withdraw the request.
     /// </summary>
-    public static class VcsProviderNameValues
-    {
-        /// <summary>
-        /// <a href="https://github.com">GitHub</a>.
-        /// </summary>
-        public const string Github = "github";
-
-        /// <summary>
-        /// <a href="https://gitlab.com">GitLab</a>.
-        /// </summary>
-        public const string Gitlab = "gitlab";
-
-        /// <summary>
-        /// Deprecated, use <c>gitea</c> instead.
-        /// </summary>
-        [global::System.Obsolete("Replaced by gitea.", false)]
-        public const string Gittea = "gittea";
-
-        /// <summary>
-        /// <a href="https://gitea.io">Gitea</a>.
-        /// </summary>
-        public const string Gitea = "gitea";
-
-        /// <summary>
-        /// <a href="https://bitbucket.org">Bitbucket</a>.
-        /// </summary>
-        public const string Bitbucket = "bitbucket";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "github", "gitlab", "gittea", "gitea", "bitbucket" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static VcsChangeState Closed { get; } = new("closed");
 
     /// <summary>
-    /// The type of the <a href="https://git-scm.com/docs/gitglossary#def_ref">reference</a> in the repository.
+    /// Merged indicates that the change has been successfully integrated into the target codebase.
     /// </summary>
-    public static class VcsRefBaseTypeValues
-    {
-        /// <summary>
-        /// <a href="https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefbranchabranch">branch</a>.
-        /// </summary>
-        public const string Branch = "branch";
-
-        /// <summary>
-        /// <a href="https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddeftagatag">tag</a>.
-        /// </summary>
-        public const string Tag = "tag";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "branch", "tag" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static VcsChangeState Merged { get; } = new("merged");
 
     /// <summary>
-    /// The type of the <a href="https://git-scm.com/docs/gitglossary#def_ref">reference</a> in the repository.
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
     /// </summary>
-    public static class VcsRefHeadTypeValues
-    {
-        /// <summary>
-        /// <a href="https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefbranchabranch">branch</a>.
-        /// </summary>
-        public const string Branch = "branch";
-
-        /// <summary>
-        /// <a href="https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddeftagatag">tag</a>.
-        /// </summary>
-        public const string Tag = "tag";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "branch", "tag" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static VcsChangeState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
     /// <summary>
-    /// The type of the <a href="https://git-scm.com/docs/gitglossary#def_ref">reference</a> in the repository.
+    /// The attribute value.
     /// </summary>
-    public static class VcsRefTypeValues
-    {
-        /// <summary>
-        /// <a href="https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefbranchabranch">branch</a>.
-        /// </summary>
-        public const string Branch = "branch";
+    public string Value => _value ?? string.Empty;
 
-        /// <summary>
-        /// <a href="https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddeftagatag">tag</a>.
-        /// </summary>
-        public const string Tag = "tag";
+    /// <inheritdoc/>
+    public bool Equals(VcsChangeState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "branch", "tag" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is VcsChangeState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
 
     /// <summary>
-    /// The type of revision comparison.
+    /// Whether two values are equal.
     /// </summary>
-    public static class VcsRevisionDeltaDirectionValues
-    {
-        /// <summary>
-        /// How many revisions the change is behind the target ref.
-        /// </summary>
-        public const string Behind = "behind";
+    public static bool operator ==(VcsChangeState left, VcsChangeState right) => left.Equals(right);
 
-        /// <summary>
-        /// How many revisions the change is ahead of the target ref.
-        /// </summary>
-        public const string Ahead = "ahead";
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(VcsChangeState left, VcsChangeState right) => !left.Equals(right);
+}
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "behind", "ahead" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+/// <summary>
+/// The type of line change being measured on a branch or change.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>vcs.line_change.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct VcsLineChangeType : global::System.IEquatable<VcsLineChangeType>
+{
+    /// <summary>
+    /// The attribute key, <c>vcs.line_change.type</c>.
+    /// </summary>
+    public const string Key = "vcs.line_change.type";
+
+    private readonly string? _value;
+
+    private VcsLineChangeType(string value) => _value = value;
+
+    /// <summary>
+    /// How many lines were added.
+    /// </summary>
+    public static VcsLineChangeType Added { get; } = new("added");
+
+    /// <summary>
+    /// How many lines were removed.
+    /// </summary>
+    public static VcsLineChangeType Removed { get; } = new("removed");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static VcsLineChangeType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(VcsLineChangeType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is VcsLineChangeType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(VcsLineChangeType left, VcsLineChangeType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(VcsLineChangeType left, VcsLineChangeType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The name of the version control system provider.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>vcs.provider.name</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct VcsProviderName : global::System.IEquatable<VcsProviderName>
+{
+    /// <summary>
+    /// The attribute key, <c>vcs.provider.name</c>.
+    /// </summary>
+    public const string Key = "vcs.provider.name";
+
+    private readonly string? _value;
+
+    private VcsProviderName(string value) => _value = value;
+
+    /// <summary>
+    /// <a href="https://github.com">GitHub</a>.
+    /// </summary>
+    public static VcsProviderName Github { get; } = new("github");
+
+    /// <summary>
+    /// <a href="https://gitlab.com">GitLab</a>.
+    /// </summary>
+    public static VcsProviderName Gitlab { get; } = new("gitlab");
+
+    /// <summary>
+    /// Deprecated, use <c>gitea</c> instead.
+    /// </summary>
+    [global::System.Obsolete("Replaced by gitea.", false)]
+    public static VcsProviderName Gittea { get; } = new("gittea");
+
+    /// <summary>
+    /// <a href="https://gitea.io">Gitea</a>.
+    /// </summary>
+    public static VcsProviderName Gitea { get; } = new("gitea");
+
+    /// <summary>
+    /// <a href="https://bitbucket.org">Bitbucket</a>.
+    /// </summary>
+    public static VcsProviderName Bitbucket { get; } = new("bitbucket");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static VcsProviderName Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(VcsProviderName other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is VcsProviderName other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(VcsProviderName left, VcsProviderName right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(VcsProviderName left, VcsProviderName right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The type of the <a href="https://git-scm.com/docs/gitglossary#def_ref">reference</a> in the repository.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>vcs.ref.base.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct VcsRefBaseType : global::System.IEquatable<VcsRefBaseType>
+{
+    /// <summary>
+    /// The attribute key, <c>vcs.ref.base.type</c>.
+    /// </summary>
+    public const string Key = "vcs.ref.base.type";
+
+    private readonly string? _value;
+
+    private VcsRefBaseType(string value) => _value = value;
+
+    /// <summary>
+    /// <a href="https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefbranchabranch">branch</a>.
+    /// </summary>
+    public static VcsRefBaseType Branch { get; } = new("branch");
+
+    /// <summary>
+    /// <a href="https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddeftagatag">tag</a>.
+    /// </summary>
+    public static VcsRefBaseType Tag { get; } = new("tag");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static VcsRefBaseType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(VcsRefBaseType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is VcsRefBaseType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(VcsRefBaseType left, VcsRefBaseType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(VcsRefBaseType left, VcsRefBaseType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The type of the <a href="https://git-scm.com/docs/gitglossary#def_ref">reference</a> in the repository.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>vcs.ref.head.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct VcsRefHeadType : global::System.IEquatable<VcsRefHeadType>
+{
+    /// <summary>
+    /// The attribute key, <c>vcs.ref.head.type</c>.
+    /// </summary>
+    public const string Key = "vcs.ref.head.type";
+
+    private readonly string? _value;
+
+    private VcsRefHeadType(string value) => _value = value;
+
+    /// <summary>
+    /// <a href="https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefbranchabranch">branch</a>.
+    /// </summary>
+    public static VcsRefHeadType Branch { get; } = new("branch");
+
+    /// <summary>
+    /// <a href="https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddeftagatag">tag</a>.
+    /// </summary>
+    public static VcsRefHeadType Tag { get; } = new("tag");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static VcsRefHeadType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(VcsRefHeadType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is VcsRefHeadType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(VcsRefHeadType left, VcsRefHeadType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(VcsRefHeadType left, VcsRefHeadType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The type of the <a href="https://git-scm.com/docs/gitglossary#def_ref">reference</a> in the repository.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>vcs.ref.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct VcsRefType : global::System.IEquatable<VcsRefType>
+{
+    /// <summary>
+    /// The attribute key, <c>vcs.ref.type</c>.
+    /// </summary>
+    public const string Key = "vcs.ref.type";
+
+    private readonly string? _value;
+
+    private VcsRefType(string value) => _value = value;
+
+    /// <summary>
+    /// <a href="https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefbranchabranch">branch</a>.
+    /// </summary>
+    public static VcsRefType Branch { get; } = new("branch");
+
+    /// <summary>
+    /// <a href="https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddeftagatag">tag</a>.
+    /// </summary>
+    public static VcsRefType Tag { get; } = new("tag");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static VcsRefType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(VcsRefType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is VcsRefType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(VcsRefType left, VcsRefType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(VcsRefType left, VcsRefType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The type of revision comparison.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>vcs.revision_delta.direction</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct VcsRevisionDeltaDirection : global::System.IEquatable<VcsRevisionDeltaDirection>
+{
+    /// <summary>
+    /// The attribute key, <c>vcs.revision_delta.direction</c>.
+    /// </summary>
+    public const string Key = "vcs.revision_delta.direction";
+
+    private readonly string? _value;
+
+    private VcsRevisionDeltaDirection(string value) => _value = value;
+
+    /// <summary>
+    /// How many revisions the change is behind the target ref.
+    /// </summary>
+    public static VcsRevisionDeltaDirection Behind { get; } = new("behind");
+
+    /// <summary>
+    /// How many revisions the change is ahead of the target ref.
+    /// </summary>
+    public static VcsRevisionDeltaDirection Ahead { get; } = new("ahead");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static VcsRevisionDeltaDirection Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(VcsRevisionDeltaDirection other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is VcsRevisionDeltaDirection other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(VcsRevisionDeltaDirection left, VcsRevisionDeltaDirection right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(VcsRevisionDeltaDirection left, VcsRevisionDeltaDirection right) => !left.Equals(right);
 }

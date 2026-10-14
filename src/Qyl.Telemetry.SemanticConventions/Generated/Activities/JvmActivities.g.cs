@@ -55,8 +55,8 @@ public static class JvmActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetJvmMemoryType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("jvm.memory.type", value);
+        JvmMemoryType value)
+        => activity.SetTag("jvm.memory.type", value.Value);
 
     /// <summary>
     /// Whether the thread is daemon or not.
@@ -71,68 +71,148 @@ public static class JvmActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetJvmThreadState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("jvm.thread.state", value);
+        JvmThreadState value)
+        => activity.SetTag("jvm.thread.state", value.Value);
+}
+
+/// <summary>
+/// The type of memory.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>jvm.memory.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct JvmMemoryType : global::System.IEquatable<JvmMemoryType>
+{
+    /// <summary>
+    /// The attribute key, <c>jvm.memory.type</c>.
+    /// </summary>
+    public const string Key = "jvm.memory.type";
+
+    private readonly string? _value;
+
+    private JvmMemoryType(string value) => _value = value;
 
     /// <summary>
-    /// The type of memory.
+    /// Heap memory.
     /// </summary>
-    public static class JvmMemoryTypeValues
-    {
-        /// <summary>
-        /// Heap memory.
-        /// </summary>
-        public const string Heap = "heap";
-
-        /// <summary>
-        /// Non-heap memory.
-        /// </summary>
-        public const string NonHeap = "non_heap";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "heap", "non_heap" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static JvmMemoryType Heap { get; } = new("heap");
 
     /// <summary>
-    /// State of the thread.
+    /// Non-heap memory.
     /// </summary>
-    public static class JvmThreadStateValues
-    {
-        /// <summary>
-        /// A thread that has not yet started is in this state.
-        /// </summary>
-        public const string New = "new";
+    public static JvmMemoryType NonHeap { get; } = new("non_heap");
 
-        /// <summary>
-        /// A thread executing in the Java virtual machine is in this state.
-        /// </summary>
-        public const string Runnable = "runnable";
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static JvmMemoryType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
-        /// <summary>
-        /// A thread that is blocked waiting for a monitor lock is in this state.
-        /// </summary>
-        public const string Blocked = "blocked";
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
 
-        /// <summary>
-        /// A thread that is waiting indefinitely for another thread to perform a particular action is in this state.
-        /// </summary>
-        public const string Waiting = "waiting";
+    /// <inheritdoc/>
+    public bool Equals(JvmMemoryType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
 
-        /// <summary>
-        /// A thread that is waiting for another thread to perform an action for up to a specified waiting time is in this state.
-        /// </summary>
-        public const string TimedWaiting = "timed_waiting";
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is JvmMemoryType other && Equals(other);
 
-        /// <summary>
-        /// A thread that has exited is in this state.
-        /// </summary>
-        public const string Terminated = "terminated";
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "new", "runnable", "blocked", "waiting", "timed_waiting", "terminated" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(JvmMemoryType left, JvmMemoryType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(JvmMemoryType left, JvmMemoryType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// State of the thread.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>jvm.thread.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct JvmThreadState : global::System.IEquatable<JvmThreadState>
+{
+    /// <summary>
+    /// The attribute key, <c>jvm.thread.state</c>.
+    /// </summary>
+    public const string Key = "jvm.thread.state";
+
+    private readonly string? _value;
+
+    private JvmThreadState(string value) => _value = value;
+
+    /// <summary>
+    /// A thread that has not yet started is in this state.
+    /// </summary>
+    public static JvmThreadState New { get; } = new("new");
+
+    /// <summary>
+    /// A thread executing in the Java virtual machine is in this state.
+    /// </summary>
+    public static JvmThreadState Runnable { get; } = new("runnable");
+
+    /// <summary>
+    /// A thread that is blocked waiting for a monitor lock is in this state.
+    /// </summary>
+    public static JvmThreadState Blocked { get; } = new("blocked");
+
+    /// <summary>
+    /// A thread that is waiting indefinitely for another thread to perform a particular action is in this state.
+    /// </summary>
+    public static JvmThreadState Waiting { get; } = new("waiting");
+
+    /// <summary>
+    /// A thread that is waiting for another thread to perform an action for up to a specified waiting time is in this state.
+    /// </summary>
+    public static JvmThreadState TimedWaiting { get; } = new("timed_waiting");
+
+    /// <summary>
+    /// A thread that has exited is in this state.
+    /// </summary>
+    public static JvmThreadState Terminated { get; } = new("terminated");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static JvmThreadState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(JvmThreadState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is JvmThreadState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(JvmThreadState left, JvmThreadState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(JvmThreadState left, JvmThreadState right) => !left.Equals(right);
 }

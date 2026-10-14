@@ -47,28 +47,12 @@ public static class OtelActivityExtensions
         => activity.SetTag("otel.library.version", value);
 
     /// <summary>
-    /// The name of the instrumentation scope - (<c>InstrumentationScope.Name</c> in OTLP).
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetOtelScopeName(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("otel.scope.name", value);
-
-    /// <summary>
-    /// The version of the instrumentation scope - (<c>InstrumentationScope.Version</c> in OTLP).
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetOtelScopeVersion(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("otel.scope.version", value);
-
-    /// <summary>
     /// Name of the code, either "OK" or "ERROR". MUST NOT be set if the status code is UNSET.
     /// </summary>
     public static global::System.Diagnostics.Activity SetOtelStatusCode(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("otel.status_code", value);
+        OtelStatusCode value)
+        => activity.SetTag("otel.status_code", value.Value);
 
     /// <summary>
     /// Description of the Status if it has a value, otherwise not set.
@@ -77,25 +61,65 @@ public static class OtelActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("otel.status_description", value);
+}
+
+/// <summary>
+/// Name of the code, either "OK" or "ERROR". MUST NOT be set if the status code is UNSET.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>otel.status_code</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct OtelStatusCode : global::System.IEquatable<OtelStatusCode>
+{
+    /// <summary>
+    /// The attribute key, <c>otel.status_code</c>.
+    /// </summary>
+    public const string Key = "otel.status_code";
+
+    private readonly string? _value;
+
+    private OtelStatusCode(string value) => _value = value;
 
     /// <summary>
-    /// Name of the code, either "OK" or "ERROR". MUST NOT be set if the status code is UNSET.
+    /// The operation has been validated by an Application developer or Operator to have completed successfully.
     /// </summary>
-    public static class OtelStatusCodeValues
-    {
-        /// <summary>
-        /// The operation has been validated by an Application developer or Operator to have completed successfully.
-        /// </summary>
-        public const string Ok = "OK";
+    public static OtelStatusCode Ok { get; } = new("OK");
 
-        /// <summary>
-        /// The operation contains an error.
-        /// </summary>
-        public const string Error = "ERROR";
+    /// <summary>
+    /// The operation contains an error.
+    /// </summary>
+    public static OtelStatusCode Error { get; } = new("ERROR");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "OK", "ERROR" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static OtelStatusCode Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(OtelStatusCode other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is OtelStatusCode other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(OtelStatusCode left, OtelStatusCode right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(OtelStatusCode left, OtelStatusCode right) => !left.Equals(right);
 }

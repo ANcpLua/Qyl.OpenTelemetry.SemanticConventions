@@ -59,27 +59,68 @@ public static class VcsActivityExtensions
     [global::System.Obsolete("Replaced by vcs.ref.head.type.", false)]
     public static global::System.Diagnostics.Activity SetVcsRepositoryRefType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("vcs.repository.ref.type", value);
+        VcsRepositoryRefType value)
+        => activity.SetTag("vcs.repository.ref.type", value.Value);
+}
+
+/// <summary>
+/// Deprecated, use <c>vcs.ref.head.type</c> instead.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>vcs.repository.ref.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+[global::System.Obsolete("Replaced by vcs.ref.head.type.", false)]
+public readonly struct VcsRepositoryRefType : global::System.IEquatable<VcsRepositoryRefType>
+{
+    /// <summary>
+    /// The attribute key, <c>vcs.repository.ref.type</c>.
+    /// </summary>
+    public const string Key = "vcs.repository.ref.type";
+
+    private readonly string? _value;
+
+    private VcsRepositoryRefType(string value) => _value = value;
 
     /// <summary>
-    /// Deprecated, use <c>vcs.ref.head.type</c> instead.
+    /// <a href="https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefbranchabranch">branch</a>.
     /// </summary>
-    public static class VcsRepositoryRefTypeValues
-    {
-        /// <summary>
-        /// <a href="https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefbranchabranch">branch</a>.
-        /// </summary>
-        public const string Branch = "branch";
+    public static VcsRepositoryRefType Branch { get; } = new("branch");
 
-        /// <summary>
-        /// <a href="https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddeftagatag">tag</a>.
-        /// </summary>
-        public const string Tag = "tag";
+    /// <summary>
+    /// <a href="https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddeftagatag">tag</a>.
+    /// </summary>
+    public static VcsRepositoryRefType Tag { get; } = new("tag");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "branch", "tag" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static VcsRepositoryRefType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(VcsRepositoryRefType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is VcsRepositoryRefType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(VcsRepositoryRefType left, VcsRepositoryRefType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(VcsRepositoryRefType left, VcsRepositoryRefType right) => !left.Equals(right);
 }

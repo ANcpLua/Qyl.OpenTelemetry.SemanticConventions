@@ -23,27 +23,68 @@ public static class LinuxActivityExtensions
     [global::System.Obsolete("Replaced by system.memory.linux.slab.state.", false)]
     public static global::System.Diagnostics.Activity SetLinuxMemorySlabState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("linux.memory.slab.state", value);
+        LinuxMemorySlabState value)
+        => activity.SetTag("linux.memory.slab.state", value.Value);
+}
+
+/// <summary>
+/// The Linux Slab memory state
+/// </summary>
+/// <remarks>
+/// The open value set of <c>linux.memory.slab.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+[global::System.Obsolete("Replaced by system.memory.linux.slab.state.", false)]
+public readonly struct LinuxMemorySlabState : global::System.IEquatable<LinuxMemorySlabState>
+{
+    /// <summary>
+    /// The attribute key, <c>linux.memory.slab.state</c>.
+    /// </summary>
+    public const string Key = "linux.memory.slab.state";
+
+    private readonly string? _value;
+
+    private LinuxMemorySlabState(string value) => _value = value;
 
     /// <summary>
-    /// The Linux Slab memory state
+    /// reclaimable.
     /// </summary>
-    public static class LinuxMemorySlabStateValues
-    {
-        /// <summary>
-        /// reclaimable.
-        /// </summary>
-        public const string Reclaimable = "reclaimable";
+    public static LinuxMemorySlabState Reclaimable { get; } = new("reclaimable");
 
-        /// <summary>
-        /// unreclaimable.
-        /// </summary>
-        public const string Unreclaimable = "unreclaimable";
+    /// <summary>
+    /// unreclaimable.
+    /// </summary>
+    public static LinuxMemorySlabState Unreclaimable { get; } = new("unreclaimable");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "reclaimable", "unreclaimable" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static LinuxMemorySlabState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(LinuxMemorySlabState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is LinuxMemorySlabState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(LinuxMemorySlabState left, LinuxMemorySlabState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(LinuxMemorySlabState left, LinuxMemorySlabState right) => !left.Equals(right);
 }

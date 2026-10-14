@@ -46,271 +46,591 @@ public static class SystemIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetSystemFilesystemState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("system.filesystem.state", value);
+        SystemFilesystemState value)
+        => activity.SetTag("system.filesystem.state", value.Value);
 
     /// <summary>
     /// The filesystem type
     /// </summary>
     public static global::System.Diagnostics.Activity SetSystemFilesystemType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("system.filesystem.type", value);
+        SystemFilesystemType value)
+        => activity.SetTag("system.filesystem.type", value.Value);
 
     /// <summary>
     /// The Linux HugePages memory state
     /// </summary>
     public static global::System.Diagnostics.Activity SetSystemMemoryLinuxHugepagesState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("system.memory.linux.hugepages.state", value);
+        SystemMemoryLinuxHugepagesState value)
+        => activity.SetTag("system.memory.linux.hugepages.state", value.Value);
 
     /// <summary>
     /// The Linux Slab memory state
     /// </summary>
     public static global::System.Diagnostics.Activity SetSystemMemoryLinuxSlabState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("system.memory.linux.slab.state", value);
+        SystemMemoryLinuxSlabState value)
+        => activity.SetTag("system.memory.linux.slab.state", value.Value);
 
     /// <summary>
     /// The memory state
     /// </summary>
     public static global::System.Diagnostics.Activity SetSystemMemoryState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("system.memory.state", value);
+        SystemMemoryState value)
+        => activity.SetTag("system.memory.state", value.Value);
 
     /// <summary>
     /// The paging access direction
     /// </summary>
     public static global::System.Diagnostics.Activity SetSystemPagingDirection(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("system.paging.direction", value);
+        SystemPagingDirection value)
+        => activity.SetTag("system.paging.direction", value.Value);
 
     /// <summary>
     /// The paging fault type
     /// </summary>
     public static global::System.Diagnostics.Activity SetSystemPagingFaultType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("system.paging.fault.type", value);
+        SystemPagingFaultType value)
+        => activity.SetTag("system.paging.fault.type", value.Value);
 
     /// <summary>
     /// The memory paging state
     /// </summary>
     public static global::System.Diagnostics.Activity SetSystemPagingState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("system.paging.state", value);
+        SystemPagingState value)
+        => activity.SetTag("system.paging.state", value.Value);
+}
+
+/// <summary>
+/// The filesystem state
+/// </summary>
+/// <remarks>
+/// The open value set of <c>system.filesystem.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct SystemFilesystemState : global::System.IEquatable<SystemFilesystemState>
+{
+    /// <summary>
+    /// The attribute key, <c>system.filesystem.state</c>.
+    /// </summary>
+    public const string Key = "system.filesystem.state";
+
+    private readonly string? _value;
+
+    private SystemFilesystemState(string value) => _value = value;
 
     /// <summary>
-    /// The filesystem state
+    /// used.
     /// </summary>
-    public static class SystemFilesystemStateValues
-    {
-        /// <summary>
-        /// used.
-        /// </summary>
-        public const string Used = "used";
-
-        /// <summary>
-        /// free.
-        /// </summary>
-        public const string Free = "free";
-
-        /// <summary>
-        /// reserved.
-        /// </summary>
-        public const string Reserved = "reserved";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "used", "free", "reserved" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static SystemFilesystemState Used { get; } = new("used");
 
     /// <summary>
-    /// The filesystem type
+    /// free.
     /// </summary>
-    public static class SystemFilesystemTypeValues
-    {
-        /// <summary>
-        /// fat32.
-        /// </summary>
-        public const string Fat32 = "fat32";
-
-        /// <summary>
-        /// exfat.
-        /// </summary>
-        public const string Exfat = "exfat";
-
-        /// <summary>
-        /// ntfs.
-        /// </summary>
-        public const string Ntfs = "ntfs";
-
-        /// <summary>
-        /// refs.
-        /// </summary>
-        public const string Refs = "refs";
-
-        /// <summary>
-        /// hfsplus.
-        /// </summary>
-        public const string Hfsplus = "hfsplus";
-
-        /// <summary>
-        /// ext4.
-        /// </summary>
-        public const string Ext4 = "ext4";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "fat32", "exfat", "ntfs", "refs", "hfsplus", "ext4" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static SystemFilesystemState Free { get; } = new("free");
 
     /// <summary>
-    /// The Linux HugePages memory state
+    /// reserved.
     /// </summary>
-    public static class SystemMemoryLinuxHugepagesStateValues
-    {
-        /// <summary>
-        /// free.
-        /// </summary>
-        public const string Free = "free";
-
-        /// <summary>
-        /// used.
-        /// </summary>
-        public const string Used = "used";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "free", "used" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static SystemFilesystemState Reserved { get; } = new("reserved");
 
     /// <summary>
-    /// The Linux Slab memory state
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
     /// </summary>
-    public static class SystemMemoryLinuxSlabStateValues
-    {
-        /// <summary>
-        /// reclaimable.
-        /// </summary>
-        public const string Reclaimable = "reclaimable";
-
-        /// <summary>
-        /// unreclaimable.
-        /// </summary>
-        public const string Unreclaimable = "unreclaimable";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "reclaimable", "unreclaimable" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static SystemFilesystemState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
     /// <summary>
-    /// The memory state
+    /// The attribute value.
     /// </summary>
-    public static class SystemMemoryStateValues
-    {
-        /// <summary>
-        /// Actual used virtual memory in bytes.
-        /// </summary>
-        public const string Used = "used";
+    public string Value => _value ?? string.Empty;
 
-        /// <summary>
-        /// free.
-        /// </summary>
-        public const string Free = "free";
+    /// <inheritdoc/>
+    public bool Equals(SystemFilesystemState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
 
-        /// <summary>
-        /// shared.
-        /// </summary>
-        [global::System.Obsolete("Removed, report shared memory usage with `metric.system.memory.linux.shared` metric", false)]
-        public const string Shared = "shared";
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is SystemFilesystemState other && Equals(other);
 
-        /// <summary>
-        /// buffers.
-        /// </summary>
-        public const string Buffers = "buffers";
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
 
-        /// <summary>
-        /// cached.
-        /// </summary>
-        public const string Cached = "cached";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "used", "free", "shared", "buffers", "cached" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <inheritdoc/>
+    public override string ToString() => Value;
 
     /// <summary>
-    /// The paging access direction
+    /// Whether two values are equal.
     /// </summary>
-    public static class SystemPagingDirectionValues
-    {
-        /// <summary>
-        /// in.
-        /// </summary>
-        public const string In = "in";
-
-        /// <summary>
-        /// out.
-        /// </summary>
-        public const string Out = "out";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "in", "out" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static bool operator ==(SystemFilesystemState left, SystemFilesystemState right) => left.Equals(right);
 
     /// <summary>
-    /// The paging fault type
+    /// Whether two values differ.
     /// </summary>
-    public static class SystemPagingFaultTypeValues
-    {
-        /// <summary>
-        /// major.
-        /// </summary>
-        public const string Major = "major";
+    public static bool operator !=(SystemFilesystemState left, SystemFilesystemState right) => !left.Equals(right);
+}
 
-        /// <summary>
-        /// minor.
-        /// </summary>
-        public const string Minor = "minor";
+/// <summary>
+/// The filesystem type
+/// </summary>
+/// <remarks>
+/// The open value set of <c>system.filesystem.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct SystemFilesystemType : global::System.IEquatable<SystemFilesystemType>
+{
+    /// <summary>
+    /// The attribute key, <c>system.filesystem.type</c>.
+    /// </summary>
+    public const string Key = "system.filesystem.type";
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "major", "minor" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    private readonly string? _value;
+
+    private SystemFilesystemType(string value) => _value = value;
 
     /// <summary>
-    /// The memory paging state
+    /// fat32.
     /// </summary>
-    public static class SystemPagingStateValues
-    {
-        /// <summary>
-        /// used.
-        /// </summary>
-        public const string Used = "used";
+    public static SystemFilesystemType Fat32 { get; } = new("fat32");
 
-        /// <summary>
-        /// free.
-        /// </summary>
-        public const string Free = "free";
+    /// <summary>
+    /// exfat.
+    /// </summary>
+    public static SystemFilesystemType Exfat { get; } = new("exfat");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "used", "free" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// ntfs.
+    /// </summary>
+    public static SystemFilesystemType Ntfs { get; } = new("ntfs");
+
+    /// <summary>
+    /// refs.
+    /// </summary>
+    public static SystemFilesystemType Refs { get; } = new("refs");
+
+    /// <summary>
+    /// hfsplus.
+    /// </summary>
+    public static SystemFilesystemType Hfsplus { get; } = new("hfsplus");
+
+    /// <summary>
+    /// ext4.
+    /// </summary>
+    public static SystemFilesystemType Ext4 { get; } = new("ext4");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static SystemFilesystemType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(SystemFilesystemType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is SystemFilesystemType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(SystemFilesystemType left, SystemFilesystemType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(SystemFilesystemType left, SystemFilesystemType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The Linux HugePages memory state
+/// </summary>
+/// <remarks>
+/// The open value set of <c>system.memory.linux.hugepages.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct SystemMemoryLinuxHugepagesState : global::System.IEquatable<SystemMemoryLinuxHugepagesState>
+{
+    /// <summary>
+    /// The attribute key, <c>system.memory.linux.hugepages.state</c>.
+    /// </summary>
+    public const string Key = "system.memory.linux.hugepages.state";
+
+    private readonly string? _value;
+
+    private SystemMemoryLinuxHugepagesState(string value) => _value = value;
+
+    /// <summary>
+    /// free.
+    /// </summary>
+    public static SystemMemoryLinuxHugepagesState Free { get; } = new("free");
+
+    /// <summary>
+    /// used.
+    /// </summary>
+    public static SystemMemoryLinuxHugepagesState Used { get; } = new("used");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static SystemMemoryLinuxHugepagesState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(SystemMemoryLinuxHugepagesState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is SystemMemoryLinuxHugepagesState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(SystemMemoryLinuxHugepagesState left, SystemMemoryLinuxHugepagesState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(SystemMemoryLinuxHugepagesState left, SystemMemoryLinuxHugepagesState right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The Linux Slab memory state
+/// </summary>
+/// <remarks>
+/// The open value set of <c>system.memory.linux.slab.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct SystemMemoryLinuxSlabState : global::System.IEquatable<SystemMemoryLinuxSlabState>
+{
+    /// <summary>
+    /// The attribute key, <c>system.memory.linux.slab.state</c>.
+    /// </summary>
+    public const string Key = "system.memory.linux.slab.state";
+
+    private readonly string? _value;
+
+    private SystemMemoryLinuxSlabState(string value) => _value = value;
+
+    /// <summary>
+    /// reclaimable.
+    /// </summary>
+    public static SystemMemoryLinuxSlabState Reclaimable { get; } = new("reclaimable");
+
+    /// <summary>
+    /// unreclaimable.
+    /// </summary>
+    public static SystemMemoryLinuxSlabState Unreclaimable { get; } = new("unreclaimable");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static SystemMemoryLinuxSlabState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(SystemMemoryLinuxSlabState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is SystemMemoryLinuxSlabState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(SystemMemoryLinuxSlabState left, SystemMemoryLinuxSlabState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(SystemMemoryLinuxSlabState left, SystemMemoryLinuxSlabState right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The memory state
+/// </summary>
+/// <remarks>
+/// The open value set of <c>system.memory.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct SystemMemoryState : global::System.IEquatable<SystemMemoryState>
+{
+    /// <summary>
+    /// The attribute key, <c>system.memory.state</c>.
+    /// </summary>
+    public const string Key = "system.memory.state";
+
+    private readonly string? _value;
+
+    private SystemMemoryState(string value) => _value = value;
+
+    /// <summary>
+    /// Actual used virtual memory in bytes.
+    /// </summary>
+    public static SystemMemoryState Used { get; } = new("used");
+
+    /// <summary>
+    /// free.
+    /// </summary>
+    public static SystemMemoryState Free { get; } = new("free");
+
+    /// <summary>
+    /// shared.
+    /// </summary>
+    [global::System.Obsolete("Removed, report shared memory usage with `metric.system.memory.linux.shared` metric", false)]
+    public static SystemMemoryState Shared { get; } = new("shared");
+
+    /// <summary>
+    /// buffers.
+    /// </summary>
+    public static SystemMemoryState Buffers { get; } = new("buffers");
+
+    /// <summary>
+    /// cached.
+    /// </summary>
+    public static SystemMemoryState Cached { get; } = new("cached");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static SystemMemoryState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(SystemMemoryState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is SystemMemoryState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(SystemMemoryState left, SystemMemoryState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(SystemMemoryState left, SystemMemoryState right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The paging access direction
+/// </summary>
+/// <remarks>
+/// The open value set of <c>system.paging.direction</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct SystemPagingDirection : global::System.IEquatable<SystemPagingDirection>
+{
+    /// <summary>
+    /// The attribute key, <c>system.paging.direction</c>.
+    /// </summary>
+    public const string Key = "system.paging.direction";
+
+    private readonly string? _value;
+
+    private SystemPagingDirection(string value) => _value = value;
+
+    /// <summary>
+    /// in.
+    /// </summary>
+    public static SystemPagingDirection In { get; } = new("in");
+
+    /// <summary>
+    /// out.
+    /// </summary>
+    public static SystemPagingDirection Out { get; } = new("out");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static SystemPagingDirection Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(SystemPagingDirection other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is SystemPagingDirection other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(SystemPagingDirection left, SystemPagingDirection right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(SystemPagingDirection left, SystemPagingDirection right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The paging fault type
+/// </summary>
+/// <remarks>
+/// The open value set of <c>system.paging.fault.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct SystemPagingFaultType : global::System.IEquatable<SystemPagingFaultType>
+{
+    /// <summary>
+    /// The attribute key, <c>system.paging.fault.type</c>.
+    /// </summary>
+    public const string Key = "system.paging.fault.type";
+
+    private readonly string? _value;
+
+    private SystemPagingFaultType(string value) => _value = value;
+
+    /// <summary>
+    /// major.
+    /// </summary>
+    public static SystemPagingFaultType Major { get; } = new("major");
+
+    /// <summary>
+    /// minor.
+    /// </summary>
+    public static SystemPagingFaultType Minor { get; } = new("minor");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static SystemPagingFaultType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(SystemPagingFaultType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is SystemPagingFaultType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(SystemPagingFaultType left, SystemPagingFaultType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(SystemPagingFaultType left, SystemPagingFaultType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The memory paging state
+/// </summary>
+/// <remarks>
+/// The open value set of <c>system.paging.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct SystemPagingState : global::System.IEquatable<SystemPagingState>
+{
+    /// <summary>
+    /// The attribute key, <c>system.paging.state</c>.
+    /// </summary>
+    public const string Key = "system.paging.state";
+
+    private readonly string? _value;
+
+    private SystemPagingState(string value) => _value = value;
+
+    /// <summary>
+    /// used.
+    /// </summary>
+    public static SystemPagingState Used { get; } = new("used");
+
+    /// <summary>
+    /// free.
+    /// </summary>
+    public static SystemPagingState Free { get; } = new("free");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static SystemPagingState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(SystemPagingState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is SystemPagingState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(SystemPagingState left, SystemPagingState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(SystemPagingState left, SystemPagingState right) => !left.Equals(right);
 }

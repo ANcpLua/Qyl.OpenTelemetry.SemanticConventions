@@ -19,10 +19,18 @@ public sealed class NumericEnumTests
     }
 
     [Fact]
+    public void Integer_enum_value_sets_keep_the_integer()
+    {
+        CpythonGcGeneration.Generation1.Value.Should().Be(1L);
+        CpythonGcGeneration.Custom(7).Value.Should().Be(7L);
+        CpythonGcGeneration.Custom(1).Should().Be(CpythonGcGeneration.Generation1);
+    }
+
+    [Fact]
     public void Integer_enum_activity_setter_emits_a_numeric_tag()
     {
         using var activity = new Activity("numeric-enum");
-        activity.SetCpythonGcGeneration(CpythonAttributes.GcGenerationValues.Generation1);
+        activity.SetCpythonGcGeneration(CpythonGcGeneration.Generation1);
         activity.GetTagItem(CpythonAttributes.GcGeneration).Should().BeOfType<long>().Which.Should().Be(1L);
     }
 }

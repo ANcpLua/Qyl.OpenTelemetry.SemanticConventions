@@ -210,70 +210,6 @@ public static class AwsIncubatingActivityExtensions
         => activity.SetTag("aws.dynamodb.total_segments", value);
 
     /// <summary>
-    /// The ARN of an <a href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/clusters.html">ECS cluster</a>.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetAwsEcsClusterArn(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("aws.ecs.cluster.arn", value);
-
-    /// <summary>
-    /// The Amazon Resource Name (ARN) of an <a href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_instances.html">ECS container instance</a>.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetAwsEcsContainerArn(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("aws.ecs.container.arn", value);
-
-    /// <summary>
-    /// The <a href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_types.html">launch type</a> for an ECS task.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetAwsEcsLaunchtype(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("aws.ecs.launchtype", value);
-
-    /// <summary>
-    /// The ARN of a running <a href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids">ECS task</a>.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetAwsEcsTaskArn(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("aws.ecs.task.arn", value);
-
-    /// <summary>
-    /// The family name of the <a href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definitions.html">ECS task definition</a> used to create the ECS task.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetAwsEcsTaskFamily(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("aws.ecs.task.family", value);
-
-    /// <summary>
-    /// The ID of a running ECS task. The ID MUST be extracted from <c>task.arn</c>.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetAwsEcsTaskId(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("aws.ecs.task.id", value);
-
-    /// <summary>
-    /// The revision for the task definition used to create the ECS task.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetAwsEcsTaskRevision(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("aws.ecs.task.revision", value);
-
-    /// <summary>
-    /// The ARN of an EKS cluster.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetAwsEksClusterArn(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("aws.eks.cluster.arn", value);
-
-    /// <summary>
     /// The AWS extended request ID as returned in the response header <c>x-amz-id-2</c>.
     /// </summary>
     public static global::System.Diagnostics.Activity SetAwsExtendedRequestId(
@@ -307,47 +243,6 @@ public static class AwsIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("aws.lambda.resource_mapping.id", value);
-
-    /// <summary>
-    /// The Amazon Resource Name(s) (ARN) of the AWS log group(s).
-    /// </summary>
-    /// <remarks>
-    /// See the <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/iam-access-control-overview-cwl.html#CWL_ARN_Format">log group ARN format documentation</a>.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetAwsLogGroupArns(
-        this global::System.Diagnostics.Activity activity,
-        string[] value)
-        => activity.SetTag("aws.log.group.arns", value);
-
-    /// <summary>
-    /// The name(s) of the AWS log group(s) an application is writing to.
-    /// </summary>
-    /// <remarks>
-    /// Multiple log groups must be supported for cases like multi-container applications, where a single application has sidecar containers, and each write to their own log group.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetAwsLogGroupNames(
-        this global::System.Diagnostics.Activity activity,
-        string[] value)
-        => activity.SetTag("aws.log.group.names", value);
-
-    /// <summary>
-    /// The ARN(s) of the AWS log stream(s).
-    /// </summary>
-    /// <remarks>
-    /// See the <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/iam-access-control-overview-cwl.html#CWL_ARN_Format">log stream ARN format documentation</a>. One log group can contain several log streams, so these ARNs necessarily identify both a log group and a log stream.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetAwsLogStreamArns(
-        this global::System.Diagnostics.Activity activity,
-        string[] value)
-        => activity.SetTag("aws.log.stream.arns", value);
-
-    /// <summary>
-    /// The name(s) of the AWS log stream(s) an application is writing to.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetAwsLogStreamNames(
-        this global::System.Diagnostics.Activity activity,
-        string[] value)
-        => activity.SetTag("aws.log.stream.names", value);
 
     /// <summary>
     /// The AWS request ID as returned in the response headers <c>x-amzn-requestid</c>, <c>x-amzn-request-id</c> or <c>x-amz-request-id</c>.
@@ -496,25 +391,4 @@ public static class AwsIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("aws.step_functions.state_machine.arn", value);
-
-    /// <summary>
-    /// The <a href="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_types.html">launch type</a> for an ECS task.
-    /// </summary>
-    public static class AwsEcsLaunchtypeValues
-    {
-        /// <summary>
-        /// Amazon EC2.
-        /// </summary>
-        public const string Ec2 = "ec2";
-
-        /// <summary>
-        /// Amazon Fargate.
-        /// </summary>
-        public const string Fargate = "fargate";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "ec2", "fargate" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
 }

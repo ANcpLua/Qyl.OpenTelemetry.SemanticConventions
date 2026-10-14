@@ -22,8 +22,8 @@ public static class CicdIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetCicdPipelineActionName(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("cicd.pipeline.action.name", value);
+        CicdPipelineActionName value)
+        => activity.SetTag("cicd.pipeline.action.name", value.Value);
 
     /// <summary>
     /// The human readable name of the pipeline within a CI/CD system.
@@ -38,32 +38,16 @@ public static class CicdIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetCicdPipelineResult(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("cicd.pipeline.result", value);
-
-    /// <summary>
-    /// The unique identifier of a pipeline run within a CI/CD system.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetCicdPipelineRunId(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("cicd.pipeline.run.id", value);
+        CicdPipelineResult value)
+        => activity.SetTag("cicd.pipeline.result", value.Value);
 
     /// <summary>
     /// The pipeline run goes through these states during its lifecycle.
     /// </summary>
     public static global::System.Diagnostics.Activity SetCicdPipelineRunState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("cicd.pipeline.run.state", value);
-
-    /// <summary>
-    /// The <a href="https://wikipedia.org/wiki/URL">URL</a> of the pipeline run, providing the complete address in order to locate and identify the pipeline run.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetCicdPipelineRunUrlFull(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("cicd.pipeline.run.url.full", value);
+        CicdPipelineRunState value)
+        => activity.SetTag("cicd.pipeline.run.state", value.Value);
 
     /// <summary>
     /// The human readable name of a task within a pipeline. Task here most closely aligns with a <a href="https://wikipedia.org/wiki/Pipeline_(computing)">computing process</a> in a pipeline. Other terms for tasks include commands, steps, and procedures.
@@ -89,8 +73,8 @@ public static class CicdIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetCicdPipelineTaskRunResult(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("cicd.pipeline.task.run.result", value);
+        CicdPipelineTaskRunResult value)
+        => activity.SetTag("cicd.pipeline.task.run.result", value.Value);
 
     /// <summary>
     /// The <a href="https://wikipedia.org/wiki/URL">URL</a> of the pipeline task run, providing the complete address in order to locate and identify the pipeline task run.
@@ -105,8 +89,8 @@ public static class CicdIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetCicdPipelineTaskType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("cicd.pipeline.task.type", value);
+        CicdPipelineTaskType value)
+        => activity.SetTag("cicd.pipeline.task.type", value.Value);
 
     /// <summary>
     /// The name of a component of the CI/CD system.
@@ -117,220 +101,436 @@ public static class CicdIncubatingActivityExtensions
         => activity.SetTag("cicd.system.component", value);
 
     /// <summary>
-    /// The unique identifier of a worker within a CI/CD system.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetCicdWorkerId(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("cicd.worker.id", value);
-
-    /// <summary>
-    /// The name of a worker within a CI/CD system.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetCicdWorkerName(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("cicd.worker.name", value);
-
-    /// <summary>
     /// The state of a CI/CD worker / agent.
     /// </summary>
     public static global::System.Diagnostics.Activity SetCicdWorkerState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("cicd.worker.state", value);
+        CicdWorkerState value)
+        => activity.SetTag("cicd.worker.state", value.Value);
+}
+
+/// <summary>
+/// The kind of action a pipeline run is performing.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>cicd.pipeline.action.name</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct CicdPipelineActionName : global::System.IEquatable<CicdPipelineActionName>
+{
+    /// <summary>
+    /// The attribute key, <c>cicd.pipeline.action.name</c>.
+    /// </summary>
+    public const string Key = "cicd.pipeline.action.name";
+
+    private readonly string? _value;
+
+    private CicdPipelineActionName(string value) => _value = value;
 
     /// <summary>
-    /// The <a href="https://wikipedia.org/wiki/URL">URL</a> of the worker, providing the complete address in order to locate and identify the worker.
+    /// The pipeline run is executing a build.
     /// </summary>
-    public static global::System.Diagnostics.Activity SetCicdWorkerUrlFull(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("cicd.worker.url.full", value);
+    public static CicdPipelineActionName Build { get; } = new("BUILD");
 
     /// <summary>
-    /// The kind of action a pipeline run is performing.
+    /// The pipeline run is executing.
     /// </summary>
-    public static class CicdPipelineActionNameValues
-    {
-        /// <summary>
-        /// The pipeline run is executing a build.
-        /// </summary>
-        public const string Build = "BUILD";
-
-        /// <summary>
-        /// The pipeline run is executing.
-        /// </summary>
-        public const string Run = "RUN";
-
-        /// <summary>
-        /// The pipeline run is executing a sync.
-        /// </summary>
-        public const string Sync = "SYNC";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "BUILD", "RUN", "SYNC" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static CicdPipelineActionName Run { get; } = new("RUN");
 
     /// <summary>
-    /// The result of a pipeline run.
+    /// The pipeline run is executing a sync.
     /// </summary>
-    public static class CicdPipelineResultValues
-    {
-        /// <summary>
-        /// The pipeline run finished successfully.
-        /// </summary>
-        public const string Success = "success";
-
-        /// <summary>
-        /// The pipeline run did not finish successfully, eg. due to a compile error or a failing test. Such failures are usually detected by non-zero exit codes of the tools executed in the pipeline run.
-        /// </summary>
-        public const string Failure = "failure";
-
-        /// <summary>
-        /// The pipeline run failed due to an error in the CI/CD system, eg. due to the worker being killed.
-        /// </summary>
-        public const string Error = "error";
-
-        /// <summary>
-        /// A timeout caused the pipeline run to be interrupted.
-        /// </summary>
-        public const string Timeout = "timeout";
-
-        /// <summary>
-        /// The pipeline run was cancelled, eg. by a user manually cancelling the pipeline run.
-        /// </summary>
-        public const string Cancellation = "cancellation";
-
-        /// <summary>
-        /// The pipeline run was skipped, eg. due to a precondition not being met.
-        /// </summary>
-        public const string Skip = "skip";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "success", "failure", "error", "timeout", "cancellation", "skip" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static CicdPipelineActionName Sync { get; } = new("SYNC");
 
     /// <summary>
-    /// The pipeline run goes through these states during its lifecycle.
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
     /// </summary>
-    public static class CicdPipelineRunStateValues
-    {
-        /// <summary>
-        /// The run pending state spans from the event triggering the pipeline run until the execution of the run starts (eg. time spent in a queue, provisioning agents, creating run resources).
-        /// </summary>
-        public const string Pending = "pending";
-
-        /// <summary>
-        /// The executing state spans the execution of any run tasks (eg. build, test).
-        /// </summary>
-        public const string Executing = "executing";
-
-        /// <summary>
-        /// The finalizing state spans from when the run has finished executing (eg. cleanup of run resources).
-        /// </summary>
-        public const string Finalizing = "finalizing";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "pending", "executing", "finalizing" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static CicdPipelineActionName Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
     /// <summary>
-    /// The result of a task run.
+    /// The attribute value.
     /// </summary>
-    public static class CicdPipelineTaskRunResultValues
-    {
-        /// <summary>
-        /// The task run finished successfully.
-        /// </summary>
-        public const string Success = "success";
+    public string Value => _value ?? string.Empty;
 
-        /// <summary>
-        /// The task run did not finish successfully, eg. due to a compile error or a failing test. Such failures are usually detected by non-zero exit codes of the tools executed in the task run.
-        /// </summary>
-        public const string Failure = "failure";
+    /// <inheritdoc/>
+    public bool Equals(CicdPipelineActionName other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
 
-        /// <summary>
-        /// The task run failed due to an error in the CI/CD system, eg. due to the worker being killed.
-        /// </summary>
-        public const string Error = "error";
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is CicdPipelineActionName other && Equals(other);
 
-        /// <summary>
-        /// A timeout caused the task run to be interrupted.
-        /// </summary>
-        public const string Timeout = "timeout";
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
 
-        /// <summary>
-        /// The task run was cancelled, eg. by a user manually cancelling the task run.
-        /// </summary>
-        public const string Cancellation = "cancellation";
-
-        /// <summary>
-        /// The task run was skipped, eg. due to a precondition not being met.
-        /// </summary>
-        public const string Skip = "skip";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "success", "failure", "error", "timeout", "cancellation", "skip" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <inheritdoc/>
+    public override string ToString() => Value;
 
     /// <summary>
-    /// The type of the task within a pipeline.
+    /// Whether two values are equal.
     /// </summary>
-    public static class CicdPipelineTaskTypeValues
-    {
-        /// <summary>
-        /// build.
-        /// </summary>
-        public const string Build = "build";
-
-        /// <summary>
-        /// test.
-        /// </summary>
-        public const string Test = "test";
-
-        /// <summary>
-        /// deploy.
-        /// </summary>
-        public const string Deploy = "deploy";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "build", "test", "deploy" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static bool operator ==(CicdPipelineActionName left, CicdPipelineActionName right) => left.Equals(right);
 
     /// <summary>
-    /// The state of a CI/CD worker / agent.
+    /// Whether two values differ.
     /// </summary>
-    public static class CicdWorkerStateValues
-    {
-        /// <summary>
-        /// The worker is not performing work for the CI/CD system. It is available to the CI/CD system to perform work on (online / idle).
-        /// </summary>
-        public const string Available = "available";
+    public static bool operator !=(CicdPipelineActionName left, CicdPipelineActionName right) => !left.Equals(right);
+}
 
-        /// <summary>
-        /// The worker is performing work for the CI/CD system.
-        /// </summary>
-        public const string Busy = "busy";
+/// <summary>
+/// The result of a pipeline run.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>cicd.pipeline.result</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct CicdPipelineResult : global::System.IEquatable<CicdPipelineResult>
+{
+    /// <summary>
+    /// The attribute key, <c>cicd.pipeline.result</c>.
+    /// </summary>
+    public const string Key = "cicd.pipeline.result";
 
-        /// <summary>
-        /// The worker is not available to the CI/CD system (disconnected / down).
-        /// </summary>
-        public const string Offline = "offline";
+    private readonly string? _value;
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "available", "busy", "offline" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    private CicdPipelineResult(string value) => _value = value;
+
+    /// <summary>
+    /// The pipeline run finished successfully.
+    /// </summary>
+    public static CicdPipelineResult Success { get; } = new("success");
+
+    /// <summary>
+    /// The pipeline run did not finish successfully, eg. due to a compile error or a failing test. Such failures are usually detected by non-zero exit codes of the tools executed in the pipeline run.
+    /// </summary>
+    public static CicdPipelineResult Failure { get; } = new("failure");
+
+    /// <summary>
+    /// The pipeline run failed due to an error in the CI/CD system, eg. due to the worker being killed.
+    /// </summary>
+    public static CicdPipelineResult Error { get; } = new("error");
+
+    /// <summary>
+    /// A timeout caused the pipeline run to be interrupted.
+    /// </summary>
+    public static CicdPipelineResult Timeout { get; } = new("timeout");
+
+    /// <summary>
+    /// The pipeline run was cancelled, eg. by a user manually cancelling the pipeline run.
+    /// </summary>
+    public static CicdPipelineResult Cancellation { get; } = new("cancellation");
+
+    /// <summary>
+    /// The pipeline run was skipped, eg. due to a precondition not being met.
+    /// </summary>
+    public static CicdPipelineResult Skip { get; } = new("skip");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static CicdPipelineResult Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(CicdPipelineResult other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is CicdPipelineResult other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(CicdPipelineResult left, CicdPipelineResult right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(CicdPipelineResult left, CicdPipelineResult right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The pipeline run goes through these states during its lifecycle.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>cicd.pipeline.run.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct CicdPipelineRunState : global::System.IEquatable<CicdPipelineRunState>
+{
+    /// <summary>
+    /// The attribute key, <c>cicd.pipeline.run.state</c>.
+    /// </summary>
+    public const string Key = "cicd.pipeline.run.state";
+
+    private readonly string? _value;
+
+    private CicdPipelineRunState(string value) => _value = value;
+
+    /// <summary>
+    /// The run pending state spans from the event triggering the pipeline run until the execution of the run starts (eg. time spent in a queue, provisioning agents, creating run resources).
+    /// </summary>
+    public static CicdPipelineRunState Pending { get; } = new("pending");
+
+    /// <summary>
+    /// The executing state spans the execution of any run tasks (eg. build, test).
+    /// </summary>
+    public static CicdPipelineRunState Executing { get; } = new("executing");
+
+    /// <summary>
+    /// The finalizing state spans from when the run has finished executing (eg. cleanup of run resources).
+    /// </summary>
+    public static CicdPipelineRunState Finalizing { get; } = new("finalizing");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static CicdPipelineRunState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(CicdPipelineRunState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is CicdPipelineRunState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(CicdPipelineRunState left, CicdPipelineRunState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(CicdPipelineRunState left, CicdPipelineRunState right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The result of a task run.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>cicd.pipeline.task.run.result</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct CicdPipelineTaskRunResult : global::System.IEquatable<CicdPipelineTaskRunResult>
+{
+    /// <summary>
+    /// The attribute key, <c>cicd.pipeline.task.run.result</c>.
+    /// </summary>
+    public const string Key = "cicd.pipeline.task.run.result";
+
+    private readonly string? _value;
+
+    private CicdPipelineTaskRunResult(string value) => _value = value;
+
+    /// <summary>
+    /// The task run finished successfully.
+    /// </summary>
+    public static CicdPipelineTaskRunResult Success { get; } = new("success");
+
+    /// <summary>
+    /// The task run did not finish successfully, eg. due to a compile error or a failing test. Such failures are usually detected by non-zero exit codes of the tools executed in the task run.
+    /// </summary>
+    public static CicdPipelineTaskRunResult Failure { get; } = new("failure");
+
+    /// <summary>
+    /// The task run failed due to an error in the CI/CD system, eg. due to the worker being killed.
+    /// </summary>
+    public static CicdPipelineTaskRunResult Error { get; } = new("error");
+
+    /// <summary>
+    /// A timeout caused the task run to be interrupted.
+    /// </summary>
+    public static CicdPipelineTaskRunResult Timeout { get; } = new("timeout");
+
+    /// <summary>
+    /// The task run was cancelled, eg. by a user manually cancelling the task run.
+    /// </summary>
+    public static CicdPipelineTaskRunResult Cancellation { get; } = new("cancellation");
+
+    /// <summary>
+    /// The task run was skipped, eg. due to a precondition not being met.
+    /// </summary>
+    public static CicdPipelineTaskRunResult Skip { get; } = new("skip");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static CicdPipelineTaskRunResult Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(CicdPipelineTaskRunResult other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is CicdPipelineTaskRunResult other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(CicdPipelineTaskRunResult left, CicdPipelineTaskRunResult right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(CicdPipelineTaskRunResult left, CicdPipelineTaskRunResult right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The type of the task within a pipeline.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>cicd.pipeline.task.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct CicdPipelineTaskType : global::System.IEquatable<CicdPipelineTaskType>
+{
+    /// <summary>
+    /// The attribute key, <c>cicd.pipeline.task.type</c>.
+    /// </summary>
+    public const string Key = "cicd.pipeline.task.type";
+
+    private readonly string? _value;
+
+    private CicdPipelineTaskType(string value) => _value = value;
+
+    /// <summary>
+    /// build.
+    /// </summary>
+    public static CicdPipelineTaskType Build { get; } = new("build");
+
+    /// <summary>
+    /// test.
+    /// </summary>
+    public static CicdPipelineTaskType Test { get; } = new("test");
+
+    /// <summary>
+    /// deploy.
+    /// </summary>
+    public static CicdPipelineTaskType Deploy { get; } = new("deploy");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static CicdPipelineTaskType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(CicdPipelineTaskType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is CicdPipelineTaskType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(CicdPipelineTaskType left, CicdPipelineTaskType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(CicdPipelineTaskType left, CicdPipelineTaskType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The state of a CI/CD worker / agent.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>cicd.worker.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct CicdWorkerState : global::System.IEquatable<CicdWorkerState>
+{
+    /// <summary>
+    /// The attribute key, <c>cicd.worker.state</c>.
+    /// </summary>
+    public const string Key = "cicd.worker.state";
+
+    private readonly string? _value;
+
+    private CicdWorkerState(string value) => _value = value;
+
+    /// <summary>
+    /// The worker is not performing work for the CI/CD system. It is available to the CI/CD system to perform work on (online / idle).
+    /// </summary>
+    public static CicdWorkerState Available { get; } = new("available");
+
+    /// <summary>
+    /// The worker is performing work for the CI/CD system.
+    /// </summary>
+    public static CicdWorkerState Busy { get; } = new("busy");
+
+    /// <summary>
+    /// The worker is not available to the CI/CD system (disconnected / down).
+    /// </summary>
+    public static CicdWorkerState Offline { get; } = new("offline");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static CicdWorkerState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(CicdWorkerState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is CicdWorkerState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(CicdWorkerState left, CicdWorkerState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(CicdWorkerState left, CicdWorkerState right) => !left.Equals(right);
 }

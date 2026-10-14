@@ -54,8 +54,8 @@ public static class LogIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetLogIostream(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("log.iostream", value);
+        LogIostream value)
+        => activity.SetTag("log.iostream", value.Value);
 
     /// <summary>
     /// The complete original Log Record.
@@ -79,25 +79,65 @@ public static class LogIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("log.record.uid", value);
+}
+
+/// <summary>
+/// The stream associated with the log. See below for a list of well-known values.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>log.iostream</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct LogIostream : global::System.IEquatable<LogIostream>
+{
+    /// <summary>
+    /// The attribute key, <c>log.iostream</c>.
+    /// </summary>
+    public const string Key = "log.iostream";
+
+    private readonly string? _value;
+
+    private LogIostream(string value) => _value = value;
 
     /// <summary>
-    /// The stream associated with the log. See below for a list of well-known values.
+    /// Logs from stdout stream.
     /// </summary>
-    public static class LogIostreamValues
-    {
-        /// <summary>
-        /// Logs from stdout stream.
-        /// </summary>
-        public const string Stdout = "stdout";
+    public static LogIostream Stdout { get; } = new("stdout");
 
-        /// <summary>
-        /// Events from stderr stream.
-        /// </summary>
-        public const string Stderr = "stderr";
+    /// <summary>
+    /// Events from stderr stream.
+    /// </summary>
+    public static LogIostream Stderr { get; } = new("stderr");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "stdout", "stderr" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static LogIostream Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(LogIostream other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is LogIostream other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(LogIostream left, LogIostream right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(LogIostream left, LogIostream right) => !left.Equals(right);
 }

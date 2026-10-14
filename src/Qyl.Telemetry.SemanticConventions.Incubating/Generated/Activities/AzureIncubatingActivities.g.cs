@@ -30,16 +30,16 @@ public static class AzureIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetAzureCosmosdbConnectionMode(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("azure.cosmosdb.connection.mode", value);
+        AzureCosmosdbConnectionMode value)
+        => activity.SetTag("azure.cosmosdb.connection.mode", value.Value);
 
     /// <summary>
     /// Account or request <a href="https://learn.microsoft.com/azure/cosmos-db/consistency-levels">consistency level</a>.
     /// </summary>
     public static global::System.Diagnostics.Activity SetAzureCosmosdbConsistencyLevel(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("azure.cosmosdb.consistency.level", value);
+        AzureCosmosdbConsistencyLevel value)
+        => activity.SetTag("azure.cosmosdb.consistency.level", value.Value);
 
     /// <summary>
     /// List of regions contacted during operation in the order that they were contacted. If there is more than one region listed, it indicates that the operation was performed on multiple regions i.e. cross-regional call.
@@ -99,61 +99,141 @@ public static class AzureIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("azure.service.request.id", value);
+}
+
+/// <summary>
+/// Cosmos client connection mode.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>azure.cosmosdb.connection.mode</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct AzureCosmosdbConnectionMode : global::System.IEquatable<AzureCosmosdbConnectionMode>
+{
+    /// <summary>
+    /// The attribute key, <c>azure.cosmosdb.connection.mode</c>.
+    /// </summary>
+    public const string Key = "azure.cosmosdb.connection.mode";
+
+    private readonly string? _value;
+
+    private AzureCosmosdbConnectionMode(string value) => _value = value;
 
     /// <summary>
-    /// Cosmos client connection mode.
+    /// Gateway (HTTP) connection.
     /// </summary>
-    public static class AzureCosmosdbConnectionModeValues
-    {
-        /// <summary>
-        /// Gateway (HTTP) connection.
-        /// </summary>
-        public const string Gateway = "gateway";
-
-        /// <summary>
-        /// Direct connection.
-        /// </summary>
-        public const string Direct = "direct";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "gateway", "direct" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static AzureCosmosdbConnectionMode Gateway { get; } = new("gateway");
 
     /// <summary>
-    /// Account or request <a href="https://learn.microsoft.com/azure/cosmos-db/consistency-levels">consistency level</a>.
+    /// Direct connection.
     /// </summary>
-    public static class AzureCosmosdbConsistencyLevelValues
-    {
-        /// <summary>
-        /// Strong.
-        /// </summary>
-        public const string Strong = "Strong";
+    public static AzureCosmosdbConnectionMode Direct { get; } = new("direct");
 
-        /// <summary>
-        /// Bounded Staleness.
-        /// </summary>
-        public const string BoundedStaleness = "BoundedStaleness";
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static AzureCosmosdbConnectionMode Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
-        /// <summary>
-        /// Session.
-        /// </summary>
-        public const string Session = "Session";
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
 
-        /// <summary>
-        /// Eventual.
-        /// </summary>
-        public const string Eventual = "Eventual";
+    /// <inheritdoc/>
+    public bool Equals(AzureCosmosdbConnectionMode other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
 
-        /// <summary>
-        /// Consistent Prefix.
-        /// </summary>
-        public const string ConsistentPrefix = "ConsistentPrefix";
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is AzureCosmosdbConnectionMode other && Equals(other);
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "Strong", "BoundedStaleness", "Session", "Eventual", "ConsistentPrefix" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(AzureCosmosdbConnectionMode left, AzureCosmosdbConnectionMode right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(AzureCosmosdbConnectionMode left, AzureCosmosdbConnectionMode right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Account or request <a href="https://learn.microsoft.com/azure/cosmos-db/consistency-levels">consistency level</a>.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>azure.cosmosdb.consistency.level</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct AzureCosmosdbConsistencyLevel : global::System.IEquatable<AzureCosmosdbConsistencyLevel>
+{
+    /// <summary>
+    /// The attribute key, <c>azure.cosmosdb.consistency.level</c>.
+    /// </summary>
+    public const string Key = "azure.cosmosdb.consistency.level";
+
+    private readonly string? _value;
+
+    private AzureCosmosdbConsistencyLevel(string value) => _value = value;
+
+    /// <summary>
+    /// Strong.
+    /// </summary>
+    public static AzureCosmosdbConsistencyLevel Strong { get; } = new("Strong");
+
+    /// <summary>
+    /// Bounded Staleness.
+    /// </summary>
+    public static AzureCosmosdbConsistencyLevel BoundedStaleness { get; } = new("BoundedStaleness");
+
+    /// <summary>
+    /// Session.
+    /// </summary>
+    public static AzureCosmosdbConsistencyLevel Session { get; } = new("Session");
+
+    /// <summary>
+    /// Eventual.
+    /// </summary>
+    public static AzureCosmosdbConsistencyLevel Eventual { get; } = new("Eventual");
+
+    /// <summary>
+    /// Consistent Prefix.
+    /// </summary>
+    public static AzureCosmosdbConsistencyLevel ConsistentPrefix { get; } = new("ConsistentPrefix");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static AzureCosmosdbConsistencyLevel Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(AzureCosmosdbConsistencyLevel other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is AzureCosmosdbConsistencyLevel other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(AzureCosmosdbConsistencyLevel left, AzureCosmosdbConsistencyLevel right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(AzureCosmosdbConsistencyLevel left, AzureCosmosdbConsistencyLevel right) => !left.Equals(right);
 }

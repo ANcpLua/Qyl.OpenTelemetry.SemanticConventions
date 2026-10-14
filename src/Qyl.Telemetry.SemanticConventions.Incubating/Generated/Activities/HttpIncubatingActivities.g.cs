@@ -22,8 +22,8 @@ public static class HttpIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetHttpConnectionState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("http.connection.state", value);
+        HttpConnectionState value)
+        => activity.SetTag("http.connection.state", value.Value);
 
     /// <summary>
     /// The size of the request payload body in bytes. This is the number of bytes transferred excluding headers and is often, but not always, present as the <a href="https://www.rfc-editor.org/rfc/rfc9110.html#field.content-length">Content-Length</a> header. For requests using transport encoding, this should be the compressed size.
@@ -56,25 +56,65 @@ public static class HttpIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         long value)
         => activity.SetTag("http.response.size", value);
+}
+
+/// <summary>
+/// State of the HTTP connection in the HTTP connection pool.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>http.connection.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct HttpConnectionState : global::System.IEquatable<HttpConnectionState>
+{
+    /// <summary>
+    /// The attribute key, <c>http.connection.state</c>.
+    /// </summary>
+    public const string Key = "http.connection.state";
+
+    private readonly string? _value;
+
+    private HttpConnectionState(string value) => _value = value;
 
     /// <summary>
-    /// State of the HTTP connection in the HTTP connection pool.
+    /// active state.
     /// </summary>
-    public static class HttpConnectionStateValues
-    {
-        /// <summary>
-        /// active state.
-        /// </summary>
-        public const string Active = "active";
+    public static HttpConnectionState Active { get; } = new("active");
 
-        /// <summary>
-        /// idle state.
-        /// </summary>
-        public const string Idle = "idle";
+    /// <summary>
+    /// idle state.
+    /// </summary>
+    public static HttpConnectionState Idle { get; } = new("idle");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "active", "idle" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static HttpConnectionState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(HttpConnectionState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is HttpConnectionState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(HttpConnectionState left, HttpConnectionState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(HttpConnectionState left, HttpConnectionState right) => !left.Equals(right);
 }

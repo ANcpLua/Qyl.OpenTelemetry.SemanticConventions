@@ -32,8 +32,8 @@ public static class SystemActivityExtensions
     [global::System.Obsolete("Replaced by cpu.mode.", false)]
     public static global::System.Diagnostics.Activity SetSystemCpuState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("system.cpu.state", value);
+        SystemCpuState value)
+        => activity.SetTag("system.cpu.state", value.Value);
 
     /// <summary>
     /// Deprecated, use <c>network.connection.state</c> instead.
@@ -41,8 +41,8 @@ public static class SystemActivityExtensions
     [global::System.Obsolete("Replaced by network.connection.state.", false)]
     public static global::System.Diagnostics.Activity SetSystemNetworkState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("system.network.state", value);
+        SystemNetworkState value)
+        => activity.SetTag("system.network.state", value.Value);
 
     /// <summary>
     /// Deprecated, use <c>system.paging.fault.type</c> instead.
@@ -50,8 +50,8 @@ public static class SystemActivityExtensions
     [global::System.Obsolete("Replaced by system.paging.fault.type.", false)]
     public static global::System.Diagnostics.Activity SetSystemPagingType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("system.paging.type", value);
+        SystemPagingType value)
+        => activity.SetTag("system.paging.type", value.Value);
 
     /// <summary>
     /// Deprecated, use <c>process.state</c> instead.
@@ -59,8 +59,8 @@ public static class SystemActivityExtensions
     [global::System.Obsolete("Replaced by process.state.", false)]
     public static global::System.Diagnostics.Activity SetSystemProcessStatus(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("system.process.status", value);
+        SystemProcessStatus value)
+        => activity.SetTag("system.process.status", value.Value);
 
     /// <summary>
     /// Deprecated, use <c>process.state</c> instead.
@@ -68,206 +68,411 @@ public static class SystemActivityExtensions
     [global::System.Obsolete("Replaced by process.state.", false)]
     public static global::System.Diagnostics.Activity SetSystemProcessesStatus(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("system.processes.status", value);
+        SystemProcessesStatus value)
+        => activity.SetTag("system.processes.status", value.Value);
+}
+
+/// <summary>
+/// Deprecated, use <c>cpu.mode</c> instead.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>system.cpu.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+[global::System.Obsolete("Replaced by cpu.mode.", false)]
+public readonly struct SystemCpuState : global::System.IEquatable<SystemCpuState>
+{
+    /// <summary>
+    /// The attribute key, <c>system.cpu.state</c>.
+    /// </summary>
+    public const string Key = "system.cpu.state";
+
+    private readonly string? _value;
+
+    private SystemCpuState(string value) => _value = value;
 
     /// <summary>
-    /// Deprecated, use <c>cpu.mode</c> instead.
+    /// user.
     /// </summary>
-    public static class SystemCpuStateValues
-    {
-        /// <summary>
-        /// user.
-        /// </summary>
-        public const string User = "user";
-
-        /// <summary>
-        /// system.
-        /// </summary>
-        public const string System = "system";
-
-        /// <summary>
-        /// nice.
-        /// </summary>
-        public const string Nice = "nice";
-
-        /// <summary>
-        /// idle.
-        /// </summary>
-        public const string Idle = "idle";
-
-        /// <summary>
-        /// iowait.
-        /// </summary>
-        public const string Iowait = "iowait";
-
-        /// <summary>
-        /// interrupt.
-        /// </summary>
-        public const string Interrupt = "interrupt";
-
-        /// <summary>
-        /// steal.
-        /// </summary>
-        public const string Steal = "steal";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "user", "system", "nice", "idle", "iowait", "interrupt", "steal" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static SystemCpuState User { get; } = new("user");
 
     /// <summary>
-    /// Deprecated, use <c>network.connection.state</c> instead.
+    /// system.
     /// </summary>
-    public static class SystemNetworkStateValues
-    {
-        /// <summary>
-        /// close.
-        /// </summary>
-        public const string Close = "close";
-
-        /// <summary>
-        /// close_wait.
-        /// </summary>
-        public const string CloseWait = "close_wait";
-
-        /// <summary>
-        /// closing.
-        /// </summary>
-        public const string Closing = "closing";
-
-        /// <summary>
-        /// delete.
-        /// </summary>
-        public const string Delete = "delete";
-
-        /// <summary>
-        /// established.
-        /// </summary>
-        public const string Established = "established";
-
-        /// <summary>
-        /// fin_wait_1.
-        /// </summary>
-        public const string FinWait1 = "fin_wait_1";
-
-        /// <summary>
-        /// fin_wait_2.
-        /// </summary>
-        public const string FinWait2 = "fin_wait_2";
-
-        /// <summary>
-        /// last_ack.
-        /// </summary>
-        public const string LastAck = "last_ack";
-
-        /// <summary>
-        /// listen.
-        /// </summary>
-        public const string Listen = "listen";
-
-        /// <summary>
-        /// syn_recv.
-        /// </summary>
-        public const string SynRecv = "syn_recv";
-
-        /// <summary>
-        /// syn_sent.
-        /// </summary>
-        public const string SynSent = "syn_sent";
-
-        /// <summary>
-        /// time_wait.
-        /// </summary>
-        public const string TimeWait = "time_wait";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "close", "close_wait", "closing", "delete", "established", "fin_wait_1", "fin_wait_2", "last_ack", "listen", "syn_recv", "syn_sent", "time_wait" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static SystemCpuState System { get; } = new("system");
 
     /// <summary>
-    /// Deprecated, use <c>system.paging.fault.type</c> instead.
+    /// nice.
     /// </summary>
-    public static class SystemPagingTypeValues
-    {
-        /// <summary>
-        /// major.
-        /// </summary>
-        public const string Major = "major";
-
-        /// <summary>
-        /// minor.
-        /// </summary>
-        public const string Minor = "minor";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "major", "minor" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static SystemCpuState Nice { get; } = new("nice");
 
     /// <summary>
-    /// Deprecated, use <c>process.state</c> instead.
+    /// idle.
     /// </summary>
-    public static class SystemProcessStatusValues
-    {
-        /// <summary>
-        /// running.
-        /// </summary>
-        public const string Running = "running";
-
-        /// <summary>
-        /// sleeping.
-        /// </summary>
-        public const string Sleeping = "sleeping";
-
-        /// <summary>
-        /// stopped.
-        /// </summary>
-        public const string Stopped = "stopped";
-
-        /// <summary>
-        /// defunct.
-        /// </summary>
-        public const string Defunct = "defunct";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "running", "sleeping", "stopped", "defunct" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static SystemCpuState Idle { get; } = new("idle");
 
     /// <summary>
-    /// Deprecated, use <c>process.state</c> instead.
+    /// iowait.
     /// </summary>
-    public static class SystemProcessesStatusValues
-    {
-        /// <summary>
-        /// running.
-        /// </summary>
-        public const string Running = "running";
+    public static SystemCpuState Iowait { get; } = new("iowait");
 
-        /// <summary>
-        /// sleeping.
-        /// </summary>
-        public const string Sleeping = "sleeping";
+    /// <summary>
+    /// interrupt.
+    /// </summary>
+    public static SystemCpuState Interrupt { get; } = new("interrupt");
 
-        /// <summary>
-        /// stopped.
-        /// </summary>
-        public const string Stopped = "stopped";
+    /// <summary>
+    /// steal.
+    /// </summary>
+    public static SystemCpuState Steal { get; } = new("steal");
 
-        /// <summary>
-        /// defunct.
-        /// </summary>
-        public const string Defunct = "defunct";
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static SystemCpuState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "running", "sleeping", "stopped", "defunct" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(SystemCpuState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is SystemCpuState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(SystemCpuState left, SystemCpuState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(SystemCpuState left, SystemCpuState right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Deprecated, use <c>network.connection.state</c> instead.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>system.network.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+[global::System.Obsolete("Replaced by network.connection.state.", false)]
+public readonly struct SystemNetworkState : global::System.IEquatable<SystemNetworkState>
+{
+    /// <summary>
+    /// The attribute key, <c>system.network.state</c>.
+    /// </summary>
+    public const string Key = "system.network.state";
+
+    private readonly string? _value;
+
+    private SystemNetworkState(string value) => _value = value;
+
+    /// <summary>
+    /// close.
+    /// </summary>
+    public static SystemNetworkState Close { get; } = new("close");
+
+    /// <summary>
+    /// close_wait.
+    /// </summary>
+    public static SystemNetworkState CloseWait { get; } = new("close_wait");
+
+    /// <summary>
+    /// closing.
+    /// </summary>
+    public static SystemNetworkState Closing { get; } = new("closing");
+
+    /// <summary>
+    /// delete.
+    /// </summary>
+    public static SystemNetworkState Delete { get; } = new("delete");
+
+    /// <summary>
+    /// established.
+    /// </summary>
+    public static SystemNetworkState Established { get; } = new("established");
+
+    /// <summary>
+    /// fin_wait_1.
+    /// </summary>
+    public static SystemNetworkState FinWait1 { get; } = new("fin_wait_1");
+
+    /// <summary>
+    /// fin_wait_2.
+    /// </summary>
+    public static SystemNetworkState FinWait2 { get; } = new("fin_wait_2");
+
+    /// <summary>
+    /// last_ack.
+    /// </summary>
+    public static SystemNetworkState LastAck { get; } = new("last_ack");
+
+    /// <summary>
+    /// listen.
+    /// </summary>
+    public static SystemNetworkState Listen { get; } = new("listen");
+
+    /// <summary>
+    /// syn_recv.
+    /// </summary>
+    public static SystemNetworkState SynRecv { get; } = new("syn_recv");
+
+    /// <summary>
+    /// syn_sent.
+    /// </summary>
+    public static SystemNetworkState SynSent { get; } = new("syn_sent");
+
+    /// <summary>
+    /// time_wait.
+    /// </summary>
+    public static SystemNetworkState TimeWait { get; } = new("time_wait");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static SystemNetworkState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(SystemNetworkState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is SystemNetworkState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(SystemNetworkState left, SystemNetworkState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(SystemNetworkState left, SystemNetworkState right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Deprecated, use <c>system.paging.fault.type</c> instead.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>system.paging.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+[global::System.Obsolete("Replaced by system.paging.fault.type.", false)]
+public readonly struct SystemPagingType : global::System.IEquatable<SystemPagingType>
+{
+    /// <summary>
+    /// The attribute key, <c>system.paging.type</c>.
+    /// </summary>
+    public const string Key = "system.paging.type";
+
+    private readonly string? _value;
+
+    private SystemPagingType(string value) => _value = value;
+
+    /// <summary>
+    /// major.
+    /// </summary>
+    public static SystemPagingType Major { get; } = new("major");
+
+    /// <summary>
+    /// minor.
+    /// </summary>
+    public static SystemPagingType Minor { get; } = new("minor");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static SystemPagingType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(SystemPagingType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is SystemPagingType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(SystemPagingType left, SystemPagingType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(SystemPagingType left, SystemPagingType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Deprecated, use <c>process.state</c> instead.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>system.process.status</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+[global::System.Obsolete("Replaced by process.state.", false)]
+public readonly struct SystemProcessStatus : global::System.IEquatable<SystemProcessStatus>
+{
+    /// <summary>
+    /// The attribute key, <c>system.process.status</c>.
+    /// </summary>
+    public const string Key = "system.process.status";
+
+    private readonly string? _value;
+
+    private SystemProcessStatus(string value) => _value = value;
+
+    /// <summary>
+    /// running.
+    /// </summary>
+    public static SystemProcessStatus Running { get; } = new("running");
+
+    /// <summary>
+    /// sleeping.
+    /// </summary>
+    public static SystemProcessStatus Sleeping { get; } = new("sleeping");
+
+    /// <summary>
+    /// stopped.
+    /// </summary>
+    public static SystemProcessStatus Stopped { get; } = new("stopped");
+
+    /// <summary>
+    /// defunct.
+    /// </summary>
+    public static SystemProcessStatus Defunct { get; } = new("defunct");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static SystemProcessStatus Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(SystemProcessStatus other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is SystemProcessStatus other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(SystemProcessStatus left, SystemProcessStatus right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(SystemProcessStatus left, SystemProcessStatus right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Deprecated, use <c>process.state</c> instead.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>system.processes.status</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+[global::System.Obsolete("Replaced by process.state.", false)]
+public readonly struct SystemProcessesStatus : global::System.IEquatable<SystemProcessesStatus>
+{
+    /// <summary>
+    /// The attribute key, <c>system.processes.status</c>.
+    /// </summary>
+    public const string Key = "system.processes.status";
+
+    private readonly string? _value;
+
+    private SystemProcessesStatus(string value) => _value = value;
+
+    /// <summary>
+    /// running.
+    /// </summary>
+    public static SystemProcessesStatus Running { get; } = new("running");
+
+    /// <summary>
+    /// sleeping.
+    /// </summary>
+    public static SystemProcessesStatus Sleeping { get; } = new("sleeping");
+
+    /// <summary>
+    /// stopped.
+    /// </summary>
+    public static SystemProcessesStatus Stopped { get; } = new("stopped");
+
+    /// <summary>
+    /// defunct.
+    /// </summary>
+    public static SystemProcessesStatus Defunct { get; } = new("defunct");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static SystemProcessesStatus Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(SystemProcessesStatus other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is SystemProcessesStatus other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(SystemProcessesStatus left, SystemProcessesStatus right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(SystemProcessesStatus left, SystemProcessesStatus right) => !left.Equals(right);
 }

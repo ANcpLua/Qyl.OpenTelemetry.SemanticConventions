@@ -49,8 +49,8 @@ public static class OtelIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetOtelComponentType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("otel.component.type", value);
+        OtelComponentType value)
+        => activity.SetTag("otel.component.type", value.Value);
 
     /// <summary>
     /// The schema URL of the instrumentation scope.
@@ -65,157 +65,277 @@ public static class OtelIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetOtelSpanParentOrigin(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("otel.span.parent.origin", value);
+        OtelSpanParentOrigin value)
+        => activity.SetTag("otel.span.parent.origin", value.Value);
 
     /// <summary>
     /// The result value of the sampler for this span
     /// </summary>
     public static global::System.Diagnostics.Activity SetOtelSpanSamplingResult(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("otel.span.sampling_result", value);
+        OtelSpanSamplingResult value)
+        => activity.SetTag("otel.span.sampling_result", value.Value);
+}
+
+/// <summary>
+/// A name identifying the type of the OpenTelemetry component.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>otel.component.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct OtelComponentType : global::System.IEquatable<OtelComponentType>
+{
+    /// <summary>
+    /// The attribute key, <c>otel.component.type</c>.
+    /// </summary>
+    public const string Key = "otel.component.type";
+
+    private readonly string? _value;
+
+    private OtelComponentType(string value) => _value = value;
 
     /// <summary>
-    /// A name identifying the type of the OpenTelemetry component.
+    /// The built-in SDK batching span processor.
     /// </summary>
-    public static class OtelComponentTypeValues
-    {
-        /// <summary>
-        /// The built-in SDK batching span processor.
-        /// </summary>
-        public const string BatchingSpanProcessor = "batching_span_processor";
-
-        /// <summary>
-        /// The built-in SDK simple span processor.
-        /// </summary>
-        public const string SimpleSpanProcessor = "simple_span_processor";
-
-        /// <summary>
-        /// The built-in SDK batching log record processor.
-        /// </summary>
-        public const string BatchingLogProcessor = "batching_log_processor";
-
-        /// <summary>
-        /// The built-in SDK simple log record processor.
-        /// </summary>
-        public const string SimpleLogProcessor = "simple_log_processor";
-
-        /// <summary>
-        /// OTLP span exporter over gRPC with protobuf serialization.
-        /// </summary>
-        public const string OtlpGrpcSpanExporter = "otlp_grpc_span_exporter";
-
-        /// <summary>
-        /// OTLP span exporter over HTTP with protobuf serialization.
-        /// </summary>
-        public const string OtlpHttpSpanExporter = "otlp_http_span_exporter";
-
-        /// <summary>
-        /// OTLP span exporter over HTTP with JSON serialization.
-        /// </summary>
-        public const string OtlpHttpJsonSpanExporter = "otlp_http_json_span_exporter";
-
-        /// <summary>
-        /// Zipkin span exporter over HTTP.
-        /// </summary>
-        public const string ZipkinHttpSpanExporter = "zipkin_http_span_exporter";
-
-        /// <summary>
-        /// OTLP log record exporter over gRPC with protobuf serialization.
-        /// </summary>
-        public const string OtlpGrpcLogExporter = "otlp_grpc_log_exporter";
-
-        /// <summary>
-        /// OTLP log record exporter over HTTP with protobuf serialization.
-        /// </summary>
-        public const string OtlpHttpLogExporter = "otlp_http_log_exporter";
-
-        /// <summary>
-        /// OTLP log record exporter over HTTP with JSON serialization.
-        /// </summary>
-        public const string OtlpHttpJsonLogExporter = "otlp_http_json_log_exporter";
-
-        /// <summary>
-        /// The built-in SDK periodically exporting metric reader.
-        /// </summary>
-        public const string PeriodicMetricReader = "periodic_metric_reader";
-
-        /// <summary>
-        /// OTLP metric exporter over gRPC with protobuf serialization.
-        /// </summary>
-        public const string OtlpGrpcMetricExporter = "otlp_grpc_metric_exporter";
-
-        /// <summary>
-        /// OTLP metric exporter over HTTP with protobuf serialization.
-        /// </summary>
-        public const string OtlpHttpMetricExporter = "otlp_http_metric_exporter";
-
-        /// <summary>
-        /// OTLP metric exporter over HTTP with JSON serialization.
-        /// </summary>
-        public const string OtlpHttpJsonMetricExporter = "otlp_http_json_metric_exporter";
-
-        /// <summary>
-        /// Prometheus metric exporter over HTTP with the default text-based format.
-        /// </summary>
-        public const string PrometheusHttpTextMetricExporter = "prometheus_http_text_metric_exporter";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "batching_span_processor", "simple_span_processor", "batching_log_processor", "simple_log_processor", "otlp_grpc_span_exporter", "otlp_http_span_exporter", "otlp_http_json_span_exporter", "zipkin_http_span_exporter", "otlp_grpc_log_exporter", "otlp_http_log_exporter", "otlp_http_json_log_exporter", "periodic_metric_reader", "otlp_grpc_metric_exporter", "otlp_http_metric_exporter", "otlp_http_json_metric_exporter", "prometheus_http_text_metric_exporter" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static OtelComponentType BatchingSpanProcessor { get; } = new("batching_span_processor");
 
     /// <summary>
-    /// Determines whether the span has a parent span, and if so, <a href="https://opentelemetry.io/docs/specs/otel/trace/api/#isremote">whether it is a remote parent</a>
+    /// The built-in SDK simple span processor.
     /// </summary>
-    public static class OtelSpanParentOriginValues
-    {
-        /// <summary>
-        /// The span does not have a parent, it is a root span.
-        /// </summary>
-        public const string None = "none";
-
-        /// <summary>
-        /// The span has a parent and the parent's span context <a href="https://opentelemetry.io/docs/specs/otel/trace/api/#isremote">isRemote()</a> is false.
-        /// </summary>
-        public const string Local = "local";
-
-        /// <summary>
-        /// The span has a parent and the parent's span context <a href="https://opentelemetry.io/docs/specs/otel/trace/api/#isremote">isRemote()</a> is true.
-        /// </summary>
-        public const string Remote = "remote";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "none", "local", "remote" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static OtelComponentType SimpleSpanProcessor { get; } = new("simple_span_processor");
 
     /// <summary>
-    /// The result value of the sampler for this span
+    /// The built-in SDK batching log record processor.
     /// </summary>
-    public static class OtelSpanSamplingResultValues
-    {
-        /// <summary>
-        /// The span is not sampled and not recording.
-        /// </summary>
-        public const string Drop = "DROP";
+    public static OtelComponentType BatchingLogProcessor { get; } = new("batching_log_processor");
 
-        /// <summary>
-        /// The span is not sampled, but recording.
-        /// </summary>
-        public const string RecordOnly = "RECORD_ONLY";
+    /// <summary>
+    /// The built-in SDK simple log record processor.
+    /// </summary>
+    public static OtelComponentType SimpleLogProcessor { get; } = new("simple_log_processor");
 
-        /// <summary>
-        /// The span is sampled and recording.
-        /// </summary>
-        public const string RecordAndSample = "RECORD_AND_SAMPLE";
+    /// <summary>
+    /// OTLP span exporter over gRPC with protobuf serialization.
+    /// </summary>
+    public static OtelComponentType OtlpGrpcSpanExporter { get; } = new("otlp_grpc_span_exporter");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "DROP", "RECORD_ONLY", "RECORD_AND_SAMPLE" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// OTLP span exporter over HTTP with protobuf serialization.
+    /// </summary>
+    public static OtelComponentType OtlpHttpSpanExporter { get; } = new("otlp_http_span_exporter");
+
+    /// <summary>
+    /// OTLP span exporter over HTTP with JSON serialization.
+    /// </summary>
+    public static OtelComponentType OtlpHttpJsonSpanExporter { get; } = new("otlp_http_json_span_exporter");
+
+    /// <summary>
+    /// Zipkin span exporter over HTTP.
+    /// </summary>
+    public static OtelComponentType ZipkinHttpSpanExporter { get; } = new("zipkin_http_span_exporter");
+
+    /// <summary>
+    /// OTLP log record exporter over gRPC with protobuf serialization.
+    /// </summary>
+    public static OtelComponentType OtlpGrpcLogExporter { get; } = new("otlp_grpc_log_exporter");
+
+    /// <summary>
+    /// OTLP log record exporter over HTTP with protobuf serialization.
+    /// </summary>
+    public static OtelComponentType OtlpHttpLogExporter { get; } = new("otlp_http_log_exporter");
+
+    /// <summary>
+    /// OTLP log record exporter over HTTP with JSON serialization.
+    /// </summary>
+    public static OtelComponentType OtlpHttpJsonLogExporter { get; } = new("otlp_http_json_log_exporter");
+
+    /// <summary>
+    /// The built-in SDK periodically exporting metric reader.
+    /// </summary>
+    public static OtelComponentType PeriodicMetricReader { get; } = new("periodic_metric_reader");
+
+    /// <summary>
+    /// OTLP metric exporter over gRPC with protobuf serialization.
+    /// </summary>
+    public static OtelComponentType OtlpGrpcMetricExporter { get; } = new("otlp_grpc_metric_exporter");
+
+    /// <summary>
+    /// OTLP metric exporter over HTTP with protobuf serialization.
+    /// </summary>
+    public static OtelComponentType OtlpHttpMetricExporter { get; } = new("otlp_http_metric_exporter");
+
+    /// <summary>
+    /// OTLP metric exporter over HTTP with JSON serialization.
+    /// </summary>
+    public static OtelComponentType OtlpHttpJsonMetricExporter { get; } = new("otlp_http_json_metric_exporter");
+
+    /// <summary>
+    /// Prometheus metric exporter over HTTP with the default text-based format.
+    /// </summary>
+    public static OtelComponentType PrometheusHttpTextMetricExporter { get; } = new("prometheus_http_text_metric_exporter");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static OtelComponentType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(OtelComponentType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is OtelComponentType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(OtelComponentType left, OtelComponentType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(OtelComponentType left, OtelComponentType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Determines whether the span has a parent span, and if so, <a href="https://opentelemetry.io/docs/specs/otel/trace/api/#isremote">whether it is a remote parent</a>
+/// </summary>
+/// <remarks>
+/// The open value set of <c>otel.span.parent.origin</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct OtelSpanParentOrigin : global::System.IEquatable<OtelSpanParentOrigin>
+{
+    /// <summary>
+    /// The attribute key, <c>otel.span.parent.origin</c>.
+    /// </summary>
+    public const string Key = "otel.span.parent.origin";
+
+    private readonly string? _value;
+
+    private OtelSpanParentOrigin(string value) => _value = value;
+
+    /// <summary>
+    /// The span does not have a parent, it is a root span.
+    /// </summary>
+    public static OtelSpanParentOrigin None { get; } = new("none");
+
+    /// <summary>
+    /// The span has a parent and the parent's span context <a href="https://opentelemetry.io/docs/specs/otel/trace/api/#isremote">isRemote()</a> is false.
+    /// </summary>
+    public static OtelSpanParentOrigin Local { get; } = new("local");
+
+    /// <summary>
+    /// The span has a parent and the parent's span context <a href="https://opentelemetry.io/docs/specs/otel/trace/api/#isremote">isRemote()</a> is true.
+    /// </summary>
+    public static OtelSpanParentOrigin Remote { get; } = new("remote");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static OtelSpanParentOrigin Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(OtelSpanParentOrigin other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is OtelSpanParentOrigin other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(OtelSpanParentOrigin left, OtelSpanParentOrigin right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(OtelSpanParentOrigin left, OtelSpanParentOrigin right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The result value of the sampler for this span
+/// </summary>
+/// <remarks>
+/// The open value set of <c>otel.span.sampling_result</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct OtelSpanSamplingResult : global::System.IEquatable<OtelSpanSamplingResult>
+{
+    /// <summary>
+    /// The attribute key, <c>otel.span.sampling_result</c>.
+    /// </summary>
+    public const string Key = "otel.span.sampling_result";
+
+    private readonly string? _value;
+
+    private OtelSpanSamplingResult(string value) => _value = value;
+
+    /// <summary>
+    /// The span is not sampled and not recording.
+    /// </summary>
+    public static OtelSpanSamplingResult Drop { get; } = new("DROP");
+
+    /// <summary>
+    /// The span is not sampled, but recording.
+    /// </summary>
+    public static OtelSpanSamplingResult RecordOnly { get; } = new("RECORD_ONLY");
+
+    /// <summary>
+    /// The span is sampled and recording.
+    /// </summary>
+    public static OtelSpanSamplingResult RecordAndSample { get; } = new("RECORD_AND_SAMPLE");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static OtelSpanSamplingResult Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(OtelSpanSamplingResult other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is OtelSpanSamplingResult other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(OtelSpanSamplingResult left, OtelSpanSamplingResult right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(OtelSpanSamplingResult left, OtelSpanSamplingResult right) => !left.Equals(right);
 }

@@ -169,40 +169,6 @@ public static class GenAiIncubatingActivityExtensions
         => activity.SetTag("gen_ai.input.messages", value);
 
     /// <summary>
-    /// The free-form description of the top-level Generative AI agent in the process.
-    /// </summary>
-    /// <remarks>
-    /// In Agent-to-Agent (A2A) communication, this maps to the <c>description</c> property declared in the Agent Card.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetGenAiMainAgentDescription(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gen_ai.main_agent.description", value);
-
-    /// <summary>
-    /// The unique and stable identifier of the top-level Generative AI agent in the process
-    /// </summary>
-    /// <remarks>
-    /// For main agents, this SHOULD be the provider-assigned stable identifier of the agent resource such as <a href="https://docs.aws.amazon.com/bedrock/latest/APIReference/API_agent_Agent.html">AWS Bedrock agent ARN</a> or <a href="https://docs.cloud.google.com/agent-registry/concepts#agent-identifier">GCP Agent Registry identifier</a>.
-    /// Instrumentation MUST NOT generate <c>gen_ai.main_agent.id</c> from an in-memory or process-local identifier. If no stable identifier is available, the agent entity is not emitted, and instrumentation continues to report <c>gen_ai.agent.name</c> at the span level when relevant.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetGenAiMainAgentId(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gen_ai.main_agent.id", value);
-
-    /// <summary>
-    /// The human-readable name of the top-level Generative AI agent in the process.
-    /// </summary>
-    /// <remarks>
-    /// In Agent-to-Agent (A2A) communication, this maps to the <c>name</c> property declared in the Agent Card.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetGenAiMainAgentName(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gen_ai.main_agent.name", value);
-
-    /// <summary>
     /// The search query used to retrieve memories.
     /// </summary>
     /// <remarks>
@@ -270,8 +236,8 @@ public static class GenAiIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetGenAiOperationName(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gen_ai.operation.name", value);
+        GenAiOperationName value)
+        => activity.SetTag("gen_ai.operation.name", value.Value);
 
     /// <summary>
     /// Messages returned by the model where each message represents a specific model response (choice, candidate).
@@ -313,8 +279,8 @@ public static class GenAiIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetGenAiOutputType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gen_ai.output.type", value);
+        GenAiOutputType value)
+        => activity.SetTag("gen_ai.output.type", value.Value);
 
     /// <summary>
     /// The name of the prompt that uniquely identifies it.
@@ -387,8 +353,8 @@ public static class GenAiIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetGenAiProviderName(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gen_ai.provider.name", value);
+        GenAiProviderName value)
+        => activity.SetTag("gen_ai.provider.name", value.Value);
 
     /// <summary>
     /// The target number of candidate completions to return.
@@ -576,8 +542,8 @@ public static class GenAiIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetGenAiResponseStatus(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gen_ai.response.status", value);
+        GenAiResponseStatus value)
+        => activity.SetTag("gen_ai.response.status", value.Value);
 
     /// <summary>
     /// Time to first chunk in a streaming response, measured from request issuance, in seconds. The value is measured from when the client issues the generation request to when the first chunk is received in the response stream.
@@ -700,8 +666,8 @@ public static class GenAiIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetGenAiTokenModality(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gen_ai.token.modality", value);
+        GenAiTokenModality value)
+        => activity.SetTag("gen_ai.token.modality", value.Value);
 
     /// <summary>
     /// The type of token <c>gen_ai.client.token.usage</c> counts, as Microsoft.Extensions.AI 10.10.0 spells it.
@@ -711,8 +677,8 @@ public static class GenAiIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetGenAiTokenType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("gen_ai.token.type", value);
+        GenAiTokenType value)
+        => activity.SetTag("gen_ai.token.type", value.Value);
 
     /// <summary>
     /// Parameters passed to the tool call.
@@ -1049,340 +1015,580 @@ public static class GenAiIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("gen_ai.workflow.name", value);
+}
+
+/// <summary>
+/// The name of the operation being performed.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>gen_ai.operation.name</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct GenAiOperationName : global::System.IEquatable<GenAiOperationName>
+{
+    /// <summary>
+    /// The attribute key, <c>gen_ai.operation.name</c>.
+    /// </summary>
+    public const string Key = "gen_ai.operation.name";
+
+    private readonly string? _value;
+
+    private GenAiOperationName(string value) => _value = value;
 
     /// <summary>
-    /// The name of the operation being performed.
+    /// Chat completion operation such as <a href="https://platform.openai.com/docs/api-reference/chat">OpenAI Chat API</a>.
     /// </summary>
-    public static class GenAiOperationNameValues
-    {
-        /// <summary>
-        /// Chat completion operation such as <a href="https://platform.openai.com/docs/api-reference/chat">OpenAI Chat API</a>.
-        /// </summary>
-        public const string Chat = "chat";
-
-        /// <summary>
-        /// Multimodal content generation operation such as <a href="https://ai.google.dev/api/generate-content">Gemini Generate Content</a>.
-        /// </summary>
-        public const string GenerateContent = "generate_content";
-
-        /// <summary>
-        /// Text completions operation such as <a href="https://platform.openai.com/docs/api-reference/completions">OpenAI Completions API (Legacy)</a>.
-        /// </summary>
-        public const string TextCompletion = "text_completion";
-
-        /// <summary>
-        /// Embeddings operation such as <a href="https://platform.openai.com/docs/api-reference/embeddings/create">OpenAI Create embeddings API</a>.
-        /// </summary>
-        public const string Embeddings = "embeddings";
-
-        /// <summary>
-        /// Retrieval operation such as <a href="https://platform.openai.com/docs/api-reference/vector-stores/search">OpenAI Search Vector Store API</a>.
-        /// </summary>
-        public const string Retrieval = "retrieval";
-
-        /// <summary>
-        /// Fetch a previously generated model response by its identifier, without performing inference, such as <a href="https://platform.openai.com/docs/api-reference/responses/get">OpenAI Get a model response</a>.
-        /// </summary>
-        public const string FetchResponse = "fetch_response";
-
-        /// <summary>
-        /// Create GenAI agent.
-        /// </summary>
-        public const string CreateAgent = "create_agent";
-
-        /// <summary>
-        /// Invoke GenAI agent.
-        /// </summary>
-        public const string InvokeAgent = "invoke_agent";
-
-        /// <summary>
-        /// Execute a tool.
-        /// </summary>
-        public const string ExecuteTool = "execute_tool";
-
-        /// <summary>
-        /// Invoke GenAI workflow.
-        /// </summary>
-        public const string InvokeWorkflow = "invoke_workflow";
-
-        /// <summary>
-        /// Agent planning or task decomposition phase.
-        /// </summary>
-        public const string Plan = "plan";
-
-        /// <summary>
-        /// Search/query memories from a memory store.
-        /// </summary>
-        public const string SearchMemory = "search_memory";
-
-        /// <summary>
-        /// Create new memory records.
-        /// </summary>
-        public const string CreateMemory = "create_memory";
-
-        /// <summary>
-        /// Update existing memory records.
-        /// </summary>
-        public const string UpdateMemory = "update_memory";
-
-        /// <summary>
-        /// Create or update memory records without the caller choosing which.
-        /// </summary>
-        public const string UpsertMemory = "upsert_memory";
-
-        /// <summary>
-        /// Delete memory records.
-        /// </summary>
-        public const string DeleteMemory = "delete_memory";
-
-        /// <summary>
-        /// Create or initialize a memory store.
-        /// </summary>
-        public const string CreateMemoryStore = "create_memory_store";
-
-        /// <summary>
-        /// Delete or deprovision a memory store.
-        /// </summary>
-        public const string DeleteMemoryStore = "delete_memory_store";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "chat", "generate_content", "text_completion", "embeddings", "retrieval", "fetch_response", "create_agent", "invoke_agent", "execute_tool", "invoke_workflow", "plan", "search_memory", "create_memory", "update_memory", "upsert_memory", "delete_memory", "create_memory_store", "delete_memory_store" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static GenAiOperationName Chat { get; } = new("chat");
 
     /// <summary>
-    /// Represents the content type requested by the client.
+    /// Multimodal content generation operation such as <a href="https://ai.google.dev/api/generate-content">Gemini Generate Content</a>.
     /// </summary>
-    public static class GenAiOutputTypeValues
-    {
-        /// <summary>
-        /// Plain text.
-        /// </summary>
-        public const string Text = "text";
-
-        /// <summary>
-        /// JSON object with known or unknown schema.
-        /// </summary>
-        public const string Json = "json";
-
-        /// <summary>
-        /// Image.
-        /// </summary>
-        public const string Image = "image";
-
-        /// <summary>
-        /// Speech.
-        /// </summary>
-        public const string Speech = "speech";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "text", "json", "image", "speech" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static GenAiOperationName GenerateContent { get; } = new("generate_content");
 
     /// <summary>
-    /// The Generative AI provider as identified by the client or server instrumentation.
+    /// Text completions operation such as <a href="https://platform.openai.com/docs/api-reference/completions">OpenAI Completions API (Legacy)</a>.
     /// </summary>
-    public static class GenAiProviderNameValues
-    {
-        /// <summary>
-        /// <a href="https://openai.com/">OpenAI</a>.
-        /// </summary>
-        public const string Openai = "openai";
-
-        /// <summary>
-        /// Any Google generative AI endpoint.
-        /// </summary>
-        public const string GcpGenAi = "gcp.gen_ai";
-
-        /// <summary>
-        /// <a href="https://cloud.google.com/vertex-ai">Vertex AI</a>.
-        /// </summary>
-        public const string GcpVertexAi = "gcp.vertex_ai";
-
-        /// <summary>
-        /// <a href="https://cloud.google.com/products/gemini">Gemini</a>.
-        /// </summary>
-        public const string GcpGemini = "gcp.gemini";
-
-        /// <summary>
-        /// <a href="https://www.anthropic.com/">Anthropic</a>.
-        /// </summary>
-        public const string Anthropic = "anthropic";
-
-        /// <summary>
-        /// <a href="https://cohere.com/">Cohere</a>.
-        /// </summary>
-        public const string Cohere = "cohere";
-
-        /// <summary>
-        /// Azure AI Inference.
-        /// </summary>
-        public const string AzureAiInference = "azure.ai.inference";
-
-        /// <summary>
-        /// <a href="https://learn.microsoft.com/en-us/azure/ai-services/openai/overview">Azure OpenAI</a>.
-        /// </summary>
-        public const string AzureAiOpenai = "azure.ai.openai";
-
-        /// <summary>
-        /// <a href="https://www.ibm.com/products/watsonx-ai">IBM Watsonx AI</a>.
-        /// </summary>
-        public const string IbmWatsonxAi = "ibm.watsonx.ai";
-
-        /// <summary>
-        /// <a href="https://aws.amazon.com/bedrock">AWS Bedrock</a>.
-        /// </summary>
-        public const string AwsBedrock = "aws.bedrock";
-
-        /// <summary>
-        /// <a href="https://www.perplexity.ai/">Perplexity</a>.
-        /// </summary>
-        public const string Perplexity = "perplexity";
-
-        /// <summary>
-        /// <a href="https://x.ai/">xAI</a>.
-        /// </summary>
-        public const string XAi = "x_ai";
-
-        /// <summary>
-        /// <a href="https://www.deepseek.com/">DeepSeek</a>.
-        /// </summary>
-        public const string Deepseek = "deepseek";
-
-        /// <summary>
-        /// <a href="https://groq.com/">Groq</a>.
-        /// </summary>
-        public const string Groq = "groq";
-
-        /// <summary>
-        /// <a href="https://mistral.ai/">Mistral AI</a>.
-        /// </summary>
-        public const string MistralAi = "mistral_ai";
-
-        /// <summary>
-        /// <a href="https://www.moonshot.ai/">Moonshot AI</a>.
-        /// </summary>
-        public const string MoonshotAi = "moonshot_ai";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "openai", "gcp.gen_ai", "gcp.vertex_ai", "gcp.gemini", "anthropic", "cohere", "azure.ai.inference", "azure.ai.openai", "ibm.watsonx.ai", "aws.bedrock", "perplexity", "x_ai", "deepseek", "groq", "mistral_ai", "moonshot_ai" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static GenAiOperationName TextCompletion { get; } = new("text_completion");
 
     /// <summary>
-    /// The lifecycle status of a generated response, as reported by the provider when the response is fetched or polled.
+    /// Embeddings operation such as <a href="https://platform.openai.com/docs/api-reference/embeddings/create">OpenAI Create embeddings API</a>.
     /// </summary>
-    public static class GenAiResponseStatusValues
-    {
-        /// <summary>
-        /// The response has been accepted by the provider but generation has not started yet.
-        /// </summary>
-        public const string Queued = "queued";
-
-        /// <summary>
-        /// The response is still being generated, for example a background or streamed response that has not finished.
-        /// </summary>
-        public const string InProgress = "in_progress";
-
-        /// <summary>
-        /// The response finished generating successfully.
-        /// </summary>
-        public const string Completed = "completed";
-
-        /// <summary>
-        /// The response stopped before generation completed, for example because a token limit or content filter was reached.
-        /// </summary>
-        public const string Incomplete = "incomplete";
-
-        /// <summary>
-        /// The response generation failed with an error.
-        /// </summary>
-        public const string Failed = "failed";
-
-        /// <summary>
-        /// The response generation was cancelled before it completed.
-        /// </summary>
-        public const string Cancelled = "cancelled";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "queued", "in_progress", "completed", "incomplete", "failed", "cancelled" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static GenAiOperationName Embeddings { get; } = new("embeddings");
 
     /// <summary>
-    /// The modality of the tokens being counted.
+    /// Retrieval operation such as <a href="https://platform.openai.com/docs/api-reference/vector-stores/search">OpenAI Search Vector Store API</a>.
     /// </summary>
-    public static class GenAiTokenModalityValues
-    {
-        /// <summary>
-        /// Text tokens.
-        /// </summary>
-        public const string Text = "text";
-
-        /// <summary>
-        /// Image tokens.
-        /// </summary>
-        public const string Image = "image";
-
-        /// <summary>
-        /// Audio tokens.
-        /// </summary>
-        public const string Audio = "audio";
-
-        /// <summary>
-        /// The modality is not known.
-        /// </summary>
-        public const string Unknown = "unknown";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "text", "image", "audio", "unknown" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static GenAiOperationName Retrieval { get; } = new("retrieval");
 
     /// <summary>
-    /// The type of token <c>gen_ai.client.token.usage</c> counts, as Microsoft.Extensions.AI 10.10.0 spells it.
+    /// Fetch a previously generated model response by its identifier, without performing inference, such as <a href="https://platform.openai.com/docs/api-reference/responses/get">OpenAI Get a model response</a>.
     /// </summary>
-    public static class GenAiTokenTypeValues
-    {
-        /// <summary>
-        /// Input tokens (prompt, input, etc.).
-        /// </summary>
-        public const string Input = "input";
+    public static GenAiOperationName FetchResponse { get; } = new("fetch_response");
 
-        /// <summary>
-        /// Output tokens (completion, response, etc.).
-        /// </summary>
-        public const string Output = "output";
+    /// <summary>
+    /// Create GenAI agent.
+    /// </summary>
+    public static GenAiOperationName CreateAgent { get; } = new("create_agent");
 
-        /// <summary>
-        /// Audio input tokens of a realtime session.
-        /// </summary>
-        public const string InputAudio = "input_audio";
+    /// <summary>
+    /// Invoke GenAI agent.
+    /// </summary>
+    public static GenAiOperationName InvokeAgent { get; } = new("invoke_agent");
 
-        /// <summary>
-        /// Text input tokens of a realtime session.
-        /// </summary>
-        public const string InputText = "input_text";
+    /// <summary>
+    /// Execute a tool.
+    /// </summary>
+    public static GenAiOperationName ExecuteTool { get; } = new("execute_tool");
 
-        /// <summary>
-        /// Audio output tokens of a realtime session.
-        /// </summary>
-        public const string OutputAudio = "output_audio";
+    /// <summary>
+    /// Invoke GenAI workflow.
+    /// </summary>
+    public static GenAiOperationName InvokeWorkflow { get; } = new("invoke_workflow");
 
-        /// <summary>
-        /// Text output tokens of a realtime session.
-        /// </summary>
-        public const string OutputText = "output_text";
+    /// <summary>
+    /// Agent planning or task decomposition phase.
+    /// </summary>
+    public static GenAiOperationName Plan { get; } = new("plan");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "input", "output", "input_audio", "input_text", "output_audio", "output_text" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// Search/query memories from a memory store.
+    /// </summary>
+    public static GenAiOperationName SearchMemory { get; } = new("search_memory");
+
+    /// <summary>
+    /// Create new memory records.
+    /// </summary>
+    public static GenAiOperationName CreateMemory { get; } = new("create_memory");
+
+    /// <summary>
+    /// Update existing memory records.
+    /// </summary>
+    public static GenAiOperationName UpdateMemory { get; } = new("update_memory");
+
+    /// <summary>
+    /// Create or update memory records without the caller choosing which.
+    /// </summary>
+    public static GenAiOperationName UpsertMemory { get; } = new("upsert_memory");
+
+    /// <summary>
+    /// Delete memory records.
+    /// </summary>
+    public static GenAiOperationName DeleteMemory { get; } = new("delete_memory");
+
+    /// <summary>
+    /// Create or initialize a memory store.
+    /// </summary>
+    public static GenAiOperationName CreateMemoryStore { get; } = new("create_memory_store");
+
+    /// <summary>
+    /// Delete or deprovision a memory store.
+    /// </summary>
+    public static GenAiOperationName DeleteMemoryStore { get; } = new("delete_memory_store");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static GenAiOperationName Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(GenAiOperationName other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is GenAiOperationName other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(GenAiOperationName left, GenAiOperationName right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(GenAiOperationName left, GenAiOperationName right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Represents the content type requested by the client.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>gen_ai.output.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct GenAiOutputType : global::System.IEquatable<GenAiOutputType>
+{
+    /// <summary>
+    /// The attribute key, <c>gen_ai.output.type</c>.
+    /// </summary>
+    public const string Key = "gen_ai.output.type";
+
+    private readonly string? _value;
+
+    private GenAiOutputType(string value) => _value = value;
+
+    /// <summary>
+    /// Plain text.
+    /// </summary>
+    public static GenAiOutputType Text { get; } = new("text");
+
+    /// <summary>
+    /// JSON object with known or unknown schema.
+    /// </summary>
+    public static GenAiOutputType Json { get; } = new("json");
+
+    /// <summary>
+    /// Image.
+    /// </summary>
+    public static GenAiOutputType Image { get; } = new("image");
+
+    /// <summary>
+    /// Speech.
+    /// </summary>
+    public static GenAiOutputType Speech { get; } = new("speech");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static GenAiOutputType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(GenAiOutputType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is GenAiOutputType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(GenAiOutputType left, GenAiOutputType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(GenAiOutputType left, GenAiOutputType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The Generative AI provider as identified by the client or server instrumentation.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>gen_ai.provider.name</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct GenAiProviderName : global::System.IEquatable<GenAiProviderName>
+{
+    /// <summary>
+    /// The attribute key, <c>gen_ai.provider.name</c>.
+    /// </summary>
+    public const string Key = "gen_ai.provider.name";
+
+    private readonly string? _value;
+
+    private GenAiProviderName(string value) => _value = value;
+
+    /// <summary>
+    /// <a href="https://openai.com/">OpenAI</a>.
+    /// </summary>
+    public static GenAiProviderName Openai { get; } = new("openai");
+
+    /// <summary>
+    /// Any Google generative AI endpoint.
+    /// </summary>
+    public static GenAiProviderName GcpGenAi { get; } = new("gcp.gen_ai");
+
+    /// <summary>
+    /// <a href="https://cloud.google.com/vertex-ai">Vertex AI</a>.
+    /// </summary>
+    public static GenAiProviderName GcpVertexAi { get; } = new("gcp.vertex_ai");
+
+    /// <summary>
+    /// <a href="https://cloud.google.com/products/gemini">Gemini</a>.
+    /// </summary>
+    public static GenAiProviderName GcpGemini { get; } = new("gcp.gemini");
+
+    /// <summary>
+    /// <a href="https://www.anthropic.com/">Anthropic</a>.
+    /// </summary>
+    public static GenAiProviderName Anthropic { get; } = new("anthropic");
+
+    /// <summary>
+    /// <a href="https://cohere.com/">Cohere</a>.
+    /// </summary>
+    public static GenAiProviderName Cohere { get; } = new("cohere");
+
+    /// <summary>
+    /// Azure AI Inference.
+    /// </summary>
+    public static GenAiProviderName AzureAiInference { get; } = new("azure.ai.inference");
+
+    /// <summary>
+    /// <a href="https://learn.microsoft.com/en-us/azure/ai-services/openai/overview">Azure OpenAI</a>.
+    /// </summary>
+    public static GenAiProviderName AzureAiOpenai { get; } = new("azure.ai.openai");
+
+    /// <summary>
+    /// <a href="https://www.ibm.com/products/watsonx-ai">IBM Watsonx AI</a>.
+    /// </summary>
+    public static GenAiProviderName IbmWatsonxAi { get; } = new("ibm.watsonx.ai");
+
+    /// <summary>
+    /// <a href="https://aws.amazon.com/bedrock">AWS Bedrock</a>.
+    /// </summary>
+    public static GenAiProviderName AwsBedrock { get; } = new("aws.bedrock");
+
+    /// <summary>
+    /// <a href="https://www.perplexity.ai/">Perplexity</a>.
+    /// </summary>
+    public static GenAiProviderName Perplexity { get; } = new("perplexity");
+
+    /// <summary>
+    /// <a href="https://x.ai/">xAI</a>.
+    /// </summary>
+    public static GenAiProviderName XAi { get; } = new("x_ai");
+
+    /// <summary>
+    /// <a href="https://www.deepseek.com/">DeepSeek</a>.
+    /// </summary>
+    public static GenAiProviderName Deepseek { get; } = new("deepseek");
+
+    /// <summary>
+    /// <a href="https://groq.com/">Groq</a>.
+    /// </summary>
+    public static GenAiProviderName Groq { get; } = new("groq");
+
+    /// <summary>
+    /// <a href="https://mistral.ai/">Mistral AI</a>.
+    /// </summary>
+    public static GenAiProviderName MistralAi { get; } = new("mistral_ai");
+
+    /// <summary>
+    /// <a href="https://www.moonshot.ai/">Moonshot AI</a>.
+    /// </summary>
+    public static GenAiProviderName MoonshotAi { get; } = new("moonshot_ai");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static GenAiProviderName Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(GenAiProviderName other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is GenAiProviderName other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(GenAiProviderName left, GenAiProviderName right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(GenAiProviderName left, GenAiProviderName right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The lifecycle status of a generated response, as reported by the provider when the response is fetched or polled.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>gen_ai.response.status</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct GenAiResponseStatus : global::System.IEquatable<GenAiResponseStatus>
+{
+    /// <summary>
+    /// The attribute key, <c>gen_ai.response.status</c>.
+    /// </summary>
+    public const string Key = "gen_ai.response.status";
+
+    private readonly string? _value;
+
+    private GenAiResponseStatus(string value) => _value = value;
+
+    /// <summary>
+    /// The response has been accepted by the provider but generation has not started yet.
+    /// </summary>
+    public static GenAiResponseStatus Queued { get; } = new("queued");
+
+    /// <summary>
+    /// The response is still being generated, for example a background or streamed response that has not finished.
+    /// </summary>
+    public static GenAiResponseStatus InProgress { get; } = new("in_progress");
+
+    /// <summary>
+    /// The response finished generating successfully.
+    /// </summary>
+    public static GenAiResponseStatus Completed { get; } = new("completed");
+
+    /// <summary>
+    /// The response stopped before generation completed, for example because a token limit or content filter was reached.
+    /// </summary>
+    public static GenAiResponseStatus Incomplete { get; } = new("incomplete");
+
+    /// <summary>
+    /// The response generation failed with an error.
+    /// </summary>
+    public static GenAiResponseStatus Failed { get; } = new("failed");
+
+    /// <summary>
+    /// The response generation was cancelled before it completed.
+    /// </summary>
+    public static GenAiResponseStatus Cancelled { get; } = new("cancelled");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static GenAiResponseStatus Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(GenAiResponseStatus other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is GenAiResponseStatus other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(GenAiResponseStatus left, GenAiResponseStatus right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(GenAiResponseStatus left, GenAiResponseStatus right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The modality of the tokens being counted.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>gen_ai.token.modality</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct GenAiTokenModality : global::System.IEquatable<GenAiTokenModality>
+{
+    /// <summary>
+    /// The attribute key, <c>gen_ai.token.modality</c>.
+    /// </summary>
+    public const string Key = "gen_ai.token.modality";
+
+    private readonly string? _value;
+
+    private GenAiTokenModality(string value) => _value = value;
+
+    /// <summary>
+    /// Text tokens.
+    /// </summary>
+    public static GenAiTokenModality Text { get; } = new("text");
+
+    /// <summary>
+    /// Image tokens.
+    /// </summary>
+    public static GenAiTokenModality Image { get; } = new("image");
+
+    /// <summary>
+    /// Audio tokens.
+    /// </summary>
+    public static GenAiTokenModality Audio { get; } = new("audio");
+
+    /// <summary>
+    /// The modality is not known.
+    /// </summary>
+    public static GenAiTokenModality Unknown { get; } = new("unknown");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static GenAiTokenModality Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(GenAiTokenModality other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is GenAiTokenModality other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(GenAiTokenModality left, GenAiTokenModality right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(GenAiTokenModality left, GenAiTokenModality right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The type of token <c>gen_ai.client.token.usage</c> counts, as Microsoft.Extensions.AI 10.10.0 spells it.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>gen_ai.token.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct GenAiTokenType : global::System.IEquatable<GenAiTokenType>
+{
+    /// <summary>
+    /// The attribute key, <c>gen_ai.token.type</c>.
+    /// </summary>
+    public const string Key = "gen_ai.token.type";
+
+    private readonly string? _value;
+
+    private GenAiTokenType(string value) => _value = value;
+
+    /// <summary>
+    /// Input tokens (prompt, input, etc.).
+    /// </summary>
+    public static GenAiTokenType Input { get; } = new("input");
+
+    /// <summary>
+    /// Output tokens (completion, response, etc.).
+    /// </summary>
+    public static GenAiTokenType Output { get; } = new("output");
+
+    /// <summary>
+    /// Audio input tokens of a realtime session.
+    /// </summary>
+    public static GenAiTokenType InputAudio { get; } = new("input_audio");
+
+    /// <summary>
+    /// Text input tokens of a realtime session.
+    /// </summary>
+    public static GenAiTokenType InputText { get; } = new("input_text");
+
+    /// <summary>
+    /// Audio output tokens of a realtime session.
+    /// </summary>
+    public static GenAiTokenType OutputAudio { get; } = new("output_audio");
+
+    /// <summary>
+    /// Text output tokens of a realtime session.
+    /// </summary>
+    public static GenAiTokenType OutputText { get; } = new("output_text");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static GenAiTokenType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(GenAiTokenType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is GenAiTokenType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(GenAiTokenType left, GenAiTokenType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(GenAiTokenType left, GenAiTokenType right) => !left.Equals(right);
 }

@@ -58,8 +58,8 @@ public static class UserAgentIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetUserAgentSyntheticType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("user_agent.synthetic.type", value);
+        UserAgentSyntheticType value)
+        => activity.SetTag("user_agent.synthetic.type", value.Value);
 
     /// <summary>
     /// Version of the user-agent extracted from original. Usually refers to the browser's version
@@ -71,25 +71,65 @@ public static class UserAgentIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("user_agent.version", value);
+}
+
+/// <summary>
+/// Specifies the category of synthetic traffic, such as tests or bots.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>user_agent.synthetic.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct UserAgentSyntheticType : global::System.IEquatable<UserAgentSyntheticType>
+{
+    /// <summary>
+    /// The attribute key, <c>user_agent.synthetic.type</c>.
+    /// </summary>
+    public const string Key = "user_agent.synthetic.type";
+
+    private readonly string? _value;
+
+    private UserAgentSyntheticType(string value) => _value = value;
 
     /// <summary>
-    /// Specifies the category of synthetic traffic, such as tests or bots.
+    /// Bot source.
     /// </summary>
-    public static class UserAgentSyntheticTypeValues
-    {
-        /// <summary>
-        /// Bot source.
-        /// </summary>
-        public const string Bot = "bot";
+    public static UserAgentSyntheticType Bot { get; } = new("bot");
 
-        /// <summary>
-        /// Synthetic test source.
-        /// </summary>
-        public const string Test = "test";
+    /// <summary>
+    /// Synthetic test source.
+    /// </summary>
+    public static UserAgentSyntheticType Test { get; } = new("test");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "bot", "test" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static UserAgentSyntheticType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(UserAgentSyntheticType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is UserAgentSyntheticType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(UserAgentSyntheticType left, UserAgentSyntheticType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(UserAgentSyntheticType left, UserAgentSyntheticType right) => !left.Equals(right);
 }

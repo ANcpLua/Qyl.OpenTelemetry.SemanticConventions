@@ -18,59 +18,6 @@ namespace Qyl.Telemetry.SemanticConventions.Incubating.Activities;
 public static class BrowserIncubatingActivityExtensions
 {
     /// <summary>
-    /// Array of brand name and version separated by a space
-    /// </summary>
-    /// <remarks>
-    /// This value is intended to be taken from the <a href="https://wicg.github.io/ua-client-hints/#interface">UA client hints API</a> (<c>navigator.userAgentData.brands</c>).
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetBrowserBrands(
-        this global::System.Diagnostics.Activity activity,
-        string[] value)
-        => activity.SetTag("browser.brands", value);
-
-    /// <summary>
-    /// Absolute URL of the current browser document according to <a href="https://www.rfc-editor.org/rfc/rfc3986">RFC3986</a>.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetBrowserDocumentUrlFull(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("browser.document.url.full", value);
-
-    /// <summary>
-    /// Preferred language of the user using the browser
-    /// </summary>
-    /// <remarks>
-    /// This value is intended to be taken from the Navigator API <c>navigator.language</c>.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetBrowserLanguage(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("browser.language", value);
-
-    /// <summary>
-    /// A boolean that is true if the browser is running on a mobile device
-    /// </summary>
-    /// <remarks>
-    /// This value is intended to be taken from the <a href="https://wicg.github.io/ua-client-hints/#interface">UA client hints API</a> (<c>navigator.userAgentData.mobile</c>). If unavailable, this attribute SHOULD be left unset.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetBrowserMobile(
-        this global::System.Diagnostics.Activity activity,
-        bool value)
-        => activity.SetTag("browser.mobile", value);
-
-    /// <summary>
-    /// The platform on which the browser is running
-    /// </summary>
-    /// <remarks>
-    /// This value is intended to be taken from the <a href="https://wicg.github.io/ua-client-hints/#interface">UA client hints API</a> (<c>navigator.userAgentData.platform</c>). If unavailable, the legacy <c>navigator.platform</c> API SHOULD NOT be used instead and this attribute SHOULD be left unset in order for the values to be consistent.
-    /// The list of possible values is defined in the <a href="https://wicg.github.io/ua-client-hints/#sec-ch-ua-platform">W3C User-Agent Client Hints specification</a>. Note that some (but not all) of these values can overlap with values in the <a href="./os.md">`os.type` and `os.name` attributes</a>. However, for consistency, the values in the <c>browser.platform</c> attribute should capture the exact value that the user agent provides.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetBrowserPlatform(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("browser.platform", value);
-
-    /// <summary>
     /// The delta between the current value and the last-reported value. See <a href="https://github.com/GoogleChrome/web-vitals?tab=readme-ov-file#report-only-the-delta-of-changes">delta</a>.
     /// </summary>
     public static global::System.Diagnostics.Activity SetBrowserWebVitalDelta(
@@ -91,24 +38,24 @@ public static class BrowserIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetBrowserWebVitalName(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("browser.web_vital.name", value);
+        BrowserWebVitalName value)
+        => activity.SetTag("browser.web_vital.name", value.Value);
 
     /// <summary>
     /// The type of navigation, as reported by the <a href="https://developer.mozilla.org/docs/Web/API/PerformanceNavigationTiming/type">Navigation Timing API</a>, with additional values reported by the web-vitals library.
     /// </summary>
     public static global::System.Diagnostics.Activity SetBrowserWebVitalNavigationType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("browser.web_vital.navigation_type", value);
+        BrowserWebVitalNavigationType value)
+        => activity.SetTag("browser.web_vital.navigation_type", value.Value);
 
     /// <summary>
     /// The rating of the web vital value against the "good", "needs improvement", and "poor" thresholds defined for the metric.
     /// </summary>
     public static global::System.Diagnostics.Activity SetBrowserWebVitalRating(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("browser.web_vital.rating", value);
+        BrowserWebVitalRating value)
+        => activity.SetTag("browser.web_vital.rating", value.Value);
 
     /// <summary>
     /// Value of the web vital.
@@ -117,113 +64,233 @@ public static class BrowserIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         double value)
         => activity.SetTag("browser.web_vital.value", value);
+}
+
+/// <summary>
+/// Name of the web vital.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>browser.web_vital.name</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct BrowserWebVitalName : global::System.IEquatable<BrowserWebVitalName>
+{
+    /// <summary>
+    /// The attribute key, <c>browser.web_vital.name</c>.
+    /// </summary>
+    public const string Key = "browser.web_vital.name";
+
+    private readonly string? _value;
+
+    private BrowserWebVitalName(string value) => _value = value;
 
     /// <summary>
-    /// Name of the web vital.
+    /// Cumulative Layout Shift. See <a href="https://web.dev/articles/cls">cls</a>.
     /// </summary>
-    public static class BrowserWebVitalNameValues
-    {
-        /// <summary>
-        /// Cumulative Layout Shift. See <a href="https://web.dev/articles/cls">cls</a>.
-        /// </summary>
-        public const string Cls = "cls";
-
-        /// <summary>
-        /// Largest Contentful Paint. See <a href="https://web.dev/articles/lcp">lcp</a>.
-        /// </summary>
-        public const string Lcp = "lcp";
-
-        /// <summary>
-        /// First Contentful Paint. See <a href="https://web.dev/articles/fcp">fcp</a>.
-        /// </summary>
-        public const string Fcp = "fcp";
-
-        /// <summary>
-        /// Interaction to Next Paint. See <a href="https://web.dev/articles/inp">inp</a>.
-        /// </summary>
-        public const string Inp = "inp";
-
-        /// <summary>
-        /// Time to First Byte. See <a href="https://web.dev/articles/ttfb">ttfb</a>.
-        /// </summary>
-        public const string Ttfb = "ttfb";
-
-        /// <summary>
-        /// First Input Delay. See <a href="https://web.dev/articles/fid">fid</a>.
-        /// </summary>
-        [global::System.Obsolete("Removed, no replacement.", false)]
-        public const string Fid = "fid";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "cls", "lcp", "fcp", "inp", "ttfb", "fid" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static BrowserWebVitalName Cls { get; } = new("cls");
 
     /// <summary>
-    /// The type of navigation, as reported by the <a href="https://developer.mozilla.org/docs/Web/API/PerformanceNavigationTiming/type">Navigation Timing API</a>, with additional values reported by the web-vitals library.
+    /// Largest Contentful Paint. See <a href="https://web.dev/articles/lcp">lcp</a>.
     /// </summary>
-    public static class BrowserWebVitalNavigationTypeValues
-    {
-        /// <summary>
-        /// Navigation started by clicking a link, entering a URL, form submission, or a script operation.
-        /// </summary>
-        public const string Navigate = "navigate";
-
-        /// <summary>
-        /// Navigation through a reload operation or a <c>Location.reload()</c> call.
-        /// </summary>
-        public const string Reload = "reload";
-
-        /// <summary>
-        /// Navigation through the browser's history traversal (e.g. back/forward buttons).
-        /// </summary>
-        public const string BackForward = "back-forward";
-
-        /// <summary>
-        /// Navigation restoring a page from the back/forward cache (bfcache).
-        /// </summary>
-        public const string BackForwardCache = "back-forward-cache";
-
-        /// <summary>
-        /// Navigation to a page that was prerendered.
-        /// </summary>
-        public const string Prerender = "prerender";
-
-        /// <summary>
-        /// Navigation restoring a page that was previously discarded by the browser.
-        /// </summary>
-        public const string Restore = "restore";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "navigate", "reload", "back-forward", "back-forward-cache", "prerender", "restore" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static BrowserWebVitalName Lcp { get; } = new("lcp");
 
     /// <summary>
-    /// The rating of the web vital value against the "good", "needs improvement", and "poor" thresholds defined for the metric.
+    /// First Contentful Paint. See <a href="https://web.dev/articles/fcp">fcp</a>.
     /// </summary>
-    public static class BrowserWebVitalRatingValues
-    {
-        /// <summary>
-        /// The metric value is within the "good" threshold.
-        /// </summary>
-        public const string Good = "good";
+    public static BrowserWebVitalName Fcp { get; } = new("fcp");
 
-        /// <summary>
-        /// The metric value is within the "needs improvement" threshold.
-        /// </summary>
-        public const string NeedsImprovement = "needs-improvement";
+    /// <summary>
+    /// Interaction to Next Paint. See <a href="https://web.dev/articles/inp">inp</a>.
+    /// </summary>
+    public static BrowserWebVitalName Inp { get; } = new("inp");
 
-        /// <summary>
-        /// The metric value is within the "poor" threshold.
-        /// </summary>
-        public const string Poor = "poor";
+    /// <summary>
+    /// Time to First Byte. See <a href="https://web.dev/articles/ttfb">ttfb</a>.
+    /// </summary>
+    public static BrowserWebVitalName Ttfb { get; } = new("ttfb");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "good", "needs-improvement", "poor" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// First Input Delay. See <a href="https://web.dev/articles/fid">fid</a>.
+    /// </summary>
+    [global::System.Obsolete("Removed, no replacement.", false)]
+    public static BrowserWebVitalName Fid { get; } = new("fid");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static BrowserWebVitalName Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(BrowserWebVitalName other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is BrowserWebVitalName other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(BrowserWebVitalName left, BrowserWebVitalName right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(BrowserWebVitalName left, BrowserWebVitalName right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The type of navigation, as reported by the <a href="https://developer.mozilla.org/docs/Web/API/PerformanceNavigationTiming/type">Navigation Timing API</a>, with additional values reported by the web-vitals library.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>browser.web_vital.navigation_type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct BrowserWebVitalNavigationType : global::System.IEquatable<BrowserWebVitalNavigationType>
+{
+    /// <summary>
+    /// The attribute key, <c>browser.web_vital.navigation_type</c>.
+    /// </summary>
+    public const string Key = "browser.web_vital.navigation_type";
+
+    private readonly string? _value;
+
+    private BrowserWebVitalNavigationType(string value) => _value = value;
+
+    /// <summary>
+    /// Navigation started by clicking a link, entering a URL, form submission, or a script operation.
+    /// </summary>
+    public static BrowserWebVitalNavigationType Navigate { get; } = new("navigate");
+
+    /// <summary>
+    /// Navigation through a reload operation or a <c>Location.reload()</c> call.
+    /// </summary>
+    public static BrowserWebVitalNavigationType Reload { get; } = new("reload");
+
+    /// <summary>
+    /// Navigation through the browser's history traversal (e.g. back/forward buttons).
+    /// </summary>
+    public static BrowserWebVitalNavigationType BackForward { get; } = new("back-forward");
+
+    /// <summary>
+    /// Navigation restoring a page from the back/forward cache (bfcache).
+    /// </summary>
+    public static BrowserWebVitalNavigationType BackForwardCache { get; } = new("back-forward-cache");
+
+    /// <summary>
+    /// Navigation to a page that was prerendered.
+    /// </summary>
+    public static BrowserWebVitalNavigationType Prerender { get; } = new("prerender");
+
+    /// <summary>
+    /// Navigation restoring a page that was previously discarded by the browser.
+    /// </summary>
+    public static BrowserWebVitalNavigationType Restore { get; } = new("restore");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static BrowserWebVitalNavigationType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(BrowserWebVitalNavigationType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is BrowserWebVitalNavigationType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(BrowserWebVitalNavigationType left, BrowserWebVitalNavigationType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(BrowserWebVitalNavigationType left, BrowserWebVitalNavigationType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The rating of the web vital value against the "good", "needs improvement", and "poor" thresholds defined for the metric.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>browser.web_vital.rating</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct BrowserWebVitalRating : global::System.IEquatable<BrowserWebVitalRating>
+{
+    /// <summary>
+    /// The attribute key, <c>browser.web_vital.rating</c>.
+    /// </summary>
+    public const string Key = "browser.web_vital.rating";
+
+    private readonly string? _value;
+
+    private BrowserWebVitalRating(string value) => _value = value;
+
+    /// <summary>
+    /// The metric value is within the "good" threshold.
+    /// </summary>
+    public static BrowserWebVitalRating Good { get; } = new("good");
+
+    /// <summary>
+    /// The metric value is within the "needs improvement" threshold.
+    /// </summary>
+    public static BrowserWebVitalRating NeedsImprovement { get; } = new("needs-improvement");
+
+    /// <summary>
+    /// The metric value is within the "poor" threshold.
+    /// </summary>
+    public static BrowserWebVitalRating Poor { get; } = new("poor");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static BrowserWebVitalRating Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(BrowserWebVitalRating other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is BrowserWebVitalRating other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(BrowserWebVitalRating left, BrowserWebVitalRating right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(BrowserWebVitalRating left, BrowserWebVitalRating right) => !left.Equals(right);
 }

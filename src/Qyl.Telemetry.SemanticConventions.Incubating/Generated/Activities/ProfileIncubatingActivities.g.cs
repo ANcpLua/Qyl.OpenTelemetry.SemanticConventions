@@ -22,82 +22,122 @@ public static class ProfileIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetProfileFrameType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("profile.frame.type", value);
+        ProfileFrameType value)
+        => activity.SetTag("profile.frame.type", value.Value);
+}
+
+/// <summary>
+/// Describes the interpreter or compiler of a single frame.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>profile.frame.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct ProfileFrameType : global::System.IEquatable<ProfileFrameType>
+{
+    /// <summary>
+    /// The attribute key, <c>profile.frame.type</c>.
+    /// </summary>
+    public const string Key = "profile.frame.type";
+
+    private readonly string? _value;
+
+    private ProfileFrameType(string value) => _value = value;
 
     /// <summary>
-    /// Describes the interpreter or compiler of a single frame.
+    /// <a href="https://wikipedia.org/wiki/.NET">.NET</a>.
     /// </summary>
-    public static class ProfileFrameTypeValues
-    {
-        /// <summary>
-        /// <a href="https://wikipedia.org/wiki/.NET">.NET</a>.
-        /// </summary>
-        public const string Dotnet = "dotnet";
+    public static ProfileFrameType Dotnet { get; } = new("dotnet");
 
-        /// <summary>
-        /// <a href="https://wikipedia.org/wiki/Java_virtual_machine">JVM</a>.
-        /// </summary>
-        public const string Jvm = "jvm";
+    /// <summary>
+    /// <a href="https://wikipedia.org/wiki/Java_virtual_machine">JVM</a>.
+    /// </summary>
+    public static ProfileFrameType Jvm { get; } = new("jvm");
 
-        /// <summary>
-        /// <a href="https://wikipedia.org/wiki/Kernel_(operating_system)">Kernel</a>.
-        /// </summary>
-        public const string Kernel = "kernel";
+    /// <summary>
+    /// <a href="https://wikipedia.org/wiki/Kernel_(operating_system)">Kernel</a>.
+    /// </summary>
+    public static ProfileFrameType Kernel { get; } = new("kernel");
 
-        /// <summary>
-        /// Can be one of but not limited to <a href="https://wikipedia.org/wiki/C_(programming_language)">C</a>, <a href="https://wikipedia.org/wiki/C%2B%2B">C++</a>, <a href="https://wikipedia.org/wiki/Go_(programming_language)">Go</a> or <a href="https://wikipedia.org/wiki/Rust_(programming_language)">Rust</a>. If possible, a more precise value MUST be used.
-        /// </summary>
-        public const string Native = "native";
+    /// <summary>
+    /// Can be one of but not limited to <a href="https://wikipedia.org/wiki/C_(programming_language)">C</a>, <a href="https://wikipedia.org/wiki/C%2B%2B">C++</a>, <a href="https://wikipedia.org/wiki/Go_(programming_language)">Go</a> or <a href="https://wikipedia.org/wiki/Rust_(programming_language)">Rust</a>. If possible, a more precise value MUST be used.
+    /// </summary>
+    public static ProfileFrameType Native { get; } = new("native");
 
-        /// <summary>
-        /// <a href="https://wikipedia.org/wiki/Perl">Perl</a>.
-        /// </summary>
-        public const string Perl = "perl";
+    /// <summary>
+    /// <a href="https://wikipedia.org/wiki/Perl">Perl</a>.
+    /// </summary>
+    public static ProfileFrameType Perl { get; } = new("perl");
 
-        /// <summary>
-        /// <a href="https://wikipedia.org/wiki/PHP">PHP</a>.
-        /// </summary>
-        public const string Php = "php";
+    /// <summary>
+    /// <a href="https://wikipedia.org/wiki/PHP">PHP</a>.
+    /// </summary>
+    public static ProfileFrameType Php { get; } = new("php");
 
-        /// <summary>
-        /// <a href="https://wikipedia.org/wiki/Python_(programming_language)">Python</a>.
-        /// </summary>
-        public const string Cpython = "cpython";
+    /// <summary>
+    /// <a href="https://wikipedia.org/wiki/Python_(programming_language)">Python</a>.
+    /// </summary>
+    public static ProfileFrameType Cpython { get; } = new("cpython");
 
-        /// <summary>
-        /// <a href="https://wikipedia.org/wiki/Ruby_(programming_language)">Ruby</a>.
-        /// </summary>
-        public const string Ruby = "ruby";
+    /// <summary>
+    /// <a href="https://wikipedia.org/wiki/Ruby_(programming_language)">Ruby</a>.
+    /// </summary>
+    public static ProfileFrameType Ruby { get; } = new("ruby");
 
-        /// <summary>
-        /// <a href="https://wikipedia.org/wiki/V8_(JavaScript_engine)">V8JS</a>.
-        /// </summary>
-        public const string V8js = "v8js";
+    /// <summary>
+    /// <a href="https://wikipedia.org/wiki/V8_(JavaScript_engine)">V8JS</a>.
+    /// </summary>
+    public static ProfileFrameType V8js { get; } = new("v8js");
 
-        /// <summary>
-        /// <a href="https://en.wikipedia.org/wiki/BEAM_(Erlang_virtual_machine)">Erlang</a>.
-        /// </summary>
-        public const string Beam = "beam";
+    /// <summary>
+    /// <a href="https://en.wikipedia.org/wiki/BEAM_(Erlang_virtual_machine)">Erlang</a>.
+    /// </summary>
+    public static ProfileFrameType Beam { get; } = new("beam");
 
-        /// <summary>
-        /// <a href="https://wikipedia.org/wiki/Go_(programming_language)">Go</a>,.
-        /// </summary>
-        public const string Go = "go";
+    /// <summary>
+    /// <a href="https://wikipedia.org/wiki/Go_(programming_language)">Go</a>,.
+    /// </summary>
+    public static ProfileFrameType Go { get; } = new("go");
 
-        /// <summary>
-        /// <a href="https://wikipedia.org/wiki/Rust_(programming_language)">Rust</a>.
-        /// </summary>
-        public const string Rust = "rust";
+    /// <summary>
+    /// <a href="https://wikipedia.org/wiki/Rust_(programming_language)">Rust</a>.
+    /// </summary>
+    public static ProfileFrameType Rust { get; } = new("rust");
 
-        /// <summary>
-        /// <a href="https://en.wikipedia.org/wiki/LuaJIT">LuaJIT</a>.
-        /// </summary>
-        public const string Luajit = "luajit";
+    /// <summary>
+    /// <a href="https://en.wikipedia.org/wiki/LuaJIT">LuaJIT</a>.
+    /// </summary>
+    public static ProfileFrameType Luajit { get; } = new("luajit");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "dotnet", "jvm", "kernel", "native", "perl", "php", "cpython", "ruby", "v8js", "beam", "go", "rust", "luajit" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static ProfileFrameType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(ProfileFrameType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is ProfileFrameType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(ProfileFrameType left, ProfileFrameType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(ProfileFrameType left, ProfileFrameType right) => !left.Equals(right);
 }

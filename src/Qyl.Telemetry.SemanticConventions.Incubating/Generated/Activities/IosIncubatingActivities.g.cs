@@ -25,42 +25,82 @@ public static class IosIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetIosAppState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("ios.app.state", value);
+        IosAppState value)
+        => activity.SetTag("ios.app.state", value.Value);
+}
+
+/// <summary>
+/// This attribute represents the state of the application.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>ios.app.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct IosAppState : global::System.IEquatable<IosAppState>
+{
+    /// <summary>
+    /// The attribute key, <c>ios.app.state</c>.
+    /// </summary>
+    public const string Key = "ios.app.state";
+
+    private readonly string? _value;
+
+    private IosAppState(string value) => _value = value;
 
     /// <summary>
-    /// This attribute represents the state of the application.
+    /// The app has become <c>active</c>. Associated with UIKit notification <c>applicationDidBecomeActive</c>.
     /// </summary>
-    public static class IosAppStateValues
-    {
-        /// <summary>
-        /// The app has become <c>active</c>. Associated with UIKit notification <c>applicationDidBecomeActive</c>.
-        /// </summary>
-        public const string Active = "active";
+    public static IosAppState Active { get; } = new("active");
 
-        /// <summary>
-        /// The app is now <c>inactive</c>. Associated with UIKit notification <c>applicationWillResignActive</c>.
-        /// </summary>
-        public const string Inactive = "inactive";
+    /// <summary>
+    /// The app is now <c>inactive</c>. Associated with UIKit notification <c>applicationWillResignActive</c>.
+    /// </summary>
+    public static IosAppState Inactive { get; } = new("inactive");
 
-        /// <summary>
-        /// The app is now in the background. This value is associated with UIKit notification <c>applicationDidEnterBackground</c>.
-        /// </summary>
-        public const string Background = "background";
+    /// <summary>
+    /// The app is now in the background. This value is associated with UIKit notification <c>applicationDidEnterBackground</c>.
+    /// </summary>
+    public static IosAppState Background { get; } = new("background");
 
-        /// <summary>
-        /// The app is now in the foreground. This value is associated with UIKit notification <c>applicationWillEnterForeground</c>.
-        /// </summary>
-        public const string Foreground = "foreground";
+    /// <summary>
+    /// The app is now in the foreground. This value is associated with UIKit notification <c>applicationWillEnterForeground</c>.
+    /// </summary>
+    public static IosAppState Foreground { get; } = new("foreground");
 
-        /// <summary>
-        /// The app is about to terminate. Associated with UIKit notification <c>applicationWillTerminate</c>.
-        /// </summary>
-        public const string Terminate = "terminate";
+    /// <summary>
+    /// The app is about to terminate. Associated with UIKit notification <c>applicationWillTerminate</c>.
+    /// </summary>
+    public static IosAppState Terminate { get; } = new("terminate");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "active", "inactive", "background", "foreground", "terminate" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static IosAppState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(IosAppState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is IosAppState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(IosAppState left, IosAppState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(IosAppState left, IosAppState right) => !left.Equals(right);
 }

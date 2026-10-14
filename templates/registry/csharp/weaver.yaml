@@ -127,10 +127,13 @@ templates:
     application_mode: each
     file_name: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated/Attributes/{{ ctx.pascal_root }}MetricAttributes.g.cs"
 
-  # Typed Activity setter extensions, per stability tier. The two packages are disjoint:
-  # the stable one carries the stable and deprecated rows, the incubating one carries only
-  # what is left, under {Root}Incubating* type names, so a consumer may import both
-  # namespaces without an ambiguous-call error.
+  # Typed Activity setter extensions and the value-set structs of the enum attributes, per
+  # stability tier. The two packages are disjoint: the stable one carries the stable and
+  # deprecated rows, the incubating one carries only what is left, under {Root}Incubating*
+  # type names, so a consumer may import both namespaces without an ambiguous-call error.
+  # Resource-only attributes (referenced by entities and by no span, event or metric:
+  # service.name, deployment.environment.name, host.*) get no Activity setter, and qyl.app gets
+  # none either: SetAppTag (Qyl.Spans) is its one writer.
   - template: activities.cs.j2
     filter: >
       . as $registry
@@ -143,10 +146,19 @@ templates:
       | def pascal($s): $s | gsub("[_\\-]"; ".") | split(".")
                      | map(select(length > 0) | (.[0:1] | ascii_upcase) + .[1:]) | join("");
       def dedupe(f): group_by(f) | map(sort_by([(if .deprecated then 1 else 0 end), f]) | .[0]);
-      ([.registry.attributes[]]) as $top
+      ([$registry, $registry.dependencies[]]) as $sources
+      | ([$sources[] | (.registry.entities[]?, .refinements.entities[]?)
+          | ((.identity // [])[], (.description // [])[]) | .key] | unique) as $entity_keys
+      | ([$sources[] | (.registry.spans[]?, .registry.events[]?, .registry.metrics[]?,
+                         .refinements.spans[]?, .refinements.events[]?, .refinements.metrics[]?)
+          | (.attributes // [])[] | .key]
+         | unique | map({key: ., value: true}) | from_entries) as $signal_keys
+      | ($entity_keys | map(select($signal_keys[.] | not)) | map({key: ., value: true})
+         | from_entries + {"qyl.app": true}) as $no_setter
+      | ([.registry.attributes[]]) as $top
       | ($top | map({key: .key, value: true}) | from_entries) as $seen
       | ([.dependencies[].registry.attributes[]] | map(select($seen[.key] | not))) as $extra
-      | (($top + $extra) | sort_by(.key)) as $all
+      | (($top + $extra) | map(select($no_setter[.key] | not)) | sort_by(.key)) as $all
       | [ ($all
             | map(select((.stability == "stable" or (.deprecated != null)) | not))
             | group_by(.key | split(".")[0]) | .[]

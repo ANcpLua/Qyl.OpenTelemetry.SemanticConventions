@@ -22,66 +22,146 @@ public static class SignalrActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetSignalrConnectionStatus(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("signalr.connection.status", value);
+        SignalrConnectionStatus value)
+        => activity.SetTag("signalr.connection.status", value.Value);
 
     /// <summary>
     /// <a href="https://github.com/dotnet/aspnetcore/blob/main/src/SignalR/docs/specs/TransportProtocols.md">SignalR transport type</a>
     /// </summary>
     public static global::System.Diagnostics.Activity SetSignalrTransport(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("signalr.transport", value);
+        SignalrTransport value)
+        => activity.SetTag("signalr.transport", value.Value);
+}
+
+/// <summary>
+/// SignalR HTTP connection closure status.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>signalr.connection.status</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct SignalrConnectionStatus : global::System.IEquatable<SignalrConnectionStatus>
+{
+    /// <summary>
+    /// The attribute key, <c>signalr.connection.status</c>.
+    /// </summary>
+    public const string Key = "signalr.connection.status";
+
+    private readonly string? _value;
+
+    private SignalrConnectionStatus(string value) => _value = value;
 
     /// <summary>
-    /// SignalR HTTP connection closure status.
+    /// The connection was closed normally.
     /// </summary>
-    public static class SignalrConnectionStatusValues
-    {
-        /// <summary>
-        /// The connection was closed normally.
-        /// </summary>
-        public const string NormalClosure = "normal_closure";
-
-        /// <summary>
-        /// The connection was closed due to a timeout.
-        /// </summary>
-        public const string Timeout = "timeout";
-
-        /// <summary>
-        /// The connection was closed because the app is shutting down.
-        /// </summary>
-        public const string AppShutdown = "app_shutdown";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "normal_closure", "timeout", "app_shutdown" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static SignalrConnectionStatus NormalClosure { get; } = new("normal_closure");
 
     /// <summary>
-    /// <a href="https://github.com/dotnet/aspnetcore/blob/main/src/SignalR/docs/specs/TransportProtocols.md">SignalR transport type</a>
+    /// The connection was closed due to a timeout.
     /// </summary>
-    public static class SignalrTransportValues
-    {
-        /// <summary>
-        /// ServerSentEvents protocol.
-        /// </summary>
-        public const string ServerSentEvents = "server_sent_events";
+    public static SignalrConnectionStatus Timeout { get; } = new("timeout");
 
-        /// <summary>
-        /// LongPolling protocol.
-        /// </summary>
-        public const string LongPolling = "long_polling";
+    /// <summary>
+    /// The connection was closed because the app is shutting down.
+    /// </summary>
+    public static SignalrConnectionStatus AppShutdown { get; } = new("app_shutdown");
 
-        /// <summary>
-        /// WebSockets protocol.
-        /// </summary>
-        public const string WebSockets = "web_sockets";
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static SignalrConnectionStatus Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "server_sent_events", "long_polling", "web_sockets" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(SignalrConnectionStatus other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is SignalrConnectionStatus other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(SignalrConnectionStatus left, SignalrConnectionStatus right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(SignalrConnectionStatus left, SignalrConnectionStatus right) => !left.Equals(right);
+}
+
+/// <summary>
+/// <a href="https://github.com/dotnet/aspnetcore/blob/main/src/SignalR/docs/specs/TransportProtocols.md">SignalR transport type</a>
+/// </summary>
+/// <remarks>
+/// The open value set of <c>signalr.transport</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct SignalrTransport : global::System.IEquatable<SignalrTransport>
+{
+    /// <summary>
+    /// The attribute key, <c>signalr.transport</c>.
+    /// </summary>
+    public const string Key = "signalr.transport";
+
+    private readonly string? _value;
+
+    private SignalrTransport(string value) => _value = value;
+
+    /// <summary>
+    /// ServerSentEvents protocol.
+    /// </summary>
+    public static SignalrTransport ServerSentEvents { get; } = new("server_sent_events");
+
+    /// <summary>
+    /// LongPolling protocol.
+    /// </summary>
+    public static SignalrTransport LongPolling { get; } = new("long_polling");
+
+    /// <summary>
+    /// WebSockets protocol.
+    /// </summary>
+    public static SignalrTransport WebSockets { get; } = new("web_sockets");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static SignalrTransport Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(SignalrTransport other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is SignalrTransport other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(SignalrTransport left, SignalrTransport right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(SignalrTransport left, SignalrTransport right) => !left.Equals(right);
 }

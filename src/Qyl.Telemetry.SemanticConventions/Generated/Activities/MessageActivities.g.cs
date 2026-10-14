@@ -41,8 +41,8 @@ public static class MessageActivityExtensions
     [global::System.Obsolete("Removed, no replacement.", false)]
     public static global::System.Diagnostics.Activity SetMessageType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("message.type", value);
+        MessageType value)
+        => activity.SetTag("message.type", value.Value);
 
     /// <summary>
     /// Deprecated, no replacement at this time.
@@ -52,25 +52,66 @@ public static class MessageActivityExtensions
         this global::System.Diagnostics.Activity activity,
         long value)
         => activity.SetTag("message.uncompressed_size", value);
+}
+
+/// <summary>
+/// Deprecated, no replacement at this time.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>message.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+[global::System.Obsolete("Removed, no replacement.", false)]
+public readonly struct MessageType : global::System.IEquatable<MessageType>
+{
+    /// <summary>
+    /// The attribute key, <c>message.type</c>.
+    /// </summary>
+    public const string Key = "message.type";
+
+    private readonly string? _value;
+
+    private MessageType(string value) => _value = value;
 
     /// <summary>
-    /// Deprecated, no replacement at this time.
+    /// sent.
     /// </summary>
-    public static class MessageTypeValues
-    {
-        /// <summary>
-        /// sent.
-        /// </summary>
-        public const string Sent = "SENT";
+    public static MessageType Sent { get; } = new("SENT");
 
-        /// <summary>
-        /// received.
-        /// </summary>
-        public const string Received = "RECEIVED";
+    /// <summary>
+    /// received.
+    /// </summary>
+    public static MessageType Received { get; } = new("RECEIVED");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "SENT", "RECEIVED" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static MessageType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(MessageType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is MessageType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(MessageType left, MessageType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(MessageType left, MessageType right) => !left.Equals(right);
 }

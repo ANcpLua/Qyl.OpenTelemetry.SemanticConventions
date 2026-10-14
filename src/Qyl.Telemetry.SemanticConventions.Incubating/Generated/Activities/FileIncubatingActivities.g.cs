@@ -137,8 +137,8 @@ public static class FileIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetFileLockType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("file.lock.type", value);
+        FileLockType value)
+        => activity.SetTag("file.lock.type", value.Value);
 
     /// <summary>
     /// Mode of the file in octal representation.
@@ -206,25 +206,65 @@ public static class FileIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("file.symbolic_link.target_path", value);
+}
+
+/// <summary>
+/// The lock type as represented by i.e. <a href="https://pubs.opengroup.org/onlinepubs/9699919799/functions/fcntl.html">POSIX</a>'s l_type.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>file.lock.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct FileLockType : global::System.IEquatable<FileLockType>
+{
+    /// <summary>
+    /// The attribute key, <c>file.lock.type</c>.
+    /// </summary>
+    public const string Key = "file.lock.type";
+
+    private readonly string? _value;
+
+    private FileLockType(string value) => _value = value;
 
     /// <summary>
-    /// The lock type as represented by i.e. <a href="https://pubs.opengroup.org/onlinepubs/9699919799/functions/fcntl.html">POSIX</a>'s l_type.
+    /// read.
     /// </summary>
-    public static class FileLockTypeValues
-    {
-        /// <summary>
-        /// read.
-        /// </summary>
-        public const string Read = "read";
+    public static FileLockType Read { get; } = new("read");
 
-        /// <summary>
-        /// write.
-        /// </summary>
-        public const string Write = "write";
+    /// <summary>
+    /// write.
+    /// </summary>
+    public static FileLockType Write { get; } = new("write");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "read", "write" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static FileLockType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(FileLockType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is FileLockType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(FileLockType left, FileLockType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(FileLockType left, FileLockType right) => !left.Equals(right);
 }

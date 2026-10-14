@@ -145,8 +145,8 @@ public static class TlsIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetTlsProtocolName(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("tls.protocol.name", value);
+        TlsProtocolName value)
+        => activity.SetTag("tls.protocol.name", value.Value);
 
     /// <summary>
     /// Numeric part of the version parsed from the original string of the negotiated <a href="https://docs.openssl.org/1.1.1/man3/SSL_get_version/#return-values">SSL/TLS protocol version</a>
@@ -243,25 +243,65 @@ public static class TlsIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("tls.server.subject", value);
+}
+
+/// <summary>
+/// Normalized lowercase protocol name parsed from original string of the negotiated <a href="https://docs.openssl.org/1.1.1/man3/SSL_get_version/#return-values">SSL/TLS protocol version</a>
+/// </summary>
+/// <remarks>
+/// The open value set of <c>tls.protocol.name</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct TlsProtocolName : global::System.IEquatable<TlsProtocolName>
+{
+    /// <summary>
+    /// The attribute key, <c>tls.protocol.name</c>.
+    /// </summary>
+    public const string Key = "tls.protocol.name";
+
+    private readonly string? _value;
+
+    private TlsProtocolName(string value) => _value = value;
 
     /// <summary>
-    /// Normalized lowercase protocol name parsed from original string of the negotiated <a href="https://docs.openssl.org/1.1.1/man3/SSL_get_version/#return-values">SSL/TLS protocol version</a>
+    /// SSL.
     /// </summary>
-    public static class TlsProtocolNameValues
-    {
-        /// <summary>
-        /// SSL.
-        /// </summary>
-        public const string Ssl = "ssl";
+    public static TlsProtocolName Ssl { get; } = new("ssl");
 
-        /// <summary>
-        /// TLS.
-        /// </summary>
-        public const string Tls = "tls";
+    /// <summary>
+    /// TLS.
+    /// </summary>
+    public static TlsProtocolName Tls { get; } = new("tls");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "ssl", "tls" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static TlsProtocolName Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(TlsProtocolName other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is TlsProtocolName other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(TlsProtocolName left, TlsProtocolName right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(TlsProtocolName left, TlsProtocolName right) => !left.Equals(right);
 }

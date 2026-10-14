@@ -22,8 +22,8 @@ public static class AspnetcoreActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetAspnetcoreDiagnosticsExceptionResult(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("aspnetcore.diagnostics.exception.result", value);
+        AspnetcoreDiagnosticsExceptionResult value)
+        => activity.SetTag("aspnetcore.diagnostics.exception.result", value.Value);
 
     /// <summary>
     /// Full type name of the <a href="https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.diagnostics.iexceptionhandler">`IExceptionHandler`</a> implementation that handled the exception.
@@ -46,8 +46,8 @@ public static class AspnetcoreActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetAspnetcoreRateLimitingResult(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("aspnetcore.rate_limiting.result", value);
+        AspnetcoreRateLimitingResult value)
+        => activity.SetTag("aspnetcore.rate_limiting.result", value.Value);
 
     /// <summary>
     /// Flag indicating if request was handled by the application pipeline.
@@ -70,8 +70,8 @@ public static class AspnetcoreActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetAspnetcoreRoutingMatchStatus(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("aspnetcore.routing.match_status", value);
+        AspnetcoreRoutingMatchStatus value)
+        => activity.SetTag("aspnetcore.routing.match_status", value.Value);
 
     /// <summary>
     /// A value that indicates whether the user is authenticated.
@@ -80,87 +80,207 @@ public static class AspnetcoreActivityExtensions
         this global::System.Diagnostics.Activity activity,
         bool value)
         => activity.SetTag("aspnetcore.user.is_authenticated", value);
+}
+
+/// <summary>
+/// ASP.NET Core exception middleware handling result.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>aspnetcore.diagnostics.exception.result</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct AspnetcoreDiagnosticsExceptionResult : global::System.IEquatable<AspnetcoreDiagnosticsExceptionResult>
+{
+    /// <summary>
+    /// The attribute key, <c>aspnetcore.diagnostics.exception.result</c>.
+    /// </summary>
+    public const string Key = "aspnetcore.diagnostics.exception.result";
+
+    private readonly string? _value;
+
+    private AspnetcoreDiagnosticsExceptionResult(string value) => _value = value;
 
     /// <summary>
-    /// ASP.NET Core exception middleware handling result.
+    /// Exception was handled by the exception handling middleware.
     /// </summary>
-    public static class AspnetcoreDiagnosticsExceptionResultValues
-    {
-        /// <summary>
-        /// Exception was handled by the exception handling middleware.
-        /// </summary>
-        public const string Handled = "handled";
-
-        /// <summary>
-        /// Exception was not handled by the exception handling middleware.
-        /// </summary>
-        public const string Unhandled = "unhandled";
-
-        /// <summary>
-        /// Exception handling was skipped because the response had started.
-        /// </summary>
-        public const string Skipped = "skipped";
-
-        /// <summary>
-        /// Exception handling didn't run because the request was aborted.
-        /// </summary>
-        public const string Aborted = "aborted";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "handled", "unhandled", "skipped", "aborted" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static AspnetcoreDiagnosticsExceptionResult Handled { get; } = new("handled");
 
     /// <summary>
-    /// Rate-limiting result, shows whether the lease was acquired or contains a rejection reason
+    /// Exception was not handled by the exception handling middleware.
     /// </summary>
-    public static class AspnetcoreRateLimitingResultValues
-    {
-        /// <summary>
-        /// Lease was acquired.
-        /// </summary>
-        public const string Acquired = "acquired";
-
-        /// <summary>
-        /// Lease request was rejected by the endpoint limiter.
-        /// </summary>
-        public const string EndpointLimiter = "endpoint_limiter";
-
-        /// <summary>
-        /// Lease request was rejected by the global limiter.
-        /// </summary>
-        public const string GlobalLimiter = "global_limiter";
-
-        /// <summary>
-        /// Lease request was canceled.
-        /// </summary>
-        public const string RequestCanceled = "request_canceled";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "acquired", "endpoint_limiter", "global_limiter", "request_canceled" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static AspnetcoreDiagnosticsExceptionResult Unhandled { get; } = new("unhandled");
 
     /// <summary>
-    /// Match result - success or failure
+    /// Exception handling was skipped because the response had started.
     /// </summary>
-    public static class AspnetcoreRoutingMatchStatusValues
-    {
-        /// <summary>
-        /// Match succeeded.
-        /// </summary>
-        public const string Success = "success";
+    public static AspnetcoreDiagnosticsExceptionResult Skipped { get; } = new("skipped");
 
-        /// <summary>
-        /// Match failed.
-        /// </summary>
-        public const string Failure = "failure";
+    /// <summary>
+    /// Exception handling didn't run because the request was aborted.
+    /// </summary>
+    public static AspnetcoreDiagnosticsExceptionResult Aborted { get; } = new("aborted");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "success", "failure" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static AspnetcoreDiagnosticsExceptionResult Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(AspnetcoreDiagnosticsExceptionResult other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is AspnetcoreDiagnosticsExceptionResult other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(AspnetcoreDiagnosticsExceptionResult left, AspnetcoreDiagnosticsExceptionResult right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(AspnetcoreDiagnosticsExceptionResult left, AspnetcoreDiagnosticsExceptionResult right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Rate-limiting result, shows whether the lease was acquired or contains a rejection reason
+/// </summary>
+/// <remarks>
+/// The open value set of <c>aspnetcore.rate_limiting.result</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct AspnetcoreRateLimitingResult : global::System.IEquatable<AspnetcoreRateLimitingResult>
+{
+    /// <summary>
+    /// The attribute key, <c>aspnetcore.rate_limiting.result</c>.
+    /// </summary>
+    public const string Key = "aspnetcore.rate_limiting.result";
+
+    private readonly string? _value;
+
+    private AspnetcoreRateLimitingResult(string value) => _value = value;
+
+    /// <summary>
+    /// Lease was acquired.
+    /// </summary>
+    public static AspnetcoreRateLimitingResult Acquired { get; } = new("acquired");
+
+    /// <summary>
+    /// Lease request was rejected by the endpoint limiter.
+    /// </summary>
+    public static AspnetcoreRateLimitingResult EndpointLimiter { get; } = new("endpoint_limiter");
+
+    /// <summary>
+    /// Lease request was rejected by the global limiter.
+    /// </summary>
+    public static AspnetcoreRateLimitingResult GlobalLimiter { get; } = new("global_limiter");
+
+    /// <summary>
+    /// Lease request was canceled.
+    /// </summary>
+    public static AspnetcoreRateLimitingResult RequestCanceled { get; } = new("request_canceled");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static AspnetcoreRateLimitingResult Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(AspnetcoreRateLimitingResult other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is AspnetcoreRateLimitingResult other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(AspnetcoreRateLimitingResult left, AspnetcoreRateLimitingResult right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(AspnetcoreRateLimitingResult left, AspnetcoreRateLimitingResult right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Match result - success or failure
+/// </summary>
+/// <remarks>
+/// The open value set of <c>aspnetcore.routing.match_status</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct AspnetcoreRoutingMatchStatus : global::System.IEquatable<AspnetcoreRoutingMatchStatus>
+{
+    /// <summary>
+    /// The attribute key, <c>aspnetcore.routing.match_status</c>.
+    /// </summary>
+    public const string Key = "aspnetcore.routing.match_status";
+
+    private readonly string? _value;
+
+    private AspnetcoreRoutingMatchStatus(string value) => _value = value;
+
+    /// <summary>
+    /// Match succeeded.
+    /// </summary>
+    public static AspnetcoreRoutingMatchStatus Success { get; } = new("success");
+
+    /// <summary>
+    /// Match failed.
+    /// </summary>
+    public static AspnetcoreRoutingMatchStatus Failure { get; } = new("failure");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static AspnetcoreRoutingMatchStatus Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(AspnetcoreRoutingMatchStatus other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is AspnetcoreRoutingMatchStatus other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(AspnetcoreRoutingMatchStatus left, AspnetcoreRoutingMatchStatus right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(AspnetcoreRoutingMatchStatus left, AspnetcoreRoutingMatchStatus right) => !left.Equals(right);
 }

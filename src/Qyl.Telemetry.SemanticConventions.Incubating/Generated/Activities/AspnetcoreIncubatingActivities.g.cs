@@ -22,8 +22,8 @@ public static class AspnetcoreIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetAspnetcoreAuthenticationResult(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("aspnetcore.authentication.result", value);
+        AspnetcoreAuthenticationResult value)
+        => activity.SetTag("aspnetcore.authentication.result", value.Value);
 
     /// <summary>
     /// The identifier that names a particular authentication handler.
@@ -46,8 +46,8 @@ public static class AspnetcoreIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetAspnetcoreAuthorizationResult(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("aspnetcore.authorization.result", value);
+        AspnetcoreAuthorizationResult value)
+        => activity.SetTag("aspnetcore.authorization.result", value.Value);
 
     /// <summary>
     /// The error code for a failed identity operation.
@@ -62,56 +62,56 @@ public static class AspnetcoreIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetAspnetcoreIdentityPasswordCheckResult(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("aspnetcore.identity.password_check_result", value);
+        AspnetcoreIdentityPasswordCheckResult value)
+        => activity.SetTag("aspnetcore.identity.password_check_result", value.Value);
 
     /// <summary>
     /// The result of the identity operation.
     /// </summary>
     public static global::System.Diagnostics.Activity SetAspnetcoreIdentityResult(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("aspnetcore.identity.result", value);
+        AspnetcoreIdentityResult value)
+        => activity.SetTag("aspnetcore.identity.result", value.Value);
 
     /// <summary>
     /// Whether the sign in result was success or failure.
     /// </summary>
     public static global::System.Diagnostics.Activity SetAspnetcoreIdentitySignInResult(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("aspnetcore.identity.sign_in.result", value);
+        AspnetcoreIdentitySignInResult value)
+        => activity.SetTag("aspnetcore.identity.sign_in.result", value.Value);
 
     /// <summary>
     /// The authentication type.
     /// </summary>
     public static global::System.Diagnostics.Activity SetAspnetcoreIdentitySignInType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("aspnetcore.identity.sign_in.type", value);
+        AspnetcoreIdentitySignInType value)
+        => activity.SetTag("aspnetcore.identity.sign_in.type", value.Value);
 
     /// <summary>
     /// What the token will be used for.
     /// </summary>
     public static global::System.Diagnostics.Activity SetAspnetcoreIdentityTokenPurpose(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("aspnetcore.identity.token_purpose", value);
+        AspnetcoreIdentityTokenPurpose value)
+        => activity.SetTag("aspnetcore.identity.token_purpose", value.Value);
 
     /// <summary>
     /// The result of token verification.
     /// </summary>
     public static global::System.Diagnostics.Activity SetAspnetcoreIdentityTokenVerified(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("aspnetcore.identity.token_verified", value);
+        AspnetcoreIdentityTokenVerified value)
+        => activity.SetTag("aspnetcore.identity.token_verified", value.Value);
 
     /// <summary>
     /// The user update type.
     /// </summary>
     public static global::System.Diagnostics.Activity SetAspnetcoreIdentityUserUpdateType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("aspnetcore.identity.user.update_type", value);
+        AspnetcoreIdentityUserUpdateType value)
+        => activity.SetTag("aspnetcore.identity.user.update_type", value.Value);
 
     /// <summary>
     /// The full name of the identity user type.
@@ -136,423 +136,783 @@ public static class AspnetcoreIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         bool value)
         => activity.SetTag("aspnetcore.sign_in.is_persistent", value);
+}
+
+/// <summary>
+/// The result of the authentication operation.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>aspnetcore.authentication.result</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct AspnetcoreAuthenticationResult : global::System.IEquatable<AspnetcoreAuthenticationResult>
+{
+    /// <summary>
+    /// The attribute key, <c>aspnetcore.authentication.result</c>.
+    /// </summary>
+    public const string Key = "aspnetcore.authentication.result";
+
+    private readonly string? _value;
+
+    private AspnetcoreAuthenticationResult(string value) => _value = value;
 
     /// <summary>
-    /// The result of the authentication operation.
+    /// Authentication was successful.
     /// </summary>
-    public static class AspnetcoreAuthenticationResultValues
-    {
-        /// <summary>
-        /// Authentication was successful.
-        /// </summary>
-        public const string Success = "success";
-
-        /// <summary>
-        /// Authentication failed.
-        /// </summary>
-        public const string Failure = "failure";
-
-        /// <summary>
-        /// No authentication information returned.
-        /// </summary>
-        public const string None = "none";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "success", "failure", "none" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static AspnetcoreAuthenticationResult Success { get; } = new("success");
 
     /// <summary>
-    /// The result of calling the authorization service.
+    /// Authentication failed.
     /// </summary>
-    public static class AspnetcoreAuthorizationResultValues
-    {
-        /// <summary>
-        /// Authorization was successful.
-        /// </summary>
-        public const string Success = "success";
-
-        /// <summary>
-        /// Authorization failed.
-        /// </summary>
-        public const string Failure = "failure";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "success", "failure" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static AspnetcoreAuthenticationResult Failure { get; } = new("failure");
 
     /// <summary>
-    /// The result from checking the password.
+    /// No authentication information returned.
     /// </summary>
-    public static class AspnetcoreIdentityPasswordCheckResultValues
-    {
-        /// <summary>
-        /// Password check was successful.
-        /// </summary>
-        public const string Success = "success";
-
-        /// <summary>
-        /// Password check was successful however the password was encoded using a deprecated algorithm and should be rehashed and updated.
-        /// </summary>
-        public const string SuccessRehashNeeded = "success_rehash_needed";
-
-        /// <summary>
-        /// Password check failed.
-        /// </summary>
-        public const string Failure = "failure";
-
-        /// <summary>
-        /// Password check couldn't proceed because the password was missing from the user.
-        /// </summary>
-        public const string PasswordMissing = "password_missing";
-
-        /// <summary>
-        /// Password check couldn't proceed because the user was missing.
-        /// </summary>
-        public const string UserMissing = "user_missing";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "success", "success_rehash_needed", "failure", "password_missing", "user_missing" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static AspnetcoreAuthenticationResult None { get; } = new("none");
 
     /// <summary>
-    /// The result of the identity operation.
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
     /// </summary>
-    public static class AspnetcoreIdentityResultValues
-    {
-        /// <summary>
-        /// Identity operation was successful.
-        /// </summary>
-        public const string Success = "success";
-
-        /// <summary>
-        /// Identity operation failed.
-        /// </summary>
-        public const string Failure = "failure";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "success", "failure" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static AspnetcoreAuthenticationResult Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
     /// <summary>
-    /// Whether the sign in result was success or failure.
+    /// The attribute value.
     /// </summary>
-    public static class AspnetcoreIdentitySignInResultValues
-    {
-        /// <summary>
-        /// Sign in was successful.
-        /// </summary>
-        public const string Success = "success";
+    public string Value => _value ?? string.Empty;
 
-        /// <summary>
-        /// User is locked out.
-        /// </summary>
-        public const string LockedOut = "locked_out";
+    /// <inheritdoc/>
+    public bool Equals(AspnetcoreAuthenticationResult other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
 
-        /// <summary>
-        /// User is not allowed to sign in.
-        /// </summary>
-        public const string NotAllowed = "not_allowed";
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is AspnetcoreAuthenticationResult other && Equals(other);
 
-        /// <summary>
-        /// User requires two factory authentication to sign in.
-        /// </summary>
-        public const string RequiresTwoFactor = "requires_two_factor";
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
 
-        /// <summary>
-        /// Sign in failed.
-        /// </summary>
-        public const string Failure = "failure";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "success", "locked_out", "not_allowed", "requires_two_factor", "failure" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <inheritdoc/>
+    public override string ToString() => Value;
 
     /// <summary>
-    /// The authentication type.
+    /// Whether two values are equal.
     /// </summary>
-    public static class AspnetcoreIdentitySignInTypeValues
-    {
-        /// <summary>
-        /// Sign in with password.
-        /// </summary>
-        public const string Password = "password";
-
-        /// <summary>
-        /// Sign in with two factory recovery code.
-        /// </summary>
-        public const string TwoFactorRecoveryCode = "two_factor_recovery_code";
-
-        /// <summary>
-        /// Sign in with two factor authenticator app.
-        /// </summary>
-        public const string TwoFactorAuthenticator = "two_factor_authenticator";
-
-        /// <summary>
-        /// Sign in with a two factor provider.
-        /// </summary>
-        public const string TwoFactor = "two_factor";
-
-        /// <summary>
-        /// Sign in with a previously registered third-party login.
-        /// </summary>
-        public const string External = "external";
-
-        /// <summary>
-        /// Sign in with passkey.
-        /// </summary>
-        public const string Passkey = "passkey";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "password", "two_factor_recovery_code", "two_factor_authenticator", "two_factor", "external", "passkey" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static bool operator ==(AspnetcoreAuthenticationResult left, AspnetcoreAuthenticationResult right) => left.Equals(right);
 
     /// <summary>
-    /// What the token will be used for.
+    /// Whether two values differ.
     /// </summary>
-    public static class AspnetcoreIdentityTokenPurposeValues
-    {
-        /// <summary>
-        /// The token is for resetting a user password.
-        /// </summary>
-        public const string ResetPassword = "reset_password";
+    public static bool operator !=(AspnetcoreAuthenticationResult left, AspnetcoreAuthenticationResult right) => !left.Equals(right);
+}
 
-        /// <summary>
-        /// The token is for changing a user phone number.
-        /// </summary>
-        public const string ChangePhoneNumber = "change_phone_number";
+/// <summary>
+/// The result of calling the authorization service.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>aspnetcore.authorization.result</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct AspnetcoreAuthorizationResult : global::System.IEquatable<AspnetcoreAuthorizationResult>
+{
+    /// <summary>
+    /// The attribute key, <c>aspnetcore.authorization.result</c>.
+    /// </summary>
+    public const string Key = "aspnetcore.authorization.result";
 
-        /// <summary>
-        /// The token is for confirming user email address.
-        /// </summary>
-        public const string EmailConfirmation = "email_confirmation";
+    private readonly string? _value;
 
-        /// <summary>
-        /// The token is for changing the user email address.
-        /// </summary>
-        public const string ChangeEmail = "change_email";
-
-        /// <summary>
-        /// The token is for changing user two factor settings.
-        /// </summary>
-        public const string TwoFactor = "two_factor";
-
-        /// <summary>
-        /// Any token purpose that the instrumentation has no prior knowledge of.
-        /// </summary>
-        public const string Other = "_OTHER";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "reset_password", "change_phone_number", "email_confirmation", "change_email", "two_factor", "_OTHER" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    private AspnetcoreAuthorizationResult(string value) => _value = value;
 
     /// <summary>
-    /// The result of token verification.
+    /// Authorization was successful.
     /// </summary>
-    public static class AspnetcoreIdentityTokenVerifiedValues
-    {
-        /// <summary>
-        /// Token verification was successful.
-        /// </summary>
-        public const string Success = "success";
-
-        /// <summary>
-        /// Token verification failed.
-        /// </summary>
-        public const string Failure = "failure";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "success", "failure" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static AspnetcoreAuthorizationResult Success { get; } = new("success");
 
     /// <summary>
-    /// The user update type.
+    /// Authorization failed.
     /// </summary>
-    public static class AspnetcoreIdentityUserUpdateTypeValues
-    {
-        /// <summary>
-        /// Identity user updated.
-        /// </summary>
-        public const string Update = "update";
+    public static AspnetcoreAuthorizationResult Failure { get; } = new("failure");
 
-        /// <summary>
-        /// Identity username updated.
-        /// </summary>
-        public const string UserName = "user_name";
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static AspnetcoreAuthorizationResult Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
-        /// <summary>
-        /// Identity user password added.
-        /// </summary>
-        public const string AddPassword = "add_password";
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
 
-        /// <summary>
-        /// Identity user password changed.
-        /// </summary>
-        public const string ChangePassword = "change_password";
+    /// <inheritdoc/>
+    public bool Equals(AspnetcoreAuthorizationResult other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
 
-        /// <summary>
-        /// Identity user security stamp updated.
-        /// </summary>
-        public const string SecurityStamp = "security_stamp";
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is AspnetcoreAuthorizationResult other && Equals(other);
 
-        /// <summary>
-        /// Identity user password reset.
-        /// </summary>
-        public const string ResetPassword = "reset_password";
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
 
-        /// <summary>
-        /// Identity user login removed.
-        /// </summary>
-        public const string RemoveLogin = "remove_login";
+    /// <inheritdoc/>
+    public override string ToString() => Value;
 
-        /// <summary>
-        /// Identity user login added.
-        /// </summary>
-        public const string AddLogin = "add_login";
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(AspnetcoreAuthorizationResult left, AspnetcoreAuthorizationResult right) => left.Equals(right);
 
-        /// <summary>
-        /// Identity user claims added.
-        /// </summary>
-        public const string AddClaims = "add_claims";
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(AspnetcoreAuthorizationResult left, AspnetcoreAuthorizationResult right) => !left.Equals(right);
+}
 
-        /// <summary>
-        /// Identity user claim replaced.
-        /// </summary>
-        public const string ReplaceClaim = "replace_claim";
+/// <summary>
+/// The result from checking the password.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>aspnetcore.identity.password_check_result</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct AspnetcoreIdentityPasswordCheckResult : global::System.IEquatable<AspnetcoreIdentityPasswordCheckResult>
+{
+    /// <summary>
+    /// The attribute key, <c>aspnetcore.identity.password_check_result</c>.
+    /// </summary>
+    public const string Key = "aspnetcore.identity.password_check_result";
 
-        /// <summary>
-        /// Identity user claims removed.
-        /// </summary>
-        public const string RemoveClaims = "remove_claims";
+    private readonly string? _value;
 
-        /// <summary>
-        /// Identity user added to roles.
-        /// </summary>
-        public const string AddToRoles = "add_to_roles";
+    private AspnetcoreIdentityPasswordCheckResult(string value) => _value = value;
 
-        /// <summary>
-        /// Identity user removed from roles.
-        /// </summary>
-        public const string RemoveFromRoles = "remove_from_roles";
+    /// <summary>
+    /// Password check was successful.
+    /// </summary>
+    public static AspnetcoreIdentityPasswordCheckResult Success { get; } = new("success");
 
-        /// <summary>
-        /// Identity user email set.
-        /// </summary>
-        public const string SetEmail = "set_email";
+    /// <summary>
+    /// Password check was successful however the password was encoded using a deprecated algorithm and should be rehashed and updated.
+    /// </summary>
+    public static AspnetcoreIdentityPasswordCheckResult SuccessRehashNeeded { get; } = new("success_rehash_needed");
 
-        /// <summary>
-        /// Identity user email confirmed.
-        /// </summary>
-        public const string ConfirmEmail = "confirm_email";
+    /// <summary>
+    /// Password check failed.
+    /// </summary>
+    public static AspnetcoreIdentityPasswordCheckResult Failure { get; } = new("failure");
 
-        /// <summary>
-        /// Identity user password rehashed.
-        /// </summary>
-        public const string PasswordRehash = "password_rehash";
+    /// <summary>
+    /// Password check couldn't proceed because the password was missing from the user.
+    /// </summary>
+    public static AspnetcoreIdentityPasswordCheckResult PasswordMissing { get; } = new("password_missing");
 
-        /// <summary>
-        /// Identity user password removed.
-        /// </summary>
-        public const string RemovePassword = "remove_password";
+    /// <summary>
+    /// Password check couldn't proceed because the user was missing.
+    /// </summary>
+    public static AspnetcoreIdentityPasswordCheckResult UserMissing { get; } = new("user_missing");
 
-        /// <summary>
-        /// Identity user email changed.
-        /// </summary>
-        public const string ChangeEmail = "change_email";
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static AspnetcoreIdentityPasswordCheckResult Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
-        /// <summary>
-        /// Identity user phone number set.
-        /// </summary>
-        public const string SetPhoneNumber = "set_phone_number";
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
 
-        /// <summary>
-        /// Identity user phone number changed.
-        /// </summary>
-        public const string ChangePhoneNumber = "change_phone_number";
+    /// <inheritdoc/>
+    public bool Equals(AspnetcoreIdentityPasswordCheckResult other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
 
-        /// <summary>
-        /// Identity user two-factor authentication enabled or disabled.
-        /// </summary>
-        public const string SetTwoFactorEnabled = "set_two_factor_enabled";
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is AspnetcoreIdentityPasswordCheckResult other && Equals(other);
 
-        /// <summary>
-        /// Identity user lockout enabled or disabled.
-        /// </summary>
-        public const string SetLockoutEnabled = "set_lockout_enabled";
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
 
-        /// <summary>
-        /// Identity user lockout end date set.
-        /// </summary>
-        public const string SetLockoutEndDate = "set_lockout_end_date";
+    /// <inheritdoc/>
+    public override string ToString() => Value;
 
-        /// <summary>
-        /// Identity user access failure recorded.
-        /// </summary>
-        public const string AccessFailed = "access_failed";
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(AspnetcoreIdentityPasswordCheckResult left, AspnetcoreIdentityPasswordCheckResult right) => left.Equals(right);
 
-        /// <summary>
-        /// Identity user access failure count reset.
-        /// </summary>
-        public const string ResetAccessFailedCount = "reset_access_failed_count";
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(AspnetcoreIdentityPasswordCheckResult left, AspnetcoreIdentityPasswordCheckResult right) => !left.Equals(right);
+}
 
-        /// <summary>
-        /// Identity user authentication token set.
-        /// </summary>
-        public const string SetAuthenticationToken = "set_authentication_token";
+/// <summary>
+/// The result of the identity operation.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>aspnetcore.identity.result</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct AspnetcoreIdentityResult : global::System.IEquatable<AspnetcoreIdentityResult>
+{
+    /// <summary>
+    /// The attribute key, <c>aspnetcore.identity.result</c>.
+    /// </summary>
+    public const string Key = "aspnetcore.identity.result";
 
-        /// <summary>
-        /// Identity user authentication token removed.
-        /// </summary>
-        public const string RemoveAuthenticationToken = "remove_authentication_token";
+    private readonly string? _value;
 
-        /// <summary>
-        /// Identity user authenticator key reset.
-        /// </summary>
-        public const string ResetAuthenticatorKey = "reset_authenticator_key";
+    private AspnetcoreIdentityResult(string value) => _value = value;
 
-        /// <summary>
-        /// Identity user new two-factor recovery codes generated.
-        /// </summary>
-        public const string GenerateNewTwoFactorRecoveryCodes = "generate_new_two_factor_recovery_codes";
+    /// <summary>
+    /// Identity operation was successful.
+    /// </summary>
+    public static AspnetcoreIdentityResult Success { get; } = new("success");
 
-        /// <summary>
-        /// Identity user two-factor recovery code redeemed.
-        /// </summary>
-        public const string RedeemTwoFactorRecoveryCode = "redeem_two_factor_recovery_code";
+    /// <summary>
+    /// Identity operation failed.
+    /// </summary>
+    public static AspnetcoreIdentityResult Failure { get; } = new("failure");
 
-        /// <summary>
-        /// Identity user passkey set.
-        /// </summary>
-        public const string SetPasskey = "set_passkey";
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static AspnetcoreIdentityResult Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
-        /// <summary>
-        /// Identity user passkey removed.
-        /// </summary>
-        public const string RemovePasskey = "remove_passkey";
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
 
-        /// <summary>
-        /// Any update type that the instrumentation has no prior knowledge of.
-        /// </summary>
-        public const string Other = "_OTHER";
+    /// <inheritdoc/>
+    public bool Equals(AspnetcoreIdentityResult other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "update", "user_name", "add_password", "change_password", "security_stamp", "reset_password", "remove_login", "add_login", "add_claims", "replace_claim", "remove_claims", "add_to_roles", "remove_from_roles", "set_email", "confirm_email", "password_rehash", "remove_password", "change_email", "set_phone_number", "change_phone_number", "set_two_factor_enabled", "set_lockout_enabled", "set_lockout_end_date", "access_failed", "reset_access_failed_count", "set_authentication_token", "remove_authentication_token", "reset_authenticator_key", "generate_new_two_factor_recovery_codes", "redeem_two_factor_recovery_code", "set_passkey", "remove_passkey", "_OTHER" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is AspnetcoreIdentityResult other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(AspnetcoreIdentityResult left, AspnetcoreIdentityResult right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(AspnetcoreIdentityResult left, AspnetcoreIdentityResult right) => !left.Equals(right);
+}
+
+/// <summary>
+/// Whether the sign in result was success or failure.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>aspnetcore.identity.sign_in.result</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct AspnetcoreIdentitySignInResult : global::System.IEquatable<AspnetcoreIdentitySignInResult>
+{
+    /// <summary>
+    /// The attribute key, <c>aspnetcore.identity.sign_in.result</c>.
+    /// </summary>
+    public const string Key = "aspnetcore.identity.sign_in.result";
+
+    private readonly string? _value;
+
+    private AspnetcoreIdentitySignInResult(string value) => _value = value;
+
+    /// <summary>
+    /// Sign in was successful.
+    /// </summary>
+    public static AspnetcoreIdentitySignInResult Success { get; } = new("success");
+
+    /// <summary>
+    /// User is locked out.
+    /// </summary>
+    public static AspnetcoreIdentitySignInResult LockedOut { get; } = new("locked_out");
+
+    /// <summary>
+    /// User is not allowed to sign in.
+    /// </summary>
+    public static AspnetcoreIdentitySignInResult NotAllowed { get; } = new("not_allowed");
+
+    /// <summary>
+    /// User requires two factory authentication to sign in.
+    /// </summary>
+    public static AspnetcoreIdentitySignInResult RequiresTwoFactor { get; } = new("requires_two_factor");
+
+    /// <summary>
+    /// Sign in failed.
+    /// </summary>
+    public static AspnetcoreIdentitySignInResult Failure { get; } = new("failure");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static AspnetcoreIdentitySignInResult Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(AspnetcoreIdentitySignInResult other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is AspnetcoreIdentitySignInResult other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(AspnetcoreIdentitySignInResult left, AspnetcoreIdentitySignInResult right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(AspnetcoreIdentitySignInResult left, AspnetcoreIdentitySignInResult right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The authentication type.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>aspnetcore.identity.sign_in.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct AspnetcoreIdentitySignInType : global::System.IEquatable<AspnetcoreIdentitySignInType>
+{
+    /// <summary>
+    /// The attribute key, <c>aspnetcore.identity.sign_in.type</c>.
+    /// </summary>
+    public const string Key = "aspnetcore.identity.sign_in.type";
+
+    private readonly string? _value;
+
+    private AspnetcoreIdentitySignInType(string value) => _value = value;
+
+    /// <summary>
+    /// Sign in with password.
+    /// </summary>
+    public static AspnetcoreIdentitySignInType Password { get; } = new("password");
+
+    /// <summary>
+    /// Sign in with two factory recovery code.
+    /// </summary>
+    public static AspnetcoreIdentitySignInType TwoFactorRecoveryCode { get; } = new("two_factor_recovery_code");
+
+    /// <summary>
+    /// Sign in with two factor authenticator app.
+    /// </summary>
+    public static AspnetcoreIdentitySignInType TwoFactorAuthenticator { get; } = new("two_factor_authenticator");
+
+    /// <summary>
+    /// Sign in with a two factor provider.
+    /// </summary>
+    public static AspnetcoreIdentitySignInType TwoFactor { get; } = new("two_factor");
+
+    /// <summary>
+    /// Sign in with a previously registered third-party login.
+    /// </summary>
+    public static AspnetcoreIdentitySignInType External { get; } = new("external");
+
+    /// <summary>
+    /// Sign in with passkey.
+    /// </summary>
+    public static AspnetcoreIdentitySignInType Passkey { get; } = new("passkey");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static AspnetcoreIdentitySignInType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(AspnetcoreIdentitySignInType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is AspnetcoreIdentitySignInType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(AspnetcoreIdentitySignInType left, AspnetcoreIdentitySignInType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(AspnetcoreIdentitySignInType left, AspnetcoreIdentitySignInType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// What the token will be used for.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>aspnetcore.identity.token_purpose</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct AspnetcoreIdentityTokenPurpose : global::System.IEquatable<AspnetcoreIdentityTokenPurpose>
+{
+    /// <summary>
+    /// The attribute key, <c>aspnetcore.identity.token_purpose</c>.
+    /// </summary>
+    public const string Key = "aspnetcore.identity.token_purpose";
+
+    private readonly string? _value;
+
+    private AspnetcoreIdentityTokenPurpose(string value) => _value = value;
+
+    /// <summary>
+    /// The token is for resetting a user password.
+    /// </summary>
+    public static AspnetcoreIdentityTokenPurpose ResetPassword { get; } = new("reset_password");
+
+    /// <summary>
+    /// The token is for changing a user phone number.
+    /// </summary>
+    public static AspnetcoreIdentityTokenPurpose ChangePhoneNumber { get; } = new("change_phone_number");
+
+    /// <summary>
+    /// The token is for confirming user email address.
+    /// </summary>
+    public static AspnetcoreIdentityTokenPurpose EmailConfirmation { get; } = new("email_confirmation");
+
+    /// <summary>
+    /// The token is for changing the user email address.
+    /// </summary>
+    public static AspnetcoreIdentityTokenPurpose ChangeEmail { get; } = new("change_email");
+
+    /// <summary>
+    /// The token is for changing user two factor settings.
+    /// </summary>
+    public static AspnetcoreIdentityTokenPurpose TwoFactor { get; } = new("two_factor");
+
+    /// <summary>
+    /// Any token purpose that the instrumentation has no prior knowledge of.
+    /// </summary>
+    public static AspnetcoreIdentityTokenPurpose Other { get; } = new("_OTHER");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static AspnetcoreIdentityTokenPurpose Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(AspnetcoreIdentityTokenPurpose other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is AspnetcoreIdentityTokenPurpose other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(AspnetcoreIdentityTokenPurpose left, AspnetcoreIdentityTokenPurpose right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(AspnetcoreIdentityTokenPurpose left, AspnetcoreIdentityTokenPurpose right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The result of token verification.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>aspnetcore.identity.token_verified</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct AspnetcoreIdentityTokenVerified : global::System.IEquatable<AspnetcoreIdentityTokenVerified>
+{
+    /// <summary>
+    /// The attribute key, <c>aspnetcore.identity.token_verified</c>.
+    /// </summary>
+    public const string Key = "aspnetcore.identity.token_verified";
+
+    private readonly string? _value;
+
+    private AspnetcoreIdentityTokenVerified(string value) => _value = value;
+
+    /// <summary>
+    /// Token verification was successful.
+    /// </summary>
+    public static AspnetcoreIdentityTokenVerified Success { get; } = new("success");
+
+    /// <summary>
+    /// Token verification failed.
+    /// </summary>
+    public static AspnetcoreIdentityTokenVerified Failure { get; } = new("failure");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static AspnetcoreIdentityTokenVerified Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(AspnetcoreIdentityTokenVerified other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is AspnetcoreIdentityTokenVerified other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(AspnetcoreIdentityTokenVerified left, AspnetcoreIdentityTokenVerified right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(AspnetcoreIdentityTokenVerified left, AspnetcoreIdentityTokenVerified right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The user update type.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>aspnetcore.identity.user.update_type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct AspnetcoreIdentityUserUpdateType : global::System.IEquatable<AspnetcoreIdentityUserUpdateType>
+{
+    /// <summary>
+    /// The attribute key, <c>aspnetcore.identity.user.update_type</c>.
+    /// </summary>
+    public const string Key = "aspnetcore.identity.user.update_type";
+
+    private readonly string? _value;
+
+    private AspnetcoreIdentityUserUpdateType(string value) => _value = value;
+
+    /// <summary>
+    /// Identity user updated.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType Update { get; } = new("update");
+
+    /// <summary>
+    /// Identity username updated.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType UserName { get; } = new("user_name");
+
+    /// <summary>
+    /// Identity user password added.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType AddPassword { get; } = new("add_password");
+
+    /// <summary>
+    /// Identity user password changed.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType ChangePassword { get; } = new("change_password");
+
+    /// <summary>
+    /// Identity user security stamp updated.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType SecurityStamp { get; } = new("security_stamp");
+
+    /// <summary>
+    /// Identity user password reset.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType ResetPassword { get; } = new("reset_password");
+
+    /// <summary>
+    /// Identity user login removed.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType RemoveLogin { get; } = new("remove_login");
+
+    /// <summary>
+    /// Identity user login added.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType AddLogin { get; } = new("add_login");
+
+    /// <summary>
+    /// Identity user claims added.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType AddClaims { get; } = new("add_claims");
+
+    /// <summary>
+    /// Identity user claim replaced.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType ReplaceClaim { get; } = new("replace_claim");
+
+    /// <summary>
+    /// Identity user claims removed.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType RemoveClaims { get; } = new("remove_claims");
+
+    /// <summary>
+    /// Identity user added to roles.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType AddToRoles { get; } = new("add_to_roles");
+
+    /// <summary>
+    /// Identity user removed from roles.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType RemoveFromRoles { get; } = new("remove_from_roles");
+
+    /// <summary>
+    /// Identity user email set.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType SetEmail { get; } = new("set_email");
+
+    /// <summary>
+    /// Identity user email confirmed.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType ConfirmEmail { get; } = new("confirm_email");
+
+    /// <summary>
+    /// Identity user password rehashed.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType PasswordRehash { get; } = new("password_rehash");
+
+    /// <summary>
+    /// Identity user password removed.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType RemovePassword { get; } = new("remove_password");
+
+    /// <summary>
+    /// Identity user email changed.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType ChangeEmail { get; } = new("change_email");
+
+    /// <summary>
+    /// Identity user phone number set.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType SetPhoneNumber { get; } = new("set_phone_number");
+
+    /// <summary>
+    /// Identity user phone number changed.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType ChangePhoneNumber { get; } = new("change_phone_number");
+
+    /// <summary>
+    /// Identity user two-factor authentication enabled or disabled.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType SetTwoFactorEnabled { get; } = new("set_two_factor_enabled");
+
+    /// <summary>
+    /// Identity user lockout enabled or disabled.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType SetLockoutEnabled { get; } = new("set_lockout_enabled");
+
+    /// <summary>
+    /// Identity user lockout end date set.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType SetLockoutEndDate { get; } = new("set_lockout_end_date");
+
+    /// <summary>
+    /// Identity user access failure recorded.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType AccessFailed { get; } = new("access_failed");
+
+    /// <summary>
+    /// Identity user access failure count reset.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType ResetAccessFailedCount { get; } = new("reset_access_failed_count");
+
+    /// <summary>
+    /// Identity user authentication token set.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType SetAuthenticationToken { get; } = new("set_authentication_token");
+
+    /// <summary>
+    /// Identity user authentication token removed.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType RemoveAuthenticationToken { get; } = new("remove_authentication_token");
+
+    /// <summary>
+    /// Identity user authenticator key reset.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType ResetAuthenticatorKey { get; } = new("reset_authenticator_key");
+
+    /// <summary>
+    /// Identity user new two-factor recovery codes generated.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType GenerateNewTwoFactorRecoveryCodes { get; } = new("generate_new_two_factor_recovery_codes");
+
+    /// <summary>
+    /// Identity user two-factor recovery code redeemed.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType RedeemTwoFactorRecoveryCode { get; } = new("redeem_two_factor_recovery_code");
+
+    /// <summary>
+    /// Identity user passkey set.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType SetPasskey { get; } = new("set_passkey");
+
+    /// <summary>
+    /// Identity user passkey removed.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType RemovePasskey { get; } = new("remove_passkey");
+
+    /// <summary>
+    /// Any update type that the instrumentation has no prior knowledge of.
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType Other { get; } = new("_OTHER");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static AspnetcoreIdentityUserUpdateType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(AspnetcoreIdentityUserUpdateType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is AspnetcoreIdentityUserUpdateType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(AspnetcoreIdentityUserUpdateType left, AspnetcoreIdentityUserUpdateType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(AspnetcoreIdentityUserUpdateType left, AspnetcoreIdentityUserUpdateType right) => !left.Equals(right);
 }

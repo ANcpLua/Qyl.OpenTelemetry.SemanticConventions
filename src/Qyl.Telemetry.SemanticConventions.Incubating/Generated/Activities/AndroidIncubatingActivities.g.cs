@@ -25,40 +25,72 @@ public static class AndroidIncubatingActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetAndroidAppState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("android.app.state", value);
+        AndroidAppState value)
+        => activity.SetTag("android.app.state", value.Value);
+}
+
+/// <summary>
+/// This attribute represents the state of the application.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>android.app.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct AndroidAppState : global::System.IEquatable<AndroidAppState>
+{
+    /// <summary>
+    /// The attribute key, <c>android.app.state</c>.
+    /// </summary>
+    public const string Key = "android.app.state";
+
+    private readonly string? _value;
+
+    private AndroidAppState(string value) => _value = value;
 
     /// <summary>
-    /// Uniquely identifies the framework API revision offered by a version (<c>os.version</c>) of the Android operating system. More information can be found in the <a href="https://developer.android.com/guide/topics/manifest/uses-sdk-element#ApiLevels">Android API levels documentation</a>.
+    /// Any time before Activity.onResume() or, if the app has no Activity, Context.startService() has been called in the app for the first time.
     /// </summary>
-    public static global::System.Diagnostics.Activity SetAndroidOsApiLevel(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("android.os.api_level", value);
+    public static AndroidAppState Created { get; } = new("created");
 
     /// <summary>
-    /// This attribute represents the state of the application.
+    /// Any time after Activity.onPause() or, if the app has no Activity, Context.stopService() has been called when the app was in the foreground state.
     /// </summary>
-    public static class AndroidAppStateValues
-    {
-        /// <summary>
-        /// Any time before Activity.onResume() or, if the app has no Activity, Context.startService() has been called in the app for the first time.
-        /// </summary>
-        public const string Created = "created";
+    public static AndroidAppState Background { get; } = new("background");
 
-        /// <summary>
-        /// Any time after Activity.onPause() or, if the app has no Activity, Context.stopService() has been called when the app was in the foreground state.
-        /// </summary>
-        public const string Background = "background";
+    /// <summary>
+    /// Any time after Activity.onResume() or, if the app has no Activity, Context.startService() has been called when the app was in either the created or background states.
+    /// </summary>
+    public static AndroidAppState Foreground { get; } = new("foreground");
 
-        /// <summary>
-        /// Any time after Activity.onResume() or, if the app has no Activity, Context.startService() has been called when the app was in either the created or background states.
-        /// </summary>
-        public const string Foreground = "foreground";
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static AndroidAppState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "created", "background", "foreground" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(AndroidAppState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is AndroidAppState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(AndroidAppState left, AndroidAppState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(AndroidAppState left, AndroidAppState right) => !left.Equals(right);
 }

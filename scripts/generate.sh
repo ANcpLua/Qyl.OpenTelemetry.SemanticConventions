@@ -187,6 +187,12 @@ PY
 "${WEAVER_CMD[@]}" registry check -r registry
 "${WEAVER_CMD[@]}" registry check -r registry --v2 --include-unreferenced -p registry/policies-v2
 
+# Weaver writes files and never deletes one, so a root the registry or a filter stops producing
+# (every host.* attribute is resource-only and gets no setter) would leave its stale file behind.
+# The two Generated trees are wholly generated (RegistrySnapshot.g.cs by generate-typescript.py
+# below); clear them first.
+rm -rf src/Qyl.Telemetry.SemanticConventions/Generated src/Qyl.Telemetry.SemanticConventions.Incubating/Generated
+
 "${WEAVER_CMD[@]}" registry generate \
   -r registry \
   --v2 \

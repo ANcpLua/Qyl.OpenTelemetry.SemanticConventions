@@ -18,25 +18,6 @@ namespace Qyl.Telemetry.SemanticConventions.Incubating.Activities;
 public static class ProcessIncubatingActivityExtensions
 {
     /// <summary>
-    /// Length of the process.command_args array
-    /// </summary>
-    /// <remarks>
-    /// This field can be useful for querying or performing bucket analysis on how many arguments were provided to start a process. More arguments may be an indication of suspicious activity.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetProcessArgsCount(
-        this global::System.Diagnostics.Activity activity,
-        long value)
-        => activity.SetTag("process.args_count", value);
-
-    /// <summary>
-    /// The command used to launch the process (i.e. the command name). On Linux based systems, can be set to the zeroth string in <c>proc/[pid]/cmdline</c>. On Windows, can be set to the first parameter extracted from <c>GetCommandLineW</c>.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetProcessCommand(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("process.command", value);
-
-    /// <summary>
     /// All the command arguments (including the command/executable itself) as received by the process. On Linux-based systems (and some other Unixoid systems supporting procfs), can be set according to the list of null-delimited strings extracted from <c>proc/[pid]/cmdline</c>. For libc-based executables, this would be the full argv vector passed to <c>main</c>. SHOULD NOT be collected by default unless there is sanitization that excludes sensitive data.
     /// </summary>
     public static global::System.Diagnostics.Activity SetProcessCommandArgs(
@@ -45,28 +26,12 @@ public static class ProcessIncubatingActivityExtensions
         => activity.SetTag("process.command_args", value);
 
     /// <summary>
-    /// The full command used to launch the process as a single string representing the full command. On Windows, can be set to the result of <c>GetCommandLineW</c>. Do not set this if you have to assemble it just for monitoring; use <c>process.command_args</c> instead. SHOULD NOT be collected by default unless there is sanitization that excludes sensitive data.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetProcessCommandLine(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("process.command_line", value);
-
-    /// <summary>
     /// Specifies whether the context switches for this data point were voluntary or involuntary.
     /// </summary>
     public static global::System.Diagnostics.Activity SetProcessContextSwitchType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("process.context_switch.type", value);
-
-    /// <summary>
-    /// The date and time the process was created, in ISO 8601 format.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetProcessCreationTime(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("process.creation.time", value);
+        ProcessContextSwitchType value)
+        => activity.SetTag("process.context_switch.type", value.Value);
 
     /// <summary>
     /// Process environment variables, <c>&lt;key&gt;</c> being the environment variable name, the value being the environment variable value.
@@ -86,45 +51,6 @@ public static class ProcessIncubatingActivityExtensions
         string segment,
         string value)
         => activity.SetTag($"process.environment_variable.{segment}", value);
-
-    /// <summary>
-    /// The GNU build ID as found in the <c>.note.gnu.build-id</c> ELF section (hex string).
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetProcessExecutableBuildIdGnu(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("process.executable.build_id.gnu", value);
-
-    /// <summary>
-    /// The Go build ID as retrieved by <c>go tool buildid &lt;go executable&gt;</c>.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetProcessExecutableBuildIdGo(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("process.executable.build_id.go", value);
-
-    /// <summary>
-    /// Deterministic build ID for executables.
-    /// </summary>
-    /// <remarks>
-    /// GNU and Go build IDs may be stripped or unavailable in some environments
-    /// (e.g., Alpine Linux, Docker images). This attribute provides a deterministic
-    /// build ID computed by hashing the first and last 4096 bytes of the file
-    /// along with its length:
-    /// <para/>
-    /// <code>
-    /// Input   ← Concat(File[:4096], File[-4096:], BigEndianUInt64(Len(File)))
-    /// Digest  ← SHA256(Input)
-    /// BuildID ← Digest[:16]
-    /// </code>
-    /// <para/>
-    /// The result is the first 16 bytes (128 bits) of the SHA256 digest,
-    /// represented as a hex string.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetProcessExecutableBuildIdHtlhash(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("process.executable.build_id.htlhash", value);
 
     /// <summary>
     /// The name of the process executable. On Linux based systems, this SHOULD be set to the base name of the target of <c>/proc/[pid]/exe</c>. On Windows, this SHOULD be set to the base name of <c>GetProcessImageFileNameW</c>.
@@ -167,41 +93,6 @@ public static class ProcessIncubatingActivityExtensions
         => activity.SetTag("process.group_leader.pid", value);
 
     /// <summary>
-    /// Whether the process is connected to an interactive shell.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetProcessInteractive(
-        this global::System.Diagnostics.Activity activity,
-        bool value)
-        => activity.SetTag("process.interactive", value);
-
-    /// <summary>
-    /// The control group associated with the process.
-    /// </summary>
-    /// <remarks>
-    /// Control groups (cgroups) are a kernel feature used to organize and manage process resources. This attribute provides the path(s) to the cgroup(s) associated with the process, which should match the contents of the <a href="https://man7.org/linux/man-pages/man7/cgroups.7.html">/proc/\[PID\]/cgroup</a> file.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetProcessLinuxCgroup(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("process.linux.cgroup", value);
-
-    /// <summary>
-    /// The username of the user that owns the process.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetProcessOwner(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("process.owner", value);
-
-    /// <summary>
-    /// Parent Process identifier (PPID).
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetProcessParentPid(
-        this global::System.Diagnostics.Activity activity,
-        long value)
-        => activity.SetTag("process.parent_pid", value);
-
-    /// <summary>
     /// Process identifier (PID).
     /// </summary>
     public static global::System.Diagnostics.Activity SetProcessPid(
@@ -224,30 +115,6 @@ public static class ProcessIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         string value)
         => activity.SetTag("process.real_user.name", value);
-
-    /// <summary>
-    /// An additional description about the runtime of the process, for example a specific vendor customization of the runtime environment.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetProcessRuntimeDescription(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("process.runtime.description", value);
-
-    /// <summary>
-    /// The name of the runtime of this process.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetProcessRuntimeName(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("process.runtime.name", value);
-
-    /// <summary>
-    /// The version of the runtime of this process, as returned by the runtime without modification.
-    /// </summary>
-    public static global::System.Diagnostics.Activity SetProcessRuntimeVersion(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("process.runtime.version", value);
 
     /// <summary>
     /// The saved user ID (SUID) of the process.
@@ -278,19 +145,8 @@ public static class ProcessIncubatingActivityExtensions
     /// </summary>
     public static global::System.Diagnostics.Activity SetProcessState(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("process.state", value);
-
-    /// <summary>
-    /// Process title (proctitle)
-    /// </summary>
-    /// <remarks>
-    /// In many Unix-like systems, process title (proctitle), is the string that represents the name or command line of a running process, displayed by system monitoring tools like ps, top, and htop.
-    /// </remarks>
-    public static global::System.Diagnostics.Activity SetProcessTitle(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("process.title", value);
+        ProcessState value)
+        => activity.SetTag("process.state", value.Value);
 
     /// <summary>
     /// The effective user ID (EUID) of the process.
@@ -318,64 +174,136 @@ public static class ProcessIncubatingActivityExtensions
         this global::System.Diagnostics.Activity activity,
         long value)
         => activity.SetTag("process.vpid", value);
+}
+
+/// <summary>
+/// Specifies whether the context switches for this data point were voluntary or involuntary.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>process.context_switch.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct ProcessContextSwitchType : global::System.IEquatable<ProcessContextSwitchType>
+{
+    /// <summary>
+    /// The attribute key, <c>process.context_switch.type</c>.
+    /// </summary>
+    public const string Key = "process.context_switch.type";
+
+    private readonly string? _value;
+
+    private ProcessContextSwitchType(string value) => _value = value;
 
     /// <summary>
-    /// The working directory of the process.
+    /// voluntary.
     /// </summary>
-    public static global::System.Diagnostics.Activity SetProcessWorkingDirectory(
-        this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("process.working_directory", value);
+    public static ProcessContextSwitchType Voluntary { get; } = new("voluntary");
 
     /// <summary>
-    /// Specifies whether the context switches for this data point were voluntary or involuntary.
+    /// involuntary.
     /// </summary>
-    public static class ProcessContextSwitchTypeValues
-    {
-        /// <summary>
-        /// voluntary.
-        /// </summary>
-        public const string Voluntary = "voluntary";
-
-        /// <summary>
-        /// involuntary.
-        /// </summary>
-        public const string Involuntary = "involuntary";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "voluntary", "involuntary" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static ProcessContextSwitchType Involuntary { get; } = new("involuntary");
 
     /// <summary>
-    /// The process state, e.g., <a href="https://man7.org/linux/man-pages/man1/ps.1.html#PROCESS_STATE_CODES">Linux Process State Codes</a>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
     /// </summary>
-    public static class ProcessStateValues
-    {
-        /// <summary>
-        /// running.
-        /// </summary>
-        public const string Running = "running";
+    public static ProcessContextSwitchType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
 
-        /// <summary>
-        /// sleeping.
-        /// </summary>
-        public const string Sleeping = "sleeping";
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
 
-        /// <summary>
-        /// stopped.
-        /// </summary>
-        public const string Stopped = "stopped";
+    /// <inheritdoc/>
+    public bool Equals(ProcessContextSwitchType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
 
-        /// <summary>
-        /// defunct.
-        /// </summary>
-        public const string Defunct = "defunct";
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is ProcessContextSwitchType other && Equals(other);
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "running", "sleeping", "stopped", "defunct" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(ProcessContextSwitchType left, ProcessContextSwitchType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(ProcessContextSwitchType left, ProcessContextSwitchType right) => !left.Equals(right);
+}
+
+/// <summary>
+/// The process state, e.g., <a href="https://man7.org/linux/man-pages/man1/ps.1.html#PROCESS_STATE_CODES">Linux Process State Codes</a>
+/// </summary>
+/// <remarks>
+/// The open value set of <c>process.state</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct ProcessState : global::System.IEquatable<ProcessState>
+{
+    /// <summary>
+    /// The attribute key, <c>process.state</c>.
+    /// </summary>
+    public const string Key = "process.state";
+
+    private readonly string? _value;
+
+    private ProcessState(string value) => _value = value;
+
+    /// <summary>
+    /// running.
+    /// </summary>
+    public static ProcessState Running { get; } = new("running");
+
+    /// <summary>
+    /// sleeping.
+    /// </summary>
+    public static ProcessState Sleeping { get; } = new("sleeping");
+
+    /// <summary>
+    /// stopped.
+    /// </summary>
+    public static ProcessState Stopped { get; } = new("stopped");
+
+    /// <summary>
+    /// defunct.
+    /// </summary>
+    public static ProcessState Defunct { get; } = new("defunct");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static ProcessState Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(ProcessState other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is ProcessState other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(ProcessState left, ProcessState right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(ProcessState left, ProcessState right) => !left.Equals(right);
 }

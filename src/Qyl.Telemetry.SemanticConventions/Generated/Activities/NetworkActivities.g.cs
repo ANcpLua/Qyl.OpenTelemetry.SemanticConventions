@@ -83,8 +83,8 @@ public static class NetworkActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetNetworkTransport(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("network.transport", value);
+        NetworkTransport value)
+        => activity.SetTag("network.transport", value.Value);
 
     /// <summary>
     /// <a href="https://wikipedia.org/wiki/Network_layer">OSI network layer</a> or non-OSI equivalent.
@@ -94,63 +94,143 @@ public static class NetworkActivityExtensions
     /// </remarks>
     public static global::System.Diagnostics.Activity SetNetworkType(
         this global::System.Diagnostics.Activity activity,
-        string value)
-        => activity.SetTag("network.type", value);
+        NetworkType value)
+        => activity.SetTag("network.type", value.Value);
+}
+
+/// <summary>
+/// <a href="https://wikipedia.org/wiki/Transport_layer">OSI transport layer</a> or <a href="https://wikipedia.org/wiki/Inter-process_communication">inter-process communication method</a>.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>network.transport</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct NetworkTransport : global::System.IEquatable<NetworkTransport>
+{
+    /// <summary>
+    /// The attribute key, <c>network.transport</c>.
+    /// </summary>
+    public const string Key = "network.transport";
+
+    private readonly string? _value;
+
+    private NetworkTransport(string value) => _value = value;
 
     /// <summary>
-    /// <a href="https://wikipedia.org/wiki/Transport_layer">OSI transport layer</a> or <a href="https://wikipedia.org/wiki/Inter-process_communication">inter-process communication method</a>.
+    /// TCP.
     /// </summary>
-    public static class NetworkTransportValues
-    {
-        /// <summary>
-        /// TCP.
-        /// </summary>
-        public const string Tcp = "tcp";
-
-        /// <summary>
-        /// UDP.
-        /// </summary>
-        public const string Udp = "udp";
-
-        /// <summary>
-        /// Named or anonymous pipe.
-        /// </summary>
-        public const string Pipe = "pipe";
-
-        /// <summary>
-        /// UNIX domain socket.
-        /// </summary>
-        public const string Unix = "unix";
-
-        /// <summary>
-        /// QUIC.
-        /// </summary>
-        public const string Quic = "quic";
-
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "tcp", "udp", "pipe", "unix", "quic" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    public static NetworkTransport Tcp { get; } = new("tcp");
 
     /// <summary>
-    /// <a href="https://wikipedia.org/wiki/Network_layer">OSI network layer</a> or non-OSI equivalent.
+    /// UDP.
     /// </summary>
-    public static class NetworkTypeValues
-    {
-        /// <summary>
-        /// IPv4.
-        /// </summary>
-        public const string Ipv4 = "ipv4";
+    public static NetworkTransport Udp { get; } = new("udp");
 
-        /// <summary>
-        /// IPv6.
-        /// </summary>
-        public const string Ipv6 = "ipv6";
+    /// <summary>
+    /// Named or anonymous pipe.
+    /// </summary>
+    public static NetworkTransport Pipe { get; } = new("pipe");
 
-        /// <summary>Every catalogued value, in registry order.</summary>
-        public static global::System.Collections.Generic.IReadOnlyList<string> AllValues { get; } = new[] { "ipv4", "ipv6" };
-        /// <summary>Whether <paramref name="value"/> is a catalogued value (ordinal).</summary>
-        public static bool Contains(string value) { foreach (var candidate in AllValues) if (string.Equals(candidate, value, global::System.StringComparison.Ordinal)) return true; return false; }
-    }
+    /// <summary>
+    /// UNIX domain socket.
+    /// </summary>
+    public static NetworkTransport Unix { get; } = new("unix");
+
+    /// <summary>
+    /// QUIC.
+    /// </summary>
+    public static NetworkTransport Quic { get; } = new("quic");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static NetworkTransport Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(NetworkTransport other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is NetworkTransport other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(NetworkTransport left, NetworkTransport right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(NetworkTransport left, NetworkTransport right) => !left.Equals(right);
+}
+
+/// <summary>
+/// <a href="https://wikipedia.org/wiki/Network_layer">OSI network layer</a> or non-OSI equivalent.
+/// </summary>
+/// <remarks>
+/// The open value set of <c>network.type</c>: one static member per registry value, and
+/// <see cref="Custom"/> for a value the registry does not list. A string does not convert to it.
+/// </remarks>
+public readonly struct NetworkType : global::System.IEquatable<NetworkType>
+{
+    /// <summary>
+    /// The attribute key, <c>network.type</c>.
+    /// </summary>
+    public const string Key = "network.type";
+
+    private readonly string? _value;
+
+    private NetworkType(string value) => _value = value;
+
+    /// <summary>
+    /// IPv4.
+    /// </summary>
+    public static NetworkType Ipv4 { get; } = new("ipv4");
+
+    /// <summary>
+    /// IPv6.
+    /// </summary>
+    public static NetworkType Ipv6 { get; } = new("ipv6");
+
+    /// <summary>
+    /// A value the registry does not list. A value a member carries is that member (QYL0121).
+    /// </summary>
+    public static NetworkType Custom(string value) => new(value ?? throw new global::System.ArgumentNullException(nameof(value)));
+
+    /// <summary>
+    /// The attribute value.
+    /// </summary>
+    public string Value => _value ?? string.Empty;
+
+    /// <inheritdoc/>
+    public bool Equals(NetworkType other) => string.Equals(Value, other.Value, global::System.StringComparison.Ordinal);
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is NetworkType other && Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => global::System.StringComparer.Ordinal.GetHashCode(Value);
+
+    /// <inheritdoc/>
+    public override string ToString() => Value;
+
+    /// <summary>
+    /// Whether two values are equal.
+    /// </summary>
+    public static bool operator ==(NetworkType left, NetworkType right) => left.Equals(right);
+
+    /// <summary>
+    /// Whether two values differ.
+    /// </summary>
+    public static bool operator !=(NetworkType left, NetworkType right) => !left.Equals(right);
 }
