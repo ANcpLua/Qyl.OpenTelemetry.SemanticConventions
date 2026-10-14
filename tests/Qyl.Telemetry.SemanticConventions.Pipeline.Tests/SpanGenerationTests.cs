@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reflection;
 using AwesomeAssertions;
 using Qyl.Telemetry.SemanticConventions.Incubating.Spans;
@@ -12,6 +13,7 @@ namespace Qyl.Telemetry.SemanticConventions.Pipeline.Tests;
 /// the generic execute_tool span, collapsed into one row and lost their span-name rules and
 /// <c>gen_ai.skill.*</c> requirement levels.
 /// </summary>
+[Collection(ApplicationSourceListeners.Name)]
 public sealed class SpanGenerationTests
 {
     private const string ExecuteTool = "gen_ai.execute_tool.internal";
@@ -82,5 +84,36 @@ public sealed class SpanGenerationTests
                                                   || name.StartsWith("AzureAi", StringComparison.Ordinal)
                                                   || name.StartsWith("AwsBedrock", StringComparison.Ordinal));
         fields.Should().Contain("GenAiExecuteToolInternal").And.Contain("GenAiInvokeAgentInternal");
+    }
+
+    [Fact]
+    public void The_skill_spans_have_starters_that_specialize_the_execute_tool_starter()
+    {
+        using var listener = new ApplicationSourceListener();
+
+        using var generic = IncubatingSpans.GenAiExecuteTool("lookup_stock", agentName: null, conversationId: null);
+        using var load = IncubatingSpans.GenAiExecuteToolLoadSkill("load_skill", agentName: null, conversationId: null, skillName: "pdf");
+        using var loadUnnamed = IncubatingSpans.GenAiExecuteToolLoadSkill("load_skill", agentName: null, conversationId: null, skillName: null);
+        using var read = IncubatingSpans.GenAiExecuteToolReadSkillResource("read_skill_resource", agentName: null,
+            conversationId: null, skillName: "pdf", skillResourceName: "forms.md");
+        using var readResourceOnly = IncubatingSpans.GenAiExecuteToolReadSkillResource("read_skill_resource", agentName: null,
+            conversationId: null, skillName: "pdf", skillResourceName: null);
+        using var command = IncubatingSpans.GenAiExecuteToolCommand("bash", agentName: null, conversationId: null,
+            processExecutableName: "git", skillName: null, skillResourceName: null);
+
+        new[] { generic, load, loadUnnamed, read, readResourceOnly, command }.Select(static s => s!.DisplayName).Should().Equal(
+            "execute_tool lookup_stock",
+            "execute_tool load_skill pdf",
+            "execute_tool load_skill",
+            "execute_tool read_skill_resource pdf forms.md",
+            "execute_tool read_skill_resource",
+            "execute_tool bash git");
+        new[] { generic, load, read, command }.Should().OnlyContain(static s =>
+            s!.Kind == ActivityKind.Internal
+            && (string?)s.GetTagItem("gen_ai.operation.name") == "execute_tool"
+            && (string?)s.GetTagItem("qyl.instrumentation.domain") == "gen_ai.execute_tool");
+        load!.GetTagItem("gen_ai.skill.name").Should().Be("pdf");
+        read!.GetTagItem("gen_ai.skill.resource.name").Should().Be("forms.md");
+        command!.GetTagItem("process.executable.name").Should().Be("git");
     }
 }

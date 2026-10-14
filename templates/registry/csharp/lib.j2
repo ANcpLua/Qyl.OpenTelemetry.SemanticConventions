@@ -527,3 +527,76 @@ global::System.Array.Empty<global::Qyl.Telemetry.SemanticConventions.EntityRef>(
 {%- endif -%}
 {%- endif -%}
 {%- endmacro -%}
+
+{#- ------------------------------------------------------------------------
+    Span starters and span names.
+    ------------------------------------------------------------------------ -#}
+
+{#- The bare camelCase name of `key` as a parameter of a span of type `span_type`: the span's root
+    segment is dropped (db.collection.name on db.client -> collectionName), a key of another root
+    keeps it (server.port -> serverPort), and the root's system discriminator
+    (<root>.system, <root>.system.name) is `system`. -#}
+{%- macro param_base(key, span_type) -%}
+{%- set root = (span_type | split(".") | list)[0] -%}
+{%- set rel = key[(root | length) + 1:] if key[0:(root | length) + 1] == root ~ "." else key -%}
+{%- if rel == "system" or rel == "system.name" -%}system
+{%- else -%}
+{%- set s = namespace(out = "", first = true) -%}
+{%- for seg in rel | replace("_", ".") | replace("-", ".") | split(".") -%}
+{%- if (seg | length) > 0 -%}
+{%- if s.first -%}{%- set s.out = seg -%}{%- set s.first = false -%}
+{%- else -%}{%- set s.out = s.out ~ (seg[0] | upper) ~ seg[1:] -%}{%- endif -%}
+{%- endif -%}
+{%- endfor -%}
+{{ s.out }}
+{%- endif -%}
+{%- endmacro -%}
+
+{#- The parameter name as C# writes it: a keyword gets `@`. -#}
+{%- macro param_name(key, span_type) -%}
+{%- set b = param_base(key, span_type) -%}
+{%- set keywords = ["abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked", "class", "const", "continue", "decimal", "default", "delegate", "do", "double", "else", "enum", "event", "explicit", "extern", "false", "finally", "fixed", "float", "for", "foreach", "goto", "if", "implicit", "in", "int", "interface", "internal", "is", "lock", "long", "namespace", "new", "null", "object", "operator", "out", "override", "params", "private", "protected", "public", "readonly", "ref", "return", "sbyte", "sealed", "short", "sizeof", "stackalloc", "static", "string", "struct", "switch", "this", "throw", "true", "try", "typeof", "uint", "ulong", "unchecked", "unsafe", "ushort", "using", "virtual", "void", "volatile", "while"] -%}
+{{ ("@" ~ b) if b in keywords else b }}
+{%- endmacro -%}
+
+{#- The value-set struct of an enum attribute, fully qualified: the stable package holds the
+    stable and deprecated attributes' structs, the incubating package the rest. -#}
+{%- macro struct_type(a) -%}
+global::Qyl.Telemetry.SemanticConventions.{{ "" if (a.stability == "stable" or a.deprecated) else "Incubating." }}Activities.{{ pascal(a.key) }}
+{%- endmacro -%}
+
+{#- An attribute's starter parameter type: the value-set struct for an enum, else the setter type;
+    nullable unless the parameter is required. -#}
+{%- macro starter_param_type(a, required) -%}
+{%- if a.type is mapping and a.type.members is defined -%}{{ struct_type(a) }}{{ "" if required else "?" }}
+{%- else -%}
+{%- set t = parameter_type(a.type) -%}
+{%- if t == "object" -%}object?
+{%- elif required -%}{{ t }}
+{%- else -%}{{ t }}?
+{%- endif -%}
+{%- endif -%}
+{%- endmacro -%}
+
+{#- The parts of a span-name template, "{a} x {b}": a list of {"key": ...} and {"text": ...}. -#}
+{%- macro template_keys(t) -%}
+{%- set s = namespace(keys = []) -%}
+{%- for piece in (t | split("{") | list)[1:] -%}
+{%- set s.keys = s.keys + [(piece | split("}") | list)[0]] -%}
+{%- endfor -%}
+{{ s.keys | join(",") }}
+{%- endmacro -%}
+
+{#- A C# expression concatenating a span-name template: literal text as string literals, each
+    {key} as the local `<param>Text`. -#}
+{%- macro template_expr(t, span_type) -%}
+{%- set pieces = t | split("{") | list -%}
+{%- set s = namespace(parts = []) -%}
+{%- if (pieces[0] | length) > 0 -%}{%- set s.parts = s.parts + [cs_string(pieces[0])] -%}{%- endif -%}
+{%- for piece in pieces[1:] -%}
+{%- set kv = piece | split("}") | list -%}
+{%- set s.parts = s.parts + [param_base(kv[0], span_type) ~ "Text"] -%}
+{%- if (kv[1] | length) > 0 -%}{%- set s.parts = s.parts + [cs_string(kv[1])] -%}{%- endif -%}
+{%- endfor -%}
+{{ s.parts | join(" + ") }}
+{%- endmacro -%}

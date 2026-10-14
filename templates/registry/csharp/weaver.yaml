@@ -262,6 +262,50 @@ templates:
     application_mode: each
     file_name: "{{ ctx.out_dir }}/Spans/{{ ctx.type_root }}Spans.g.cs"
 
+  # Span starters (Qyl.Spans, Qyl.IncubatingSpans) and span names (Qyl.SpanNames) over the same
+  # span refinement rows as spans.cs.j2. Which rows get a starter, their domain, fixed values and
+  # naming chains come from registry/qyl/policy.yaml (params.policy); the filter adds the
+  # qyl.instrumentation.domain values the starters may stamp and the qyl.app template key.
+  - template: starters.cs.j2
+    filter: >
+      . as $registry
+      | ($registry.schema_url) as $qyl
+      | ([($registry.dependencies | keys)[]
+           | select((($registry.dependency_graph[.]) | length) == 0)] | first) as $core
+      | ([($registry.dependencies | keys)[] | select(. != $core)] | first) as $genai
+      | {qyl_schema_url: $qyl, core_schema_url: $core, genai_schema_url: $genai} as $schema_urls
+      | $registry
+      | ([.refinements.spans[]
+          | select(((.type | startswith("gen_ai.")) | not) or (.id | startswith("gen_ai.")))]
+         | sort_by(.id)) as $all
+      | ([.registry.attributes[] | select(.key == "qyl.instrumentation.domain") | .type.members[].value]) as $domains
+      | ([.registry.attributes[] | select(.key == "qyl.app") | .key] | first) as $app_key
+      | [ {tier: "incubating", class_name: "IncubatingSpans",
+           spans: [$all[] | select((.stability == "stable" or (.deprecated != null)) | not)],
+           out_dir: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"},
+          {tier: "stable", class_name: "Spans",
+           spans: [$all[] | select(.stability == "stable" or (.deprecated != null))],
+           out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"} ]
+      | map(. + $schema_urls + {domains: $domains, app_key: $app_key})
+    application_mode: each
+    file_name: "{{ ctx.out_dir }}/Starters/{{ ctx.class_name }}.g.cs"
+
+  - template: span_names.cs.j2
+    filter: >
+      . as $registry
+      | ($registry.schema_url) as $qyl
+      | ([($registry.dependencies | keys)[]
+           | select((($registry.dependency_graph[.]) | length) == 0)] | first) as $core
+      | ([($registry.dependencies | keys)[] | select(. != $core)] | first) as $genai
+      | {qyl_schema_url: $qyl, core_schema_url: $core, genai_schema_url: $genai} as $schema_urls
+      | $registry
+      | {spans: ([.refinements.spans[]
+                  | select(((.type | startswith("gen_ai.")) | not) or (.id | startswith("gen_ai.")))]
+                 | sort_by(.id))}
+      | . + $schema_urls
+    application_mode: single
+    file_name: "src/Qyl.Telemetry.SemanticConventions/Generated/Starters/SpanNames.g.cs"
+
   # EventDefinition rows, per stability tier; disjoint the same way.
   - template: events.cs.j2
     filter: >
