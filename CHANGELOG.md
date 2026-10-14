@@ -6,6 +6,12 @@ Notable changes to the `Qyl.Telemetry.SemanticConventions` package family. `Vers
 (the three NuGet packages and the TypeScript npm package), then tagged `v<version>`;
 [`eng/release/verify-packages.sh`](eng/release/verify-packages.sh) proves the published packages against nuget.org.
 
+## [9.9.3]
+
+- Give every string attribute of the qyl and vendor registries examples taken from the code that writes it, and declare the manifest's `file_format`; Weaver no longer reports diagnostics for this registry.
+- `RegistrySnapshot.Sha256` and `REGISTRY_SNAPSHOT_SHA256` change with the examples; no constant name, value set, doc comment or analyzer rule changes.
+- Build: the pipeline tests run under Microsoft code coverage, and `./build.sh Coverage` (in `mise run check-full`) gates line and branch coverage through dotcov.fallout 3.0.0.
+
 ## [9.9.2] - 2026-10-14
 
 - Move ANcpLua.Roslyn.Utilities from 2.2.47 to 2.2.48: the analyzers embed `ANcpLua.Roslyn.Utilities.Sources` 2.2.48.
@@ -17,14 +23,5 @@ Notable changes to the `Qyl.Telemetry.SemanticConventions` package family. `Vers
 - Run analyzer documentation checks from the completed generator binary; remove nested `dotnet run` builds.
 - Define `qyl.gen_ai.tool.call.arguments_hash` once in the shared registry for producer-supplied, opaque argument fingerprints.
 - Generate matching C# and TypeScript constants; no raw argument capture or instrumentation behavior changes.
-
-## [9.9.0] - 2026-10-12
-
-- Generate stable and incubating TypeScript bindings from the same resolved registry as C#.
-- Add the dependency-free `@ancplua/qyl-semantic-conventions` package and packed-consumer checks.
-- Publish all four artifacts at one version, require their exact names, and verify installed public consumers.
-- Make the shared registry fingerprint independent of local source paths and prove full packed TypeScript/C# vocabulary parity.
-- Correct C# integer enum constants, value sets, Activity setters and analyzer type facts to preserve registry numeric values, matching TypeScript.
-- Declare the existing `qyl.mcp.operation` event in the shared registry.
 
 Older entries: [CHANGELOG.archive.md](CHANGELOG.archive.md).
