@@ -1,5 +1,3 @@
-using MsOperationExtensions = Microsoft.CodeAnalysis.Operations.OperationExtensions;
-
 namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 
 /// <summary>
@@ -101,7 +99,7 @@ internal sealed class Qyl0110MissingRecordFailureAnalyzer : AlAnalyzer {
     }
 
     private static string? StarterIn(IOperation operation) {
-        foreach (var descendant in MsOperationExtensions.DescendantsAndSelf(operation)) {
+        foreach (var descendant in operation.DescendantsAndSelf()) {
             if (descendant is IInvocationOperation invocation && TagSetterDetection.TryGetStarter(invocation, out var starter)) {
                 return starter.Substring("Qyl.".Length);
             }

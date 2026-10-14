@@ -1,7 +1,6 @@
 // Copyright The OpenTelemetry Authors
 // SPDX-License-Identifier: Apache-2.0
 
-using MsOperationExtensions = Microsoft.CodeAnalysis.Operations.OperationExtensions;
 
 namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 
@@ -207,7 +206,7 @@ internal static class TagSetterDetection
         IOperation root,
         List<TagSetterCall> sink)
     {
-        foreach (var descendant in MsOperationExtensions.DescendantsAndSelf(root))
+        foreach (var descendant in root.DescendantsAndSelf())
         {
             if (descendant is not IInvocationOperation invocation)
             {
