@@ -32,7 +32,7 @@ public static class MessageIncubatingActivityExtensions
     /// Id of the executor a message was sent from.
     /// </summary>
     /// <remarks>
-    /// Span tag on the "Microsoft.Agents.AI.Workflows" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:23; set at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/WorkflowTelemetryContext.cs:203 on <c>message.send</c> and at dotnet/src/Microsoft.Agents.AI.Workflows/Execution/DirectEdgeRunner.cs:18, dotnet/src/Microsoft.Agents.AI.Workflows/Execution/FanOutEdgeRunner.cs:20 and dotnet/src/Microsoft.Agents.AI.Workflows/Execution/ResponseEdgeRunner.cs:32 on <c>edge_group.process</c>.
+    /// Span tag on the "Microsoft.Agents.AI.Workflows" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:23; set at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/WorkflowTelemetryContext.cs:203 on <c>message.send</c> and at dotnet/src/Microsoft.Agents.AI.Workflows/Execution/DirectEdgeRunner.cs:18, dotnet/src/Microsoft.Agents.AI.Workflows/Execution/FanOutEdgeRunner.cs:20 and dotnet/src/Microsoft.Agents.AI.Workflows/Execution/ResponseEdgeRunner.cs:32 on <c>edge_group.process</c>. On <c>edge_group.process</c> a Direct, FanOut or Response edge sets it; a FanIn edge, which has several sources, does not.
     /// </remarks>
     public static global::System.Diagnostics.Activity SetMessageSourceId(
         this global::System.Diagnostics.Activity activity,
@@ -43,7 +43,7 @@ public static class MessageIncubatingActivityExtensions
     /// Id of the executor a message is delivered to.
     /// </summary>
     /// <remarks>
-    /// Span tag on the "Microsoft.Agents.AI.Workflows" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:24; set at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/WorkflowTelemetryContext.cs:206 on <c>message.send</c> and at dotnet/src/Microsoft.Agents.AI.Workflows/Execution/DirectEdgeRunner.cs:19, dotnet/src/Microsoft.Agents.AI.Workflows/Execution/FanInEdgeRunner.cs:26 and dotnet/src/Microsoft.Agents.AI.Workflows/Execution/ResponseEdgeRunner.cs:33 on <c>edge_group.process</c>.
+    /// Span tag on the "Microsoft.Agents.AI.Workflows" ActivitySource. Declared at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/Tags.cs:24; set at dotnet/src/Microsoft.Agents.AI.Workflows/Observability/WorkflowTelemetryContext.cs:206 on <c>message.send</c> and at dotnet/src/Microsoft.Agents.AI.Workflows/Execution/DirectEdgeRunner.cs:19, dotnet/src/Microsoft.Agents.AI.Workflows/Execution/FanInEdgeRunner.cs:26 and dotnet/src/Microsoft.Agents.AI.Workflows/Execution/ResponseEdgeRunner.cs:33 on <c>edge_group.process</c>. On <c>edge_group.process</c> a Direct, FanIn or Response edge sets it; a FanOut edge, which has several targets, does not.
     /// </remarks>
     public static global::System.Diagnostics.Activity SetMessageTargetId(
         this global::System.Diagnostics.Activity activity,

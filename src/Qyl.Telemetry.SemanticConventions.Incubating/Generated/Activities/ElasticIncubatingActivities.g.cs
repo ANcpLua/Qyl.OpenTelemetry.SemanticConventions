@@ -76,7 +76,7 @@ public static class ElasticIncubatingActivityExtensions
     /// Semantic-convention schema URL the transport layer's own attributes conform to.
     /// </summary>
     /// <remarks>
-    /// Span tag on the "Elastic.Transport" ActivitySource. Declared at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetryAttributes.cs:30; set at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetry.cs:67.
+    /// Span tag on the "Elastic.Transport" ActivitySource. Declared at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetryAttributes.cs:30; set at src/Elastic.Transport/Diagnostics/OpenTelemetry/OpenTelemetry.cs:67. Set only when the client's schema version differs from the product's (OpenTelemetry.cs:67); with the Elasticsearch client both are 1.21.0, so the tag is usually absent.
     /// </remarks>
     public static global::System.Diagnostics.Activity SetElasticTransportSchemaUrl(
         this global::System.Diagnostics.Activity activity,

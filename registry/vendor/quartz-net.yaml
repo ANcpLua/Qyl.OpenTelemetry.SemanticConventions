@@ -54,7 +54,7 @@ groups:
       - id: quartz.job.type
         type: string
         stability: development
-        brief: "Assembly-qualified type name of the job."
+        brief: "Namespace-qualified full name of the job type (`JobType.ToString()`), not assembly-qualified."
         note: "Span tag on the \"Quartz\" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:52; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:143."
         examples:
           - "MyApp.Jobs.ReportJob"

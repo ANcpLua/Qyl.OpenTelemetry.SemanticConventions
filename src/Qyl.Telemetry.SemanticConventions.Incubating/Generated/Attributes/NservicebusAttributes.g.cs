@@ -57,7 +57,7 @@ public static class NservicebusAttributes
     /// Content type of the claim-check (data bus) payload.
     /// </summary>
     /// <remarks>
-    /// Span tag on the "NServiceBus.Core" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:37; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).
+    /// Span tag on the "NServiceBus.Core" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:37; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping). Promoted from the <c>NServiceBus.DataBusConfig.ContentType</c> header when a message carries it (ActivityDecorator.cs:53); NServiceBus.Core 10.2.9 itself never sets that header, the ClaimCheck package does.
     /// </remarks>
     public const string DatabusContentType = "nservicebus.databus.content_type";
 
@@ -161,7 +161,7 @@ public static class NservicebusAttributes
     /// Marks the message as deferred.
     /// </summary>
     /// <remarks>
-    /// Span tag on the "NServiceBus.Core" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:23; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).
+    /// Span tag on the "NServiceBus.Core" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:23; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping). Promoted from the <c>NServiceBus.IsDeferredMessage</c> header when a message carries it (ActivityDecorator.cs:39); NServiceBus.Core 10.2.9 itself never sets that header, so the tag appears only for messages whose sender (another NServiceBus package or an older endpoint) did.
     /// </remarks>
     public const string IsDeferred = "nservicebus.is_deferred";
 
@@ -217,7 +217,7 @@ public static class NservicebusAttributes
     /// Marks the message as non-durable.
     /// </summary>
     /// <remarks>
-    /// Span tag on the "NServiceBus.Core" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:38; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).
+    /// Span tag on the "NServiceBus.Core" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:38; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping). Promoted from the <c>NServiceBus.NonDurableMessage</c> header when a message carries it (ActivityDecorator.cs:54); NServiceBus.Core 10.2.9 itself never sets that header, so the tag appears only for messages whose sender (another NServiceBus package or an older endpoint) did.
     /// </remarks>
     public const string NonDurable = "nservicebus.non_durable";
 
@@ -225,7 +225,7 @@ public static class NservicebusAttributes
     /// Address the message originated from.
     /// </summary>
     /// <remarks>
-    /// Span tag on the "NServiceBus.Core" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:32; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping).
+    /// Span tag on the "NServiceBus.Core" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:32; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping). Promoted from the <c>NServiceBus.OriginatingAddress</c> header when a message carries it (ActivityDecorator.cs:48); NServiceBus.Core 10.2.9 itself never sets that header, so the tag appears only for messages whose sender (another NServiceBus package or an older endpoint) did.
     /// </remarks>
     public const string OriginatingAddress = "nservicebus.originating_address";
 

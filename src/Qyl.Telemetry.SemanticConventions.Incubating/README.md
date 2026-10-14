@@ -3,7 +3,9 @@
 The incubating OpenTelemetry semantic conventions as .NET constants and typed helpers, generated
 by [Weaver](https://github.com/open-telemetry/weaver) from qyl's registry and shipped pre-built:
 attribute keys at every stability tier, the metric, span, event and entity rows the stable tier
-does not carry, the qyl-owned instrument names, and `AttributeMapping`, the collector's normalize
+does not carry and their value-set structs, the incubating span starters `Qyl.IncubatingSpans`
+(messaging process consumer, invoke_agent, execute_tool and its skill specializations) with
+their views, the qyl-owned instrument names, and `AttributeMapping`, the collector's normalize
 table.
 
 Incubating keys track unstable upstream conventions and may change between minor releases. Opt

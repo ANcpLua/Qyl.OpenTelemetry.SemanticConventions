@@ -195,7 +195,7 @@ public static class MessagingIncubatingActivityExtensions
         => activity.SetTag("messaging.masstransit.begin_state", value);
 
     /// <summary>
-    /// Short type name of the consumer, handler, saga, state machine or Courier activity processing the message.
+    /// Type name of what processed the message: the namespace-qualified <c>TypeCache&lt;T&gt;.ShortName</c> of a consumer, saga or Courier activity, a state machine's <c>GetType().Name</c>, or the literal <c>Handler</c> for a message handler.
     /// </summary>
     /// <remarks>
     /// Span tag on the "MassTransit" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:24; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:108,118,130,142,154,166.
@@ -272,7 +272,7 @@ public static class MessagingIncubatingActivityExtensions
         => activity.SetTag("messaging.masstransit.message_id", value);
 
     /// <summary>
-    /// Comma-separated list of the message types supported by the message.
+    /// Comma-separated message type URNs (<c>urn:message:{namespace}:{name}</c>) the message supports, not CLR type names.
     /// </summary>
     /// <remarks>
     /// Span tag on the "MassTransit" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:22; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:209,296 and src/MassTransit/Logging/Diagnostics/DiagnosticActivityExtensions.cs:38.

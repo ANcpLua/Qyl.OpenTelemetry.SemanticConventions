@@ -40,7 +40,7 @@ internal sealed class Qyl0112NonConstantTelemetryNameAnalyzer : AlAnalyzer {
         };
 
         if (parameter is null
-            || invocation.Arguments.FirstOrDefault(argument => argument.Parameter?.Name == parameter) is not { } argument
+            || invocation.Arguments.FirstOrDefault(candidate => candidate.Parameter?.Name == parameter) is not { } argument
             || argument.Value.ConstantValue.HasValue) {
             return;
         }

@@ -84,7 +84,7 @@ public static class QuartzIncubatingActivityExtensions
         => activity.SetTag("quartz.job.result", value);
 
     /// <summary>
-    /// Assembly-qualified type name of the job.
+    /// Namespace-qualified full name of the job type (<c>JobType.ToString()</c>), not assembly-qualified.
     /// </summary>
     /// <remarks>
     /// Span tag on the "Quartz" ActivitySource. Declared at src/Quartz/Diagnostics/ActivityTags.cs:52; set at src/Quartz/Diagnostics/QuartzActivitySource.cs:143.

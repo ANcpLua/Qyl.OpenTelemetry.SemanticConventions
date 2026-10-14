@@ -18,7 +18,7 @@ namespace Qyl.Telemetry.SemanticConventions.Incubating.Activities;
 public static class SoapIncubatingActivityExtensions
 {
     /// <summary>
-    /// SOAP envelope and WS-Addressing version of the incoming request message.
+    /// The incoming request's <c>MessageVersion</c> display string: the SOAP envelope and WS-Addressing versions, each with its namespace in parentheses.
     /// </summary>
     /// <remarks>
     /// Span tag on the "CoreWCF.Primitives" ActivitySource; the value is <c>request.Version.ToString()</c>, the <c>MessageVersion</c> of the received message. Declared at src/CoreWCF.Primitives/src/CoreWCF/Telemetry/WcfInstrumentationConstants.cs:13; set at src/CoreWCF.Primitives/src/CoreWCF/Dispatcher/ImmutableDispatchRuntime.cs:713.

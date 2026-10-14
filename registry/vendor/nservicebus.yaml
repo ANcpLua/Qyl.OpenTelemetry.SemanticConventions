@@ -130,7 +130,7 @@ groups:
         type: string
         stability: development
         brief: "Marks the message as deferred."
-        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:23; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:23; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping). Promoted from the `NServiceBus.IsDeferredMessage` header when a message carries it (ActivityDecorator.cs:39); NServiceBus.Core 10.2.9 itself never sets that header, so the tag appears only for messages whose sender (another NServiceBus package or an older endpoint) did."
         examples:
           - "True"
       - id: nservicebus.originating_endpoint
@@ -193,7 +193,7 @@ groups:
         type: string
         stability: development
         brief: "Address the message originated from."
-        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:32; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:32; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping). Promoted from the `NServiceBus.OriginatingAddress` header when a message carries it (ActivityDecorator.cs:48); NServiceBus.Core 10.2.9 itself never sets that header, so the tag appears only for messages whose sender (another NServiceBus package or an older endpoint) did."
         examples:
           - "Samples.ComplexSagaFindingLogic@MACHINEA"
       - id: nservicebus.conversation_id
@@ -231,14 +231,14 @@ groups:
         type: string
         stability: development
         brief: "Content type of the claim-check (data bus) payload."
-        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:37; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:37; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping). Promoted from the `NServiceBus.DataBusConfig.ContentType` header when a message carries it (ActivityDecorator.cs:53); NServiceBus.Core 10.2.9 itself never sets that header, the ClaimCheck package does."
         examples:
           - "application/json"
       - id: nservicebus.non_durable
         type: string
         stability: development
         brief: "Marks the message as non-durable."
-        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:38; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping)."
+        note: "Span tag on the \"NServiceBus.Core\" ActivitySource. Declared at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityTags.cs:38; set at src/NServiceBus.Core/OpenTelemetry/Tracing/ActivityDecorator.cs:14 (PromoteHeadersToTags, HeaderMapping). Promoted from the `NServiceBus.NonDurableMessage` header when a message carries it (ActivityDecorator.cs:54); NServiceBus.Core 10.2.9 itself never sets that header, so the tag appears only for messages whose sender (another NServiceBus package or an older endpoint) did."
         examples:
           - "True"
       - id: nservicebus.native_message_id

@@ -71,7 +71,7 @@ groups:
       - id: messaging.masstransit.message_types
         type: string
         stability: development
-        brief: "Comma-separated list of the message types supported by the message."
+        brief: "Comma-separated message type URNs (`urn:message:{namespace}:{name}`) the message supports, not CLR type names."
         note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:22; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:209,296 and src/MassTransit/Logging/Diagnostics/DiagnosticActivityExtensions.cs:38."
         examples:
           - "urn:message:Shop.Orders.Contracts:SubmitOrder"
@@ -79,7 +79,7 @@ groups:
       - id: messaging.masstransit.consumer_type
         type: string
         stability: development
-        brief: "Short type name of the consumer, handler, saga, state machine or Courier activity processing the message."
+        brief: "Type name of what processed the message: the namespace-qualified `TypeCache<T>.ShortName` of a consumer, saga or Courier activity, a state machine's `GetType().Name`, or the literal `Handler` for a message handler."
         note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:24; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:108,118,130,142,154,166."
         examples:
           - "Shop.Orders.SubmitOrderConsumer"
@@ -110,7 +110,7 @@ groups:
       - id: peer.address
         type: string
         stability: development
-        brief: "MassTransit diagnostic address of the message type being consumed."
+        brief: "MassTransit's diagnostic address of the consumed message type (`MessageTypeCache.GetDiagnosticAddress`): `{Name}/{Namespace}`, or a Courier activity's name without its `Activity` suffix; not a network address."
         note: "Span tag on the \"MassTransit\" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:26; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:109,119,131,143,155,167."
         examples:
           - "SubmitOrder/Shop.Orders.Contracts"

@@ -14,7 +14,7 @@ namespace Qyl.Telemetry.SemanticConventions.Incubating.Attributes.Peer;
 public static class PeerAttributes
 {
     /// <summary>
-    /// MassTransit diagnostic address of the message type being consumed.
+    /// MassTransit's diagnostic address of the consumed message type (<c>MessageTypeCache.GetDiagnosticAddress</c>): <c>{Name}/{Namespace}</c>, or a Courier activity's name without its <c>Activity</c> suffix; not a network address.
     /// </summary>
     /// <remarks>
     /// Span tag on the "MassTransit" ActivitySource. Declared at src/MassTransit/Logging/Diagnostics/DiagnosticHeaders.cs:26; set at src/MassTransit/Logging/Diagnostics/LogContextActivityExtensions.cs:109,119,131,143,155,167.

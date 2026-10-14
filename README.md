@@ -16,8 +16,8 @@ automatic-instrumentation releases.
 
 | Package | Contents |
 | --- | --- |
-| `Qyl.Telemetry.SemanticConventions` | The stable tier: attribute-key constants, `SchemaUrl`, the qyl-owned telemetry names, typed `Activity` setter extensions, and the metric, span, event and entity definitions — plus the definition types themselves (`MetricDefinition<TInstrument>`, `SpanDefinition<TKind>`, `EventDefinition`, `EntityDefinition`, and their `Stability`/`Deprecation`/`RequirementLevel`/`AttributeRef`/`EntityRef` companions) |
-| `Qyl.Telemetry.SemanticConventions.Incubating` | Attribute-key constants at every stability tier, the rows the stable tier does not carry for the other five kinds, the qyl-owned instrument names, and `Mapping.AttributeMapping` — the collector's normalize table |
+| `Qyl.Telemetry.SemanticConventions` | The stable tier: attribute-key constants, `SchemaUrl`, the qyl-owned telemetry names, typed `Activity` setter extensions with their value-set structs, and the metric, span, event and entity definitions — plus the definition types themselves (`MetricDefinition<TInstrument>`, `SpanDefinition<TKind>`, `EventDefinition`, `EntityDefinition`, and their `Stability`/`Deprecation`/`RequirementLevel`/`AttributeRef`/`AttributePhase`/`EntityRef` companions). The agent-first API in namespace `Qyl`: the span starters `Spans` (`Source`, `Work`, `DbClient`, `SetAppTag`, `RecordFailure`) and `SpanNames`; and the trace contract `SpanRecord`, `StoreIdentity`, the `Views` over them and `RegistryPolicy` |
+| `Qyl.Telemetry.SemanticConventions.Incubating` | Attribute-key constants at every stability tier, the rows the stable tier does not carry for the other five kinds and their value-set structs, the incubating starters `Qyl.IncubatingSpans` and their views, the qyl-owned instrument names, and `Mapping.AttributeMapping` — the collector's normalize table |
 | `Qyl.Telemetry.SemanticConventions.Analyzers` | Roslyn diagnostics and code fixes for semantic-convention consumers, with a [generated rule catalog](docs/Qyl.Telemetry.SemanticConventions.Analyzers.md), a [migration catalog](docs/migration-catalog.md), and [editorconfig severity profiles](docs/editorconfig/) |
 
 Three packages ship. `Qyl.Telemetry.SemanticConventions.SourceGeneration` is retired: its
@@ -62,10 +62,16 @@ var duration = HttpMetricDefinitions.HttpClientRequestDuration;
 Console.WriteLine($"{duration.Name} {duration.Instrument} {duration.Unit}");
 // http.client.request.duration histogram s
 
-// The stable setter extension and its incubating sibling, on one Activity.
+// The stable setter extension and its incubating sibling, on one Activity. An enum attribute
+// takes its value-set struct: a member, or Custom for a value the registry does not list.
 using var activity = new Activity("GET").Start();
-activity.SetHttpRequestMethod("GET");
+activity.SetHttpRequestMethod(HttpRequestMethod.Get);
 activity.SetHttpRequestBodySize(1234);
+
+// A span starter on the application scope AddQyl subscribes: required attributes positional,
+// conditional ones without a default, the name from the registry's chain ("write orders").
+using var span = Qyl.Spans.DbClient(DbSystemName.Postgresql, collectionName: "orders",
+    @namespace: "shop", operationName: "write", serverPort: null);
 
 // The collector's normalize table.
 Console.WriteLine(AttributeMapping.TryGetRename("http.method", out var live) ? live : "(none)");
@@ -77,7 +83,8 @@ Both namespaces are in scope at once and no call is ambiguous, because the two p
 disjoint for every kind but attributes. The program also publishes NativeAOT clean —
 `dotnet publish -c Release -r <rid> -p:PublishAot=true` emits no trim or AOT warning, because
 nothing here reflects: the keys are `const string`, the definitions are constructed objects,
-and `AttributeMapping` is switch statements over string literals.
+the starters are static methods with `TagList` creation tags, and `AttributeMapping` is switch
+statements over string literals.
 
 ## The registry
 
@@ -185,7 +192,7 @@ scripts/generate.sh -> weaver registry generate --v2 --include-unreferenced
         |
         +----> src/Qyl.Telemetry.SemanticConventions/Generated/            (stable tier)
         +----> src/Qyl.Telemetry.SemanticConventions.Incubating/Generated/ (the other tiers)
-        +----> src/…Analyzers/SemconvRegistryFacts.g.cs, SemconvDeprecations.g.cs
+        +----> src/…Analyzers/SemconvRegistryFacts.g.cs, SemconvDeprecations.g.cs, SemconvTypedSurface.g.cs
         +----> generated/pins.props                   (the pins, for MSBuild)
 ```
 
@@ -200,8 +207,14 @@ therefore writes `error: missing param <name>` into the header instead of a stal
 Because the resolved v2 registry flattens `registry.*` groups into the catalog and drops
 their group annotations, `scripts/generate.sh` reads the two lists that live only in
 annotations — the scope names qyl constructs and the vendor `ActivitySource` names — out of
-the same YAML and hands them to the templates as parameters. `registry/` stays the only
-source.
+the same YAML and hands them to the templates as parameters. The same holds for qyl's policy
+over the registry, [`registry/qyl/policy.yaml`](registry/qyl/policy.yaml): which keys the
+collector does not persist (`qyl.persisted: false`, the denied-key tokens, `qyl.token_exempt`),
+which attributes are known only when an operation ends (`qyl.phase: end`), and the span-name
+chains and starters keyed by span refinement id (`qyl.span_name`, `starter`, `domain`, `fixed`).
+`scripts/generate.sh` reads it into one JSON value, `-D policy=<json>`, which the templates
+receive as `params.policy`. `registry/` stays the only source. Weaver writes files and never
+deletes one, so `scripts/generate.sh` clears both `Generated/` trees first.
 
 [`scripts/check-generated.sh`](scripts/check-generated.sh) is the gate: it regenerates
 everything and fails on `git diff HEAD`. `GeneratedSurfaceTests` is the second line, pinning
@@ -235,16 +248,42 @@ Each package's `Generated/` directory holds one file per registry root for six k
 | Kind | Stable package | Incubating package |
 | --- | --- | --- |
 | Attributes | `Attributes.{Root}.{Root}Attributes` | `Incubating.Attributes.{Root}.{Root}Attributes` |
-| Activities | `Activities.{Root}ActivityExtensions` | `Incubating.Activities.{Root}IncubatingActivityExtensions` |
+| Activities | `Activities.{Root}ActivityExtensions` and a value-set struct per enum attribute (`Activities.DbSystemName`) | `Incubating.Activities.{Root}IncubatingActivityExtensions` and its structs (`Incubating.Activities.MessagingSystem`) |
 | Metrics | `Metrics.{Root}MetricDefinitions` | `Incubating.Metrics.{Root}IncubatingMetricDefinitions` |
 | Spans | `Spans.{Root}SpanDefinitions` | `Incubating.Spans.{Root}IncubatingSpanDefinitions` |
 | Events | `Events.{Root}EventDefinitions` | `Incubating.Events.{Root}IncubatingEventDefinitions` |
 | Entities | `Entities.{Root}EntityDefinitions` | `Incubating.Entities.{Root}IncubatingEntityDefinitions` |
+| Starters | `Qyl.Spans`, `Qyl.SpanNames` | `Qyl.IncubatingSpans` |
+| Views | `Views.SpanViews`, `Views.DbClientSpan` | `Incubating.Views.IncubatingSpanViews` and its view structs |
 
 `Attributes` is the one kind both packages carry in full — the stable package the stable rows
 plus the deprecated migration symbols, the incubating package every key, at the byte-identical
 shape the collector reads by reflection. Every enum-value class carries `AllValues` and
-`Contains`.
+`Contains`; those `const string` classes live under `Attributes` only, for `switch` and pattern
+matching. Under `Activities` an enum attribute is an open value-set struct (`DbSystemName`): one
+static member per registry value, `Custom(...)` for a value the registry does not list (QYL0121
+reports one a member carries), `Value`, `Key`, value equality, and no conversion from `string`.
+The typed setter of an enum attribute takes the struct. Resource-only attributes
+(`service.name`, `deployment.environment.name`, `host.*`: referenced by entities and by no span,
+event or metric) get no `Activity` setter.
+
+Span rows are keyed by the registry's span refinement id and grouped by type, so a
+specialization (`db.postgresql.client`, the gen_ai skill spans) is a row of its own with
+`Type` naming its base; each row carries its `SpanName` chain, and each `AttributeRef` its
+condition text, `Phase` and `IsPersisted`.
+
+The starters (ADR D2) exist for the span groups no library qyl subscribes to already emits:
+`db.client` on `Qyl.Spans`; `messaging.process.consumer`, `gen_ai.invoke_agent.internal`,
+`gen_ai.execute_tool.internal` and its three skill specializations on `Qyl.IncubatingSpans`.
+Required attributes are positional, conditionally required ones nullable with no default (an
+omission is CS7036), recommended ones default to `null`; OptIn, end-phase and group-fixed
+attributes take no parameter and go through the typed setters or `RecordFailure`. Each starter
+stamps its `qyl.instrumentation.domain`, names the span through `Qyl.SpanNames`, puts every
+supplied value into the creation tags and returns `null` when nothing listens. `Spans.Work(name)`
+covers business work no group describes (domain `app`), `SetAppTag(key, value)` writes
+`qyl.app.<key>`, and `RecordFailure` sets status Error with a bounded description, `error.type`
+and the exception event. `Qyl.SpanNames` carries every naming chain of the policy in the stable
+package, so producers that may not read the incubating tier name their spans the same way.
 
 For the other five the two packages are **disjoint**. The stable package carries the stable
 and deprecated rows under `{Root}{Kind}`; the incubating package carries only the rows the
@@ -253,12 +292,19 @@ namespaces without an ambiguous-call error. A registry root with no non-stable r
 incubating type at all. A definition generated in either package is an instance of the same
 public type, so it can be handed between libraries and applications.
 
-Four singletons round the surface out.
+These singletons round the surface out.
 
-- `SchemaUrl.Current` — the pinned core schema URL, stable package only.
+- `SchemaUrl.Current` — the pinned core schema URL, stable package only; `SchemaUrl.Qyl` and
+  `SchemaUrl.QylVersion` — the qyl registry's own (`https://qyl.at/schemas/<version>`), which
+  qyl's ActivitySources carry.
+- `RegistryPolicy` — the collector's persistence rule as a table (`NotPersistedKeys`,
+  `NotPersistedPrefixes`, `DeniedKeyTokens`, `TokenExemptKeys`, `VendorKeys`, `IsPersisted`);
+  the views, QYL0113 and the qyl collector's catalog read it.
+- `SpanRecord`, `SpanEventRecord`, `SpanLinkRecord`, `StoreIdentity` — the trace contract the
+  generated views read and `Qyl.Telemetry.Testing` builds on.
 - `Names.QylTelemetryNames` — stable package only, because the producer packages build their
   `ActivitySource` and `Meter` from it and may not read the incubating tier. `Scopes` is the
-  six scope names qyl constructs; `VendorActivitySources` is the source names of the pinned
+  seven scope names qyl constructs (the application scope `Qyl.Telemetry.Application` among them); `VendorActivitySources` is the source names of the pinned
   third-party libraries, so `AddSource` and a span processor's source match need no literal,
   and they join QYL0200's allowlist; `Events` is the one qyl-owned event name.
 - `Incubating.Attributes.{Root}.{Root}MetricAttributes` — the qyl-owned instrument names and

@@ -161,14 +161,15 @@ internal static class Program
             return 2;
         }
 
-        // The pre-generated setter extensions of both packages. The two tiers are disjoint,
-        // so a stable and an incubating Activities namespace can be imported together: the
-        // stable http setter and the incubating gen_ai one resolve without an ambiguous call. A bare Activity exercises them and needs no
+        // The pre-generated setter extensions of both packages, which take the value-set
+        // structs. The two tiers are disjoint, so a stable and an incubating Activities
+        // namespace can be imported together: the stable http setter and the incubating gen_ai
+        // one resolve without an ambiguous call. A bare Activity exercises them and needs no
         // ActivitySource, so nothing here has to be registered or suppressed.
         using var activity = new Activity("release-smoke").Start();
-        activity.SetHttpRequestMethod(HttpAttributes.RequestMethodValues.Get);
-        activity.SetGenAiOperationName(GenAiAttributes.OperationNameValues.Chat);
-        activity.SetCpythonGcGeneration(CpythonAttributes.GcGenerationValues.Generation0);
+        activity.SetHttpRequestMethod(HttpRequestMethod.Get);
+        activity.SetGenAiOperationName(GenAiOperationName.Chat);
+        activity.SetCpythonGcGeneration(CpythonGcGeneration.Generation0);
         if (activity.GetTagItem(CpythonAttributes.GcGeneration) is not long generation || generation != 0L)
         {
             return 7;
@@ -189,6 +190,27 @@ internal static class Program
             || AttributeMapping.NamespaceOf("http.request.method") != "http")
         {
             return 5;
+        }
+
+        // A generated starter on the application scope: the name from the registry chain, the
+        // qyl schema URL on the source, the domain stamped. The analyzers ship in this consumer,
+        // so the starter is also what they accept.
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = static source => source.Name == QylTelemetryNames.Scopes.QylTelemetryApplication,
+            Sample = static (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
+        };
+        ActivitySource.AddActivityListener(listener);
+        using (var span = Qyl.Spans.DbClient(DbSystemName.Postgresql, collectionName: "orders", @namespace: "shop",
+                   operationName: "write", serverPort: null))
+        {
+            if (span is null
+                || span.DisplayName != "write orders"
+                || span.Source.TelemetrySchemaUrl != SchemaUrl.Qyl
+                || span.GetTagItem("qyl.instrumentation.domain") is not "db.client")
+            {
+                return 8;
+            }
         }
 
         Console.WriteLine("semantic-conventions release smoke passed");

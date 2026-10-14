@@ -18,7 +18,7 @@ groups:
       - id: soap.message_version
         type: string
         stability: development
-        brief: "SOAP envelope and WS-Addressing version of the incoming request message."
+        brief: "The incoming request's `MessageVersion` display string: the SOAP envelope and WS-Addressing versions, each with its namespace in parentheses."
         note: "Span tag on the \"CoreWCF.Primitives\" ActivitySource; the value is `request.Version.ToString()`, the `MessageVersion` of the received message. Declared at src/CoreWCF.Primitives/src/CoreWCF/Telemetry/WcfInstrumentationConstants.cs:13; set at src/CoreWCF.Primitives/src/CoreWCF/Dispatcher/ImmutableDispatchRuntime.cs:713."
         examples:
           - "Soap12 (http://www.w3.org/2003/05/soap-envelope) Addressing10 (http://www.w3.org/2005/08/addressing)"
