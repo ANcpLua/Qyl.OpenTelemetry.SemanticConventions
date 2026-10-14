@@ -1,6 +1,9 @@
+using System.Diagnostics;
 using System.Globalization;
+using ANcpLua.Roslyn.Utilities.Testing;
 using AwesomeAssertions;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Qyl.Telemetry.SemanticConventions.Analyzers;
 using Xunit;
 
@@ -17,9 +20,14 @@ public sealed class Qyl0200TelemetryNameAnalyzerTests
     [Fact]
     public async Task Qyl0200_fails_the_build_for_a_hardcoded_unknown_attribute_key()
     {
-        var diagnostics = await AnalyzerHarness.RunAsync(
-            new Qyl0200TelemetryNameAnalyzer(),
-            ActivitySink("activity?.SetTag(\"qyl.invented.attribute\", 1);"));
+        var diagnostics = await Compile
+            .Source(ActivitySink("activity?.SetTag(\"qyl.invented.attribute\", 1);"))
+            .WithReference<Activity>()
+            .Build()
+            .ShouldSucceed()
+            .Compilation
+            .WithAnalyzers([new Qyl0200TelemetryNameAnalyzer()])
+            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
 
         diagnostics.Should().ContainSingle();
         diagnostics[0].Id.Should().Be("QYL0200");
@@ -30,9 +38,8 @@ public sealed class Qyl0200TelemetryNameAnalyzerTests
     [Fact]
     public async Task Qyl0200_accepts_registry_attribute_keys_including_qyl_owned_entries()
     {
-        var diagnostics = await AnalyzerHarness.RunAsync(
-            new Qyl0200TelemetryNameAnalyzer(),
-            ActivitySink(
+        var diagnostics = await Compile
+            .Source(ActivitySink(
                 """
                 activity?.SetTag("http.request.method", "GET");
                 activity?.SetTag("qyl.instrumentation.domain", "http");
@@ -43,7 +50,13 @@ public sealed class Qyl0200TelemetryNameAnalyzerTests
                 activity?.SetTag("qyl.workspace.id", "workspace-1");
                 activity?.SetTag("qyl.mcp.server.id", "server-1");
                 activity?.SetTag("qyl.mcp.tool.name", "search");
-                """));
+                """))
+            .WithReference<Activity>()
+            .Build()
+            .ShouldSucceed()
+            .Compilation
+            .WithAnalyzers([new Qyl0200TelemetryNameAnalyzer()])
+            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
 
         diagnostics.Should().BeEmpty();
     }
@@ -51,13 +64,18 @@ public sealed class Qyl0200TelemetryNameAnalyzerTests
     [Fact]
     public async Task Qyl0200_resolves_hand_written_constants_through_constant_propagation()
     {
-        var diagnostics = await AnalyzerHarness.RunAsync(
-            new Qyl0200TelemetryNameAnalyzer(),
-            ActivitySink(
+        var diagnostics = await Compile
+            .Source(ActivitySink(
                 """
                 const string invented = "qyl.laundered.attribute";
                 activity?.SetTag(invented, 1);
-                """));
+                """))
+            .WithReference<Activity>()
+            .Build()
+            .ShouldSucceed()
+            .Compilation
+            .WithAnalyzers([new Qyl0200TelemetryNameAnalyzer()])
+            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
 
         diagnostics.Should().ContainSingle();
         diagnostics[0].Id.Should().Be("QYL0200");
@@ -66,13 +84,18 @@ public sealed class Qyl0200TelemetryNameAnalyzerTests
     [Fact]
     public async Task Qyl0200_ignores_non_constant_name_expressions()
     {
-        var diagnostics = await AnalyzerHarness.RunAsync(
-            new Qyl0200TelemetryNameAnalyzer(),
-            ActivitySink(
+        var diagnostics = await Compile
+            .Source(ActivitySink(
                 """
                 var dynamicKey = "qyl." + activity?.DisplayName;
                 activity?.SetTag(dynamicKey!, 1);
-                """));
+                """))
+            .WithReference<Activity>()
+            .Build()
+            .ShouldSucceed()
+            .Compilation
+            .WithAnalyzers([new Qyl0200TelemetryNameAnalyzer()])
+            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
 
         diagnostics.Should().BeEmpty();
     }
@@ -80,26 +103,38 @@ public sealed class Qyl0200TelemetryNameAnalyzerTests
     [Fact]
     public async Task Qyl0200_checks_activity_source_construction_against_scope_names()
     {
-        var clean = await AnalyzerHarness.RunAsync(
-            new Qyl0200TelemetryNameAnalyzer(),
-            """
-            using System.Diagnostics;
-            internal static class Owner
-            {
-                public static readonly ActivitySource Source = new("Qyl.Collector");
-            }
-            """);
+        var clean = await Compile
+            .Source(
+                """
+                using System.Diagnostics;
+                internal static class Owner
+                {
+                    public static readonly ActivitySource Source = new("Qyl.Collector");
+                }
+                """)
+            .WithReference<Activity>()
+            .Build()
+            .ShouldSucceed()
+            .Compilation
+            .WithAnalyzers([new Qyl0200TelemetryNameAnalyzer()])
+            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
         clean.Should().BeEmpty();
 
-        var flagged = await AnalyzerHarness.RunAsync(
-            new Qyl0200TelemetryNameAnalyzer(),
-            """
-            using System.Diagnostics;
-            internal static class Owner
-            {
-                public static readonly ActivitySource Source = new("Not.A.Registered.Scope");
-            }
-            """);
+        var flagged = await Compile
+            .Source(
+                """
+                using System.Diagnostics;
+                internal static class Owner
+                {
+                    public static readonly ActivitySource Source = new("Not.A.Registered.Scope");
+                }
+                """)
+            .WithReference<Activity>()
+            .Build()
+            .ShouldSucceed()
+            .Compilation
+            .WithAnalyzers([new Qyl0200TelemetryNameAnalyzer()])
+            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
         flagged.Should().ContainSingle();
         flagged[0].Id.Should().Be("QYL0200");
         flagged[0].GetMessage(CultureInfo.InvariantCulture).Should().Contain("instrumentation scope name");
@@ -108,14 +143,24 @@ public sealed class Qyl0200TelemetryNameAnalyzerTests
     [Fact]
     public async Task Qyl0200_checks_meter_instrument_names_against_catalog_metrics()
     {
-        var clean = await AnalyzerHarness.RunAsync(
-            new Qyl0200TelemetryNameAnalyzer(),
-            MeterSink("Meter.CreateHistogram<double>(\"db.client.operation.duration\", \"s\");"));
+        var clean = await Compile
+            .Source(MeterSink("Meter.CreateHistogram<double>(\"db.client.operation.duration\", \"s\");"))
+            .WithReference<Activity>()
+            .Build()
+            .ShouldSucceed()
+            .Compilation
+            .WithAnalyzers([new Qyl0200TelemetryNameAnalyzer()])
+            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
         clean.Should().BeEmpty();
 
-        var flagged = await AnalyzerHarness.RunAsync(
-            new Qyl0200TelemetryNameAnalyzer(),
-            MeterSink("Meter.CreateCounter<long>(\"qyl.invented.metric\");"));
+        var flagged = await Compile
+            .Source(MeterSink("Meter.CreateCounter<long>(\"qyl.invented.metric\");"))
+            .WithReference<Activity>()
+            .Build()
+            .ShouldSucceed()
+            .Compilation
+            .WithAnalyzers([new Qyl0200TelemetryNameAnalyzer()])
+            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
         flagged.Should().ContainSingle();
         flagged[0].Id.Should().Be("QYL0200");
         flagged[0].GetMessage(CultureInfo.InvariantCulture).Should().Contain("metric name");
@@ -124,18 +169,28 @@ public sealed class Qyl0200TelemetryNameAnalyzerTests
     [Fact]
     public async Task Qyl0200_checks_activity_event_names()
     {
-        var clean = await AnalyzerHarness.RunAsync(
-            new Qyl0200TelemetryNameAnalyzer(),
-            ActivitySink(
+        var clean = await Compile
+            .Source(ActivitySink(
                 """
                 activity?.AddEvent(new ActivityEvent("exception"));
                 activity?.AddEvent(new ActivityEvent("qyl.rpc.grpc"));
-                """));
+                """))
+            .WithReference<Activity>()
+            .Build()
+            .ShouldSucceed()
+            .Compilation
+            .WithAnalyzers([new Qyl0200TelemetryNameAnalyzer()])
+            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
         clean.Should().BeEmpty();
 
-        var flagged = await AnalyzerHarness.RunAsync(
-            new Qyl0200TelemetryNameAnalyzer(),
-            ActivitySink("activity?.AddEvent(new ActivityEvent(\"qyl.invented.event\"));"));
+        var flagged = await Compile
+            .Source(ActivitySink("activity?.AddEvent(new ActivityEvent(\"qyl.invented.event\"));"))
+            .WithReference<Activity>()
+            .Build()
+            .ShouldSucceed()
+            .Compilation
+            .WithAnalyzers([new Qyl0200TelemetryNameAnalyzer()])
+            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
         flagged.Should().ContainSingle();
         flagged[0].GetMessage(CultureInfo.InvariantCulture).Should().Contain("event name");
     }
@@ -143,10 +198,18 @@ public sealed class Qyl0200TelemetryNameAnalyzerTests
     [Fact]
     public async Task Qyl0200_trusts_generated_code()
     {
-        var diagnostics = await AnalyzerHarness.RunAsync(
-            new Qyl0200TelemetryNameAnalyzer(),
-            ActivitySink("activity?.SetTag(\"qyl.invented.attribute\", 1);"),
-            "/repo/Consumer.g.cs");
+        var compilation = Compile
+            .Source(ActivitySink("activity?.SetTag(\"qyl.invented.attribute\", 1);"))
+            .WithReference<Activity>()
+            .Build()
+            .ShouldSucceed()
+            .Compilation;
+        var tree = compilation.SyntaxTrees.Single();
+
+        var diagnostics = await compilation
+            .ReplaceSyntaxTree(tree, tree.WithFilePath("/repo/Consumer.g.cs"))
+            .WithAnalyzers([new Qyl0200TelemetryNameAnalyzer()])
+            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
 
         diagnostics.Should().BeEmpty();
     }
@@ -154,16 +217,24 @@ public sealed class Qyl0200TelemetryNameAnalyzerTests
     [Fact]
     public async Task Qyl0201_requires_descriptor_metric_names_to_be_catalog_members()
     {
-        var flagged = await AnalyzerHarness.RunAsync(
-            new Qyl0201InvalidMetricNameAnalyzer(),
-            DescriptorSink("qyl.invented.metric"));
+        var flagged = await Compile
+            .Source(DescriptorSink("qyl.invented.metric"))
+            .Build()
+            .ShouldSucceed()
+            .Compilation
+            .WithAnalyzers([new Qyl0201InvalidMetricNameAnalyzer()])
+            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
         flagged.Should().ContainSingle();
         flagged[0].Id.Should().Be("QYL0201");
         flagged[0].Severity.Should().Be(DiagnosticSeverity.Error);
 
-        var clean = await AnalyzerHarness.RunAsync(
-            new Qyl0201InvalidMetricNameAnalyzer(),
-            DescriptorSink("gen_ai.client.inference.operation.input_tokens"));
+        var clean = await Compile
+            .Source(DescriptorSink("gen_ai.client.inference.operation.input_tokens"))
+            .Build()
+            .ShouldSucceed()
+            .Compilation
+            .WithAnalyzers([new Qyl0201InvalidMetricNameAnalyzer()])
+            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
         clean.Should().BeEmpty();
     }
 
@@ -173,38 +244,25 @@ public sealed class Qyl0200TelemetryNameAnalyzerTests
     [InlineData("quartz.trigger.retry")]
     public async Task Qyl0201_accepts_native_Quartz_metrics(string name)
     {
-        var diagnostics = await AnalyzerHarness.RunAsync(
-            new Qyl0201InvalidMetricNameAnalyzer(), DescriptorSink(name));
+        var diagnostics = await Compile
+            .Source(DescriptorSink(name))
+            .Build()
+            .ShouldSucceed()
+            .Compilation
+            .WithAnalyzers([new Qyl0201InvalidMetricNameAnalyzer()])
+            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
 
         diagnostics.Should().BeEmpty();
     }
 
     private static string ActivitySink(string statements) =>
-        $$"""
-        #nullable enable
-        using System.Diagnostics;
-        internal sealed class Sink
-        {
-            internal void Emit(Activity? activity)
-            {
-                {{statements}}
-            }
-        }
-        """;
+        SourceFixture.InMethod(statements, declarations: "using System.Diagnostics;", parameters: "Activity? activity");
 
     private static string MeterSink(string statements) =>
-        $$"""
-        #nullable enable
-        using System.Diagnostics.Metrics;
-        internal sealed class Sink
-        {
-            private static readonly Meter Meter = new("System.Runtime");
-            internal void Emit()
-            {
-                {{statements}}
-            }
-        }
-        """;
+        SourceFixture.InMethod(
+            statements,
+            declarations: "using System.Diagnostics.Metrics;",
+            members: "private static readonly Meter Meter = new(\"System.Runtime\");");
 
     private static string DescriptorSink(string metricName) =>
         $$"""

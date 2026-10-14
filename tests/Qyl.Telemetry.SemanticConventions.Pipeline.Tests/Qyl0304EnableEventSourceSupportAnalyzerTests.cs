@@ -8,9 +8,10 @@ using System.IO.Compression;
 using System.Linq;
 using System.Security;
 using System.Threading.Tasks;
+using ANcpLua.Roslyn.Utilities.Testing;
+using ANcpLua.Roslyn.Utilities.Testing.MSBuild;
 using AwesomeAssertions;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Qyl.Telemetry.SemanticConventions.Analyzers;
 using Xunit;
@@ -53,10 +54,15 @@ public sealed class Qyl0304EnableEventSourceSupportAnalyzerTests
         string source,
         IReadOnlyDictionary<string, string> buildProperties)
     {
-        var diagnostics = await AnalyzerHarness.RunAsync(
-            [new Qyl0304EnableEventSourceSupportAnalyzer()],
-            source,
-            options: new AnalyzerOptions([], new GlobalOptionsProvider(buildProperties)));
+        var diagnostics = await Compile
+            .Source(source)
+            .Build()
+            .ShouldSucceed()
+            .Compilation
+            .WithAnalyzers(
+                [new Qyl0304EnableEventSourceSupportAnalyzer()],
+                new AnalyzerOptions([], new DictionaryAnalyzerConfigOptionsProvider(buildProperties)))
+            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
         return [.. diagnostics.Where(d => d.Id == "QYL0304")];
     }
 
@@ -72,7 +78,7 @@ public sealed class Qyl0304EnableEventSourceSupportAnalyzerTests
     [Fact]
     public async Task Packaged_build_transitive_props_expose_aot_properties_to_real_msbuild_consumers()
     {
-        var repositoryRoot = FindRepositoryRoot();
+        string repositoryRoot = RepositoryRoot.LocateFrom(AppContext.BaseDirectory, "Qyl.Telemetry.SemanticConventions.slnx");
         var analyzerProject = Path.Combine(
             repositoryRoot,
             "src",
@@ -200,46 +206,6 @@ public sealed class Qyl0304EnableEventSourceSupportAnalyzerTests
         var diagnostics = await RunAsync(EventSourceSubclass, AotNoSwitch);
 
         diagnostics[0].Location.IsInSource.Should().BeTrue();
-    }
-
-    private sealed class GlobalOptionsProvider(IReadOnlyDictionary<string, string> global)
-        : AnalyzerConfigOptionsProvider
-    {
-        private readonly Options _options = new(global);
-        public override AnalyzerConfigOptions GlobalOptions => _options;
-        public override AnalyzerConfigOptions GetOptions(SyntaxTree tree) => _options;
-        public override AnalyzerConfigOptions GetOptions(AdditionalText textFile) => _options;
-
-        private sealed class Options(IReadOnlyDictionary<string, string> values) : AnalyzerConfigOptions
-        {
-            public override bool TryGetValue(string key, out string value)
-            {
-                if (values.TryGetValue(key, out var v))
-                {
-                    value = v;
-                    return true;
-                }
-
-                value = null!;
-                return false;
-            }
-        }
-    }
-
-    private static string FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(AppContext.BaseDirectory);
-        while (directory is not null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "Qyl.Telemetry.SemanticConventions.slnx")))
-            {
-                return directory.FullName;
-            }
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the semantic-conventions repository root.");
     }
 
     private static async Task<ConsumerBuildResult> BuildPackageConsumerAsync(

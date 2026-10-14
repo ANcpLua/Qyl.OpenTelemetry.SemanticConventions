@@ -3,9 +3,11 @@
 
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using ANcpLua.Roslyn.Utilities.Testing;
 using AwesomeAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -57,13 +59,19 @@ public sealed class Qyl0008IncubatingSemconvInLibraryAnalyzerTests
         string source,
         IReadOnlyDictionary<string, string>? buildProperties = null)
     {
-        var diagnostics = await AnalyzerHarness.RunAsync(
-            [new IncubatingSemconvInLibraryAnalyzer()],
-            source,
-            options: new AnalyzerOptions(
-                [],
-                new GlobalOptionsProvider(buildProperties ?? new Dictionary<string, string>())),
-            excludeTestFrameworkReferences: true);
+        // The compilation references no test framework, so QYL0008 sees a library project.
+        var diagnostics = await Compile
+            .Source(source)
+            .WithReference<Activity>()
+            .Build()
+            .ShouldSucceed()
+            .Compilation
+            .WithAnalyzers(
+                [new IncubatingSemconvInLibraryAnalyzer()],
+                new AnalyzerOptions(
+                    [],
+                    new DictionaryAnalyzerConfigOptionsProvider(buildProperties ?? new Dictionary<string, string>())))
+            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
         return [.. diagnostics.Where(d => d.Id == "QYL0008")];
     }
 
@@ -150,29 +158,5 @@ public sealed class Qyl0008IncubatingSemconvInLibraryAnalyzerTests
             });
 
         diagnostics.Should().BeEmpty();
-    }
-
-    private sealed class GlobalOptionsProvider(IReadOnlyDictionary<string, string> global)
-        : AnalyzerConfigOptionsProvider
-    {
-        private readonly Options _options = new(global);
-        public override AnalyzerConfigOptions GlobalOptions => _options;
-        public override AnalyzerConfigOptions GetOptions(SyntaxTree tree) => _options;
-        public override AnalyzerConfigOptions GetOptions(AdditionalText textFile) => _options;
-
-        private sealed class Options(IReadOnlyDictionary<string, string> values) : AnalyzerConfigOptions
-        {
-            public override bool TryGetValue(string key, out string value)
-            {
-                if (values.TryGetValue(key, out var v))
-                {
-                    value = v;
-                    return true;
-                }
-
-                value = null!;
-                return false;
-            }
-        }
     }
 }

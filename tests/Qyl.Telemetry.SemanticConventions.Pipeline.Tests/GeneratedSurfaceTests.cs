@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using ANcpLua.Roslyn.Utilities.Testing.MSBuild;
 using AwesomeAssertions;
 using Xunit;
 
@@ -132,11 +133,7 @@ public sealed class GeneratedSurfaceTests
 
     private static string RepoPath(params string[] parts)
     {
-        var directory = new DirectoryInfo(AppContext.BaseDirectory);
-        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "Qyl.Telemetry.SemanticConventions.slnx")))
-            directory = directory.Parent;
-
-        directory.Should().NotBeNull("the test must run inside the repository");
-        return Path.Combine(new[] { directory!.FullName }.Concat(parts).ToArray());
+        string root = RepositoryRoot.LocateFrom(AppContext.BaseDirectory, "Qyl.Telemetry.SemanticConventions.slnx");
+        return Path.Combine([root, .. parts]);
     }
 }

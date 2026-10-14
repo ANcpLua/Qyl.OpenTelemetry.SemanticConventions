@@ -1,7 +1,9 @@
 // Copyright The OpenTelemetry Authors
 // SPDX-License-Identifier: Apache-2.0
 
+using ANcpLua.Roslyn.Utilities.Testing;
 using AwesomeAssertions;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Qyl.Telemetry.SemanticConventions.Analyzers;
 using Xunit;
 
@@ -18,9 +20,13 @@ public sealed class Qyl0006MissingSchemaUrlAnalyzerTests
     [Fact]
     public async Task Fires_when_the_resource_names_no_schema_url()
     {
-        var diagnostics = await AnalyzerHarness.RunAsync(
-            new Qyl0006MissingSchemaUrlAnalyzer(),
-            Fixture("""builder.ConfigureResource(r => r.AddAttributes(new[] { new KeyValuePair<string, object>("service.name", "checkout") }));"""));
+        var diagnostics = await Compile
+            .Source(Fixture("""builder.ConfigureResource(r => r.AddAttributes(new[] { new KeyValuePair<string, object>("service.name", "checkout") }));"""))
+            .Build()
+            .ShouldSucceed()
+            .Compilation
+            .WithAnalyzers([new Qyl0006MissingSchemaUrlAnalyzer()])
+            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
 
         diagnostics.Should().ContainSingle();
         diagnostics[0].Id.Should().Be("QYL0006");
@@ -33,9 +39,13 @@ public sealed class Qyl0006MissingSchemaUrlAnalyzerTests
     [InlineData("""builder.ConfigureResource(r => r.AddAttributes(new[] { new KeyValuePair<string, object>(Key, "https://qyl.at/schemas/9.4.0") }));""")]
     public async Task Silent_when_the_schema_url_arrives_as_a_literal_a_named_constant_or_a_constant_value(string statement)
     {
-        var diagnostics = await AnalyzerHarness.RunAsync(
-            new Qyl0006MissingSchemaUrlAnalyzer(),
-            Fixture(statement));
+        var diagnostics = await Compile
+            .Source(Fixture(statement))
+            .Build()
+            .ShouldSucceed()
+            .Compilation
+            .WithAnalyzers([new Qyl0006MissingSchemaUrlAnalyzer()])
+            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
 
         diagnostics.Should().BeEmpty();
     }

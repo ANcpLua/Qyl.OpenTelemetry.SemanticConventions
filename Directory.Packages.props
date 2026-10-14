@@ -28,5 +28,6 @@
   <ItemGroup Label="Tests">
     <PackageVersion Include="xunit.v3.mtp-v2" Version="$(XunitVersion)"/>
     <PackageVersion Include="AwesomeAssertions" Version="$(AwesomeAssertionsVersion)"/>
+    <PackageVersion Include="ANcpLua.Roslyn.Utilities.Testing" Version="$(ANcpLuaRoslynUtilitiesVersion)"/>
   </ItemGroup>
 </Project>

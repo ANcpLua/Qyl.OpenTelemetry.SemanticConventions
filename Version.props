@@ -8,7 +8,7 @@
     <WeaverVersion>0.27.0</WeaverVersion>
 
     <!-- renovate: datasource=nuget depName=ANcpLua.Roslyn.Utilities -->
-    <ANcpLuaRoslynUtilitiesVersion>2.2.47</ANcpLuaRoslynUtilitiesVersion>
+    <ANcpLuaRoslynUtilitiesVersion>2.2.48</ANcpLuaRoslynUtilitiesVersion>
     <!-- renovate: datasource=nuget depName=Microsoft.CodeAnalysis.CSharp -->
     <MicrosoftCodeAnalysisVersion>5.9.0</MicrosoftCodeAnalysisVersion>
 

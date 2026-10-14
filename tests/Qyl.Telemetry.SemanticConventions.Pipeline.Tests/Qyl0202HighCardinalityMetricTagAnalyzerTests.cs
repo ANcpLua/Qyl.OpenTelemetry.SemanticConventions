@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Globalization;
+using ANcpLua.Roslyn.Utilities.Testing;
 using AwesomeAssertions;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Qyl.Telemetry.SemanticConventions.Analyzers;
 using Xunit;
 
@@ -24,9 +26,13 @@ public sealed class Qyl0202HighCardinalityMetricTagAnalyzerTests
     [InlineData("var tags = new TagList { [\"sessionId\"] = 1 }; counter.Add(1, tags);", "sessionId")]
     public async Task Fires_on_a_high_cardinality_key_that_reaches_a_metric(string statement, string expectedKey)
     {
-        var diagnostics = await AnalyzerHarness.RunAsync(
-            new Qyl0202HighCardinalityMetricTagAnalyzer(),
-            Fixture(statement));
+        var diagnostics = await Compile
+            .Source(Fixture(statement))
+            .Build()
+            .ShouldSucceed()
+            .Compilation
+            .WithAnalyzers([new Qyl0202HighCardinalityMetricTagAnalyzer()])
+            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
 
         diagnostics.Should().ContainSingle();
         diagnostics[0].Id.Should().Be("QYL0202");
@@ -40,9 +46,13 @@ public sealed class Qyl0202HighCardinalityMetricTagAnalyzerTests
     [InlineData("var tags = new TagList(); tags.Add(\"request.id\", 1); source.StartActivity(\"operation\", tags: tags);")]
     public async Task Silent_on_a_bounded_key_or_on_a_key_that_reaches_a_span(string statement)
     {
-        var diagnostics = await AnalyzerHarness.RunAsync(
-            new Qyl0202HighCardinalityMetricTagAnalyzer(),
-            Fixture(statement));
+        var diagnostics = await Compile
+            .Source(Fixture(statement))
+            .Build()
+            .ShouldSucceed()
+            .Compilation
+            .WithAnalyzers([new Qyl0202HighCardinalityMetricTagAnalyzer()])
+            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
 
         diagnostics.Should().BeEmpty();
     }
@@ -50,84 +60,82 @@ public sealed class Qyl0202HighCardinalityMetricTagAnalyzerTests
     [Fact]
     public async Task Fires_on_a_tag_parameter_of_a_generated_counter()
     {
-        var diagnostics = await AnalyzerHarness.RunAsync(
-            new Qyl0202HighCardinalityMetricTagAnalyzer(),
-            Fixture(
+        var diagnostics = await Compile
+            .Source(Fixture(
                 string.Empty,
                 """
                 [Counter("orders")]
                 private static void CountOrder([Tag("orderId")] string id, [Tag("order.status")] string status) { }
-                """));
+                """))
+            .Build()
+            .ShouldSucceed()
+            .Compilation
+            .WithAnalyzers([new Qyl0202HighCardinalityMetricTagAnalyzer()])
+            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
 
         diagnostics.Should().ContainSingle();
         diagnostics[0].GetMessage(CultureInfo.InvariantCulture).Should().Contain("orderId");
     }
 
     private static string Fixture(string statement, string members = "") =>
-        $$"""
-        #nullable enable
-        using System;
-        using System.Collections.Generic;
-        using Qyl.Instrumentation.Instrumentation;
+        SourceFixture.InMethod(
+            statement,
+            declarations: """
+                using System;
+                using System.Collections.Generic;
+                using Qyl.Instrumentation.Instrumentation;
 
-        namespace Qyl.Instrumentation.Instrumentation
-        {
-            [AttributeUsage(AttributeTargets.Method)]
-            public sealed class CounterAttribute(string name) : Attribute;
+                namespace Qyl.Instrumentation.Instrumentation
+                {
+                    [AttributeUsage(AttributeTargets.Method)]
+                    public sealed class CounterAttribute(string name) : Attribute;
 
-            [AttributeUsage(AttributeTargets.Method)]
-            public sealed class HistogramAttribute(string name) : Attribute;
+                    [AttributeUsage(AttributeTargets.Method)]
+                    public sealed class HistogramAttribute(string name) : Attribute;
 
-            [AttributeUsage(AttributeTargets.Parameter)]
-            public sealed class TagAttribute(string name) : Attribute;
-        }
+                    [AttributeUsage(AttributeTargets.Parameter)]
+                    public sealed class TagAttribute(string name) : Attribute;
+                }
 
-        internal sealed class ActivitySource
-        {
-            public void StartActivity(
-                string name,
-                int kind = 0,
-                object? parent = null,
-                object? tags = null) { }
-        }
+                internal sealed class ActivitySource
+                {
+                    public void StartActivity(
+                        string name,
+                        int kind = 0,
+                        object? parent = null,
+                        object? tags = null) { }
+                }
 
-        internal sealed class Counter
-        {
-            public void Add(int value, params KeyValuePair<string, object?>[] tags) { }
-            public void Add(int value, TagList tags) { }
-        }
+                internal sealed class Counter
+                {
+                    public void Add(int value, params KeyValuePair<string, object?>[] tags) { }
+                    public void Add(int value, TagList tags) { }
+                }
 
-        internal sealed class Histogram
-        {
-            public void Record(double value, params KeyValuePair<string, object?>[] tags) { }
-        }
+                internal sealed class Histogram
+                {
+                    public void Record(double value, params KeyValuePair<string, object?>[] tags) { }
+                }
 
-        internal sealed class Measurement(int value, params KeyValuePair<string, object?>[] tags);
+                internal sealed class Measurement(int value, params KeyValuePair<string, object?>[] tags);
 
-        internal sealed class TagList
-        {
-            public object? this[string key] { set { } }
-            public void Add(string key, object? value) { }
-        }
+                internal sealed class TagList
+                {
+                    public object? this[string key] { set { } }
+                    public void Add(string key, object? value) { }
+                }
 
-        internal sealed class Activity
-        {
-            public Activity SetTag(string key, object? value) => this;
-        }
+                internal sealed class Activity
+                {
+                    public Activity SetTag(string key, object? value) => this;
+                }
+                """,
+            members: $$"""
+                private readonly ActivitySource source = new();
+                private readonly Counter counter = new();
+                private readonly Histogram histogram = new();
+                private readonly Activity activity = new();
 
-        internal sealed class Sink
-        {
-            private readonly ActivitySource source = new();
-            private readonly Counter counter = new();
-            private readonly Histogram histogram = new();
-            private readonly Activity activity = new();
-
-            internal void Emit()
-            {
-                {{statement}}
-            }
-
-            {{members}}
-        }
-        """;
+                {{members}}
+                """);
 }
