@@ -9,6 +9,12 @@
 # moves both files.
 set -euo pipefail
 
+# Quiet unless --verbose or QYL_VERBOSE=1: scripts/quiet.sh prints PASS or FAIL, the failing
+# tail and the path of the whole Weaver output, artifacts/logs/generate.log.
+if [[ ${QYL_VERBOSE:-0} != 1 && ${1:-} != --verbose ]]; then
+  exec "$(dirname "${BASH_SOURCE[0]}")/quiet.sh" generate -- "${BASH_SOURCE[0]}"
+fi
+
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "${script_dir}/.." && pwd)"
 cd "${repo_root}"

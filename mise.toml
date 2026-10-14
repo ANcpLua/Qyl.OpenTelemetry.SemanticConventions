@@ -6,13 +6,15 @@
 "github:open-telemetry/weaver" = "0.27.0"
 
 [tasks.check]
-description = "The gate before a push or a release"
-run = [
-  "uv run --no-project --with pyyaml python3 -m unittest discover --start-directory tests/scripts --pattern 'test_*.py'",
-  "./scripts/check-generated.sh",
-  "npm test --prefix typescript",
-  "./scripts/check-live-check-policies.sh",
-  "dotnet restore Qyl.Telemetry.SemanticConventions.slnx",
-  "dotnet build Qyl.Telemetry.SemanticConventions.slnx --no-restore --configuration Release",
-  "dotnet run --project tests/Qyl.Telemetry.SemanticConventions.Pipeline.Tests/ --configuration Release --no-build",
-]
+description = "The gate before a push or a release; a line per step, full log in artifacts/logs, QYL_VERBOSE=1 prints everything"
+quiet = true
+run = '''
+scripts/quiet.sh check \
+  "uv run --no-project --with pyyaml python3 -m unittest discover --start-directory tests/scripts --pattern 'test_*.py'" \
+  './scripts/check-generated.sh' \
+  'npm test --prefix typescript' \
+  './scripts/check-live-check-policies.sh' \
+  'dotnet restore Qyl.Telemetry.SemanticConventions.slnx' \
+  'dotnet build Qyl.Telemetry.SemanticConventions.slnx --no-restore --configuration Release' \
+  'dotnet run --project tests/Qyl.Telemetry.SemanticConventions.Pipeline.Tests/ --configuration Release --no-build'
+'''
