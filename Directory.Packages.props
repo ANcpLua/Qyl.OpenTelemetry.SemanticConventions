@@ -26,6 +26,14 @@
     <PackageVersion Include="NuGet.Packaging" Version="$(NuGetPackagingVersion)"/>
   </ItemGroup>
 
+  <!-- NuGet.Packaging and MSBuild in the build host (10.0.10) and
+       Microsoft.CodeAnalysis.Analyzer.Testing in the tests (8.0.1) bring vulnerable
+       System.Security.Cryptography builds; transitive pinning lifts both to the patched one. -->
+  <ItemGroup Label="Security pins">
+    <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="$(SystemSecurityCryptographyVersion)"/>
+    <PackageVersion Include="System.Security.Cryptography.Xml" Version="$(SystemSecurityCryptographyVersion)"/>
+  </ItemGroup>
+
   <ItemGroup Label="Tests">
     <PackageVersion Include="xunit.v3.mtp-v2" Version="$(XunitVersion)"/>
     <PackageVersion Include="AwesomeAssertions" Version="$(AwesomeAssertionsVersion)"/>
