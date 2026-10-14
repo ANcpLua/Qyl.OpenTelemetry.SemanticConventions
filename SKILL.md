@@ -21,7 +21,7 @@ One agent per qyl-dev repo (qyl, qyl.mcp, qyl-api-schema, Qyl.Telemetry.AutoInst
 2. `./release.sh <x.y.z>` (`--dry-run` first only when a step is new or unsure; the script refuses before publishing when anything is off).
 3. If it stops before all three NuGet ids and the npm package list `<x.y.z>`, poll every 30 s; nothing else about this release until then.
 4. All four indexed: notify the consumers.
-5. Run `/Users/alexandernachtmann/Downloads/qyl-codex-claude/refresh-published-versions.sh` (rewrites `qyl-published-versions.yaml`, the snapshot every agent reads first).
+5. Run `/Users/alexandernachtmann/RiderProjects/qyl.at/scripts/refresh-published-versions.sh` (rewrites, commits and pushes `published-versions.yaml` in qyl.at, the snapshot every agent reads first).
 
 Stopped after NuGet accepted the packages: keep the four artifacts and `release-<version>.json`, renew credentials, wait until all three NuGet ids are indexed, then `--resume` as the script header shows, dry run first. `--browser-auth` only after the owner explicitly offers to complete browser authentication.
 
