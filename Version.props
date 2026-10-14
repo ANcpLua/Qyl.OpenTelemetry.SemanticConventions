@@ -20,6 +20,11 @@
     <XunitVersion>4.0.2</XunitVersion>
     <!-- renovate: datasource=nuget depName=AwesomeAssertions -->
     <AwesomeAssertionsVersion>9.6.0</AwesomeAssertionsVersion>
+    <!-- The Cobertura producer for the pipeline tests; dotcov reads its report. -->
+    <!-- renovate: datasource=nuget depName=Microsoft.Testing.Extensions.CodeCoverage -->
+    <MicrosoftTestingExtensionsCodeCoverageVersion>18.12.0</MicrosoftTestingExtensionsCodeCoverageVersion>
+    <!-- renovate: datasource=nuget depName=DotCov.Fallout -->
+    <DotCovVersion>3.0.0</DotCovVersion>
 
     <!-- renovate: datasource=nuget depName=NuGet.Packaging -->
     <NuGetPackagingVersion>7.9.0</NuGetPackagingVersion>

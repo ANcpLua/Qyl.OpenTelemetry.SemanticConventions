@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="Fallout.Common"/>
+    <PackageReference Include="DotCov.Fallout"/>
   </ItemGroup>
 
 </Project>

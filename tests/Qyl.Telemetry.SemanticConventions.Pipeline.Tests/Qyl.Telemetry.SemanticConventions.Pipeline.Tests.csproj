@@ -10,6 +10,7 @@
     <PackageReference Include="AwesomeAssertions"/>
     <PackageReference Include="ANcpLua.Roslyn.Utilities.Testing"/>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp"/>
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage"/>
   </ItemGroup>
 
   <ItemGroup>
