@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using DotCov;
 using DotCov.Fallout;
 using Fallout.Common;
@@ -40,12 +41,13 @@ internal sealed partial class Build : FalloutBuild, ICoverageReport
 
     AbsolutePath CoverageDirectory => RootDirectory / "artifacts" / "coverage";
 
-    // The coverage gate's thresholds sit a few points under what the pipeline tests measured when
-    // the gate was added, test code excluded: line 22.6 %, branch 14.9 %. The untested generated
-    // helpers in the Incubating package (Spans, Metrics, Events, Entities) hold the numbers down.
+    // The coverage gate's thresholds sit a few points under what the pipeline tests measured over
+    // this repository's sources (test code excluded, identical over two runs): line 30.2 %
+    // (3568/11831), branch 26.3 % (1053/3997). The untested generated helpers in the Incubating
+    // package (Spans, Metrics, Events, Entities) hold the numbers down.
     // --coverage-min-line and --coverage-min-branch override a threshold for one run.
-    string? ICoverageReport.MinLine => ((ICoverageReport)this).TryGetValue(() => ((ICoverageReport)this).MinLine) ?? "20";
-    string? ICoverageReport.MinBranch => ((ICoverageReport)this).TryGetValue(() => ((ICoverageReport)this).MinBranch) ?? "12";
+    string? ICoverageReport.MinLine => ((ICoverageReport)this).TryGetValue(() => ((ICoverageReport)this).MinLine) ?? "27";
+    string? ICoverageReport.MinBranch => ((ICoverageReport)this).TryGetValue(() => ((ICoverageReport)this).MinBranch) ?? "23";
     string ICoverageReport.ExcludeTestCodeParam => "true";
     AbsolutePath ICoverageReport.CoverageSearchDirectory => CoverageDirectory;
 
@@ -73,6 +75,17 @@ internal sealed partial class Build : FalloutBuild, ICoverageReport
         .Executes(() =>
         {
             CoverageDirectory.CreateOrCleanDirectory();
+            // Only sources under this repository: ANcpLua.Roslyn.Utilities.Sources compiles 127
+            // files from the NuGet cache into the analyzers, and they are not this repository's
+            // code. A CI build's mapped PDB paths (/_/, /_1/) still match: Microsoft code coverage
+            // resolves them to the local paths before it applies the filter.
+            var settings = CoverageDirectory / "settings.xml";
+            new XElement("Configuration",
+                new XElement("CodeCoverage",
+                    new XElement("Sources",
+                        new XElement("Include",
+                            new XElement("Source", $"^{Regex.Escape(RootDirectory.ToString())}[\\\\/].*")))))
+                .Save(settings);
             try
             {
                 DotNetTasks.DotNetRun(s => s
@@ -82,6 +95,7 @@ internal sealed partial class Build : FalloutBuild, ICoverageReport
                     .SetApplicationArguments(
                         "--coverage", "--coverage-output-format", "cobertura",
                         "--coverage-output", "coverage.cobertura.xml",
+                        "--coverage-settings", settings,
                         "--results-directory", CoverageDirectory));
             }
             catch (ProcessException exception)
