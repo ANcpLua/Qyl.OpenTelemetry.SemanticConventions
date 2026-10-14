@@ -46,7 +46,9 @@ public sealed class RegistryPolicyTests
     [Fact]
     public void Every_collector_denied_exact_key_except_the_agent_name_is_not_persisted()
     {
-        RegistryPolicy.NotPersistedKeys.Should().BeEquivalentTo(CollectorDeniedExactKeys);
+        // The collector's list plus the vendor keys whose content the registry denies elsewhere (10.0.1).
+        RegistryPolicy.NotPersistedKeys.Should().BeEquivalentTo(CollectorDeniedExactKeys.Concat(
+            ["build.error.message", "db.odp.user.statement", "nservicebus.originating_machine", "nservicebus.processing_machine"]));
         RegistryPolicy.NotPersistedKeys.Should().BeInAscendingOrder(StringComparer.Ordinal);
         RegistryPolicy.NotPersistedPrefixes.Should().Equal("enduser.", "user.");
     }
