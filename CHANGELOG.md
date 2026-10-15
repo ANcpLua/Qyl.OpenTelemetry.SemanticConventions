@@ -6,6 +6,17 @@ Notable changes to the `Qyl.Telemetry.SemanticConventions` package family. `Vers
 (the three NuGet packages and the TypeScript npm package), then tagged `v<version>`;
 [`eng/release/verify-packages.sh`](eng/release/verify-packages.sh) proves the published packages against nuget.org.
 
+## [10.1.0] - 2026-10-15
+
+### Fixed
+
+- The analyzer documentation generator formats diagnostic-ID suffixes with `AsSpan(3)`, avoiding JetBrains' false `System.Range` resolution error with the aliased analyzer assembly.
+- Clear the generator's redundant array declarations and reduce its solution-file constant to private visibility. JetBrains inspection reports no errors, warnings or suggestions in the generator.
+
+### Changed
+
+- Align the stable, incubating, analyzer and TypeScript packages with the 10.1.0 registry schema URL.
+
 ## [10.0.1] - 2026-10-15
 
 ### Fixed
