@@ -1,6 +1,5 @@
 using ANcpLua.Roslyn.Utilities.Testing;
 using AwesomeAssertions;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Qyl.Telemetry.SemanticConventions.Analyzers;
 using Xunit;

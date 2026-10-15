@@ -21,22 +21,22 @@ namespace Qyl.Telemetry.SemanticConventions.Pipeline.Tests;
 public sealed class GeneratedSurfaceTests
 {
     private static readonly string[] GeneratedRoots =
-    {
+    [
         "src/Qyl.Telemetry.SemanticConventions/Generated",
         "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated",
         "generated",
         "typescript/src",
         "typescript/dist",
-    };
+    ];
 
     private static readonly string[] GeneratedFiles =
-    {
+    [
         "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvRegistryFacts.g.cs",
         "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvDeprecations.g.cs",
         "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvTypedSurface.g.cs",
         "typescript/package.json",
         "typescript/LICENSE",
-    };
+    ];
 
     [Fact]
     public void Every_Generated_File_Matches_The_Pinned_Manifest()

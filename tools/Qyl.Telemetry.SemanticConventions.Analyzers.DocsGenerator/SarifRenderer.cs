@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 extern alias analyzers;
-
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.CodeAnalysis;

@@ -24,7 +24,7 @@ internal sealed class ApplicationSourceListener : IDisposable
         _listener = new ActivityListener
         {
             ShouldListenTo = static source => source.Name == "Qyl.Telemetry.Application",
-            Sample = static (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
+            Sample = static (ref _) => ActivitySamplingResult.AllDataAndRecorded,
         };
         ActivitySource.AddActivityListener(_listener);
     }

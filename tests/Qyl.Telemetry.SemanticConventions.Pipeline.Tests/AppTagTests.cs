@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using AwesomeAssertions;
-using Qyl;
 using Xunit;
 
 namespace Qyl.Telemetry.SemanticConventions.Pipeline.Tests;

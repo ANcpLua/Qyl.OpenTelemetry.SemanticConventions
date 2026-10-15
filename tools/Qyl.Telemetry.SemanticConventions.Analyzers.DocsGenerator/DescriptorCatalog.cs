@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 extern alias analyzers;
-
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;

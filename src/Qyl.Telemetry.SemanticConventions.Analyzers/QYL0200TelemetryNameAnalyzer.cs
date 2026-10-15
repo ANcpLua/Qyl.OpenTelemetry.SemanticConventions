@@ -79,7 +79,7 @@ internal sealed class Qyl0200TelemetryNameAnalyzer : AlAnalyzer {
     private static void AnalyzeObjectCreation(OperationAnalysisContext context, IObjectCreationOperation creation) {
         var check = creation.Type?.ToDisplayString() switch {
             ActivitySourceTypeName or ActivitySourceOptionsTypeName or MeterTypeName or MeterOptionsTypeName =>
-                ((Func<string, bool>)SemconvRegistryFacts.IsKnownScopeName, "instrumentation scope name"),
+                (SemconvRegistryFacts.IsKnownScopeName, "instrumentation scope name"),
             ActivityEventTypeName =>
                 (SemconvRegistryFacts.IsKnownEventName, "event name"),
             _ => default((Func<string, bool>?, string?)),

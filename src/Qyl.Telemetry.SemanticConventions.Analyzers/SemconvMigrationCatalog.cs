@@ -218,11 +218,11 @@ internal static class SemconvMigrationCatalog
             "event",
             "gen_ai",
             "1.37.0",
-            ImmutableArray.Create(
+            [
                 "gen_ai.input.messages",
                 "gen_ai.output.messages",
                 "gen_ai.system_instructions",
-                "gen_ai.client.inference.operation.details"),
+                "gen_ai.client.inference.operation.details"],
             SemconvMigrationKind.ContextSensitive,
             "GenAI chat history events were replaced by structured span attributes or the gen_ai.client.inference.operation.details event.");
 

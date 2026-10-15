@@ -1,5 +1,3 @@
-using MsOperationExtensions = Microsoft.CodeAnalysis.Operations.OperationExtensions;
-
 namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 
 /// <summary>
@@ -48,7 +46,7 @@ internal sealed class Qyl0401GenAiMissingRequiredAttributesAnalyzer : AlAnalyzer
 
         foreach (var block in context.OperationBlocks)
         {
-            foreach (var operation in MsOperationExtensions.DescendantsAndSelf(block))
+            foreach (var operation in block.DescendantsAndSelf())
             {
                 if (operation is not IInvocationOperation { TargetMethod.Name: "StartActivity" } invocation
                     || !SemconvRegistryFacts.TryResolveSpanRule(

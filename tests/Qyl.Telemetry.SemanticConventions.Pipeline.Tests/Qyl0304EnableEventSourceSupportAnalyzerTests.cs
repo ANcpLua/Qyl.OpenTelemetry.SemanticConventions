@@ -1,13 +1,8 @@
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Diagnostics.Tracing;
 using System.Globalization;
-using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Security;
-using System.Threading.Tasks;
 using ANcpLua.Roslyn.Utilities.Testing;
 using ANcpLua.Roslyn.Utilities.Testing.MSBuild;
 using AwesomeAssertions;
@@ -108,9 +103,9 @@ public sealed class Qyl0304EnableEventSourceSupportAnalyzerTests
 
             var packagePath = Directory.EnumerateFiles(feedDirectory.FullName, "*.nupkg").Should()
                 .ContainSingle().Which;
-            using (var package = ZipFile.OpenRead(packagePath))
+            await using (var package = await ZipFile.OpenReadAsync(packagePath, cancellationToken))
             {
-                var entries = package.Entries.Select(static entry => entry.FullName);
+                var entries = package.Entries.Select(static entry => entry.FullName).ToArray();
                 entries.Should().Contain($"analyzers/dotnet/cs/{AnalyzerPackageId}.dll");
                 entries.Should().Contain($"buildTransitive/{AnalyzerPackageId}.props");
             }
@@ -298,7 +293,7 @@ public sealed class Qyl0304EnableEventSourceSupportAnalyzerTests
 
         using var process = Process.Start(startInfo);
         process.Should().NotBeNull();
-        var standardOutput = process!.StandardOutput.ReadToEndAsync(cancellationToken);
+        var standardOutput = process.StandardOutput.ReadToEndAsync(cancellationToken);
         var standardError = process.StandardError.ReadToEndAsync(cancellationToken);
         await process.WaitForExitAsync(cancellationToken);
         return new ProcessResult(process.ExitCode, (await standardOutput) + (await standardError));

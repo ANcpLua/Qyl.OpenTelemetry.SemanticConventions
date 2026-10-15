@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 extern alias analyzers;
-
 using System.Collections.Immutable;
 using System.Text;
 using SemconvMigrationCatalog = analyzers::Qyl.Telemetry.SemanticConventions.Analyzers.SemconvMigrationCatalog;

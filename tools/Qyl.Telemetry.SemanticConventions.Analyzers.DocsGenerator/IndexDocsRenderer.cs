@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 extern alias analyzers;
-
 using System.Text;
 using Microsoft.CodeAnalysis;
 using RuleDocs = analyzers::Qyl.Telemetry.SemanticConventions.Analyzers.RuleDocs;

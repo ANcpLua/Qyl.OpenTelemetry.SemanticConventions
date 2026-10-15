@@ -1,18 +1,16 @@
 // Copyright (c) Alexander Nachtmann
 // SPDX-License-Identifier: Apache-2.0
 
-using System;
 using System.Collections;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using DotCov;
 using DotCov.Fallout;
 using Fallout.Common;
 using Fallout.Common.IO;
-using Fallout.Solutions;
 using Fallout.Common.Tooling;
 using Fallout.Common.Tools.DotNet;
+using Fallout.Solutions;
 using Serilog;
 
 namespace Qyl.Telemetry.SemanticConventions.Build;
@@ -46,8 +44,8 @@ internal sealed partial class Build : FalloutBuild, ICoverageReport
     // (3568/11831), branch 26.3 % (1053/3997). The untested generated helpers in the Incubating
     // package (Spans, Metrics, Events, Entities) hold the numbers down.
     // --coverage-min-line and --coverage-min-branch override a threshold for one run.
-    string? ICoverageReport.MinLine => ((ICoverageReport)this).TryGetValue(() => ((ICoverageReport)this).MinLine) ?? "27";
-    string? ICoverageReport.MinBranch => ((ICoverageReport)this).TryGetValue(() => ((ICoverageReport)this).MinBranch) ?? "23";
+    string ICoverageReport.MinLine => ((ICoverageReport)this).TryGetValue(() => ((ICoverageReport)this).MinLine) ?? "27";
+    string ICoverageReport.MinBranch => ((ICoverageReport)this).TryGetValue(() => ((ICoverageReport)this).MinBranch) ?? "23";
     string ICoverageReport.ExcludeTestCodeParam => "true";
     AbsolutePath ICoverageReport.CoverageSearchDirectory => CoverageDirectory;
 

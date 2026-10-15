@@ -314,7 +314,7 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
             "trace",
             "rpc",
             "1.41.0",
-            ImmutableArray.Create("server.address"),
+            ["server.address"],
             SemconvMigrationKind.ContextSensitive,
             "RPC server spans no longer include client.address; use server.address/server.port for server endpoint data and keep client.* only when modeling client endpoint data."));
 
@@ -324,7 +324,7 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
             "trace",
             "rpc",
             "1.41.0",
-            ImmutableArray.Create("server.port"),
+            ["server.port"],
             SemconvMigrationKind.ContextSensitive,
             "RPC server spans no longer include client.port; use server.address/server.port for server endpoint data and keep client.* only when modeling client endpoint data."));
 
@@ -334,7 +334,7 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
             "metric",
             "system",
             "1.40.0",
-            ImmutableArray.Create("system.memory.linux.shared"),
+            ["system.memory.linux.shared"],
             SemconvMigrationKind.ExactRename,
             "The system.memory.shared metric was renamed to system.memory.linux.shared."));
 
@@ -383,7 +383,7 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
             signal: InferSignal(oldName),
             domain: InferDomain(oldName),
             version: version,
-            replacementNames: hasReplacement ? ImmutableArray.Create(replacement) : ImmutableArray<string>.Empty,
+            replacementNames: hasReplacement ? [replacement] : ImmutableArray<string>.Empty,
             migrationKind: migrationKind,
             changelogEvidence: evidence);
     }

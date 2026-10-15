@@ -2,7 +2,6 @@ using System.Diagnostics;
 using System.Reflection;
 using ANcpLua.Roslyn.Utilities.Testing;
 using AwesomeAssertions;
-using Qyl;
 using Qyl.Telemetry.SemanticConventions.Activities;
 using Qyl.Telemetry.SemanticConventions.Incubating.Activities;
 using Xunit;
@@ -108,7 +107,7 @@ public sealed class StarterGenerationTests
             operationName: operation, serverPort: port, querySummary: summary, serverAddress: address);
 
         span.Should().NotBeNull();
-        span!.DisplayName.Should().Be(expected);
+        span.DisplayName.Should().Be(expected);
     }
 
     [Fact]

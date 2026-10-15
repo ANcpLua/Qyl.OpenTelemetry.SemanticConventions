@@ -12,6 +12,7 @@ Notable changes to the `Qyl.Telemetry.SemanticConventions` package family. `Vers
 
 - The analyzer documentation generator formats diagnostic-ID suffixes with `AsSpan(3)`, avoiding JetBrains' false `System.Range` resolution error with the aliased analyzer assembly.
 - Clear the generator's redundant array declarations and reduce its solution-file constant to private visibility. JetBrains inspection reports no errors, warnings or suggestions in the generator.
+- Clean redundant imports and collection declarations in the analyzers and test helpers. The analyzer package test opens its ZIP asynchronously with cancellation and reads its entry names once.
 
 ### Changed
 

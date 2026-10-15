@@ -1,8 +1,6 @@
 // Copyright The OpenTelemetry Authors
 // SPDX-License-Identifier: Apache-2.0
 
-using MsOperationExtensions = Microsoft.CodeAnalysis.Operations.OperationExtensions;
-
 namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 
 /// <summary>The telemetry surface a detected attribute payload reaches.</summary>
@@ -67,7 +65,7 @@ internal sealed class TelemetryPayloadFlowScope
 
         foreach (var block in operationBlocks)
         {
-            foreach (var descendant in MsOperationExtensions.DescendantsAndSelf(block))
+            foreach (var descendant in block.DescendantsAndSelf())
             {
                 if (descendant is IArgumentOperation argument
                     && TelemetryAttributePayloadDetection.TryGetLocalReference(argument.Value, out var local)

@@ -34,7 +34,7 @@ internal static class AnalyzerRun
         var compilation = Compile
             .Source(source)
             .WithReference(typeof(global::Qyl.Spans).Assembly)
-            .WithReference(typeof(global::Qyl.IncubatingSpans).Assembly)
+            .WithReference(typeof(IncubatingSpans).Assembly)
             .WithReference<Activity>()
             .Build()
             .Compilation
