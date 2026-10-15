@@ -25,8 +25,8 @@ internal static class IndexDocsRenderer
         Dictionary<string, string> idToClass)
     {
         var sb = new StringBuilder();
-        var sections = new Action<StringBuilder>[]
-        {
+        Action<StringBuilder>[] sections =
+        [
             WriteHeader,
             b => WriteDiagnostics(b, descriptors, fixableIds, idToClass),
             WriteConfiguration,
@@ -34,7 +34,7 @@ internal static class IndexDocsRenderer
             WriteSeverityPolicy,
             WriteRelatedDocs,
             MarkdownFormatting.WriteGeneratedFile,
-        };
+        ];
 
         foreach (var section in sections)
         {

@@ -25,8 +25,8 @@ internal static class MigrationCatalogRenderer
     public static string Render(CatalogStatistics stats)
     {
         var sb = new StringBuilder();
-        var sections = new Action<StringBuilder, CatalogStatistics>[]
-        {
+        Action<StringBuilder, CatalogStatistics>[] sections =
+        [
             (b, _) => WriteCatalogHeader(b),
             WriteCuratedSummary,
             WriteCompletionAudit,
@@ -34,7 +34,7 @@ internal static class MigrationCatalogRenderer
             WriteCuratedInventory,
             WriteSupplementalValues,
             (b, _) => MarkdownFormatting.WriteGeneratedFile(b),
-        };
+        ];
 
         foreach (var section in sections)
         {

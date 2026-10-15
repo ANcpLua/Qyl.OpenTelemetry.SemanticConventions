@@ -13,7 +13,7 @@ internal static class RepoLayout
 {
     public const string PackageName = "Qyl.Telemetry.SemanticConventions.Analyzers";
     public const string ProjectRelativePath = "tools/Qyl.Telemetry.SemanticConventions.Analyzers.DocsGenerator";
-    public const string SolutionFileName = "Qyl.Telemetry.SemanticConventions.slnx";
+    private const string SolutionFileName = "Qyl.Telemetry.SemanticConventions.slnx";
 
     public static string IndexPath(string repoRoot) =>
         Path.Combine(repoRoot, "docs", PackageName + ".md");

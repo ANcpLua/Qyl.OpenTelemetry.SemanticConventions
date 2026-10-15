@@ -64,7 +64,8 @@ internal static partial class EnforceIdsRewriter
             var prefixMatch = ClassPrefixRegex().Match(className);
             if (prefixMatch.Success)
             {
-                var expectedClassName = $"Qyl{realId[3..]}{prefixMatch.Groups[2].Value}";
+                // AsSpan avoids JetBrains' Range lookup bug with the aliased analyzer's polyfills.
+                var expectedClassName = $"Qyl{realId.AsSpan(3)}{prefixMatch.Groups[2].Value}";
                 if (className != expectedClassName)
                     classRenames[className] = expectedClassName;
             }
