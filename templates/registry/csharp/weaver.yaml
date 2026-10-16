@@ -409,7 +409,7 @@ templates:
     application_mode: each
     file_name: "{{ ctx.out_dir }}/Entities/{{ ctx.type_root }}Entities.g.cs"
 
-  # The registry-derived analyzer facts. Everything the analyzers need to decide whether a key,
+  # Shared registry catalog and analyzer facts. Everything the analyzers need to decide whether a key,
   # metric, scope, event or GenAI span is one the pinned registry knows — derived here rather
   # than in Python, and committed like every other generated file.
   #
@@ -419,7 +419,7 @@ templates:
   # matched nothing. A span refinement adds a constraint read out of its note
   # ("`gen_ai.provider.name` MUST be set to `\"anthropic\"`") and inherits its base's
   # discriminator.
-  - template: analyzer_facts.cs.j2
+  - template: registry_facts.cs.j2
     filter: >
       . as $registry
       | ($registry.schema_url) as $qyl
@@ -498,8 +498,8 @@ templates:
               required_attributes: required($r)}]) as $refrules
       | (($baserules + $refrules)
           | sort_by([(if .constraint_key == null then 1 else 0 end), .id])) as $rules
-      | {attributes: [$all[] | {key: .key} + kindof(.type) + {values: enumvals}],
-         metric_names: ([$allm[] | .name] | unique),
+      | {attributes: [$all[] | {key: .key, stability: .stability, deprecated: .deprecated} + kindof(.type) + {values: enumvals}],
+         metrics: ([$allm[] | {name: .name, instrument: .instrument, unit: .unit, stability: .stability, deprecated: .deprecated}] | sort_by(.name)),
          genai_token_histograms: ([$allm[] | select(genai)
                                    | select(.instrument == "histogram" and .unit == "{token}")
                                    | .name] | unique),
@@ -507,8 +507,12 @@ templates:
          span_rules: $rules,
          genai_discriminators: ([$rules[] | .discriminator_key | select(startswith("gen_ai."))] | unique)}
       | . + $schema_urls
-    application_mode: single
-    file_name: "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvRegistryFacts.g.cs"
+      | . as $facts
+      | [ $facts + {target_template: "analyzer_facts.cs.j2", output_file: "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvRegistryFacts.g.cs"},
+          $facts + {target_template: "registry_catalog.cs.j2", output_file: "src/Qyl.Telemetry.SemanticConventions/Generated/RegistryCatalog.g.cs"},
+          $facts + {target_template: "registry.json.j2", output_file: ".build/registry-catalog.json"} ]
+    application_mode: each
+    file_name: "{{ ctx.output_file }}"
 
   # The typed surface the analyzers read attribute writes through: setters, value-set members,
   # starter parameters and the denied-key tokens.

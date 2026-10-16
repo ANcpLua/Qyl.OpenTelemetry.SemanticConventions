@@ -1,6 +1,6 @@
 # SemanticConventions 11.0.0 candidate handoff
 
-This checkout contains the canonical OTLP trace snapshot changes, analyzer corrections and MSTest migration for the coordinated major wave. Publication is held: the primary agent will add and review a generated registry facts catalog before releasing 11.0.0 once. The package version remains independent of OpenTelemetry registry 1.44.0, protocol 1.11.1 and SDK 1.19.1.
+This checkout contains the canonical OTLP trace snapshot changes, analyzer corrections and MSTest migration for the coordinated major wave. The generated registry catalog is now implemented by the primary. Publication remains held until its full native gates and package consumers pass; release11.0.0 once. The package version remains independent of OpenTelemetry registry 1.44.0, protocol 1.11.1 and SDK 1.19.1.
 
 ## Public contract and rule changes
 
@@ -12,7 +12,7 @@ Analyzer test runners fail on Roslyn AD engine diagnostics before selecting rule
 
 ## Verification and boundaries
 
-The fresh public-dependency native Fallout Coverage run with .NET SDK 10.0.401, MSTest 4.5.1, MTP 2.5.1 and DotCov 4.7.0 passes 228 cases with no failures or skips. The final run measures 8380/19119 lines (43.83%) and 1653/5285 branches (31.28%); the unchanged 27% line and 23% branch gates pass. Generated sources are included. The existing source boundary is this repository; moving the isolated NuGet cache outside that boundary prevents embedded dependency sources being mistaken for repository sources. No coverage exclusions or threshold reductions were added, and the report's excluded-file list is empty.
+The pre-catalog public-dependency native Fallout Coverage checkpoint with .NET SDK 10.0.401, MSTest 4.5.1, MTP 2.5.1 and DotCov 4.7.0 passes 228 cases with no failures or skips. The final run measures 8380/19119 lines (43.83%) and 1653/5285 branches (31.28%); the unchanged 27% line and 23% branch gates pass. Generated sources are included. The existing source boundary is this repository; moving the isolated NuGet cache outside that boundary prevents embedded dependency sources being mistaken for repository sources. No coverage exclusions or threshold reductions were added, and the report's excluded-file list is empty.
 
 Evidence: `artifacts/mstest-migration/coverage-public.json`, `coverage-public-unfiltered.json`, `public-coverage.log` and `public-check-final.log`; Python 28/28 and packed TypeScript 1/1 checks pass. The complete native `mise run check` passed, including generated-vs-HEAD reproduction, live-check policy fixtures and all 228 MSTest cases. Documentation generation and its explicit checks pass. The test review at `artifacts/mstest-migration/test-review.json` covers 147 method bodies, 32 class fixtures and three owned helpers: 102 A and 45 B method grades, all passing; no mutation test was run.
 
@@ -26,7 +26,7 @@ The first public-only restore failed NU1103 while NuGet indexed the new release.
 
 ## Explicit remaining leads for the primary agent
 
-There is no public registry-wide attribute/type/deprecation catalog today. Per-family definitions and caller-selected span conformance are valid; reflecting over constants or applying all required attributes globally is not. The primary agent owns the proposed generated catalog and final release.
+RegistryCatalog now exposes value kinds, template expansions, metric instrument/unit, stability and structured deprecations from one normalized Weaver facts filter. The analyzer embeds the same generated source privately, with shared lifecycle types, and TypeScript provides a separate ./catalog export. Unknown custom names remain valid OpenTelemetry; no global required-attribute, scope-ownership or closed-enum claim is made. C#241/241 native cases pass, including a reproduced/fixed newline-loss regression in shared metadata generation. Packed TypeScript lookup tests passed; full native pre-push gates follow the catalog commit.
 
 The installed pinned Weaver 0.27.0 binary proves registered metric unit and instrument mismatches, but its live-check report drops supplied instrumentation scope metadata. Its source checkout has later scope support; those are different artifacts. Controlled evidence is retained in `metric-policy-samples.json`, `metric-policy-report.json` and `metric-policy.stderr`. Unknown custom metrics currently produce `missing_metric` findings. No scope-blind duplicate-name rule was added.
 

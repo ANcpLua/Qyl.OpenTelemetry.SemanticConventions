@@ -1,8 +1,17 @@
+#if QYL_ANALYZER_CATALOG
+namespace Qyl.Telemetry.SemanticConventions.Analyzers;
+#else
 namespace Qyl.Telemetry.SemanticConventions;
+#endif
 
 /// <summary>Stability tier of a semantic convention, as declared by the upstream registry.</summary>
+#if QYL_ANALYZER_CATALOG
+internal
+#else
 [JetBrains.Annotations.PublicAPI]
-public enum Stability
+public
+#endif
+enum Stability
 {
     /// <summary>The convention is stable: its name and shape are frozen.</summary>
     Stable,

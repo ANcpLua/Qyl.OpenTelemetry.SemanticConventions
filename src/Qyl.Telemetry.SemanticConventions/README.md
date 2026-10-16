@@ -38,6 +38,11 @@ using var span = Qyl.Spans.DbClient(DbSystemName.Postgresql, collectionName: "or
 Nothing here reflects: keys are `const string`, definitions are constructed objects. A consumer
 publishes NativeAOT clean.
 
+`RegistryCatalog.TryGetAttribute(key, out var attribute)` looks up stable and incubating
+value kinds, template expansions, stability and deprecation metadata. `TryGetMetric` adds
+the instrument and unit. Unknown custom names return false; they remain valid OpenTelemetry.
+Required attributes come from the selected signal definition, rather than this catalog.
+
 ## The siblings
 
 - [`Qyl.Telemetry.SemanticConventions.Incubating`](https://www.nuget.org/packages/Qyl.Telemetry.SemanticConventions.Incubating)

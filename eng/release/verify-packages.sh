@@ -63,6 +63,7 @@ fi
 
 work_directory="$(mktemp -d)"
 trap 'rm -rf "${work_directory}"' EXIT INT TERM HUP
+cp "$(dirname "${BASH_SOURCE[0]}")/../../global.json" "${work_directory}/global.json"
 consumer_directory="${work_directory}/consumer"
 mkdir -p "${consumer_directory}"
 
@@ -159,6 +160,18 @@ internal static class Program
         if (!HttpAttributes.RequestMethodValues.Contains("POST"))
         {
             return 2;
+        }
+
+        if (!RegistryCatalog.TryGetAttribute("http.request.header.content_type", out var header)
+            || header.ValueKind != RegistryAttributeValueKind.StringArray
+            || !header.IsTemplate
+            || !RegistryCatalog.TryGetAttribute("db.system", out var oldDatabase)
+            || oldDatabase.Deprecation.Replacement != "db.system.name"
+            || !RegistryCatalog.TryGetMetric("http.server.request.duration", out var httpMetric)
+            || httpMetric.Instrument != "histogram" || httpMetric.Unit != "s"
+            || RegistryCatalog.TryGetMetric("shop.custom.duration", out _))
+        {
+            return 9;
         }
 
         // The pre-generated setter extensions of both packages, which take the value-set

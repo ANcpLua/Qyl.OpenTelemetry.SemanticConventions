@@ -323,6 +323,14 @@ These singletons round the surface out.
   `qyl.attribute.namespace`, returning `other` for anything the registry does not know. The
   four pins ride along as constants.
 
+`RegistryCatalog.TryGetAttribute` and `TryGetMetric` expose complete stable and incubating
+facts without reflecting over constants: value kinds, template keys, metric instruments and
+units, stability and structured deprecations. The analyzers embed the same generated catalog
+privately, with no runtime dependency on the consumer library. TypeScript's separate
+`./catalog` export provides `findAttribute` and `findMetric` from the same normalized facts.
+An unknown custom name is not an OpenTelemetry error. Requirements belong to a selected
+signal definition, and the catalog does not assign instruments to scopes.
+
 ## Checking live telemetry against this registry
 
 `weaver registry live-check` compares emitted spans, metrics and logs against the registry
@@ -404,7 +412,7 @@ sample and the expected table in `scripts/check-live-check-policies.sh`.
 
 ## Releasing
 
-Bump `VersionPrefix` in `Directory.Build.props`, set the `registry/manifest.yaml` `schema_url` to the same version, add the `CHANGELOG.md` entry, run `scripts/generate.sh` (it rejects a `schema_url` that differs from `VersionPrefix`) and make sure `qyl.at/schemas/<version>` is served. Then run `./release.sh <version> --dry-run` and `./release.sh <version>`. The script verifies exactly three named NuGet packages and one npm tarball, publishes all four at the same version using the keys registered in Vitals, waits for indexing, verifies isolated public consumers, tags the commit `v<version>` and creates the GitHub release. `eng/release/verify-packages.sh` and `eng/release/verify-typescript.sh` check the published artifacts.
+Bump `VersionPrefix` in `Directory.Build.props`, set the `registry/manifest.yaml` `schema_url` to the same version, add the `CHANGELOG.md` entry, run `scripts/generate.sh` (it rejects a `schema_url` that differs from `VersionPrefix`) and make sure `qyl.at/schemas/<version>` is served. Then run `./release.sh <version> --dry-run` and `./release.sh <version>`. The script checks exactly three named NuGet packages and one npm tarball, publishes all four with the keys registered in Vitals, tags the commit and creates the GitHub release. Its detached verifier waits for indexing, runs isolated public consumers and refreshes the published-version snapshot; `./release.sh --wait <version>` reports that result. `eng/release/verify-packages.sh` and `eng/release/verify-typescript.sh` check the published artifacts.
 
 ## License
 
@@ -412,4 +420,4 @@ Apache-2.0
 
 ## TypeScript bindings
 
-The `typescript/` package generates stable and incubating constants from the same resolved registry as the C# bindings. See [the TypeScript package documentation](typescript/README.md). The package has no runtime dependencies. Run `npm test --prefix typescript` to verify the packed exports.
+The `typescript/` package generates stable and incubating constants and a separate lookup catalog from the same resolved registry as the C# bindings. See [the TypeScript package documentation](typescript/README.md). The package has no runtime dependencies. Run `npm test --prefix typescript` to verify the packed exports.

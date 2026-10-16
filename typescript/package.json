@@ -18,6 +18,10 @@
     "./incubating": {
       "types": "./dist/incubating.d.ts",
       "import": "./dist/incubating.js"
+    },
+    "./catalog": {
+      "types": "./dist/catalog.d.ts",
+      "import": "./dist/catalog.js"
     }
   },
   "files": [

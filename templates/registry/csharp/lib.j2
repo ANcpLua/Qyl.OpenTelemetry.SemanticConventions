@@ -415,11 +415,11 @@ global::Qyl.Telemetry.SemanticConventions.Stability.
 {%- if not dep -%}
 global::Qyl.Telemetry.SemanticConventions.Deprecation.None
 {%- elif dep.reason == "renamed" -%}
-{{ 'global::Qyl.Telemetry.SemanticConventions.Deprecation.Renamed("' ~ escape_attribute(dep.renamed_to) ~ '")' }}
+{{ 'global::Qyl.Telemetry.SemanticConventions.Deprecation.Renamed(' ~ cs_string(dep.renamed_to) ~ ')' }}
 {%- elif dep.reason == "obsoleted" -%}
 global::Qyl.Telemetry.SemanticConventions.Deprecation.Obsoleted
 {%- else -%}
-{{ 'global::Qyl.Telemetry.SemanticConventions.Deprecation.Uncategorized("' ~ escape_attribute(dep.note | default("", true)) ~ '")' }}
+{{ 'global::Qyl.Telemetry.SemanticConventions.Deprecation.Uncategorized(' ~ cs_string(dep.note | default("", true)) ~ ')' }}
 {%- endif -%}
 {%- endmacro -%}
 

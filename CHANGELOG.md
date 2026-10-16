@@ -6,7 +6,11 @@ Notable changes to the `Qyl.Telemetry.SemanticConventions` package family. `Vers
 (the three NuGet packages and the TypeScript npm package), then tagged `v<version>`;
 [`eng/release/verify-packages.sh`](eng/release/verify-packages.sh) proves the published packages against nuget.org.
 
-## [11.0.0] - Unreleased
+## [11.0.0] - 2026-10-16
+
+### Added
+
+- `RegistryCatalog.TryGetAttribute` and `TryGetMetric` expose generated value kinds, templates, instrument units, stability and deprecations. The TypeScript `./catalog` export reads the same normalized Weaver facts. An unknown custom name is not an OpenTelemetry error; required attributes remain tied to their signal definitions.
 
 ### Changed
 
@@ -21,6 +25,7 @@ Notable changes to the `Qyl.Telemetry.SemanticConventions` package family. `Vers
 - Analyzer test runners now fail on Roslyn engine failures before selecting rule diagnostics, so a crashing analyzer cannot pass a negative test.
 - Traverse constructor-backed `ActivityTagsCollection` payloads on real span events and links.
 - Compare migration replacement arrays structurally when catalog entries become collection keys.
+- Preserve newlines in generated deprecation notes instead of replacing them with spaces.
 - Remove obsolete analyzer pages before writing their replacements, including case-only filename changes on macOS. The native coverage build resolves its solution explicitly and uses the supported Fallout process-argument API.
 
 ## [10.1.0] - 2026-10-15

@@ -17,11 +17,19 @@
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <IncludeSymbols>false</IncludeSymbols>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <DefineConstants>$(DefineConstants);QYL_ANALYZER_CATALOG</DefineConstants>
     <NeutralLanguage>en</NeutralLanguage>
 
     <!-- NU5017 is spurious for analyzer-only packages; RS2000/RS2008 remain active for release-manifest coverage. -->
     <NoWarn>$(NoWarn);NU5017;RS1041;RS1025;RS1026;RS0030;RS1038;IDE0055;CA2249</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup Label="One generated catalog, embedded privately in the compiler component">
+    <Compile Include="../Qyl.Telemetry.SemanticConventions/Generated/RegistryCatalog.g.cs" Link="RegistryCatalog.g.cs"/>
+    <Compile Include="../Qyl.Telemetry.SemanticConventions/Stability.cs" Link="Stability.cs"/>
+    <Compile Include="../Qyl.Telemetry.SemanticConventions/Deprecation.cs" Link="Deprecation.cs"/>
+    <Compile Include="../Qyl.Telemetry.SemanticConventions/MigrationKind.cs" Link="MigrationKind.cs"/>
+  </ItemGroup>
 
   <ItemGroup>
     <AssemblyMetadata Include="OpenTelemetry.SemanticConventions.Version"

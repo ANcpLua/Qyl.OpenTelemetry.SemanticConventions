@@ -13,6 +13,7 @@ import assert from 'node:assert/strict';
 import { fileURLToPath } from 'node:url';
 import * as stable from '@ancplua/qyl-semantic-conventions';
 import * as all from '@ancplua/qyl-semantic-conventions/incubating';
+import { findAttribute, findMetric } from '@ancplua/qyl-semantic-conventions/catalog';
 import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 const pkg = JSON.parse(readFileSync(resolve(dirname(fileURLToPath(import.meta.resolve('@ancplua/qyl-semantic-conventions'))), '../package.json')));
@@ -27,6 +28,11 @@ assert.equal(all.METRIC_MCP_SERVER_OPERATION_DURATION_UNIT, 's');
 assert.equal(all.METRIC_MCP_SERVER_OPERATION_DURATION_DEFINITION.instrument, 'histogram');
 assert.equal(stable.REGISTRY_SNAPSHOT_SHA256, all.REGISTRY_SNAPSHOT_SHA256);
 assert.equal(stable.REGISTRY_SNAPSHOT_SHA256, process.argv[3]);
+assert.equal(findAttribute('http.request.header.content_type').valueKind, 'StringArray');
+assert.equal(findAttribute('db.system').deprecated.renamed_to, 'db.system.name');
+assert.equal(findMetric('http.server.request.duration').instrument, 'histogram');
+assert.equal(findMetric('http.server.request.duration').unit, 's');
+assert.equal(findMetric('shop.custom.duration'), undefined);
 console.log(`TypeScript release consumer passed: ${pkg.version}; registry ${stable.REGISTRY_SNAPSHOT_SHA256}`);
 JS
 node "$temp/verify.mjs" "$version" "$expected_digest"

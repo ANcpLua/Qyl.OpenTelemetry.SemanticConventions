@@ -21,20 +21,6 @@
 
 namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 
-internal enum SemconvAttributeValueKind
-{
-    Unknown,
-    String,
-    Integer,
-    Double,
-    Boolean,
-    StringArray,
-    IntegerArray,
-    DoubleArray,
-    BooleanArray,
-    Any
-}
-
 internal sealed class SemconvSpanRule(
     string id,
     string kind,
@@ -76,25 +62,6 @@ internal static class SemconvRegistryFacts
 {% endfor %}
     };
 
-    private static readonly Dictionary<string, SemconvAttributeValueKind> AttributeTypes =
-        new(StringComparer.Ordinal)
-        {
-{% for a in ctx.attributes %}
-{% if not a.template %}
-            ["{{ a.key }}"] = SemconvAttributeValueKind.{{ a.kind }},
-{% endif %}
-{% endfor %}
-        };
-
-    private static readonly (string Prefix, SemconvAttributeValueKind Kind)[] TemplateAttributeTypes =
-    {
-{% for a in ctx.attributes %}
-{% if a.template %}
-        ("{{ a.key }}.", SemconvAttributeValueKind.{{ a.kind }}),
-{% endif %}
-{% endfor %}
-    };
-
     private static readonly Dictionary<string, string[]> EnumValues =
         new(StringComparer.Ordinal)
         {
@@ -107,9 +74,6 @@ internal static class SemconvRegistryFacts
 
     private static readonly HashSet<string> GenAiSpanDiscriminatorKeys =
         new(new[] { {% for k in ctx.genai_discriminators %}{% if not loop.first %}, {% endif %}"{{ k }}"{% endfor %} }, StringComparer.Ordinal);
-
-    private static readonly HashSet<string> KnownMetricNames =
-        new(new[] { {% for n in ctx.metric_names %}{% if not loop.first %}, {% endif %}"{{ n }}"{% endfor %} }, StringComparer.Ordinal);
 
     private static readonly HashSet<string> KnownScopeNames =
         new(new[] { {% for n in scopes %}{% if not loop.first %}, {% endif %}"{{ n }}"{% endfor %} }, StringComparer.Ordinal);
@@ -131,21 +95,15 @@ internal static class SemconvRegistryFacts
 {% endfor %}
     };
 
-    internal static bool TryGetAttributeType(string key, out SemconvAttributeValueKind kind)
+    internal static bool TryGetAttributeType(string key, out RegistryAttributeValueKind kind)
     {
-        if (AttributeTypes.TryGetValue(key, out kind))
-            return true;
-
-        foreach (var template in TemplateAttributeTypes)
+        if (RegistryCatalog.TryGetAttribute(key, out var attribute))
         {
-            if (key.StartsWith(template.Prefix, StringComparison.Ordinal) && key.Length > template.Prefix.Length)
-            {
-                kind = template.Kind;
-                return true;
-            }
+            kind = attribute.ValueKind;
+            return true;
         }
 
-        kind = SemconvAttributeValueKind.Unknown;
+        kind = RegistryAttributeValueKind.Unknown;
         return false;
     }
 
@@ -175,9 +133,10 @@ internal static class SemconvRegistryFacts
     /// True only for a key the registry defines outright; a key that merely extends a
     /// template such as <c>http.request.header.</c> is not one.
     /// </summary>
-    internal static bool IsRegistryAttributeKey(string key) => AttributeTypes.ContainsKey(key);
+    internal static bool IsRegistryAttributeKey(string key) =>
+        RegistryCatalog.TryGetAttribute(key, out var attribute) && !attribute.IsTemplate;
 
-    internal static bool IsKnownMetricName(string name) => KnownMetricNames.Contains(name);
+    internal static bool IsKnownMetricName(string name) => RegistryCatalog.TryGetMetric(name, out _);
 
     internal static bool IsKnownScopeName(string name) => KnownScopeNames.Contains(name);
 

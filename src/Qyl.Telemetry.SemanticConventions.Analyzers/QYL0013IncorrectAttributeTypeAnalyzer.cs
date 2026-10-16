@@ -29,7 +29,7 @@ internal sealed class Qyl0013IncorrectAttributeTypeAnalyzer : AlAnalyzer
             || !TagSetterDetection.TryGetTagSetterValueArgument(invocation, out var valueArgument)
             || !TagSetterDetection.TryGetNonEmptyStringConstant(keyArgument.Value, out var attributeName)
             || !SemconvRegistryFacts.TryGetAttributeType(attributeName, out var expectedKind)
-            || expectedKind is SemconvAttributeValueKind.Any or SemconvAttributeValueKind.Unknown)
+            || expectedKind is RegistryAttributeValueKind.Any or RegistryAttributeValueKind.Unknown)
         {
             return;
         }
@@ -48,17 +48,17 @@ internal sealed class Qyl0013IncorrectAttributeTypeAnalyzer : AlAnalyzer
             value.Type.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat));
     }
 
-    private static bool IsTypeMatch(ITypeSymbol actualType, SemconvAttributeValueKind expectedKind) =>
+    private static bool IsTypeMatch(ITypeSymbol actualType, RegistryAttributeValueKind expectedKind) =>
         expectedKind switch
         {
-            SemconvAttributeValueKind.String => actualType.IsString(),
-            SemconvAttributeValueKind.Integer => IsIntegerType(actualType),
-            SemconvAttributeValueKind.Double => IsFloatingPointType(actualType),
-            SemconvAttributeValueKind.Boolean => actualType.IsBoolean(),
-            SemconvAttributeValueKind.StringArray => HasSequenceElementType(actualType, TypeSymbolExtensions.IsString),
-            SemconvAttributeValueKind.IntegerArray => HasSequenceElementType(actualType, IsIntegerType),
-            SemconvAttributeValueKind.DoubleArray => HasSequenceElementType(actualType, IsFloatingPointType),
-            SemconvAttributeValueKind.BooleanArray => HasSequenceElementType(actualType, TypeSymbolExtensions.IsBoolean),
+            RegistryAttributeValueKind.String => actualType.IsString(),
+            RegistryAttributeValueKind.Integer => IsIntegerType(actualType),
+            RegistryAttributeValueKind.Double => IsFloatingPointType(actualType),
+            RegistryAttributeValueKind.Boolean => actualType.IsBoolean(),
+            RegistryAttributeValueKind.StringArray => HasSequenceElementType(actualType, TypeSymbolExtensions.IsString),
+            RegistryAttributeValueKind.IntegerArray => HasSequenceElementType(actualType, IsIntegerType),
+            RegistryAttributeValueKind.DoubleArray => HasSequenceElementType(actualType, IsFloatingPointType),
+            RegistryAttributeValueKind.BooleanArray => HasSequenceElementType(actualType, TypeSymbolExtensions.IsBoolean),
             _ => true,
         };
 
@@ -128,17 +128,17 @@ internal sealed class Qyl0013IncorrectAttributeTypeAnalyzer : AlAnalyzer
         return false;
     }
 
-    private static string GetTypeName(SemconvAttributeValueKind expectedKind) =>
+    private static string GetTypeName(RegistryAttributeValueKind expectedKind) =>
         expectedKind switch
         {
-            SemconvAttributeValueKind.String => "string",
-            SemconvAttributeValueKind.Integer => "integer",
-            SemconvAttributeValueKind.Double => "double",
-            SemconvAttributeValueKind.Boolean => "boolean",
-            SemconvAttributeValueKind.StringArray => "string[]",
-            SemconvAttributeValueKind.IntegerArray => "integer[]",
-            SemconvAttributeValueKind.DoubleArray => "double[]",
-            SemconvAttributeValueKind.BooleanArray => "boolean[]",
+            RegistryAttributeValueKind.String => "string",
+            RegistryAttributeValueKind.Integer => "integer",
+            RegistryAttributeValueKind.Double => "double",
+            RegistryAttributeValueKind.Boolean => "boolean",
+            RegistryAttributeValueKind.StringArray => "string[]",
+            RegistryAttributeValueKind.IntegerArray => "integer[]",
+            RegistryAttributeValueKind.DoubleArray => "double[]",
+            RegistryAttributeValueKind.BooleanArray => "boolean[]",
             _ => "unknown",
         };
 }

@@ -15,4 +15,11 @@ The root export contains stable and deprecated migration conventions. `./incubat
 
 Exports follow OpenTelemetry JavaScript names: `ATTR_*`, enum `*_VALUE_*`, `METRIC_*` and `EVENT_*`. Metrics also export `METRIC_*_UNIT` and `METRIC_*_DEFINITION` (name, instrument, unit and stability). `SCHEMA_URL` identifies the qyl schema; `REGISTRY_SNAPSHOT_SHA256` identifies the shared resolved input, excluding source-location metadata such as temporary checkout paths. The C# `RegistrySnapshot.Sha256` constant carries the same fingerprint. Literal `.d.ts` declarations and TypeScript sources are included alongside JavaScript.
 
+Import `findAttribute` and `findMetric` from `@ancplua/qyl-semantic-conventions/catalog`
+for value kinds, template expansion, units, stability and deprecation metadata. Lookups
+return frozen records from the same normalized Weaver facts as C# `RegistryCatalog`.
+An unknown custom name returns undefined and remains valid OpenTelemetry. Requirements
+belong to the selected signal definition; registry membership does not establish scope ownership.
+The separate export keeps the complete catalog out of constant-only imports.
+
 Generation runs through `scripts/generate.sh` at the repository root, using pinned official language-independent OpenTelemetry registries and qyl/vendor definitions. These bindings can release independently of OpenTelemetry SDK versions. SDKs/exporters and official OTLP wire definitions remain separate dependencies. The registry schema URL alone does not transform attributes.
