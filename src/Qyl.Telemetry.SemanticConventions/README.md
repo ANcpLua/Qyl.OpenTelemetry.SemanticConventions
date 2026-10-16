@@ -4,7 +4,7 @@ The stable OpenTelemetry semantic conventions as .NET constants and typed helper
 [Weaver](https://github.com/open-telemetry/weaver) from qyl's registry and shipped pre-built:
 attribute keys, the pinned `SchemaUrl`, the qyl-owned scope and event names, typed `Activity`
 setter extensions with open value-set structs, first-class metric, span, event and entity
-definitions, the span starters `Qyl.Spans` (with `Work`, `SetAppTag`, `RecordFailure`) and
+definitions, the span starters `Qyl.Spans` (with `Work`, `RecordFailure`) and
 `Qyl.SpanNames`, and the trace contract `SpanRecord`, resource and scope records, `StoreIdentity`, typed span views and
 `RegistryPolicy`.
 

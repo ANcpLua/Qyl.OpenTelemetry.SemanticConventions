@@ -26,7 +26,6 @@ public sealed class RegistryCatalogTests
     [DataRow("http.request.header.content_type", RegistryAttributeValueKind.StringArray)]
     [DataRow("pprof.scope.sample_type_order", RegistryAttributeValueKind.IntegerArray)]
     [DataRow("feature_flag.result.value", RegistryAttributeValueKind.Any)]
-    [DataRow("qyl.app.order.id", RegistryAttributeValueKind.String)]
     public void Looks_up_stable_incubating_and_template_value_kinds(string key, RegistryAttributeValueKind kind)
     {
         Assert.IsTrue(RegistryCatalog.TryGetAttribute(key, out var attribute));

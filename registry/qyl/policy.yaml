@@ -10,7 +10,7 @@ groups:
   # not-persisted prefix. The token rule drops any other key that contains a denied token
   # (ordinal, case-insensitive) unless the key is `token_exempt` or a vendor key (registry/vendor/):
   # a vendor spells its own tags. The generated RegistryPolicy table carries all of it; the
-  # starters' views, analyzer QYL0113 and the collector catalog read that one table.
+  # starters' views and the collector catalog read that one table.
   - id: qyl.policy.persistence
     type: attribute_group
     display_name: qyl Persistence Policy

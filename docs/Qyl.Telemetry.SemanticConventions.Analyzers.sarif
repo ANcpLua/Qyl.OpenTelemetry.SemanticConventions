@@ -230,49 +230,15 @@
               }
             },
             {
-              "id": "QYL0111",
-              "name": "RawActivitySource",
-              "shortDescription": {
-                "text": "Start spans through the generated starters"
-              },
-              "fullDescription": {
-                "text": "A hand-made ActivitySource is unregistered until something subscribes it, and its StartActivity calls carry no registry kind, name or attributes. The generated starters on Qyl.Spans and Qyl.IncubatingSpans start every span on the registry-owned Qyl.Telemetry.Application scope that AddQyl subscribes. Instrumentation libraries that own their ActivitySources set the MSBuild property OtelSemConvInstrumentationLibrary to true."
-              },
-              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0111_RawActivitySource.md",
-              "defaultConfiguration": {
-                "level": "error"
-              },
-              "properties": {
-                "category": "OpenTelemetry"
-              }
-            },
-            {
               "id": "QYL0112",
               "name": "NonConstantTelemetryName",
               "shortDescription": {
                 "text": "Span work names and business keys are compile-time constants"
               },
               "fullDescription": {
-                "text": "A Spans.Work name is the operation\u0027s identity in failure signatures and a SetAppTag key is a stored column, so both must stay low-cardinality. Use a constant and put the varying part into a SetAppTag value."
+                "text": "A Spans.Work name identifies an operation and must stay low-cardinality. Use a constant and put varying values into native Activity.SetTag attributes."
               },
               "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0112_NonConstantTelemetryName.md",
-              "defaultConfiguration": {
-                "level": "error"
-              },
-              "properties": {
-                "category": "OpenTelemetry"
-              }
-            },
-            {
-              "id": "QYL0113",
-              "name": "DeniedAppTagKey",
-              "shortDescription": {
-                "text": "A business key must not contain a token the collector denies"
-              },
-              "fullDescription": {
-                "text": "The qyl collector drops every key that contains one of the registry\u0027s denied tokens (RegistryPolicy.DeniedKeyTokens). A SetAppTag key, or a qyl.app.* key, that contains one compiles and runs but never arrives. Rename the key."
-              },
-              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0113_DeniedAppTagKey.md",
               "defaultConfiguration": {
                 "level": "error"
               },
@@ -321,7 +287,7 @@
                 "text": "No span starter inside an AIFunction"
               },
               "fullDescription": {
-                "text": "FunctionInvokingChatClient records the execute_tool span of every AIFunction it invokes, and the registry says not to record two spans for one tool call. Inside the function, set business keys on Activity.Current with SetAppTag instead."
+                "text": "FunctionInvokingChatClient records the execute_tool span of every AIFunction it invokes, and the registry says not to record two spans for one tool call. Inside the function, set application attributes on Activity.Current with SetTag instead."
               },
               "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0122_StarterInsideAiFunction.md",
               "defaultConfiguration": {
@@ -338,7 +304,7 @@
                 "text": "Reserved qyl telemetry name must come from the generated registry catalog"
               },
               "fullDescription": {
-                "text": "Names in the reserved qyl namespace must use the generated registry vocabulary. Custom application and library scopes, attributes, metrics and events remain valid outside it, and qyl.app.* is open to application-owned names. Registry membership is not a universal OpenTelemetry validity check. Use the generated constant for an existing qyl name or add a genuinely qyl-owned definition to the registry."
+                "text": "Names in the reserved qyl namespace must use the generated registry vocabulary. Custom application and library scopes, attributes, metrics and events remain valid outside it,. Registry membership is not a universal OpenTelemetry validity check. Use the generated constant for an existing qyl name or add a genuinely qyl-owned definition to the registry."
               },
               "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0200_TelemetryName.md",
               "defaultConfiguration": {

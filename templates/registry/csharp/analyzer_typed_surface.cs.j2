@@ -2,7 +2,7 @@
 {#-
   The typed surface the analyzers read attribute writes through (ADR D3): every generated
   Set{Key} setter, every value-set struct member and every span starter parameter, with the key
-  each one writes, plus the persistence policy's denied-key tokens (QYL0113). TagSetterDetection
+  each one writes. TagSetterDetection
   reads these tables, so QYL0012, QYL0013, QYL0400 and QYL0401 see typed code, not only
   SetTag("key", value).
 -#}
@@ -24,33 +24,6 @@ internal sealed class SemconvTypedSetter(string key, bool isTemplate)
 
 internal static class SemconvTypedSurface
 {
-    /// <summary>The <c>business attribute</c> prefix SetAppTag writes.</summary>
-    internal const string AppKeyPrefix = "{{ ctx.app_key if ctx.app_key else "error: the registry has no qyl.app attribute" }}.";
-
-    /// <summary>The tokens whose presence in a key (ordinal, case-insensitive) makes the collector drop it.</summary>
-    internal static readonly string[] DeniedKeyTokens =
-    {
-{% for t in policy.denied_key_tokens %}
-        {{ lib.cs_string(t) }},
-{% endfor %}
-    };
-
-    /// <summary>Keys the collector never persists; a template child (key + ".") is denied too (QYL0113 checks the part after qyl.app.).</summary>
-    internal static readonly string[] NotPersistedKeys =
-    {
-{% for k in policy.not_persisted %}
-        {{ lib.cs_string(k) }},
-{% endfor %}
-    };
-
-    /// <summary>Key prefixes the collector never persists (ordinal, case-insensitive).</summary>
-    internal static readonly string[] NotPersistedPrefixes =
-    {
-{% for p in policy.not_persisted_prefixes %}
-        {{ lib.cs_string(p) }},
-{% endfor %}
-    };
-
     /// <summary>Generated setter name to the key it writes; a template setter takes (segment, value).</summary>
     internal static readonly Dictionary<string, SemconvTypedSetter> Setters = new(StringComparer.Ordinal)
     {

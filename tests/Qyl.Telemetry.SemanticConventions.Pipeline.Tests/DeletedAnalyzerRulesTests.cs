@@ -11,7 +11,7 @@ namespace Qyl.Telemetry.SemanticConventions.Pipeline.Tests;
 [TestClass]
 public sealed class DeletedAnalyzerRulesTests
 {
-    private static readonly string[] Deleted = ["QYL0100", "QYL0101", "QYL0102", "QYL0103", "QYL0104", "QYL0105", "QYL0106", "QYL0107", "QYL0108", "QYL0109", "QYL0201", "QYL0300", "QYL0302", "QYL0303", "QYL0405", "QYL0500", "QYL0501", ];
+    private static readonly string[] Deleted = ["QYL0100", "QYL0101", "QYL0102", "QYL0103", "QYL0104", "QYL0105", "QYL0106", "QYL0107", "QYL0108", "QYL0109", "QYL0111", "QYL0113", "QYL0201", "QYL0300", "QYL0302", "QYL0303", "QYL0405", "QYL0500", "QYL0501", ];
     [TestMethod]
     public void No_analyzer_reports_a_deleted_rule()
     {
@@ -20,9 +20,7 @@ public sealed class DeletedAnalyzerRulesTests
         foreach (var id in new[]
         {
             "QYL0110",
-            "QYL0111",
             "QYL0112",
-            "QYL0113",
             "QYL0120",
             "QYL0121",
             "QYL0122"

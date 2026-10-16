@@ -1,7 +1,7 @@
 {%- import "lib.j2" as lib -%}
 {#-
   Span starters (ADR D2), one class per tier: Qyl.Spans for stable span groups (plus the
-  application scope's Source, Work and SetAppTag), Qyl.IncubatingSpans for the rest. A group gets
+  application scope's Source and Work), Qyl.IncubatingSpans for the rest. A group gets
   a starter only when registry/qyl/policy.yaml marks it `starter: true`, which it does only for
   groups no library qyl subscribes to already emits.
 
@@ -36,8 +36,8 @@ namespace Qyl;
 /// <c>qyl.instrumentation.domain</c>; <see cref="Work"/> covers business work no group describes.
 /// </summary>
 /// <remarks>
-/// <c>AddQyl</c> subscribes <see cref="Source"/>, so application code creates no
-/// <c>ActivitySource</c> and registers nothing. A starter returns <see langword="null"/> when
+/// <c>AddQyl</c> subscribes <see cref="Source"/>. Applications may also register their own
+/// <c>ActivitySource</c>. A starter returns <see langword="null"/> when
 /// nothing listens. Starters of incubating span groups are on <c>IncubatingSpans</c>.
 /// </remarks>
 public static partial class Spans
@@ -62,18 +62,6 @@ public static partial class Spans
 {{ pad }}    var tags = new global::System.Diagnostics.TagList { { "qyl.instrumentation.domain", "app" } };
 {{ pad }}    return Source.StartActivity(name, global::System.Diagnostics.ActivityKind.Internal, default(global::System.Diagnostics.ActivityContext), tags);
 {{ pad }}}
-{% for value_type in ["string", "long", "double", "bool"] %}
-
-{{ pad }}/// <summary>
-{{ pad }}/// Sets the business attribute <c>{{ ctx.app_key if ctx.app_key else "error: the registry has no qyl.app attribute" }}.&lt;key&gt;</c>; the caller never types the prefix.
-{{ pad }}/// </summary>
-{{ pad }}/// <param name="activity">The span.</param>
-{{ pad }}/// <param name="key">The business key, a compile-time constant without a denied token (QYL0112, QYL0113), such as <c>order.id</c>.</param>
-{{ pad }}/// <param name="value">The value; the collector drops a value longer than 256 characters.</param>
-{{ pad }}/// <returns>The same span.</returns>
-{{ pad }}public static global::System.Diagnostics.Activity SetAppTag(this global::System.Diagnostics.Activity activity, string key, {{ value_type }} value)
-{{ pad }}    => activity.SetTag("{{ ctx.app_key }}." + key, value);
-{% endfor %}
 {% else %}
 /// <summary>
 /// Span starters for the incubating span groups, on the same application scope as

@@ -26,7 +26,7 @@ internal static class SemconvAnalyzerOptions
 
     /// <summary>
     /// <c>build_property.OtelSemConvInstrumentationLibrary</c> — when <c>true</c>,
-    /// QYL0008 and QYL0111 do not report in that project. Set it in instrumentation libraries
+    /// QYL0008 does not report in that project. Set it in instrumentation libraries
     /// that intentionally ship against the incubating tier, version-lock with it and own
     /// their ActivitySources (for example <c>Qyl.Telemetry.AutoInstrumentation</c>), so the
     /// rules stay on for application code and for ordinary libraries.

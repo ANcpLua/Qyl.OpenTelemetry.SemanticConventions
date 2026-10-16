@@ -6,7 +6,7 @@ namespace Qyl.Telemetry.SemanticConventions.Pipeline.Tests;
 /// <summary>
 /// The collector's deny lists moved out of qyl's eng/config/collector-semantic-policy.json into the
 /// registry (registry/qyl/policy.yaml); the generated <see cref = "RegistryPolicy"/> is the one table
-/// the views, QYL0113 and the collector catalog read. The expected lists are that policy file's
+/// the views and the collector catalog read. The expected lists are that policy file's
 /// <c>deniedExactKeys</c>, <c>deniedKeyTokens</c> and <c>deniedTokenExemptKeys</c> on 2026-10-14,
 /// with <c>gen_ai.agent.name</c> un-denied (ADR answer 3).
 /// </summary>
@@ -57,9 +57,9 @@ public sealed class RegistryPolicyTests
     [DataRow("qyl.app.order.message", false)]
     [DataRow("gen_ai.request.max_tokens", true)]
     [DataRow("gen_ai.usage.text.input_tokens", true)]
-    [DataRow("qyl.app.user.email", false)]
-    [DataRow("qyl.app.url.full", false)]
-    [DataRow("qyl.app.enduser.id", false)]
+    [DataRow("qyl.app.user.email", true)]
+    [DataRow("qyl.app.url.full", true)]
+    [DataRow("qyl.app.enduser.id", true)]
     [DataRow("db.odp.user.statement", false)]
     [DataRow("nservicebus.processing_machine", false)]
     [DataRow("qyl.app.API_KEY", false)]

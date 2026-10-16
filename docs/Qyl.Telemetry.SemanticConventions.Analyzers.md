@@ -28,9 +28,7 @@ Each ID links to a per-rule page under [`docs/rules/`](rules/) with severity, ca
 | [QYL0012](rules/QYL0012_InvalidAttributeValue.md) | Error | Semantic-convention enum value uses non-canonical casing | No |
 | [QYL0013](rules/QYL0013_IncorrectAttributeType.md) | Warning | Incorrect attribute type | No |
 | [QYL0110](rules/QYL0110_MissingRecordFailure.md) | Error | A catch that throws inside a span starter's scope must call RecordFailure | No |
-| [QYL0111](rules/QYL0111_RawActivitySource.md) | Error | Start spans through the generated starters | No |
 | [QYL0112](rules/QYL0112_NonConstantTelemetryName.md) | Error | Span work names and business keys are compile-time constants | No |
-| [QYL0113](rules/QYL0113_DeniedAppTagKey.md) | Error | A business key must not contain a token the collector denies | No |
 | [QYL0120](rules/QYL0120_ContribInstrumentationWithAddQyl.md) | Error | No OpenTelemetry.Instrumentation.* package next to AddQyl | No |
 | [QYL0121](rules/QYL0121_CustomValueEqualsMember.md) | Error | Custom value equals a registry member | No |
 | [QYL0122](rules/QYL0122_StarterInsideAiFunction.md) | Error | No span starter inside an AIFunction | No |

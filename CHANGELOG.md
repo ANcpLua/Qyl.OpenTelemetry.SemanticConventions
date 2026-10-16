@@ -1,5 +1,10 @@
 # Changelog
 
+## [13.0.0] - 2026-10-16
+
+- Remove `SetAppTag`, the `qyl.app` string template and the stringifying `App` span views. Applications use native typed attributes with their own names; historical keys have no invented registry type.
+- Allow application-owned `ActivitySource` instances. Keep generated starters optional and limit the constant-name rule to `Spans.Work`. Remove the helper-specific QYL0113 rule.
+
 ## [12.0.0] - 2026-10-16
 
 - Correct the Oracle vendor declaration for `db.odp.roundtrip.duration` from double to string, matching real OTLP output from the pinned provider. The generated C# setter now accepts a string; the C# and TypeScript catalogs retain the observed representation without guessing a unit.

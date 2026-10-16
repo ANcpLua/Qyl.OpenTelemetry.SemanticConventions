@@ -12,7 +12,7 @@
 
 ## Description
 
-A Spans.Work name is the operation's identity in failure signatures and a SetAppTag key is a stored column, so both must stay low-cardinality. Use a constant and put the varying part into a SetAppTag value.
+A Spans.Work name identifies an operation and must stay low-cardinality. Use a constant and put varying values into native Activity.SetTag attributes.
 
 ## See also
 

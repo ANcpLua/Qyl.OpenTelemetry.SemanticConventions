@@ -7,7 +7,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 ///     <c>FunctionInvokingChatClient</c> records the <c>execute_tool</c> span of every
 ///     <c>AIFunction</c> it invokes, and the registry says not to record two spans for one tool
 ///     call. Inside the function, set business keys on <c>Activity.Current</c> with
-///     <c>SetAppTag</c> instead of starting a span.
+///     <c>SetTag</c> instead of starting a span.
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 internal sealed class Qyl0122StarterInsideAiFunctionAnalyzer : AlAnalyzer {

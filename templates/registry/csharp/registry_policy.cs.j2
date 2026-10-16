@@ -1,7 +1,7 @@
 {%- import "lib.j2" as lib -%}
 {#-
   The persistence rule of registry/qyl/policy.yaml as a runtime table, in the stable package. The
-  span views, analyzer QYL0113 and the qyl collector's catalog read this one table, so a test can
+  span views and the qyl collector's catalog read this one table, so a test can
   never assert a key that ingest drops. The rule is applied in this order: a not-persisted key
   (and its template children), a not-persisted prefix, then the token rule, which a token-exempt
   key and every vendor key skip.
@@ -89,8 +89,6 @@ public static class RegistryPolicy
 {{ pad }}public static bool IsPersisted(string key)
 {{ pad }}{
 {{ pad }}    if (key is null) throw new global::System.ArgumentNullException(nameof(key));
-{{ pad }}    // A qyl.app. key is held to the same rule by the part after the prefix: qyl.app.user.email is user.email.
-{{ pad }}    if (key.StartsWith("qyl.app.", global::System.StringComparison.Ordinal) && !IsPersistedName(key.Substring("qyl.app.".Length))) return false;
 {{ pad }}    return IsPersistedName(key);
 {{ pad }}}
 

@@ -12,7 +12,7 @@
 
 ## Description
 
-Names in the reserved qyl namespace must use the generated registry vocabulary. Custom application and library scopes, attributes, metrics and events remain valid outside it, and qyl.app.* is open to application-owned names. Registry membership is not a universal OpenTelemetry validity check. Use the generated constant for an existing qyl name or add a genuinely qyl-owned definition to the registry.
+Names in the reserved qyl namespace must use the generated registry vocabulary. Custom application and library scopes, attributes, metrics and events remain valid outside it,. Registry membership is not a universal OpenTelemetry validity check. Use the generated constant for an existing qyl name or add a genuinely qyl-owned definition to the registry.
 
 ## See also
 

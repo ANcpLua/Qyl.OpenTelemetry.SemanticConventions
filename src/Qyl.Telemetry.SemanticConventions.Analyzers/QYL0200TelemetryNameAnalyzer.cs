@@ -6,8 +6,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 /// <remarks>
 ///     <para>
 ///         The registry owns qyl's SDK vocabulary, not the application's vocabulary. Unknown names
-///         outside the qyl namespace remain valid custom telemetry. The <c>qyl.app.*</c> namespace
-///         is also open to application-owned names. Type, deprecation and value checks for known
+///         outside the qyl namespace remain valid custom telemetry. Type, deprecation and value checks for known
 ///         semantic conventions are handled by their dedicated analyzers.
 ///     </para>
 ///     <para>
@@ -108,6 +107,5 @@ internal sealed class Qyl0200TelemetryNameAnalyzer : AlAnalyzer {
     }
 
     private static bool IsReservedName(string name) =>
-        (name.StartsWith("qyl.", StringComparison.Ordinal) || name.StartsWith("Qyl.", StringComparison.Ordinal))
-        && !(name.StartsWith("qyl.app.", StringComparison.Ordinal) && name.Length > "qyl.app.".Length);
+        name.StartsWith("qyl.", StringComparison.Ordinal) || name.StartsWith("Qyl.", StringComparison.Ordinal);
 }

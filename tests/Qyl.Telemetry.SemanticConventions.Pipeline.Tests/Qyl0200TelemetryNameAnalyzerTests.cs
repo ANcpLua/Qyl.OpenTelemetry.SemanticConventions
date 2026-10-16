@@ -124,20 +124,18 @@ public sealed class Qyl0200TelemetryNameAnalyzerTests(TestContext testContext)
         var diagnostics = await AnalyzerRun.CompileSource(Compile.Source(ActivitySink("""
                 activity?.SetTag("checkout.order.id", "ord-42");
                 activity?.AddEvent(new ActivityEvent("checkout.order.placed"));
-                activity?.AddEvent(new ActivityEvent("qyl.app.order.placed"));
                 using var source = new ActivitySource("Checkout.Application");
                 using var meter = new System.Diagnostics.Metrics.Meter("Checkout.Metrics");
                 meter.CreateCounter<long>("checkout.orders.created", "{order}");
-                meter.CreateCounter<long>("qyl.app.orders.created", "{order}");
                 """)).WithReference<Activity>()).WithAnalyzers([new Qyl0200TelemetryNameAnalyzer()]).GetAnalyzerDiagnosticsAsync(testContext.CancellationToken);
         Assert.IsEmpty(diagnostics);
     }
 
     [TestMethod]
-    public async Task Qyl0200_accepts_app_keys_and_the_application_scope()
+    public async Task Qyl0200_accepts_native_application_keys_and_the_generated_scope()
     {
         var diagnostics = await AnalyzerRun.CompileSource(Compile.Source(ActivitySink("""
-                activity?.SetTag("qyl.app.order.id", "ord-1042");
+                activity?.SetTag("checkout.order.id", "ord-1042");
                 using var source = new ActivitySource("Qyl.Telemetry.Application");
                 """)).WithReference<Activity>()).WithAnalyzers([new Qyl0200TelemetryNameAnalyzer()]).GetAnalyzerDiagnosticsAsync(testContext.CancellationToken);
         Assert.IsEmpty(diagnostics);

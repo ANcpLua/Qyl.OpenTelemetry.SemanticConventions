@@ -132,8 +132,7 @@ templates:
   # deprecated rows, the incubating one carries only what is left, under {Root}Incubating*
   # type names, so a consumer may import both namespaces without an ambiguous-call error.
   # Resource-only attributes (referenced by entities and by no span, event or metric:
-  # service.name, deployment.environment.name, host.*) get no Activity setter, and qyl.app gets
-  # none either: SetAppTag (Qyl.Spans) is its one writer.
+  # service.name, deployment.environment.name, host.*) get no Activity setter.
   - template: activities.cs.j2
     filter: >
       . as $registry
@@ -154,7 +153,7 @@ templates:
           | (.attributes // [])[] | .key]
          | unique | map({key: ., value: true}) | from_entries) as $signal_keys
       | ($entity_keys | map(select($signal_keys[.] | not)) | map({key: ., value: true})
-         | from_entries + {"qyl.app": true}) as $no_setter
+         | from_entries) as $no_setter
       | ([.registry.attributes[]]) as $top
       | ($top | map({key: .key, value: true}) | from_entries) as $seen
       | ([.dependencies[].registry.attributes[]] | map(select($seen[.key] | not))) as $extra
@@ -265,7 +264,7 @@ templates:
   # Span starters (Qyl.Spans, Qyl.IncubatingSpans) and span names (Qyl.SpanNames) over the same
   # span refinement rows as spans.cs.j2. Which rows get a starter, their domain, fixed values and
   # naming chains come from registry/qyl/policy.yaml (params.policy); the filter adds the
-  # qyl.instrumentation.domain values the starters may stamp and the qyl.app template key.
+  # qyl.instrumentation.domain values the starters may stamp.
   - template: starters.cs.j2
     filter: >
       . as $registry
@@ -279,14 +278,13 @@ templates:
           | select(((.type | startswith("gen_ai.")) | not) or (.id | startswith("gen_ai.")))]
          | sort_by(.id)) as $all
       | ([.registry.attributes[] | select(.key == "qyl.instrumentation.domain") | .type.members[].value]) as $domains
-      | ([.registry.attributes[] | select(.key == "qyl.app") | .key] | first) as $app_key
       | [ {tier: "incubating", class_name: "IncubatingSpans",
            spans: [$all[] | select((.stability == "stable" or (.deprecated != null)) | not)],
            out_dir: "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated"},
           {tier: "stable", class_name: "Spans",
            spans: [$all[] | select(.stability == "stable" or (.deprecated != null))],
            out_dir: "src/Qyl.Telemetry.SemanticConventions/Generated"} ]
-      | map(. + $schema_urls + {domains: $domains, app_key: $app_key})
+      | map(. + $schema_urls + {domains: $domains})
     application_mode: each
     file_name: "{{ ctx.out_dir }}/Starters/{{ ctx.class_name }}.g.cs"
 
@@ -534,8 +532,7 @@ templates:
       | {attributes: (($top + $extra) | dedupe(pascal(.key)) | sort_by(.key)),
          spans: ([.refinements.spans[]
                   | select(((.type | startswith("gen_ai.")) | not) or (.id | startswith("gen_ai.")))]
-                 | sort_by(.id)),
-         app_key: ([.registry.attributes[] | select(.key == "qyl.app") | .key] | first)}
+                 | sort_by(.id))}
       | . + $schema_urls
     application_mode: single
     file_name: "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvTypedSurface.g.cs"

@@ -112,7 +112,7 @@
         <value>Telemetry name '{0}' in a {1} position is not in the generated registry catalog</value>
     </data>
     <data name="QYL0200AnalyzerDescription" xml:space="preserve">
-        <value>Names in the reserved qyl namespace must use the generated registry vocabulary. Custom application and library scopes, attributes, metrics and events remain valid outside it, and qyl.app.* is open to application-owned names. Registry membership is not a universal OpenTelemetry validity check. Use the generated constant for an existing qyl name or add a genuinely qyl-owned definition to the registry.</value>
+        <value>Names in the reserved qyl namespace must use the generated registry vocabulary. Custom application and library scopes, attributes, metrics and events remain valid outside it,. Registry membership is not a universal OpenTelemetry validity check. Use the generated constant for an existing qyl name or add a genuinely qyl-owned definition to the registry.</value>
     </data>
     <!-- AL0070: Non-OTLP collector endpoint -->
     <data name="QYL0301AnalyzerTitle" xml:space="preserve">
@@ -253,15 +253,6 @@
     <data name="QYL0110AnalyzerDescription" xml:space="preserve">
         <value>A span whose operation fails needs status Error with a description, error.type and the exception event, or the collector records a success with an empty failure message. Call span.RecordFailure(exception) in every catch that throws inside the scope of a Qyl.Spans or Qyl.IncubatingSpans starter.</value>
     </data>
-    <data name="QYL0111AnalyzerTitle" xml:space="preserve">
-        <value>Start spans through the generated starters</value>
-    </data>
-    <data name="QYL0111AnalyzerMessageFormat" xml:space="preserve">
-        <value>'{0}' starts spans outside the generated starters; use Qyl.Spans (a starter or Spans.Work), whose application scope AddQyl subscribes</value>
-    </data>
-    <data name="QYL0111AnalyzerDescription" xml:space="preserve">
-        <value>A hand-made ActivitySource is unregistered until something subscribes it, and its StartActivity calls carry no registry kind, name or attributes. The generated starters on Qyl.Spans and Qyl.IncubatingSpans start every span on the registry-owned Qyl.Telemetry.Application scope that AddQyl subscribes. Instrumentation libraries that own their ActivitySources set the MSBuild property OtelSemConvInstrumentationLibrary to true.</value>
-    </data>
     <data name="QYL0112AnalyzerTitle" xml:space="preserve">
         <value>Span work names and business keys are compile-time constants</value>
     </data>
@@ -269,16 +260,7 @@
         <value>The {0} '{1}' is not a compile-time constant</value>
     </data>
     <data name="QYL0112AnalyzerDescription" xml:space="preserve">
-        <value>A Spans.Work name is the operation's identity in failure signatures and a SetAppTag key is a stored column, so both must stay low-cardinality. Use a constant and put the varying part into a SetAppTag value.</value>
-    </data>
-    <data name="QYL0113AnalyzerTitle" xml:space="preserve">
-        <value>A business key must not contain a token the collector denies</value>
-    </data>
-    <data name="QYL0113AnalyzerMessageFormat" xml:space="preserve">
-        <value>Business key '{0}' contains '{1}', which the qyl collector denies; ingest drops it</value>
-    </data>
-    <data name="QYL0113AnalyzerDescription" xml:space="preserve">
-        <value>The qyl collector drops every key that contains one of the registry's denied tokens (RegistryPolicy.DeniedKeyTokens). A SetAppTag key, or a qyl.app.* key, that contains one compiles and runs but never arrives. Rename the key.</value>
+        <value>A Spans.Work name identifies an operation and must stay low-cardinality. Use a constant and put varying values into native Activity.SetTag attributes.</value>
     </data>
     <data name="QYL0120AnalyzerTitle" xml:space="preserve">
         <value>No OpenTelemetry.Instrumentation.* package next to AddQyl</value>
@@ -305,6 +287,6 @@
         <value>'{0}' starts a span inside a delegate passed to AIFunctionFactory.Create, whose execute_tool span FunctionInvokingChatClient already records</value>
     </data>
     <data name="QYL0122AnalyzerDescription" xml:space="preserve">
-        <value>FunctionInvokingChatClient records the execute_tool span of every AIFunction it invokes, and the registry says not to record two spans for one tool call. Inside the function, set business keys on Activity.Current with SetAppTag instead.</value>
+        <value>FunctionInvokingChatClient records the execute_tool span of every AIFunction it invokes, and the registry says not to record two spans for one tool call. Inside the function, set application attributes on Activity.Current with SetTag instead.</value>
     </data>
 </root>

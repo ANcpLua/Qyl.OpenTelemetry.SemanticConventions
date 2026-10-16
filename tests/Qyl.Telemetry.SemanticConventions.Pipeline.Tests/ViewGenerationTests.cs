@@ -27,7 +27,7 @@ public sealed class ViewGenerationTests
         Resource = new ResourceRecord(new Dictionary<string, object?> { ["service.name"] = service }),
     };
     [TestMethod]
-    public void The_db_client_view_exposes_service_system_namespace_store_and_app()
+    public void The_db_client_view_exposes_service_system_namespace_store_and_original_record()
     {
         var properties = typeof(DbClientSpan).GetProperties(BindingFlags.Public | BindingFlags.Instance).Select(static p => p.Name).ToList();
         foreach (var property in new[]
@@ -36,7 +36,7 @@ public sealed class ViewGenerationTests
             "System",
             "Namespace",
             "Store",
-            "App"
+            "Record"
         })
             Assert.Contains(property, properties);
         Assert.DoesNotContain("QueryText", properties);
@@ -62,7 +62,7 @@ public sealed class ViewGenerationTests
     {
         var spans = new[]
         {
-            Record("write orders", ActivityKind.Client, new Dictionary<string, object?> { ["db.system.name"] = "postgresql", ["db.namespace"] = "shop", ["db.collection.name"] = "orders", ["server.address"] = "db.internal", ["server.port"] = 5432L, ["db.query.text"] = "insert into orders values ($1)", ["qyl.app.order.id"] = "ord-1042", ["qyl.app.order.lines"] = 3L, }),
+            Record("write orders", ActivityKind.Client, new Dictionary<string, object?> { ["db.system.name"] = "postgresql", ["db.namespace"] = "shop", ["db.collection.name"] = "orders", ["server.address"] = "db.internal", ["server.port"] = 5432L, ["db.query.text"] = "insert into orders values ($1)", ["checkout.order.id"] = "ord-1042", ["checkout.order.lines"] = 3L, }),
             Record("GET /orders", ActivityKind.Server, new Dictionary<string, object?> { ["http.request.method"] = "GET" }),
             Record("checkout", ActivityKind.Internal, new Dictionary<string, object?> { ["qyl.instrumentation.domain"] = "app" }),
         };
@@ -73,7 +73,8 @@ public sealed class ViewGenerationTests
         Assert.AreEqual("orders", db.CollectionName);
         Assert.AreEqual(5432L, db.ServerPort);
         Assert.AreEqual(new StoreIdentity("postgresql", "db.internal", 5432L, "shop"), db.Store);
-        Assert.AreEquivalent(new Dictionary<string, string> { ["order.id"] = "ord-1042", ["order.lines"] = "3" }, db.App);
+        Assert.AreEqual("ord-1042", db.Record.GetString("checkout.order.id"));
+        Assert.AreEqual(3L, db.Record.GetInt64("checkout.order.lines"));
         Assert.AreEqual("write orders", db.Record.Name);
     }
 

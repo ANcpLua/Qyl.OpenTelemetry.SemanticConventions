@@ -12,7 +12,7 @@
 
 ## Description
 
-FunctionInvokingChatClient records the execute_tool span of every AIFunction it invokes, and the registry says not to record two spans for one tool call. Inside the function, set business keys on Activity.Current with SetAppTag instead.
+FunctionInvokingChatClient records the execute_tool span of every AIFunction it invokes, and the registry says not to record two spans for one tool call. Inside the function, set application attributes on Activity.Current with SetTag instead.
 
 ## See also
 

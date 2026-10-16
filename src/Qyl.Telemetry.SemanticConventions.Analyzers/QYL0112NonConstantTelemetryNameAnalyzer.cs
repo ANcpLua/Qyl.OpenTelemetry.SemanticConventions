@@ -1,12 +1,11 @@
 namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     QYL0112: a <c>Spans.Work</c> name and a <c>SetAppTag</c> key are compile-time constants.
+///     QYL0112: a <c>Spans.Work</c> name is a compile-time constant.
 /// </summary>
 /// <remarks>
-///     The span name is the operation's identity in the collector's failure signatures and the
-///     business key is a column; a composed one (<c>$"write {what}"</c>) turns each into an
-///     unbounded set. Put the varying part into a <c>SetAppTag</c> value instead.
+///     A composed name (<c>$"write {what}"</c>) produces an unbounded set of operation identities.
+///     Put varying values into native <c>Activity.SetTag</c> attributes instead.
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 internal sealed class Qyl0112NonConstantTelemetryNameAnalyzer : AlAnalyzer {
@@ -35,7 +34,6 @@ internal sealed class Qyl0112NonConstantTelemetryNameAnalyzer : AlAnalyzer {
 
         var (parameter, what) = method.Name switch {
             "Work" => ("name", "Spans.Work name"),
-            "SetAppTag" => ("key", "SetAppTag key"),
             _ => (null, null),
         };
 

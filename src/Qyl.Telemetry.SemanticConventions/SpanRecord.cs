@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Globalization;
 
 namespace Qyl.Telemetry.SemanticConventions;
 
@@ -17,8 +16,6 @@ namespace Qyl.Telemetry.SemanticConventions;
 [JetBrains.Annotations.PublicAPI]
 public sealed class SpanRecord
 {
-    private const string AppPrefix = "qyl.app.";
-
     /// <summary>Initializes a span record.</summary>
     /// <param name="traceId">The trace id, 32 lowercase hex characters.</param>
     /// <param name="spanId">The span id, 16 lowercase hex characters.</param>
@@ -101,24 +98,6 @@ public sealed class SpanRecord
     /// <summary>The resource's <c>service.name</c>, or <see langword="null"/>.</summary>
     public string? Service => Resource.Attributes.TryGetValue("service.name", out var value) ? value as string : null;
 
-    /// <summary>The <c>qyl.app.*</c> business attributes, keyed without the prefix, values as invariant strings.</summary>
-    public IReadOnlyDictionary<string, string> App
-    {
-        get
-        {
-            var app = new Dictionary<string, string>(StringComparer.Ordinal);
-            foreach (var attribute in Attributes)
-            {
-                if (attribute.Key.StartsWith(AppPrefix, StringComparison.Ordinal) && attribute.Value is not null)
-                {
-                    app[attribute.Key.Substring(AppPrefix.Length)] = Invariant(attribute.Value);
-                }
-            }
-
-            return app;
-        }
-    }
-
     /// <summary>The attribute as a string, or <see langword="null"/> when absent or not a string.</summary>
     /// <param name="key">The attribute key.</param>
     /// <returns>The value.</returns>
@@ -186,14 +165,7 @@ public sealed class SpanRecord
     /// <inheritdoc/>
     public override string ToString() => Name;
 
-    private static string Invariant(object value) =>
-        value switch
-        {
-            string s => s,
-            bool b => b ? "true" : "false",
-            IFormattable f => f.ToString(null, CultureInfo.InvariantCulture),
-            _ => value.ToString() ?? string.Empty,
-        };
+
 }
 
 /// <summary>An event of a <see cref="SpanRecord"/>.</summary>

@@ -16,7 +16,7 @@ automatic-instrumentation releases.
 
 | Package | Contents |
 | --- | --- |
-| `Qyl.Telemetry.SemanticConventions` | The stable tier: attribute-key constants, `SchemaUrl`, the qyl-owned telemetry names, typed `Activity` setter extensions with their value-set structs, and the metric, span, event and entity definitions — plus the definition types themselves (`MetricDefinition<TInstrument>`, `SpanDefinition<TKind>`, `EventDefinition`, `EntityDefinition`, and their `Stability`/`Deprecation`/`RequirementLevel`/`AttributeRef`/`AttributePhase`/`EntityRef` companions). The agent-first API in namespace `Qyl`: the span starters `Spans` (`Source`, `Work`, `DbClient`, `SetAppTag`, `RecordFailure`) and `SpanNames`; and the trace contract `SpanRecord`, `StoreIdentity`, the `Views` over them and `RegistryPolicy` |
+| `Qyl.Telemetry.SemanticConventions` | The stable tier: attribute-key constants, `SchemaUrl`, the qyl-owned telemetry names, typed `Activity` setter extensions with their value-set structs, and the metric, span, event and entity definitions — plus the definition types themselves (`MetricDefinition<TInstrument>`, `SpanDefinition<TKind>`, `EventDefinition`, `EntityDefinition`, and their `Stability`/`Deprecation`/`RequirementLevel`/`AttributeRef`/`AttributePhase`/`EntityRef` companions). The agent-first API in namespace `Qyl`: the span starters `Spans` (`Source`, `Work`, `DbClient`, `RecordFailure`) and `SpanNames`; and the trace contract `SpanRecord`, `StoreIdentity`, the `Views` over them and `RegistryPolicy` |
 | `Qyl.Telemetry.SemanticConventions.Incubating` | Attribute-key constants at every stability tier, the rows the stable tier does not carry for the other five kinds and their value-set structs, the incubating starters `Qyl.IncubatingSpans` and their views, the qyl-owned instrument names, and `Mapping.AttributeMapping` — the collector's normalize table |
 | `Qyl.Telemetry.SemanticConventions.Analyzers` | Roslyn diagnostics and code fixes for semantic-convention consumers, with a [generated rule catalog](docs/Qyl.Telemetry.SemanticConventions.Analyzers.md), a [migration catalog](docs/migration-catalog.md), and [editorconfig severity profiles](docs/editorconfig/) |
 
@@ -280,8 +280,8 @@ omission is CS7036), recommended ones default to `null`; OptIn, end-phase and gr
 attributes take no parameter and go through the typed setters or `RecordFailure`. Each starter
 stamps its `qyl.instrumentation.domain`, names the span through `Qyl.SpanNames`, puts every
 supplied value into the creation tags and returns `null` when nothing listens. `Spans.Work(name)`
-covers business work no group describes (domain `app`), `SetAppTag(key, value)` writes
-`qyl.app.<key>`, and `RecordFailure` sets status Error with a bounded description, `error.type`
+covers business work no group describes (domain `app`). Use native `Activity.SetTag` for
+application attributes, preserving their names and types. `RecordFailure` sets status Error with a bounded description, `error.type`
 and the exception event. `Qyl.SpanNames` carries every naming chain of the policy in the stable
 package, so producers that may not read the incubating tier name their spans the same way.
 
@@ -299,7 +299,7 @@ These singletons round the surface out.
   qyl's ActivitySources carry.
 - `RegistryPolicy` — the collector's persistence rule as a table (`NotPersistedKeys`,
   `NotPersistedPrefixes`, `DeniedKeyTokens`, `TokenExemptKeys`, `VendorKeys`, `IsPersisted`);
-  the views, QYL0113 and the qyl collector's catalog read it.
+  the views and the qyl collector's catalog read it.
 - `SpanRecord`, `SpanEventRecord`, `SpanLinkRecord`, `ResourceRecord`,
   `InstrumentationScopeRecord`, `ResourceEntityReference` and `StoreIdentity` — the trace
   contract the generated views read and `Qyl.Telemetry.Testing` builds on. Construct a span

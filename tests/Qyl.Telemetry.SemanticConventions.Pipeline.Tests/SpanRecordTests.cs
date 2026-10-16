@@ -1,5 +1,3 @@
-using System.Globalization;
-
 namespace Qyl.Telemetry.SemanticConventions.Pipeline.Tests;
 
 [TestClass]
@@ -51,35 +49,6 @@ public sealed class SpanRecordTests
         Assert.IsNull(Record("first").GetStrings("value"));
         Assert.IsNull(Record(42).GetStrings("value"));
         Assert.IsNull(Record(null).GetStrings("missing"));
-    }
-
-    [TestMethod]
-    public void App_projection_uses_invariant_values_and_omits_null_or_other_namespaces()
-    {
-        var previousCulture = CultureInfo.CurrentCulture;
-        try
-        {
-            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("de-AT");
-            var span = new SpanRecord("4bf92f3577b34da6a3ce929d0e0e4736", "00f067aa0ba902b7", "operation")
-            {
-                Attributes = new Dictionary<string, object?>
-                {
-                    ["qyl.app.price"] = 1.25,
-                    ["qyl.app.enabled"] = true,
-                    ["qyl.app.label"] = "order",
-                    ["qyl.app.missing"] = null,
-                    ["http.request.method"] = "GET",
-                },
-            };
-            Assert.AreEquivalent(new Dictionary<string, string>
-            {
-                ["price"] = "1.25", ["enabled"] = "true", ["label"] = "order",
-            }, span.App);
-        }
-        finally
-        {
-            CultureInfo.CurrentCulture = previousCulture;
-        }
     }
 
     [TestMethod]
