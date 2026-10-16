@@ -270,3 +270,44 @@ QYL_EXPECTED_REGISTRY_SHA256=${QYL_EXPECTED_REGISTRY_SHA256:-$(node --input-type
 dotnet run --project "${consumer_directory}/ReleaseSmoke.csproj" \
   --configuration Release \
   --no-build --no-restore
+
+# A separate consumer selects the declared netstandard2.0 asset and verifies
+# nullable-flow metadata, which the net10.0 smoke's framework already provides.
+compatibility_directory="${work_directory}/netstandard-consumer"
+mkdir -p "${compatibility_directory}"
+cat > "${compatibility_directory}/Compatibility.csproj" <<EOF
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="${stable_id}" Version="${version}" />
+  </ItemGroup>
+</Project>
+EOF
+cat > "${compatibility_directory}/Compatibility.cs" <<'EOF'
+using Qyl.Telemetry.SemanticConventions;
+
+public static class Compatibility
+{
+    public static string? AttributeName(string key)
+    {
+        if (RegistryCatalog.TryGetAttribute(key, out var attribute)) return attribute.Name;
+        return null;
+    }
+
+    public static string? MetricInstrument(string name)
+    {
+        if (RegistryCatalog.TryGetMetric(name, out var metric)) return metric.Instrument;
+        return null;
+    }
+}
+EOF
+dotnet restore "${compatibility_directory}/Compatibility.csproj" \
+  --configfile "${work_directory}/NuGet.Config" \
+  --packages "${work_directory}/packages" --no-cache
+dotnet build "${compatibility_directory}/Compatibility.csproj" \
+  --configuration Release --no-restore -maxcpucount:4
