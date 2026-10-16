@@ -1,5 +1,11 @@
 # Changelog
 
+## [13.1.0] - 2026-10-17
+
+- Retain `exception.message` and `exception.stacktrace` only after Collector value sanitization. Remove their exact-key denials and exempt only `exception.message` from the unchanged general message-token rule.
+- Generate the required exception-text policy alongside the existing denial tables. Key exemptions do not bypass value sanitization or earlier privacy denials.
+- Define a bounded, value-free diagnostic counter for exception-attribute sanitization failures.
+
 ## [13.0.0] - 2026-10-16
 
 - Remove `SetAppTag`, the `qyl.app` string template and the stringifying `App` span views. Applications use native typed attributes with their own names; historical keys have no invented registry type.

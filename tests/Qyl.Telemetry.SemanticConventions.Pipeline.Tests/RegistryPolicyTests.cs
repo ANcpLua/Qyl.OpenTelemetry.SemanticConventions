@@ -7,17 +7,17 @@ namespace Qyl.Telemetry.SemanticConventions.Pipeline.Tests;
 /// The collector's deny lists moved out of qyl's eng/config/collector-semantic-policy.json into the
 /// registry (registry/qyl/policy.yaml); the generated <see cref = "RegistryPolicy"/> is the one table
 /// the views and the collector catalog read. The expected lists are that policy file's
-/// <c>deniedExactKeys</c>, <c>deniedKeyTokens</c> and <c>deniedTokenExemptKeys</c> on 2026-10-14,
-/// with <c>gen_ai.agent.name</c> un-denied (ADR answer 3).
+/// unrelated exact, prefix and token denials stay intact when the two exception fields
+/// become eligible for persistence only after Collector value sanitization.
 /// </summary>
 [TestClass]
 public sealed class RegistryPolicyTests
 {
-    private static readonly string[] CollectorDeniedExactKeys = ["code.file.path", "code.stacktrace", "db.query.text", "exception.message", "exception.stacktrace", "executor.input", "executor.output", "gen_ai.agent.description", "gen_ai.agent.id", "gen_ai.conversation.id", "gen_ai.data_source.id", "gen_ai.evaluation.explanation", "gen_ai.evaluation.name", "gen_ai.input.messages", "gen_ai.output.messages", "gen_ai.prompt.name", "gen_ai.response.id", "gen_ai.retrieval.documents", "gen_ai.retrieval.query.text", "gen_ai.system_instructions", "gen_ai.tool.call.arguments", "http.request.header", "http.response.header", "gen_ai.tool.call.id", "gen_ai.tool.call.result", "gen_ai.tool.definitions", "gen_ai.tool.description", "gen_ai.workflow.name", "host.id", "host.ip", "host.mac", "host.name", "mcp.resource.uri", "mcp.session.id", "message.content", "rpc.request.metadata", "rpc.response.metadata", "service.instance.id", "session.id", "session.previous_id", "url.full", "url.query", ];
+    private static readonly string[] CollectorDeniedExactKeys = ["code.file.path", "code.stacktrace", "db.query.text", "executor.input", "executor.output", "gen_ai.agent.description", "gen_ai.agent.id", "gen_ai.conversation.id", "gen_ai.data_source.id", "gen_ai.evaluation.explanation", "gen_ai.evaluation.name", "gen_ai.input.messages", "gen_ai.output.messages", "gen_ai.prompt.name", "gen_ai.response.id", "gen_ai.retrieval.documents", "gen_ai.retrieval.query.text", "gen_ai.system_instructions", "gen_ai.tool.call.arguments", "http.request.header", "http.response.header", "gen_ai.tool.call.id", "gen_ai.tool.call.result", "gen_ai.tool.definitions", "gen_ai.tool.description", "gen_ai.workflow.name", "host.id", "host.ip", "host.mac", "host.name", "mcp.resource.uri", "mcp.session.id", "message.content", "rpc.request.metadata", "rpc.response.metadata", "service.instance.id", "session.id", "session.previous_id", "url.full", "url.query", ];
     private static readonly string[] CollectorDeniedKeyTokens = ["access_token", "api-key", "api_key", "apikey", "authorization", "body", "completion", "cookie", "credential", "definition", "document", "fingerprint", "id_token", "instruction", "jwt", "message", "password", "private_key", "prompt", "query", "refresh_token", "result", "secret", "set-cookie", "token", ];
     private static readonly string[] CollectorTokenExemptKeys = ["db.query.summary", "gen_ai.token.type", "messaging.kafka.message.offset", "messaging.message.body.size", "messaging.message.id", ];
     [TestMethod]
-    public void Every_collector_denied_exact_key_except_the_agent_name_is_not_persisted()
+    public void Every_unrelated_exact_and_prefix_denial_is_preserved()
     {
         // The collector's list plus the vendor keys whose content the registry denies elsewhere (10.0.1).
         Assert.AreSequenceEqual(CollectorDeniedExactKeys.Concat(["build.error.message", "db.odp.user.statement", "nservicebus.originating_machine", "nservicebus.processing_machine"]).Order(), RegistryPolicy.NotPersistedKeys.Order());
@@ -41,6 +41,7 @@ public sealed class RegistryPolicyTests
         var policy = File.ReadAllText(RepoPath("registry", "qyl", "policy.yaml"));
         Assert.AreSequenceEqual(RegistryPolicy.NotPersistedKeys.Order(), Annotated(policy, "persisted: false").Order());
         Assert.AreSequenceEqual(RegistryPolicy.TokenExemptKeys.Order(), Annotated(policy, "token_exempt: true").Order());
+        Assert.AreSequenceEqual(RegistryPolicy.ExceptionTextKeys.Order(), Annotated(policy, "sanitize: exception_text").Order());
     }
 
     [TestMethod]
@@ -50,7 +51,15 @@ public sealed class RegistryPolicyTests
     [DataRow("gen_ai.usage.input_tokens", true)]
     [DataRow("messaging.masstransit.message_id", true)]
     [DataRow("qyl.app.order.id", true)]
-    [DataRow("exception.message", false)]
+    [DataRow("exception.message", true)]
+    [DataRow("exception.stacktrace", true)]
+    [DataRow("exception.message.detail", false)]
+    [DataRow("diagnostic.message", false)]
+    [DataRow("custom.exception.message", false)]
+    [DataRow("exception.stacktrace.secret", false)]
+    [DataRow("http.request.header.exception.message", false)]
+    [DataRow("user.exception.stacktrace", false)]
+    [DataRow("Exception.Message", false)]
     [DataRow("http.request.header.authorization", false)]
     [DataRow("user.email", false)]
     [DataRow("enduser.id", false)]
@@ -81,7 +90,21 @@ public sealed class RegistryPolicyTests
         Assert.IsTrue(references.Any(static reference => !reference.IsPersisted));
     }
 
-    private static IEnumerable<string> Annotated(string policy, string annotation) => Regex.Matches(policy, @"- ref: (?<key>\S+)\s+annotations: \{qyl: \{" + Regex.Escape(annotation) + @"\}\}").Select(static match => match.Groups["key"].Value);
+    [TestMethod]
+    public void Only_the_two_exact_exception_keys_require_value_sanitization()
+    {
+        Assert.AreSequenceEqual(["exception.message", "exception.stacktrace"], RegistryPolicy.ExceptionTextKeys);
+        Assert.IsTrue(RegistryPolicy.ContainsDeniedToken("exception.message"), "The general message-token denial must remain.");
+        Assert.Contains("exception.message", RegistryPolicy.TokenExemptKeys);
+        Assert.DoesNotContain("exception.stacktrace", RegistryPolicy.TokenExemptKeys);
+        Assert.IsTrue(RegistryPolicy.ExceptionTextKeys.All(RegistryPolicy.IsPersisted));
+    }
+
+    private static IEnumerable<string> Annotated(string policy, string annotation) =>
+        Regex.Matches(policy, @"- ref: (?<key>\S+)\s+annotations: \{qyl: \{(?<annotations>[^}]+)\}\}")
+            .Where(match => Regex.IsMatch(match.Groups["annotations"].Value,
+                @"(?:^|,)\s*" + Regex.Escape(annotation) + @"\s*(?:,|$)"))
+            .Select(static match => match.Groups["key"].Value);
     private static string RepoPath(params string[] parts)
     {
         string root = RepositoryRoot.LocateFrom(AppContext.BaseDirectory, "Qyl.Telemetry.SemanticConventions.slnx");

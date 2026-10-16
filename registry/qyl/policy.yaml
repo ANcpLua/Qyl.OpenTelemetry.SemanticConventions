@@ -51,10 +51,13 @@ groups:
         annotations: {qyl: {persisted: false}}
       - ref: db.query.text
         annotations: {qyl: {persisted: false}}
+      # These two exact keys are eligible only after the Collector's bounded .NET
+      # value sanitization. A token exemption never waives a value policy or any
+      # earlier exact-key/prefix denial. Keep the general "message" token denied.
       - ref: exception.message
-        annotations: {qyl: {persisted: false}}
+        annotations: {qyl: {token_exempt: true, sanitize: exception_text}}
       - ref: exception.stacktrace
-        annotations: {qyl: {persisted: false}}
+        annotations: {qyl: {sanitize: exception_text}}
       - ref: executor.input
         annotations: {qyl: {persisted: false}}
       - ref: executor.output

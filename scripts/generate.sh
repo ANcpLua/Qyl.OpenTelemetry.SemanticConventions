@@ -146,7 +146,12 @@ def refs(group_id, allowed):
         out.append((attribute["ref"], annotations))
     return out
 
-persistence = refs("qyl.policy.persistence", {"persisted", "token_exempt"})
+persistence = refs("qyl.policy.persistence", {"persisted", "token_exempt", "sanitize"})
+for key, annotations in persistence:
+    if "sanitize" in annotations and annotations["sanitize"] != "exception_text":
+        raise SystemExit(f"error: {key} declares an unsupported value sanitizer")
+    if annotations.get("sanitize") and annotations.get("persisted") is False:
+        raise SystemExit(f"error: {key} requires sanitization but is explicitly not persisted")
 phase = refs("qyl.policy.phase", {"phase"})
 spans = qyl(groups["qyl.policy.spans"]).get("spans") or {}
 for span_id, entry in spans.items():
@@ -169,6 +174,7 @@ policy = {
     "not_persisted_prefixes": sorted(group.get("not_persisted_prefixes") or []),
     "denied_key_tokens": sorted(group.get("denied_key_tokens") or []),
     "token_exempt": sorted(key for key, a in persistence if a.get("token_exempt") is True),
+    "exception_text": sorted(key for key, a in persistence if a.get("sanitize") == "exception_text"),
     "phase_end": sorted(key for key, a in phase if a.get("phase") == "end"),
     "spans": {span_id: {"starter": bool(entry.get("starter")),
                         "domain": entry.get("domain") or "",

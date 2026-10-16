@@ -37,3 +37,16 @@ groups:
     attributes:
       - ref: qyl.attribute.namespace
         requirement_level: required
+  - id: metric.qyl.qyl_collector_attributes_sanitization_failed
+    type: metric
+    metric_name: qyl.collector.attributes.sanitization.failed
+    instrument: counter
+    unit: "{attribute}"
+    stability: development
+    brief: "Exception attributes replaced with a safe marker because their value could not be sanitized."
+    note: "The Collector records only the bounded attribute key and failure category. Attribute values, captured credentials and sanitizer exception text never appear in this diagnostic."
+    attributes:
+      - ref: qyl.attribute.key
+        requirement_level: required
+      - ref: error.type
+        requirement_level: required
