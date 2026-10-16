@@ -1,7 +1,8 @@
 # Changelog
 
-## [Unreleased]
+## [12.0.0] - 2026-10-16
 
+- Correct the Oracle vendor declaration for `db.odp.roundtrip.duration` from double to string, matching real OTLP output from the pinned provider. The generated C# setter now accepts a string; the C# and TypeScript catalogs retain the observed representation without guessing a unit.
 - Verify native tests against OpenTelemetry SDK 1.20.0. This test dependency is not shipped in the convention packages.
 
 Notable changes to the `Qyl.Telemetry.SemanticConventions` package family. `VersionPrefix` in

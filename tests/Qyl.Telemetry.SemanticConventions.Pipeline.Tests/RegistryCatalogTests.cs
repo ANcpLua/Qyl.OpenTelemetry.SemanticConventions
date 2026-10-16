@@ -1,8 +1,23 @@
+using System.Diagnostics;
+using Qyl.Telemetry.SemanticConventions.Incubating.Activities;
+
 namespace Qyl.Telemetry.SemanticConventions.Pipeline.Tests;
 
 [TestClass]
 public sealed class RegistryCatalogTests
 {
+    [TestMethod]
+    public void Oracle_duration_retains_the_vendor_wire_representation_without_a_numeric_unit()
+    {
+        Assert.IsTrue(RegistryCatalog.TryGetAttribute("db.odp.roundtrip.duration", out var attribute));
+        Assert.IsNotNull(attribute);
+        Assert.AreEqual(RegistryAttributeValueKind.String, attribute.ValueKind);
+        using var span = new Activity("oracle.duration");
+        const string observed = "00:00:00.0595180";
+        Assert.AreSame(span, span.SetDbOdpRoundtripDuration(observed));
+        Assert.AreEqual(observed, span.GetTagItem("db.odp.roundtrip.duration"));
+    }
+
     [TestMethod]
     [DataRow("service.name", RegistryAttributeValueKind.String)]
     [DataRow("http.response.status_code", RegistryAttributeValueKind.Integer)]

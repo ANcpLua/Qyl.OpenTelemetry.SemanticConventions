@@ -25,10 +25,12 @@ groups:
         brief: "Number of database server roundtrips the ODP.NET method makes."
         note: "Span tag on the \"Oracle.ManagedDataAccess.Core\" ActivitySource. ODP.NET ships no public source, so the finding is the vendor's own attribute table in Oracle's ODP.NET OpenTelemetry documentation, https://docs.oracle.com/en/database/oracle/oracle-database/23/odpnt/featOpenTelemetry.html; the brief is that table's wording and the type follows the fact it describes."
       - id: db.odp.roundtrip.duration
-        type: double
+        type: string
         stability: development
         brief: "Database server roundtrip time, including ODP.NET processing, network send and receive, and database server processing."
-        note: "Span tag on the \"Oracle.ManagedDataAccess.Core\" ActivitySource. ODP.NET ships no public source, so the finding is the vendor's own attribute table in Oracle's ODP.NET OpenTelemetry documentation, https://docs.oracle.com/en/database/oracle/oracle-database/23/odpnt/featOpenTelemetry.html; the brief is that table's wording and the type follows the fact it describes."
+        note: "Oracle documents the duration's meaning at https://docs.oracle.com/en/database/oracle/oracle-database/23/odpnt/featOpenTelemetry.html, without declaring a numeric wire type or unit. The pinned 23.26.301 provider exposes a System.TimeSpan Activity tag; real OTLP capture with SDK 1.20.0 preserves it as a duration string, for example 00:00:00.0595180. Keep that representation; do not invent a numeric unit."
+        examples:
+          - "00:00:00.0595180"
       - id: db.odp.rows_affected
         type: int
         stability: development
