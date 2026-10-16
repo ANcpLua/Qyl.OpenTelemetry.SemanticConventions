@@ -5,6 +5,7 @@ namespace Qyl.Telemetry.SemanticConventions;
 /// structured deprecation, and attribute references travel with it. Events have no kind,
 /// so this type is not generic.
 /// </summary>
+[JetBrains.Annotations.PublicAPI]
 public sealed class EventDefinition
 {
     /// <summary>Initializes a new event definition.</summary>

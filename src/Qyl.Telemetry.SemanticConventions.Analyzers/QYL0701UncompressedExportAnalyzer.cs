@@ -29,33 +29,33 @@ internal sealed class Qyl0701UncompressedExportAnalyzer : AlAnalyzer {
     /// <summary>The diagnostic identifier for QYL0701.</summary>
     private const string DiagnosticId = "QYL0701";
 
-    private static readonly DiagnosticDescriptor s_rule = CreateRule(
+    private static readonly DiagnosticDescriptor Rule = CreateRule(
         DiagnosticId,
         DiagnosticCategories.OpenTelemetry,
         DiagnosticSeverity.Warning);
 
     /// <summary>Method names that configure OTLP exporters.</summary>
-    private static readonly HashSet<string> s_otlpExporterMethods = [
+    private static readonly HashSet<string> OtlpExporterMethods = [
         "AddOtlpExporter",
         "UseOtlpExporter",
         "WithOtlpExporter"
     ];
 
     /// <summary>Type names for OTLP exporter options.</summary>
-    private static readonly string[] s_otlpOptionsTypeNames = [
+    private static readonly string[] OtlpOptionsTypeNames = [
         "OpenTelemetry.Exporter.OtlpExporterOptions",
         "OpenTelemetry.Exporter.OtlpExporterOptionsBase"
     ];
 
     /// <summary>Gets the diagnostic descriptors for the supported diagnostics.</summary>
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
 
     /// <summary>Registers compilation start action to analyze OTLP exporter configurations.</summary>
     protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterCompilationStartAction(OnCompilationStart);
 
     private static void OnCompilationStart(CompilationStartAnalysisContext context) {
-        var otlpOptionsTypes = s_otlpOptionsTypeNames
+        var otlpOptionsTypes = OtlpOptionsTypeNames
             .Select(context.Compilation.GetTypeByMetadataName)
             .WhereNotNull()
             .ToImmutableArray();
@@ -78,7 +78,7 @@ internal sealed class Qyl0701UncompressedExportAnalyzer : AlAnalyzer {
         INamedTypeSymbol? httpProtobufType) {
         var invocation = (InvocationExpressionSyntax)context.Node;
 
-        if (invocation.GetMethodName() is not { } methodName || !s_otlpExporterMethods.Contains(methodName)) {
+        if (invocation.GetMethodName() is not { } methodName || !OtlpExporterMethods.Contains(methodName)) {
             return;
         }
 
@@ -90,7 +90,7 @@ internal sealed class Qyl0701UncompressedExportAnalyzer : AlAnalyzer {
         if (lambdaArg is not null) {
             if (!HasCompressionConfiguration(lambdaArg)
                 && HasHttpProtobufConfiguration(lambdaArg, httpProtobufType, context.SemanticModel, context.CancellationToken)) {
-                context.ReportDiagnostic(s_rule, invocation.GetMethodLocation());
+                context.ReportDiagnostic(Rule, invocation.GetMethodLocation());
             }
 
             return;
@@ -108,7 +108,7 @@ internal sealed class Qyl0701UncompressedExportAnalyzer : AlAnalyzer {
 
             if (otlpOptionsTypes.Any(optionsType => argType.InheritsFrom(optionsType) || argType.IsEqualTo(optionsType))
                 && IsHttpProtobufOptionsWithoutCompression(arg.Expression)) {
-                context.ReportDiagnostic(s_rule, invocation.GetMethodLocation());
+                context.ReportDiagnostic(Rule, invocation.GetMethodLocation());
             }
         }
     }

@@ -9,7 +9,13 @@ const root = resolve(import.meta.dirname, '../..');
 test('packed exports preserve constants, units, tiers and C# parity', () => {
   const temp = mkdtempSync(resolve(tmpdir(), 'qyl-semconv-'));
   try {
-    const packed = JSON.parse(execFileSync('npm', ['pack', './typescript', '--json', '--pack-destination', temp], {cwd:root,encoding:'utf8'}))[0];
+    const output = JSON.parse(execFileSync('npm', ['pack', './typescript', '--json', '--pack-destination', temp], {cwd:root,encoding:'utf8'}));
+    const packages = Array.isArray(output) ? output : Object.values(output);
+    assert.equal(packages.length, 1);
+    const [packed] = packages;
+    assert.equal(packed.name, '@ancplua/qyl-semantic-conventions');
+    assert.equal(packed.version, JSON.parse(readFileSync(resolve(root, 'typescript/package.json'))).version);
+    assert.equal(typeof packed.filename, 'string');
     execFileSync('npm', ['install', '--prefix', temp, '--ignore-scripts', '--no-audit', '--no-fund', resolve(temp, packed.filename)], {encoding:'utf8'});
     const check = `
 import assert from 'node:assert/strict';

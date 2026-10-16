@@ -18,7 +18,7 @@ internal static class SemconvAnalyzerOptions
     /// <c>*Meters</c>, <c>*Activities</c>). Default <c>false</c> scans only
     /// <c>*Attributes</c> classes.
     /// </summary>
-    public const string NonAttributesTiersBuildProperty = "build_property.OtelSemConvNonAttributesTiers";
+    private const string NonAttributesTiersBuildProperty = "build_property.OtelSemConvNonAttributesTiers";
 
     public static bool ShouldAllowNonAttributesTiers(AnalyzerConfigOptions options) =>
         options.TryGetValue(NonAttributesTiersBuildProperty, out var value)
@@ -31,7 +31,7 @@ internal static class SemconvAnalyzerOptions
     /// their ActivitySources (for example <c>Qyl.Telemetry.AutoInstrumentation</c>), so the
     /// rules stay on for application code and for ordinary libraries.
     /// </summary>
-    public const string InstrumentationLibraryBuildProperty = "build_property.OtelSemConvInstrumentationLibrary";
+    private const string InstrumentationLibraryBuildProperty = "build_property.OtelSemConvInstrumentationLibrary";
 
     public static bool IsInstrumentationLibrary(AnalyzerConfigOptions options) =>
         options.TryGetValue(InstrumentationLibraryBuildProperty, out var value)

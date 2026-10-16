@@ -1,168 +1,99 @@
 // Copyright The OpenTelemetry Authors
 // SPDX-License-Identifier: Apache-2.0
-
 using System.Globalization;
 using ANcpLua.Roslyn.Utilities.Testing;
-using AwesomeAssertions;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Qyl.Telemetry.SemanticConventions.Analyzers;
-using Xunit;
 
 namespace Qyl.Telemetry.SemanticConventions.Pipeline.Tests;
-
 /// <summary>
 ///   QYL0601 fires on a sensitive-looking key only where the key provably reaches telemetry,
 ///   matches sensitive words on segment boundaries, and exempts keys the pinned registry
 ///   defines outright.
 /// </summary>
-public sealed class Qyl0601SensitiveDataInAttributeAnalyzerTests
+[TestClass]
+public sealed class Qyl0601SensitiveDataInAttributeAnalyzerTests(TestContext testContext)
 {
-    [Theory]
-    [InlineData("activity.SetTag(\"user.password\", secret);", "user.password")]
-    [InlineData("activity.SetBaggage(\"api_key\", secret);", "api_key")]
-    [InlineData("activity.SetTag(\"x-auth-token\", secret);", "x-auth-token")]
-    [InlineData("activity.SetTag(\"apiKey\", secret);", "apiKey")]
-    [InlineData("counter.Add(1, new KeyValuePair<string, object?>(\"credit_card\", secret));", "credit_card")]
-    [InlineData("var tags = new TagList(); tags.Add(\"connection_string\", secret);", "connection_string")]
+
+    [TestMethod]
+    [DataRow("activity.SetTag(\"user.password\", secret);", "user.password")]
+    [DataRow("activity.SetBaggage(\"api_key\", secret);", "api_key")]
+    [DataRow("activity.SetTag(\"x-auth-token\", secret);", "x-auth-token")]
+    [DataRow("activity.SetTag(\"apiKey\", secret);", "apiKey")]
+    [DataRow("counter.Add(1, new KeyValuePair<string, object?>(\"credit_card\", secret));", "credit_card")]
+    [DataRow("var tags = new TagList(); tags.Add(\"connection_string\", secret);", "connection_string")]
     public async Task Fires_where_a_sensitive_key_reaches_telemetry(string statement, string expectedKey)
     {
-        var diagnostics = await Compile
-            .Source(Fixture(statement))
-            .Build()
-            .ShouldSucceed()
-            .Compilation
-            .WithAnalyzers([new Qyl0601SensitiveDataInAttributeAnalyzer()])
-            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
-
-        diagnostics.Should().ContainSingle();
-        diagnostics[0].Id.Should().Be("QYL0601");
-        diagnostics[0].GetMessage(CultureInfo.InvariantCulture).Should().Contain(expectedKey);
+        var diagnostics = await CompileTelemetry(Compile.Source(Fixture(statement))).WithAnalyzers([new Qyl0601SensitiveDataInAttributeAnalyzer()]).GetAnalyzerDiagnosticsAsync(testContext.CancellationToken);
+        Assert.ContainsSingle(diagnostics);
+        Assert.AreEqual("QYL0601", diagnostics[0].Id);
+        Assert.Contains(expectedKey, diagnostics[0].GetMessage(CultureInfo.InvariantCulture));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task A_dictionary_reaches_telemetry_through_the_local_it_is_built_in()
     {
-        var diagnostics = await Compile
-            .Source(Fixture(
-                """
+        var diagnostics = await CompileTelemetry(Compile.Source(Fixture("""
                 var attributes = new Dictionary<string, object?>();
                 attributes["password"] = secret;
-                source.StartActivity("operation", tags: attributes);
-                """))
-            .Build()
-            .ShouldSucceed()
-            .Compilation
-            .WithAnalyzers([new Qyl0601SensitiveDataInAttributeAnalyzer()])
-            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
-
-        diagnostics.Should().ContainSingle();
-        diagnostics[0].GetMessage(CultureInfo.InvariantCulture).Should().Contain("password");
+                source.StartActivity("operation", ActivityKind.Internal, default(ActivityContext), tags: attributes);
+                """))).WithAnalyzers([new Qyl0601SensitiveDataInAttributeAnalyzer()]).GetAnalyzerDiagnosticsAsync(testContext.CancellationToken);
+        Assert.ContainsSingle(diagnostics);
+        Assert.AreEqual("QYL0601", diagnostics[0].Id);
+        Assert.Contains("password", diagnostics[0].GetMessage(CultureInfo.InvariantCulture));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task A_dictionary_that_never_reaches_telemetry_is_silent_whatever_it_is_called()
     {
         // The previous detection fired here because the receiver was named "attributes".
-        var diagnostics = await Compile
-            .Source(Fixture(
-                """
+        var diagnostics = await CompileTelemetry(Compile.Source(Fixture("""
                 var attributes = new Dictionary<string, object?>();
                 attributes["password"] = secret;
-                """))
-            .Build()
-            .ShouldSucceed()
-            .Compilation
-            .WithAnalyzers([new Qyl0601SensitiveDataInAttributeAnalyzer()])
-            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
-
-        diagnostics.Should().BeEmpty();
+                """))).WithAnalyzers([new Qyl0601SensitiveDataInAttributeAnalyzer()]).GetAnalyzerDiagnosticsAsync(testContext.CancellationToken);
+        Assert.IsEmpty(diagnostics);
     }
 
-    [Theory]
-    [InlineData("activity.SetTag(\"gen_ai.usage.input_tokens\", 42);")]
-    [InlineData("activity.SetTag(\"app.pipeline.stage\", \"build\");")]
-    [InlineData("activity.SetTag(\"app.author.name\", \"x\");")]
+    [TestMethod]
+    [DataRow("activity.SetTag(\"gen_ai.usage.input_tokens\", 42);")]
+    [DataRow("activity.SetTag(\"app.pipeline.stage\", \"build\");")]
+    [DataRow("activity.SetTag(\"app.author.name\", \"x\");")]
     public async Task Sensitive_words_match_whole_segments_not_substrings(string statement)
     {
-        var diagnostics = await Compile
-            .Source(Fixture(statement))
-            .Build()
-            .ShouldSucceed()
-            .Compilation
-            .WithAnalyzers([new Qyl0601SensitiveDataInAttributeAnalyzer()])
-            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
-
-        diagnostics.Should().BeEmpty();
+        var diagnostics = await CompileTelemetry(Compile.Source(Fixture(statement))).WithAnalyzers([new Qyl0601SensitiveDataInAttributeAnalyzer()]).GetAnalyzerDiagnosticsAsync(testContext.CancellationToken);
+        Assert.IsEmpty(diagnostics);
     }
 
-    [Theory]
-    [InlineData("activity.SetTag(\"aspnetcore.authorization.policy\", \"admin\");")]
-    [InlineData("activity.SetTag(\"aws.secretsmanager.secret.arn\", \"arn:aws:secretsmanager:eu-west-1:123456789012:secret:x\");")]
+    [TestMethod]
+    [DataRow("activity.SetTag(\"aspnetcore.authorization.policy\", \"admin\");")]
+    [DataRow("activity.SetTag(\"aws.secretsmanager.secret.arn\", \"arn:aws:secretsmanager:eu-west-1:123456789012:secret:x\");")]
     public async Task A_key_the_registry_defines_outright_is_exempt(string statement)
     {
-        var diagnostics = await Compile
-            .Source(Fixture(statement))
-            .Build()
-            .ShouldSucceed()
-            .Compilation
-            .WithAnalyzers([new Qyl0601SensitiveDataInAttributeAnalyzer()])
-            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
-
-        diagnostics.Should().BeEmpty();
+        var diagnostics = await CompileTelemetry(Compile.Source(Fixture(statement))).WithAnalyzers([new Qyl0601SensitiveDataInAttributeAnalyzer()]).GetAnalyzerDiagnosticsAsync(testContext.CancellationToken);
+        Assert.IsEmpty(diagnostics);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task A_key_that_only_extends_a_registry_template_is_not_exempt()
     {
-        var diagnostics = await Compile
-            .Source(Fixture("activity.SetTag(\"http.request.header.authorization\", secret);"))
-            .Build()
-            .ShouldSucceed()
-            .Compilation
-            .WithAnalyzers([new Qyl0601SensitiveDataInAttributeAnalyzer()])
-            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
-
-        diagnostics.Should().ContainSingle();
-        diagnostics[0].GetMessage(CultureInfo.InvariantCulture).Should().Contain("http.request.header.authorization");
+        var diagnostics = await CompileTelemetry(Compile.Source(Fixture("activity.SetTag(\"http.request.header.authorization\", secret);"))).WithAnalyzers([new Qyl0601SensitiveDataInAttributeAnalyzer()]).GetAnalyzerDiagnosticsAsync(testContext.CancellationToken);
+        Assert.ContainsSingle(diagnostics);
+        Assert.AreEqual("QYL0601", diagnostics[0].Id);
+        Assert.Contains("http.request.header.authorization", diagnostics[0].GetMessage(CultureInfo.InvariantCulture));
     }
 
-    private static string Fixture(string statement) =>
-        SourceFixture.InMethod(
-            statement,
-            declarations: """
-                using System;
-                using System.Collections.Generic;
+    private static Microsoft.CodeAnalysis.CSharp.CSharpCompilation CompileTelemetry(Compile source) =>
+        AnalyzerRun.CompileSource(source.WithReference<System.Diagnostics.Activity>().WithReference<System.Diagnostics.Metrics.Meter>());
 
-                internal sealed class ActivitySource
-                {
-                    public void StartActivity(
-                        string name,
-                        int kind = 0,
-                        object? parent = null,
-                        IEnumerable<KeyValuePair<string, object?>>? tags = null) { }
-                }
-
-                internal sealed class Counter
-                {
-                    public void Add(int value, params KeyValuePair<string, object?>[] tags) { }
-                }
-
-                internal sealed class TagList
-                {
-                    public object? this[string key] { set { } }
-                    public void Add(string key, object? value) { }
-                }
-
-                internal sealed class Activity
-                {
-                    public Activity SetTag(string key, object? value) => this;
-                    public Activity SetBaggage(string key, string? value) => this;
-                }
-                """,
-            members: """
-                private readonly ActivitySource source = new();
-                private readonly Counter counter = new();
-                private readonly Activity activity = new();
-                """,
-            parameters: "string secret");
+    private static string Fixture(string statement) => SourceFixture.InMethod(statement, declarations: """
+        using System;
+        using System.Collections.Generic;
+        using System.Diagnostics;
+        using System.Diagnostics.Metrics;
+        """, members: """
+        private static readonly ActivitySource source = new("test.telemetry");
+        private static readonly Meter meter = new("test.telemetry");
+        private static readonly Counter<int> counter = meter.CreateCounter<int>("requests");
+        private readonly Activity activity = new("operation");
+        """, parameters: "string secret");
 }

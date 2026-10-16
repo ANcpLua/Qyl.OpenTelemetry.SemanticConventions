@@ -5,6 +5,7 @@ namespace Qyl.Telemetry.SemanticConventions;
 /// <c>server.address</c>, <c>server.port</c> and <c>db.namespace</c>. Tests and the service map
 /// compare stores by this value, so "the same database" means the same thing everywhere.
 /// </summary>
+[JetBrains.Annotations.PublicAPI]
 public readonly struct StoreIdentity : IEquatable<StoreIdentity>
 {
     /// <summary>Initializes a store identity.</summary>

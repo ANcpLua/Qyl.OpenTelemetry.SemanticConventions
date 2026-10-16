@@ -9,13 +9,13 @@ internal sealed class Qyl0013IncorrectAttributeTypeAnalyzer : AlAnalyzer
 {
     private const string DiagnosticId = "QYL0013";
 
-    private static readonly DiagnosticDescriptor s_rule = CreateRule(
+    private static readonly DiagnosticDescriptor Rule = CreateRule(
         DiagnosticId,
         DiagnosticCategories.OpenTelemetry,
         DiagnosticSeverity.Warning);
 
     /// <inheritdoc />
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
 
     /// <inheritdoc />
     protected override void InitializeCore(AnalysisContext context) =>
@@ -41,7 +41,7 @@ internal sealed class Qyl0013IncorrectAttributeTypeAnalyzer : AlAnalyzer
         }
 
         context.ReportDiagnostic(
-            s_rule,
+            Rule,
             valueArgument.Syntax.GetLocation(),
             attributeName,
             GetTypeName(expectedKind),

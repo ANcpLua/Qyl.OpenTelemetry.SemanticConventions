@@ -11,6 +11,7 @@ namespace Qyl.Telemetry.SemanticConventions;
 /// carries its own attributes and naming rule.
 /// </remarks>
 /// <typeparam name="TKind">The span-kind marker (<see cref="Client"/>, <see cref="Server"/>, <see cref="Internal"/>, <see cref="Producer"/>, or <see cref="Consumer"/>).</typeparam>
+[JetBrains.Annotations.PublicAPI]
 public sealed class SpanDefinition<TKind>
     where TKind : struct, ISpanKind
 {

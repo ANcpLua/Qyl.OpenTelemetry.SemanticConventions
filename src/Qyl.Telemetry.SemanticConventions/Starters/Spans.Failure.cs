@@ -4,6 +4,7 @@ using Qyl.Telemetry.SemanticConventions.Attributes.Error;
 
 namespace Qyl;
 
+[JetBrains.Annotations.PublicAPI]
 public static partial class Spans
 {
     /// <summary>The longest status description <c>RecordFailure</c> writes; a longer one is cut.</summary>

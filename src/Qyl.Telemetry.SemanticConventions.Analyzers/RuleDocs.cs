@@ -19,7 +19,7 @@ internal static class RuleDocs
     ///     <c>docs/rules/QYL00XX_&lt;SymbolicName&gt;.md</c>, emitted by
     ///     <c>tools/Qyl.Telemetry.SemanticConventions.Analyzers.DocsGenerator</c>.
     /// </summary>
-    public const string HelpLinkBase =
+    private const string HelpLinkBase =
         "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions"
         + "/blob/main/docs/rules/";
 

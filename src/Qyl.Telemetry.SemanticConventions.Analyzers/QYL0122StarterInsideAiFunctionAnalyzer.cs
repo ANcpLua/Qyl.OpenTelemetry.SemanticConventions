@@ -10,17 +10,17 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 ///     <c>SetAppTag</c> instead of starting a span.
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-internal sealed class Qyl0122StarterInsideAIFunctionAnalyzer : AlAnalyzer {
+internal sealed class Qyl0122StarterInsideAiFunctionAnalyzer : AlAnalyzer {
     private const string DiagnosticId = "QYL0122";
-    private const string AIFunctionFactory = "Microsoft.Extensions.AI.AIFunctionFactory";
+    private const string AiFunctionFactory = "Microsoft.Extensions.AI.AIFunctionFactory";
 
-    private static readonly DiagnosticDescriptor s_rule = CreateRule(
+    private static readonly DiagnosticDescriptor Rule = CreateRule(
         DiagnosticId,
         DiagnosticCategories.GenAI,
         DiagnosticSeverities.RequiredFix);
 
     /// <inheritdoc />
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
 
     /// <inheritdoc />
     protected override void InitializeCore(AnalysisContext context) =>
@@ -33,20 +33,20 @@ internal sealed class Qyl0122StarterInsideAIFunctionAnalyzer : AlAnalyzer {
         }
 
         for (var current = invocation.Parent; current is not null; current = current.Parent) {
-            if (current is IAnonymousFunctionOperation && IsAIFunctionDelegate(current)) {
-                context.ReportDiagnostic(Diagnostic.Create(s_rule, invocation.Syntax.GetLocation(), starter.Substring("Qyl.".Length)));
+            if (current is IAnonymousFunctionOperation && IsAiFunctionDelegate(current)) {
+                context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation(), starter.Substring("Qyl.".Length)));
                 return;
             }
         }
     }
 
-    private static bool IsAIFunctionDelegate(IOperation function) {
+    private static bool IsAiFunctionDelegate(IOperation function) {
         var current = function.Parent;
         while (current is IDelegateCreationOperation or IConversionOperation) {
             current = current.Parent;
         }
 
         return current is IArgumentOperation { Parent: IInvocationOperation { TargetMethod.Name: "Create" } create }
-               && create.TargetMethod.ContainingType?.ToDisplayString() == AIFunctionFactory;
+               && create.TargetMethod.ContainingType?.ToDisplayString() == AiFunctionFactory;
     }
 }

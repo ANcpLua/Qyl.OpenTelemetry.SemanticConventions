@@ -8,7 +8,7 @@ internal static class SemconvCodeFixHelpers
     public const string ReplacementValueProperty = "ReplacementValue";
 
     /// <summary>Fallback when an <c>[Obsolete]</c> attribute carries no usable message.</summary>
-    public const string MissingObsoleteMessage = "no replacement message provided";
+    private const string MissingObsoleteMessage = "no replacement message provided";
 
     /// <summary>The <c>[Obsolete]</c> message, or <see cref="MissingObsoleteMessage"/> when absent or empty.</summary>
     public static string GetObsoleteMessage(AttributeData obsolete) =>

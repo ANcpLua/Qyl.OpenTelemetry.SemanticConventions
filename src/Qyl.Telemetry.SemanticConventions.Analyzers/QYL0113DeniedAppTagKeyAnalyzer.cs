@@ -13,13 +13,13 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 internal sealed class Qyl0113DeniedAppTagKeyAnalyzer : AlAnalyzer {
     private const string DiagnosticId = "QYL0113";
 
-    private static readonly DiagnosticDescriptor s_rule = CreateRule(
+    private static readonly DiagnosticDescriptor Rule = CreateRule(
         DiagnosticId,
         DiagnosticCategories.OpenTelemetry,
         DiagnosticSeverities.RequiredFix);
 
     /// <inheritdoc />
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
 
     /// <inheritdoc />
     protected override void InitializeCore(AnalysisContext context) =>
@@ -51,7 +51,7 @@ internal sealed class Qyl0113DeniedAppTagKeyAnalyzer : AlAnalyzer {
 
         foreach (var token in SemconvTypedSurface.DeniedKeyTokens) {
             if (key.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0) {
-                context.ReportDiagnostic(Diagnostic.Create(s_rule, anchor.Syntax.GetLocation(), key, token));
+                context.ReportDiagnostic(Diagnostic.Create(Rule, anchor.Syntax.GetLocation(), key, token));
                 return;
             }
         }
@@ -61,14 +61,14 @@ internal sealed class Qyl0113DeniedAppTagKeyAnalyzer : AlAnalyzer {
         foreach (var denied in SemconvTypedSurface.NotPersistedKeys) {
             if (string.Equals(name, denied, StringComparison.Ordinal)
                 || (name.Length > denied.Length && name[denied.Length] == '.' && name.StartsWith(denied, StringComparison.Ordinal))) {
-                context.ReportDiagnostic(Diagnostic.Create(s_rule, anchor.Syntax.GetLocation(), key, denied));
+                context.ReportDiagnostic(Diagnostic.Create(Rule, anchor.Syntax.GetLocation(), key, denied));
                 return;
             }
         }
 
         foreach (var prefix in SemconvTypedSurface.NotPersistedPrefixes) {
             if (name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) {
-                context.ReportDiagnostic(Diagnostic.Create(s_rule, anchor.Syntax.GetLocation(), key, prefix));
+                context.ReportDiagnostic(Diagnostic.Create(Rule, anchor.Syntax.GetLocation(), key, prefix));
                 return;
             }
         }

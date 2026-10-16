@@ -1,15 +1,14 @@
 namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 
 /// <summary>
-///     QYL0200: Detects telemetry names in name positions that the generated registry catalog does not know.
+///     QYL0200: Reserves qyl-owned telemetry names for the generated registry catalog.
 /// </summary>
 /// <remarks>
 ///     <para>
-///         The qyl vocabulary loop generates producer constants and the collector ingest catalog from one
-///         registry, so a name the catalog does not know is a name the platform cannot recognize on the wire.
-///         This analyzer owns that rule at compile time (qyl architecture G1/G4): every compile-time-constant
-///         string reaching a telemetry <em>name position</em> must be a member of the generated catalog
-///         (<see cref="SemconvRegistryFacts"/>), never a hardcoded invention.
+///         The registry owns qyl's SDK vocabulary, not the application's vocabulary. Unknown names
+///         outside the qyl namespace remain valid custom telemetry. The <c>qyl.app.*</c> namespace
+///         is also open to application-owned names. Type, deprecation and value checks for known
+///         semantic conventions are handled by their dedicated analyzers.
 ///     </para>
 ///     <para>
 ///         Name positions checked: <c>Activity.SetTag</c>/<c>AddTag</c> keys, <c>ActivityEvent</c> names,
@@ -32,13 +31,13 @@ internal sealed class Qyl0200TelemetryNameAnalyzer : AlAnalyzer {
     private const string MeterTypeName = "System.Diagnostics.Metrics.Meter";
     private const string MeterOptionsTypeName = "System.Diagnostics.Metrics.MeterOptions";
 
-    private static readonly DiagnosticDescriptor s_rule = CreateRule(
+    private static readonly DiagnosticDescriptor Rule = CreateRule(
         DiagnosticId,
         DiagnosticCategories.OpenTelemetry,
         DiagnosticSeverities.RequiredFix);
 
     /// <summary>Gets the diagnostic descriptors for the supported diagnostics.</summary>
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
 
     /// <summary>Registers operation actions for telemetry name positions.</summary>
     protected override void InitializeCore(AnalysisContext context) {
@@ -100,10 +99,15 @@ internal sealed class Qyl0200TelemetryNameAnalyzer : AlAnalyzer {
         if (argument is null ||
             !argument.TryGetConstantValue<string>(out var name) ||
             string.IsNullOrEmpty(name) ||
+            !IsReservedName(name) ||
             isKnown(name)) {
             return;
         }
 
-        context.ReportDiagnostic(Diagnostic.Create(s_rule, argument.Syntax.GetLocation(), name, positionKind));
+        context.ReportDiagnostic(Diagnostic.Create(Rule, argument.Syntax.GetLocation(), name, positionKind));
     }
+
+    private static bool IsReservedName(string name) =>
+        (name.StartsWith("qyl.", StringComparison.Ordinal) || name.StartsWith("Qyl.", StringComparison.Ordinal))
+        && !(name.StartsWith("qyl.app.", StringComparison.Ordinal) && name.Length > "qyl.app.".Length);
 }

@@ -95,14 +95,14 @@
             },
             {
               "id": "QYL0006",
-              "name": "MissingSchemaUrl",
+              "name": "SchemaUrlAttribute",
               "shortDescription": {
-                "text": "Missing telemetry schema URL"
+                "text": "Schema URL stored as a resource attribute"
               },
               "fullDescription": {
-                "text": "Setting the schema URL allows collectors and backends to understand which version of semantic conventions your telemetry uses."
+                "text": "A telemetry.schema_url resource attribute does not set resource schema metadata. Supply a known schema through the SDK schemaUrl parameter; leave unknown schemas unset."
               },
-              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0006_MissingSchemaUrl.md",
+              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0006_SchemaUrlAttribute.md",
               "defaultConfiguration": {
                 "level": "note"
               },
@@ -316,14 +316,14 @@
             },
             {
               "id": "QYL0122",
-              "name": "StarterInsideAIFunction",
+              "name": "StarterInsideAiFunction",
               "shortDescription": {
                 "text": "No span starter inside an AIFunction"
               },
               "fullDescription": {
                 "text": "FunctionInvokingChatClient records the execute_tool span of every AIFunction it invokes, and the registry says not to record two spans for one tool call. Inside the function, set business keys on Activity.Current with SetAppTag instead."
               },
-              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0122_StarterInsideAIFunction.md",
+              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0122_StarterInsideAiFunction.md",
               "defaultConfiguration": {
                 "level": "error"
               },
@@ -335,10 +335,10 @@
               "id": "QYL0200",
               "name": "TelemetryName",
               "shortDescription": {
-                "text": "Telemetry name must come from the generated registry catalog"
+                "text": "Reserved qyl telemetry name must come from the generated registry catalog"
               },
               "fullDescription": {
-                "text": "The producer constants and the collector ingest catalog are generated from one registry, so a name the catalog does not know is a name the platform cannot recognize on the wire. Add the name to the registry (qyl-owned names go in registry/qyl/names.yaml) and run scripts/generate.sh, or use the generated constant for an existing name."
+                "text": "Names in the reserved qyl namespace must use the generated registry vocabulary. Custom application and library scopes, attributes, metrics and events remain valid outside it, and qyl.app.* is open to application-owned names. Registry membership is not a universal OpenTelemetry validity check. Use the generated constant for an existing qyl name or add a genuinely qyl-owned definition to the registry."
               },
               "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0200_TelemetryName.md",
               "defaultConfiguration": {
@@ -346,23 +346,6 @@
               },
               "properties": {
                 "category": "OpenTelemetry"
-              }
-            },
-            {
-              "id": "QYL0201",
-              "name": "InvalidMetricName",
-              "shortDescription": {
-                "text": "Metric descriptor name must be a well-formed catalog member"
-              },
-              "fullDescription": {
-                "text": "Metric names declared on Counter/Histogram descriptor attributes must follow OpenTelemetry naming conventions and be members of the generated registry catalog, so the collector recognizes every metric qyl emits. Add qyl-owned metrics to registry/qyl/metrics.yaml and run scripts/generate.sh."
-              },
-              "helpUri": "https://github.com/ANcpLua/Qyl.Telemetry.SemanticConventions/blob/main/docs/rules/QYL0201_InvalidMetricName.md",
-              "defaultConfiguration": {
-                "level": "error"
-              },
-              "properties": {
-                "category": "Metrics"
               }
             },
             {

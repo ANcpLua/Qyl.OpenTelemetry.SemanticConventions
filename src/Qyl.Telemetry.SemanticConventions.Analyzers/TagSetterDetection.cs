@@ -22,7 +22,7 @@ internal static class TagSetterDetection
     /// receiver type because consumers use Activity, Span, TagList, custom builders,
     /// and OTel-extension wrappers interchangeably.
     /// </summary>
-    public static readonly ImmutableHashSet<string> TagSetterMethodNames = ImmutableHashSet.Create(
+    private static readonly ImmutableHashSet<string> TagSetterMethodNames = ImmutableHashSet.Create(
         "SetTag", "AddTag", "SetAttribute", "AddAttribute");
 
     /// <summary>Whether <paramref name="invocation"/> is a raw <c>SetTag</c>-style call.</summary>
@@ -307,18 +307,12 @@ internal static class TagSetterDetection
 }
 
 /// <summary>An attribute write with its key, its constant value when it has one, and where it is.</summary>
-internal readonly struct TagSetterCall
+internal readonly struct TagSetterCall(string key, string? value, Location keyLocation)
 {
-    public TagSetterCall(string key, string? value, Location keyLocation)
-    {
-        Key = key;
-        Value = value;
-        KeyLocation = keyLocation;
-    }
 
-    public string Key { get; }
-    public string? Value { get; }
+    public string Key { get; } = key;
+    public string? Value { get; } = value;
 
     /// <summary>The syntax location of the write (suitable for diagnostic reports).</summary>
-    public Location KeyLocation { get; }
+    public Location KeyLocation { get; } = keyLocation;
 }

@@ -12,13 +12,13 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 internal sealed class Qyl0112NonConstantTelemetryNameAnalyzer : AlAnalyzer {
     private const string DiagnosticId = "QYL0112";
 
-    private static readonly DiagnosticDescriptor s_rule = CreateRule(
+    private static readonly DiagnosticDescriptor Rule = CreateRule(
         DiagnosticId,
         DiagnosticCategories.OpenTelemetry,
         DiagnosticSeverities.RequiredFix);
 
     /// <inheritdoc />
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
 
     /// <inheritdoc />
     protected override void InitializeCore(AnalysisContext context) =>
@@ -45,6 +45,6 @@ internal sealed class Qyl0112NonConstantTelemetryNameAnalyzer : AlAnalyzer {
             return;
         }
 
-        context.ReportDiagnostic(Diagnostic.Create(s_rule, argument.Syntax.GetLocation(), what, argument.Value.Syntax.ToString()));
+        context.ReportDiagnostic(Diagnostic.Create(Rule, argument.Syntax.GetLocation(), what, argument.Value.Syntax.ToString()));
     }
 }

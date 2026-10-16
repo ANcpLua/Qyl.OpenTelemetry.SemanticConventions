@@ -1,6 +1,7 @@
 namespace Qyl.Telemetry.SemanticConventions;
 
 /// <summary>Requirement level of an attribute on a signal (metric, span, event, or entity).</summary>
+[JetBrains.Annotations.PublicAPI]
 public enum RequirementLevel
 {
     /// <summary>The registry declares no requirement level for the attribute on this signal.</summary>

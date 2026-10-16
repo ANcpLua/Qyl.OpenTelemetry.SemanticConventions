@@ -5,6 +5,7 @@ namespace Qyl.Telemetry.SemanticConventions;
 /// the registry; the full <see cref="EntityDefinition"/> (its identifying attributes) lives
 /// with the entity conventions.
 /// </summary>
+[JetBrains.Annotations.PublicAPI]
 public sealed class EntityRef
 {
     /// <summary>Initializes a new entity reference.</summary>

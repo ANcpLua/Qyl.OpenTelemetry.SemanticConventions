@@ -15,8 +15,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 ///         </list>
 ///     </para>
 ///     <para>
-///         Two paths reach a metric. The source-generator path is a <c>[Tag]</c> parameter on
-///         a <c>[Counter]</c> or <c>[Histogram]</c> method. The SDK path is a literal key in
+///         A metric receives a literal key in
 ///         the tags of <c>Counter.Add</c>, <c>Histogram.Record</c>, <c>UpDownCounter.Add</c>
 ///         or a <c>Measurement</c>, including a <c>TagList</c> or dictionary built up in a
 ///         local and passed to one of those; that path is the shared
@@ -34,20 +33,12 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 internal sealed class Qyl0202HighCardinalityMetricTagAnalyzer : AlAnalyzer {
-    private enum KnownType { TagAttribute, CounterAttribute, HistogramAttribute }
-
-    private static readonly string[] s_knownTypeNames = [
-        "Qyl.Instrumentation.Instrumentation.TagAttribute",
-        "Qyl.Instrumentation.Instrumentation.CounterAttribute",
-        "Qyl.Instrumentation.Instrumentation.HistogramAttribute"
-    ];
-
     /// <summary>
     ///     Known high-cardinality tag patterns, matched on segment boundaries so
     ///     <c>user.id</c>, <c>user_id</c>, <c>userId</c> and <c>app.user.id</c> all match
     ///     and <c>enduser.id</c> does not.
     /// </summary>
-    private static readonly AttributeKeyPatternSet s_highCardinalityPatterns = new(
+    private static readonly AttributeKeyPatternSet HighCardinalityPatterns = new(
         "user.id",
         "request.id",
         "session.id",
@@ -73,66 +64,28 @@ internal sealed class Qyl0202HighCardinalityMetricTagAnalyzer : AlAnalyzer {
     /// <summary>The diagnostic identifier for QYL0202.</summary>
     private const string DiagnosticId = "QYL0202";
 
-    private static readonly DiagnosticDescriptor s_highCardinalityMetricTagRule = CreateRule(
+    private static readonly DiagnosticDescriptor HighCardinalityMetricTagRule = CreateRule(
         DiagnosticId,
         DiagnosticCategories.Metrics,
         DiagnosticSeverities.Suggestion);
 
     /// <summary>Gets the diagnostic descriptors for the supported diagnostics.</summary>
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_highCardinalityMetricTagRule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [HighCardinalityMetricTagRule];
 
-    /// <summary>Registers compilation start action to resolve metric attribute types once.</summary>
+    /// <summary>Checks literal tag keys that reach .NET metric measurements.</summary>
     protected override void InitializeCore(AnalysisContext context) =>
-        context.RegisterCompilationStartAction(OnCompilationStart);
-
-    private static void OnCompilationStart(CompilationStartAnalysisContext context) {
-        // The SDK path needs no Qyl.Instrumentation reference, so it registers unconditionally.
-        TelemetryAttributePayloadDetection.RegisterPayloadAnalysis(context, ReportIfHighCardinalityMetricTag);
-
-        var cache = new TypeCache<KnownType>(type => context.Compilation.GetTypeByMetadataName(s_knownTypeNames[(int)type]));
-
-        if (cache.Get(KnownType.TagAttribute) is null) {
-            return;
-        }
-
-        if (cache.Get(KnownType.CounterAttribute) is null && cache.Get(KnownType.HistogramAttribute) is null) {
-            return;
-        }
-
-        context.RegisterSyntaxNodeAction(
-            ctx => AnalyzeParameterForHighCardinalityTags(ctx, cache),
-            SyntaxKind.Parameter);
-    }
+        context.RegisterCompilationStartAction(static start =>
+            TelemetryAttributePayloadDetection.RegisterPayloadAnalysis(start, ReportIfHighCardinalityMetricTag));
 
     private static void ReportIfHighCardinalityMetricTag(OperationAnalysisContext context, TelemetryAttributePayloadLiteral payload) {
-        if (payload.Sink != TelemetryPayloadSink.MetricMeasurement || !s_highCardinalityPatterns.Matches(payload.Key)) {
+        if (payload.Sink != TelemetryPayloadSink.MetricMeasurement || !HighCardinalityPatterns.Matches(payload.Key)) {
             return;
         }
 
         context.ReportDiagnostic(Diagnostic.Create(
-            s_highCardinalityMetricTagRule,
+            HighCardinalityMetricTagRule,
             payload.KeySyntax.GetLocation(),
             payload.Key));
     }
 
-    private static void AnalyzeParameterForHighCardinalityTags(SyntaxNodeAnalysisContext context, TypeCache<KnownType> cache) {
-        var parameter = (ParameterSyntax)context.Node;
-
-        if (parameter.AttributeLists.Count is 0) {
-            return;
-        }
-
-        if (context.SemanticModel.GetDeclaredSymbol(parameter, context.CancellationToken) is not { ContainingSymbol: IMethodSymbol methodSymbol } parameterSymbol
-            || (!cache.HasAttribute(methodSymbol, KnownType.CounterAttribute) && !cache.HasAttribute(methodSymbol, KnownType.HistogramAttribute))
-            || cache.GetAttribute(parameterSymbol, KnownType.TagAttribute) is not { ConstructorArguments: [{ Value: string tagName }, ..] }) {
-            return;
-        }
-
-        if (s_highCardinalityPatterns.Matches(tagName)) {
-            context.ReportDiagnostic(Diagnostic.Create(
-                s_highCardinalityMetricTagRule,
-                parameter.GetLocation(),
-                tagName));
-        }
-    }
 }

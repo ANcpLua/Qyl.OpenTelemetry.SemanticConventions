@@ -64,15 +64,15 @@
             PublicKeyToken=b77a5c561934e089
         </value>
     </resheader>
-    <!-- AL0013: Missing telemetry schema URL -->
+    <!-- Resource schema metadata -->
     <data name="QYL0006AnalyzerTitle" xml:space="preserve">
-    <value>Missing telemetry schema URL</value>
+    <value>Schema URL stored as a resource attribute</value>
   </data>
     <data name="QYL0006AnalyzerMessageFormat" xml:space="preserve">
-    <value>OpenTelemetry resource configuration should include 'telemetry.schema_url' attribute</value>
+    <value>Use the ResourceBuilder.AddAttributes schemaUrl parameter; 'telemetry.schema_url' is only an attribute</value>
   </data>
     <data name="QYL0006AnalyzerDescription" xml:space="preserve">
-    <value>Setting the schema URL allows collectors and backends to understand which version of semantic conventions your telemetry uses.</value>
+    <value>A telemetry.schema_url resource attribute does not set resource schema metadata. Supply a known schema through the SDK schemaUrl parameter; leave unknown schemas unset.</value>
   </data>
     <!-- AL0064: GenAI span missing required attributes -->
     <data name="QYL0401AnalyzerTitle" xml:space="preserve">
@@ -106,23 +106,13 @@
     </data>
     <!-- QYL0200: Telemetry name not in the generated catalog -->
     <data name="QYL0200AnalyzerTitle" xml:space="preserve">
-        <value>Telemetry name must come from the generated registry catalog</value>
+        <value>Reserved qyl telemetry name must come from the generated registry catalog</value>
     </data>
     <data name="QYL0200AnalyzerMessageFormat" xml:space="preserve">
         <value>Telemetry name '{0}' in a {1} position is not in the generated registry catalog</value>
     </data>
     <data name="QYL0200AnalyzerDescription" xml:space="preserve">
-        <value>The producer constants and the collector ingest catalog are generated from one registry, so a name the catalog does not know is a name the platform cannot recognize on the wire. Add the name to the registry (qyl-owned names go in registry/qyl/names.yaml) and run scripts/generate.sh, or use the generated constant for an existing name.</value>
-    </data>
-    <!-- QYL0201: Invalid or uncataloged metric descriptor name -->
-    <data name="QYL0201AnalyzerTitle" xml:space="preserve">
-        <value>Metric descriptor name must be a well-formed catalog member</value>
-    </data>
-    <data name="QYL0201AnalyzerMessageFormat" xml:space="preserve">
-        <value>Metric descriptor name '{0}' is not a well-formed name from the generated registry catalog</value>
-    </data>
-    <data name="QYL0201AnalyzerDescription" xml:space="preserve">
-        <value>Metric names declared on Counter/Histogram descriptor attributes must follow OpenTelemetry naming conventions and be members of the generated registry catalog, so the collector recognizes every metric qyl emits. Add qyl-owned metrics to registry/qyl/metrics.yaml and run scripts/generate.sh.</value>
+        <value>Names in the reserved qyl namespace must use the generated registry vocabulary. Custom application and library scopes, attributes, metrics and events remain valid outside it, and qyl.app.* is open to application-owned names. Registry membership is not a universal OpenTelemetry validity check. Use the generated constant for an existing qyl name or add a genuinely qyl-owned definition to the registry.</value>
     </data>
     <!-- AL0070: Non-OTLP collector endpoint -->
     <data name="QYL0301AnalyzerTitle" xml:space="preserve">

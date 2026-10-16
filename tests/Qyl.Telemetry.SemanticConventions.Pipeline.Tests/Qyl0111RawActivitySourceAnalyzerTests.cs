@@ -1,13 +1,12 @@
 using System.Globalization;
-using AwesomeAssertions;
 using Qyl.Telemetry.SemanticConventions.Analyzers;
-using Xunit;
 
 namespace Qyl.Telemetry.SemanticConventions.Pipeline.Tests;
-
 /// <summary>QYL0111: application code starts spans only through the generated starters (ADR D2).</summary>
-public sealed class Qyl0111RawActivitySourceAnalyzerTests
+[TestClass]
+public sealed class Qyl0111RawActivitySourceAnalyzerTests(TestContext testContext)
 {
+
     private const string RawSource = """
         using System.Diagnostics;
 
@@ -21,38 +20,27 @@ public sealed class Qyl0111RawActivitySourceAnalyzerTests
             }
         }
         """;
-
-    [Fact]
+    [TestMethod]
     public async Task Reports_a_new_ActivitySource_and_a_raw_StartActivity()
     {
-        var diagnostics = await AnalyzerRun.DiagnosticsAsync(new Qyl0111RawActivitySourceAnalyzer(), "QYL0111", RawSource);
-
-        diagnostics.Should().HaveCount(2);
-        diagnostics.Should().OnlyContain(static d => d.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Error);
-        diagnostics.Select(static d => d.GetMessage(CultureInfo.InvariantCulture))
-            .Should().Contain(static m => m.Contains("ActivitySource", StringComparison.Ordinal))
-            .And.Contain(static m => m.Contains("StartActivity", StringComparison.Ordinal));
+        var diagnostics = await AnalyzerRun.DiagnosticsAsync(new Qyl0111RawActivitySourceAnalyzer(), "QYL0111", RawSource, cancellationToken: testContext.CancellationToken);
+        Assert.HasCount(2, diagnostics);
+        Assert.IsTrue(diagnostics.All(static d => d.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Error));
+        Assert.IsTrue(diagnostics.Select(static d => d.GetMessage(CultureInfo.InvariantCulture)).Any(static m => m.Contains("ActivitySource", StringComparison.Ordinal)));
+        Assert.IsTrue(diagnostics.Select(static d => d.GetMessage(CultureInfo.InvariantCulture)).Any(static m => m.Contains("StartActivity", StringComparison.Ordinal)));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Is_silent_in_an_instrumentation_library()
     {
-        var diagnostics = await AnalyzerRun.DiagnosticsAsync(
-            new Qyl0111RawActivitySourceAnalyzer(),
-            "QYL0111",
-            RawSource,
-            new Dictionary<string, string> { ["build_property.OtelSemConvInstrumentationLibrary"] = "true" });
-
-        diagnostics.Should().BeEmpty();
+        var diagnostics = await AnalyzerRun.DiagnosticsAsync(new Qyl0111RawActivitySourceAnalyzer(), "QYL0111", RawSource, new Dictionary<string, string> { ["build_property.OtelSemConvInstrumentationLibrary"] = "true" }, cancellationToken: testContext.CancellationToken);
+        Assert.IsEmpty(diagnostics);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Is_silent_for_the_generated_starters()
     {
-        var diagnostics = await AnalyzerRun.DiagnosticsAsync(
-            new Qyl0111RawActivitySourceAnalyzer(),
-            "QYL0111",
-            """
+        var diagnostics = await AnalyzerRun.DiagnosticsAsync(new Qyl0111RawActivitySourceAnalyzer(), "QYL0111", """
             public static class Checkout
             {
                 public static void Run()
@@ -60,8 +48,7 @@ public sealed class Qyl0111RawActivitySourceAnalyzerTests
                     using var span = Qyl.Spans.Work("checkout");
                 }
             }
-            """);
-
-        diagnostics.Should().BeEmpty();
+            """, cancellationToken: testContext.CancellationToken);
+        Assert.IsEmpty(diagnostics);
     }
 }

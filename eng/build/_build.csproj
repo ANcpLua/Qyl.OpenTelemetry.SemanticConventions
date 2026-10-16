@@ -17,6 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" PrivateAssets="all"/>
     <PackageReference Include="Fallout.Common"/>
     <PackageReference Include="DotCov.Fallout"/>
   </ItemGroup>

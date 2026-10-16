@@ -10,10 +10,11 @@ namespace Qyl.Telemetry.SemanticConventions;
 /// </summary>
 /// <remarks>
 /// Attribute values are what OTLP carries: <see cref="string"/>, <see cref="long"/>,
-/// <see cref="double"/>, <see cref="bool"/>, or a list of those. The typed getters convert
+/// <see cref="double"/>, <see cref="bool"/>, bytes, recursive lists/maps, or null. The typed getters convert
 /// between the integer and floating representations and return <see langword="null"/> for an
 /// absent key or a value of another type.
 /// </remarks>
+[JetBrains.Annotations.PublicAPI]
 public sealed class SpanRecord
 {
     private const string AppPrefix = "qyl.app.";
@@ -21,54 +22,12 @@ public sealed class SpanRecord
     /// <summary>Initializes a span record.</summary>
     /// <param name="traceId">The trace id, 32 lowercase hex characters.</param>
     /// <param name="spanId">The span id, 16 lowercase hex characters.</param>
-    /// <param name="parentSpanId">The parent span id, or <see langword="null"/> for a root span.</param>
     /// <param name="name">The span name.</param>
-    /// <param name="kind">The span kind.</param>
-    /// <param name="startTime">When the span started.</param>
-    /// <param name="endTime">When the span ended.</param>
-    /// <param name="status">The status code.</param>
-    /// <param name="statusDescription">The status description, or <see langword="null"/>.</param>
-    /// <param name="scopeName">The instrumentation scope name.</param>
-    /// <param name="scopeVersion">The instrumentation scope version, or <see langword="null"/>.</param>
-    /// <param name="schemaUrl">The scope's schema URL, or <see langword="null"/>.</param>
-    /// <param name="attributes">The span attributes.</param>
-    /// <param name="resource">The resource attributes.</param>
-    /// <param name="events">The span events.</param>
-    /// <param name="links">The span links.</param>
-    public SpanRecord(
-        string traceId,
-        string spanId,
-        string? parentSpanId,
-        string name,
-        ActivityKind kind,
-        DateTimeOffset startTime,
-        DateTimeOffset endTime,
-        ActivityStatusCode status,
-        string? statusDescription,
-        string scopeName,
-        string? scopeVersion,
-        string? schemaUrl,
-        IReadOnlyDictionary<string, object?> attributes,
-        IReadOnlyDictionary<string, object?> resource,
-        IReadOnlyList<SpanEventRecord> events,
-        IReadOnlyList<SpanLinkRecord> links)
+    public SpanRecord(string traceId, string spanId, string name)
     {
         TraceId = traceId ?? throw new ArgumentNullException(nameof(traceId));
         SpanId = spanId ?? throw new ArgumentNullException(nameof(spanId));
-        ParentSpanId = parentSpanId;
         Name = name ?? throw new ArgumentNullException(nameof(name));
-        Kind = kind;
-        StartTime = startTime;
-        EndTime = endTime;
-        Status = status;
-        StatusDescription = statusDescription;
-        ScopeName = scopeName ?? throw new ArgumentNullException(nameof(scopeName));
-        ScopeVersion = scopeVersion;
-        SchemaUrl = schemaUrl;
-        Attributes = attributes ?? throw new ArgumentNullException(nameof(attributes));
-        Resource = resource ?? throw new ArgumentNullException(nameof(resource));
-        Events = events ?? throw new ArgumentNullException(nameof(events));
-        Links = links ?? throw new ArgumentNullException(nameof(links));
     }
 
     /// <summary>The trace id, 32 lowercase hex characters.</summary>
@@ -78,52 +37,69 @@ public sealed class SpanRecord
     public string SpanId { get; }
 
     /// <summary>The parent span id, or <see langword="null"/> for a root span.</summary>
-    public string? ParentSpanId { get; }
+    public string? ParentSpanId { get; init; }
+
+    /// <summary>The W3C trace state supplied by the producer.</summary>
+    public string? TraceState { get; init; }
+
+    /// <summary>The complete OTLP flags field, including remote-context and unknown bits.</summary>
+    public uint Flags { get; init; }
 
     /// <summary>The span name.</summary>
     public string Name { get; }
 
     /// <summary>The span kind.</summary>
-    public ActivityKind Kind { get; }
+    public SpanKind Kind { get; init; }
 
-    /// <summary>When the span started.</summary>
-    public DateTimeOffset StartTime { get; }
+    /// <summary>The exact start timestamp in nanoseconds since the Unix epoch.</summary>
+    public ulong StartTimeUnixNano { get; init; }
 
-    /// <summary>When the span ended.</summary>
-    public DateTimeOffset EndTime { get; }
+    /// <summary>The exact end timestamp in nanoseconds since the Unix epoch.</summary>
+    public ulong EndTimeUnixNano { get; init; }
 
-    /// <summary>The span's duration.</summary>
-    public TimeSpan Duration => EndTime - StartTime;
+    /// <summary>When the span started, projected to .NET's 100-nanosecond tick resolution.</summary>
+    public DateTimeOffset StartTime => TelemetryTimestamp.ToDateTimeOffset(StartTimeUnixNano);
+
+    /// <summary>When the span ended, projected to .NET's 100-nanosecond tick resolution.</summary>
+    public DateTimeOffset EndTime => TelemetryTimestamp.ToDateTimeOffset(EndTimeUnixNano);
+
+    /// <summary>The elapsed nanoseconds projected to .NET ticks, without subtracting rounded timestamps.</summary>
+    public TimeSpan Duration => EndTimeUnixNano >= StartTimeUnixNano
+        ? TimeSpan.FromTicks((long)((EndTimeUnixNano - StartTimeUnixNano) / 100))
+        : -TimeSpan.FromTicks((long)((StartTimeUnixNano - EndTimeUnixNano) / 100));
 
     /// <summary>The status code.</summary>
-    public ActivityStatusCode Status { get; }
+    public ActivityStatusCode Status { get; init; }
 
     /// <summary>The status description, or <see langword="null"/>.</summary>
-    public string? StatusDescription { get; }
+    public string? StatusDescription { get; init; }
 
-    /// <summary>The instrumentation scope name.</summary>
-    public string ScopeName { get; }
-
-    /// <summary>The instrumentation scope version, or <see langword="null"/>.</summary>
-    public string? ScopeVersion { get; }
-
-    /// <summary>The scope's schema URL, or <see langword="null"/>.</summary>
-    public string? SchemaUrl { get; }
+    /// <summary>The instrumentation scope, independent of the resource schema.</summary>
+    public InstrumentationScopeRecord? Scope { get; init; }
 
     /// <summary>The span attributes.</summary>
-    public IReadOnlyDictionary<string, object?> Attributes { get; }
+    public IReadOnlyDictionary<string, object?> Attributes { get; init; } = new Dictionary<string, object?>();
 
-    /// <summary>The resource attributes.</summary>
-    public IReadOnlyDictionary<string, object?> Resource { get; }
+    /// <summary>The attributes dropped by the producer before export.</summary>
+    public uint DroppedAttributesCount { get; init; }
+
+    /// <summary>The resource attributes and their own schema and loss metadata.</summary>
+    public ResourceRecord Resource { get; init; } = new(new Dictionary<string, object?>());
 
     /// <summary>The span events.</summary>
-    public IReadOnlyList<SpanEventRecord> Events { get; }
+    public IReadOnlyList<SpanEventRecord> Events { get; init; } = Array.Empty<SpanEventRecord>();
+
+    /// <summary>The events dropped by the producer before export.</summary>
+    public uint DroppedEventsCount { get; init; }
 
     /// <summary>The span links.</summary>
-    public IReadOnlyList<SpanLinkRecord> Links { get; }
+    public IReadOnlyList<SpanLinkRecord> Links { get; init; } = Array.Empty<SpanLinkRecord>();
+
+    /// <summary>The links dropped by the producer before export.</summary>
+    public uint DroppedLinksCount { get; init; }
 
     /// <summary>The resource's <c>service.name</c>, or <see langword="null"/>.</summary>
-    public string? Service => Resource.TryGetValue("service.name", out var value) ? value as string : null;
+    public string? Service => Resource.Attributes.TryGetValue("service.name", out var value) ? value as string : null;
 
     /// <summary>The <c>qyl.app.*</c> business attributes, keyed without the prefix, values as invariant strings.</summary>
     public IReadOnlyDictionary<string, string> App
@@ -221,16 +197,17 @@ public sealed class SpanRecord
 }
 
 /// <summary>An event of a <see cref="SpanRecord"/>.</summary>
+[JetBrains.Annotations.PublicAPI]
 public sealed class SpanEventRecord
 {
     /// <summary>Initializes a span event record.</summary>
     /// <param name="name">The event name (<c>exception</c> for a recorded exception).</param>
-    /// <param name="timestamp">When the event happened.</param>
+    /// <param name="timeUnixNano">The exact timestamp in nanoseconds since the Unix epoch.</param>
     /// <param name="attributes">The event attributes.</param>
-    public SpanEventRecord(string name, DateTimeOffset timestamp, IReadOnlyDictionary<string, object?> attributes)
+    public SpanEventRecord(string name, ulong timeUnixNano, IReadOnlyDictionary<string, object?> attributes)
     {
         Name = name ?? throw new ArgumentNullException(nameof(name));
-        Timestamp = timestamp;
+        TimeUnixNano = timeUnixNano;
         Attributes = attributes ?? throw new ArgumentNullException(nameof(attributes));
     }
 
@@ -238,13 +215,20 @@ public sealed class SpanEventRecord
     public string Name { get; }
 
     /// <summary>When the event happened.</summary>
-    public DateTimeOffset Timestamp { get; }
+    public DateTimeOffset Timestamp => TelemetryTimestamp.ToDateTimeOffset(TimeUnixNano);
+
+    /// <summary>The exact event timestamp, without rounding to .NET ticks.</summary>
+    public ulong TimeUnixNano { get; }
+
+    /// <summary>The event attributes dropped by the producer.</summary>
+    public uint DroppedAttributesCount { get; init; }
 
     /// <summary>The event attributes.</summary>
     public IReadOnlyDictionary<string, object?> Attributes { get; }
 }
 
 /// <summary>A link of a <see cref="SpanRecord"/>.</summary>
+[JetBrains.Annotations.PublicAPI]
 public sealed class SpanLinkRecord
 {
     /// <summary>Initializes a span link record.</summary>
@@ -263,6 +247,15 @@ public sealed class SpanLinkRecord
 
     /// <summary>The linked span id.</summary>
     public string SpanId { get; }
+
+    /// <summary>The linked span's W3C trace state.</summary>
+    public string? TraceState { get; init; }
+
+    /// <summary>The complete OTLP flags field of the linked context.</summary>
+    public uint Flags { get; init; }
+
+    /// <summary>The link attributes dropped by the producer.</summary>
+    public uint DroppedAttributesCount { get; init; }
 
     /// <summary>The link attributes.</summary>
     public IReadOnlyDictionary<string, object?> Attributes { get; }

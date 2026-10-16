@@ -1,6 +1,7 @@
 namespace Qyl.Telemetry.SemanticConventions;
 
 /// <summary>Stability tier of a semantic convention, as declared by the upstream registry.</summary>
+[JetBrains.Annotations.PublicAPI]
 public enum Stability
 {
     /// <summary>The convention is stable: its name and shape are frozen.</summary>

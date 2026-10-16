@@ -26,7 +26,6 @@ dotnet_diagnostic.QYL0120.severity = error
 dotnet_diagnostic.QYL0121.severity = error
 dotnet_diagnostic.QYL0122.severity = error
 dotnet_diagnostic.QYL0200.severity = error
-dotnet_diagnostic.QYL0201.severity = error
 dotnet_diagnostic.QYL0202.severity = error
 dotnet_diagnostic.QYL0301.severity = error
 dotnet_diagnostic.QYL0304.severity = error

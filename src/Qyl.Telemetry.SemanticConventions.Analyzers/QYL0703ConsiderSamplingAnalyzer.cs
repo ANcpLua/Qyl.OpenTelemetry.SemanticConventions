@@ -28,38 +28,38 @@ internal sealed class Qyl0703ConsiderSamplingAnalyzer : AlAnalyzer {
     private const string DiagnosticId = "QYL0703";
 
     /// <summary>Array of known OTel tracer builder type names.</summary>
-    private static readonly string[] s_tracerBuilderTypeNames = [
+    private static readonly string[] TracerBuilderTypeNames = [
         "OpenTelemetry.Trace.TracerProviderBuilder",
         "OpenTelemetry.IOpenTelemetryBuilder"
     ];
 
     /// <summary>Methods that configure tracing and should have sampling configured.</summary>
-    private static readonly HashSet<string> s_tracingConfigMethods = [
+    private static readonly HashSet<string> TracingConfigMethods = [
         "WithTracing",
         "AddTracing",
         "ConfigureTracing"
     ];
 
     /// <summary>Sampler types that capture all spans (problematic for high-volume services).</summary>
-    private static readonly HashSet<string> s_alwaysOnSamplerTypes = [
+    private static readonly HashSet<string> AlwaysOnSamplerTypes = [
         "AlwaysOnSampler",
         "OpenTelemetry.Trace.AlwaysOnSampler"
     ];
 
-    private static readonly DiagnosticDescriptor s_rule = CreateRule(
+    private static readonly DiagnosticDescriptor Rule = CreateRule(
         DiagnosticId,
         DiagnosticCategories.OpenTelemetry,
         DiagnosticSeverities.HiddenByDefault);
 
     /// <summary>Gets the diagnostic descriptors for the supported diagnostics.</summary>
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
 
     /// <summary>Registers compilation start action to analyze tracing configurations.</summary>
     protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterCompilationStartAction(OnCompilationStart);
 
     private static void OnCompilationStart(CompilationStartAnalysisContext context) {
-        var tracerBuilderTypes = s_tracerBuilderTypeNames
+        var tracerBuilderTypes = TracerBuilderTypeNames
             .Select(context.Compilation.GetTypeByMetadataName)
             .WhereNotNull()
             .ToImmutableArray();
@@ -79,7 +79,7 @@ internal sealed class Qyl0703ConsiderSamplingAnalyzer : AlAnalyzer {
         var invocation = (InvocationExpressionSyntax)context.Node;
 
         var methodName = invocation.GetMethodName();
-        if (methodName is null || !s_tracingConfigMethods.Contains(methodName)) {
+        if (methodName is null || !TracingConfigMethods.Contains(methodName)) {
             return;
         }
 
@@ -89,13 +89,13 @@ internal sealed class Qyl0703ConsiderSamplingAnalyzer : AlAnalyzer {
 
         if (HasSamplerConfiguration(invocation, out var usesAlwaysOn)) {
             if (usesAlwaysOn) {
-                context.ReportDiagnostic(Diagnostic.Create(s_rule, invocation.GetMethodLocation()));
+                context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetMethodLocation()));
             }
 
             return;
         }
 
-        context.ReportDiagnostic(Diagnostic.Create(s_rule, invocation.GetMethodLocation()));
+        context.ReportDiagnostic(Diagnostic.Create(Rule, invocation.GetMethodLocation()));
     }
 
     private static bool HasSamplerConfiguration(SyntaxNode invocation, out bool usesAlwaysOnSampler) {
@@ -114,7 +114,7 @@ internal sealed class Qyl0703ConsiderSamplingAnalyzer : AlAnalyzer {
                 }
                 case IdentifierNameSyntax identifier: {
                     var name = identifier.Identifier.Text;
-                    if (s_alwaysOnSamplerTypes.Any(s => s.ContainsIgnoreCase(name))) {
+                    if (AlwaysOnSamplerTypes.Any(s => s.ContainsIgnoreCase(name))) {
                         usesAlwaysOnSampler = true;
                     }
 
@@ -130,9 +130,9 @@ internal sealed class Qyl0703ConsiderSamplingAnalyzer : AlAnalyzer {
         foreach (var descendant in setSamplerInvocation.DescendantNodes()) {
             switch (descendant) {
                 case IdentifierNameSyntax identifier
-                    when s_alwaysOnSamplerTypes.Contains(identifier.Identifier.Text):
-                case ObjectCreationExpressionSyntax { Type: IdentifierNameSyntax typeName } when s_alwaysOnSamplerTypes.Contains(typeName.Identifier.Text):
-                case ObjectCreationExpressionSyntax { Type: QualifiedNameSyntax qualifiedName } when s_alwaysOnSamplerTypes.Contains(qualifiedName.ToString()):
+                    when AlwaysOnSamplerTypes.Contains(identifier.Identifier.Text):
+                case ObjectCreationExpressionSyntax { Type: IdentifierNameSyntax typeName } when AlwaysOnSamplerTypes.Contains(typeName.Identifier.Text):
+                case ObjectCreationExpressionSyntax { Type: QualifiedNameSyntax qualifiedName } when AlwaysOnSamplerTypes.Contains(qualifiedName.ToString()):
                     return true;
             }
         }

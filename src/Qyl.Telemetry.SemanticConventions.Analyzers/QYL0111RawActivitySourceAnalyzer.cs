@@ -15,13 +15,13 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 internal sealed class Qyl0111RawActivitySourceAnalyzer : AlAnalyzer {
     private const string DiagnosticId = "QYL0111";
 
-    private static readonly DiagnosticDescriptor s_rule = CreateRule(
+    private static readonly DiagnosticDescriptor Rule = CreateRule(
         DiagnosticId,
         DiagnosticCategories.OpenTelemetry,
         DiagnosticSeverities.RequiredFix);
 
     /// <inheritdoc />
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
 
     /// <inheritdoc />
     protected override void InitializeCore(AnalysisContext context) =>
@@ -37,7 +37,7 @@ internal sealed class Qyl0111RawActivitySourceAnalyzer : AlAnalyzer {
             ctx => {
                 var creation = (IObjectCreationOperation)ctx.Operation;
                 if (SymbolEqualityComparer.Default.Equals(creation.Type, activitySource)) {
-                    ctx.ReportDiagnostic(Diagnostic.Create(s_rule, creation.Syntax.GetLocation(), "new ActivitySource(...)"));
+                    ctx.ReportDiagnostic(Diagnostic.Create(Rule, creation.Syntax.GetLocation(), "new ActivitySource(...)"));
                 }
             },
             OperationKind.ObjectCreation);
@@ -47,7 +47,7 @@ internal sealed class Qyl0111RawActivitySourceAnalyzer : AlAnalyzer {
                 var invocation = (IInvocationOperation)ctx.Operation;
                 if (invocation.TargetMethod.Name is "StartActivity" or "CreateActivity"
                     && SymbolEqualityComparer.Default.Equals(invocation.TargetMethod.ContainingType, activitySource)) {
-                    ctx.ReportDiagnostic(Diagnostic.Create(s_rule, invocation.Syntax.GetLocation(), "ActivitySource." + invocation.TargetMethod.Name));
+                    ctx.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation(), "ActivitySource." + invocation.TargetMethod.Name));
                 }
             },
             OperationKind.Invocation);

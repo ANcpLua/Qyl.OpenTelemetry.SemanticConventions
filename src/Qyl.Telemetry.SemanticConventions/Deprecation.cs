@@ -6,6 +6,7 @@ namespace Qyl.Telemetry.SemanticConventions;
 /// uncategorized note). <see cref="Replacement"/> is <see langword="null"/> unless the
 /// upstream data gives an exact rename target: a deprecation does not imply a successor.
 /// </summary>
+[JetBrains.Annotations.PublicAPI]
 public sealed class Deprecation
 {
     private Deprecation(MigrationKind kind, string? replacement, string? note)

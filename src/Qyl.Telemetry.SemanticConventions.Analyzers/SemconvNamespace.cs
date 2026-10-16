@@ -103,7 +103,7 @@ internal static class SemconvNamespace
         }
     }
 
-    public static bool IsInSemconvNamespace(INamespaceSymbol? ns)
+    private static bool IsInSemconvNamespace(INamespaceSymbol? ns)
     {
         var s = ns?.ToDisplayString();
         if (s is null)

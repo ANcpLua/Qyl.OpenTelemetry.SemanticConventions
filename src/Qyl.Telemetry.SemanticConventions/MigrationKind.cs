@@ -1,6 +1,7 @@
 namespace Qyl.Telemetry.SemanticConventions;
 
 /// <summary>The kind of change that deprecated a semantic convention.</summary>
+[JetBrains.Annotations.PublicAPI]
 public enum MigrationKind
 {
     /// <summary>The convention is current; not deprecated.</summary>

@@ -17,7 +17,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 public sealed class PreferSemconvConstantAnalyzer : DiagnosticAnalyzer
 {
     /// <summary>Property-bag key carrying the fully-qualified suggested constant for code-fix providers.</summary>
-    public const string SuggestedConstantKey = "SuggestedConstant";
+    private const string SuggestedConstantKey = "SuggestedConstant";
 
     /// <inheritdoc />
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =

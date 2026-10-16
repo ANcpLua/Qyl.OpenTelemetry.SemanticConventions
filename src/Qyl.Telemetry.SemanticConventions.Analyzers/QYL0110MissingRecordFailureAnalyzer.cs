@@ -19,13 +19,13 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 internal sealed class Qyl0110MissingRecordFailureAnalyzer : AlAnalyzer {
     private const string DiagnosticId = "QYL0110";
 
-    private static readonly DiagnosticDescriptor s_rule = CreateRule(
+    private static readonly DiagnosticDescriptor Rule = CreateRule(
         DiagnosticId,
         DiagnosticCategories.OpenTelemetry,
         DiagnosticSeverities.RequiredFix);
 
     /// <inheritdoc />
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
 
     /// <inheritdoc />
     protected override void InitializeCore(AnalysisContext context) =>
@@ -42,7 +42,7 @@ internal sealed class Qyl0110MissingRecordFailureAnalyzer : AlAnalyzer {
         var location = catchClause.Syntax is CatchClauseSyntax syntax
             ? syntax.CatchKeyword.GetLocation()
             : catchClause.Syntax.GetLocation();
-        context.ReportDiagnostic(Diagnostic.Create(s_rule, location, starter));
+        context.ReportDiagnostic(Diagnostic.Create(Rule, location, starter));
     }
 
     private static bool Throws(IOperation handler) =>

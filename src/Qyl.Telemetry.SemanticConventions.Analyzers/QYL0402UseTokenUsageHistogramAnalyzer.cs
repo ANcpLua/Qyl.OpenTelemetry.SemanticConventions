@@ -1,61 +1,42 @@
 namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 
-/// <summary>
-/// QYL0402: Detects GenAI token-related histogram names that are absent from the
-/// complete metric inventory in the pinned registry.
-/// </summary>
+/// <summary>Suggests registry-defined GenAI token histogram names at the .NET Meter API.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 internal sealed class Qyl0402UseTokenUsageHistogramAnalyzer : AlAnalyzer
 {
-    private const string HistogramAttributeFullName = "Qyl.Instrumentation.Instrumentation.HistogramAttribute";
     private const string DiagnosticId = "QYL0402";
-
-    private static readonly DiagnosticDescriptor s_rule = CreateRule(
+    private static readonly DiagnosticDescriptor Rule = CreateRule(
         DiagnosticId,
         DiagnosticCategories.GenAI,
         DiagnosticSeverities.Suggestion);
 
     /// <inheritdoc />
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
 
     /// <inheritdoc />
     protected override void InitializeCore(AnalysisContext context) =>
-        context.RegisterSymbolAction(AnalyzeMethod, SymbolKind.Method);
+        context.RegisterOperationAction(AnalyzeHistogram, OperationKind.Invocation);
 
-    private static void AnalyzeMethod(SymbolAnalysisContext context)
+    private static void AnalyzeHistogram(OperationAnalysisContext context)
     {
-        var method = (IMethodSymbol)context.Symbol;
-        if (context.Compilation.GetTypeByMetadataName(HistogramAttributeFullName) is not { } histogramType)
+        var invocation = (IInvocationOperation)context.Operation;
+        if (invocation.TargetMethod.Name != "CreateHistogram"
+            || invocation.TargetMethod.ContainingType.ToDisplayString() != "System.Diagnostics.Metrics.Meter")
         {
             return;
         }
 
-        foreach (var attribute in method.GetAttributes())
+        var argument = invocation.Arguments.FirstOrDefault(static argument => argument.Parameter?.Name == "name");
+        if (argument is null
+            || !argument.Value.TryGetConstantValue<string>(out var name)
+            || !name.StartsWith("gen_ai.", StringComparison.Ordinal)
+            || !name.ContainsIgnoreCase("token")
+            || SemconvRegistryFacts.IsKnownMetricName(name))
         {
-            if (!attribute.AttributeClass.IsEqualTo(histogramType)
-                || attribute.ConstructorArguments.Length == 0
-                || attribute.ConstructorArguments[0].Value is not string metricName
-                || !IsCandidate(metricName)
-                || SemconvRegistryFacts.IsKnownMetricName(metricName))
-            {
-                continue;
-            }
-
-            var location = attribute.ApplicationSyntaxReference?.GetSyntax(context.CancellationToken).GetLocation()
-                ?? method.Locations.FirstOrDefault();
-            if (location is not null)
-            {
-                context.ReportDiagnostic(
-                    Diagnostic.Create(
-                        s_rule,
-                        location,
-                        metricName,
-                        string.Join("', '", SemconvRegistryFacts.GenAiTokenHistogramNames)));
-            }
+            return;
         }
-    }
 
-    private static bool IsCandidate(string metricName) =>
-        metricName.StartsWith("gen_ai.", StringComparison.Ordinal)
-        && metricName.ContainsIgnoreCase("token");
+        context.ReportDiagnostic(Diagnostic.Create(Rule, argument.Value.Syntax.GetLocation(), name,
+            string.Join("', '", SemconvRegistryFacts.GenAiTokenHistogramNames)));
+    }
 }

@@ -9,13 +9,13 @@ internal sealed class Qyl0401GenAiMissingRequiredAttributesAnalyzer : AlAnalyzer
 {
     private const string DiagnosticId = "QYL0401";
 
-    private static readonly DiagnosticDescriptor s_rule = CreateRule(
+    private static readonly DiagnosticDescriptor Rule = CreateRule(
         DiagnosticId,
         DiagnosticCategories.GenAI,
         DiagnosticSeverities.Suggestion);
 
     /// <inheritdoc />
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
 
     /// <inheritdoc />
     protected override void InitializeCore(AnalysisContext context) =>
@@ -65,7 +65,7 @@ internal sealed class Qyl0401GenAiMissingRequiredAttributesAnalyzer : AlAnalyzer
                     {
                         context.ReportDiagnostic(
                             Diagnostic.Create(
-                                s_rule,
+                                Rule,
                                 invocation.Syntax.GetLocation(),
                                 activityName,
                                 requiredAttribute));

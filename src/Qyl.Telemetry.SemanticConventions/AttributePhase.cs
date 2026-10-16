@@ -1,6 +1,7 @@
 namespace Qyl.Telemetry.SemanticConventions;
 
 /// <summary>When an attribute's value becomes known, from the registry annotation <c>qyl.phase</c>.</summary>
+[JetBrains.Annotations.PublicAPI]
 public enum AttributePhase
 {
     /// <summary>The value is known when the operation starts; a span starter takes it as a parameter.</summary>

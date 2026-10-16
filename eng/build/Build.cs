@@ -24,8 +24,8 @@ internal sealed partial class Build : FalloutBuild, ICoverageReport
 {
     public static int Main() => Execute<Build>(x => x.Compile);
 
-    [Solution(GenerateProjects = false)]
-    readonly Solution Solution = null!;
+    [Solution("Qyl.Telemetry.SemanticConventions.slnx", GenerateProjects = false)]
+    readonly Solution _solution = null!;
 
     AbsolutePath DocsGeneratorProject =>
         RootDirectory / "tools"
@@ -50,13 +50,14 @@ internal sealed partial class Build : FalloutBuild, ICoverageReport
     AbsolutePath ICoverageReport.CoverageSearchDirectory => CoverageDirectory;
 
     /// <summary>Restore + compile every project in the solution.</summary>
-    Target Compile => _ => _
+    Target Compile => target => target
         .Executes(() =>
         {
             DotNetTasks.DotNetBuild(s => s
-                .SetProjectFile(Solution)
+                .SetProjectFile(_solution)
                 .SetConfiguration("Release")
-                .EnableNoLogo());
+                .EnableNoLogo()
+                .SetProcessAdditionalArguments("-m:4"));
         });
 
     /// <summary>
@@ -66,7 +67,8 @@ internal sealed partial class Build : FalloutBuild, ICoverageReport
     ///   evaluated. ReportCoverage exits with dotcov's gate codes (1 FAIL, 2 invalid parameter,
     ///   3 NODATA, 4 DISABLED, 5 unreadable report); scripts/quiet.sh names them.
     /// </summary>
-    Target Coverage => _ => _
+    [JetBrains.Annotations.UsedImplicitly]
+    Target Coverage => target => target
         .Description("Run the pipeline tests with coverage and gate line and branch coverage.")
         .DependsOn(Compile)
         .Triggers<ICoverageReport>(x => x.ReportCoverage)
@@ -104,8 +106,8 @@ internal sealed partial class Build : FalloutBuild, ICoverageReport
             }
         });
 
-    [Parameter("VerifyRelease: the released version to verify on nuget.org and npm")]
-    readonly string? PublishedVersion = null;  // Fallout injects it
+    [Parameter("VerifyRelease: the released version to verify on nuget.org and npm", Name = "PublishedVersion")]
+    readonly string? _publishedVersion = null;  // Fallout injects it
 
     static readonly string[] NuGetPackageIds =
     [
@@ -121,12 +123,13 @@ internal sealed partial class Build : FalloutBuild, ICoverageReport
     ///   three packages) and eng/release/verify-typescript.sh. The expected registry fingerprint is
     ///   read from the release tag, not the working tree, which may hold the next version.
     /// </summary>
-    Target VerifyRelease => _ => _
+    [JetBrains.Annotations.UsedImplicitly]
+    Target VerifyRelease => target => target
         .Description("Wait until nuget.org and npm serve --published-version, then smoke the registry packages.")
-        .Requires(() => PublishedVersion)
+        .Requires(() => _publishedVersion)
         .Executes(() =>
         {
-            var version = PublishedVersion!;
+            var version = _publishedVersion!;
             ReleaseIndex.Wait(
                 ReleaseIndex.StatusFile(RootDirectory, version),
                 TimeSpan.FromMinutes(45),
@@ -155,12 +158,14 @@ internal sealed partial class Build : FalloutBuild, ICoverageReport
     ///   <c>SemconvMigrationCatalog</c>. Every QYL rule's <c>HelpLinkUri</c> resolves to its
     ///   generated per-rule page.
     /// </summary>
-    Target GenerateDocs => _ => _
+    [JetBrains.Annotations.UsedImplicitly]
+    Target GenerateDocs => target => target
         .Description("Regenerate analyzer documentation and machine-readable rule artifacts.")
         .Executes(() => RunDocsGenerator(buildGenerator: true));
 
     /// <summary>Print catalog statistics (curated vs supplemental, fixable counts, ...). No file I/O.</summary>
-    Target AuditDocs => _ => _
+    [JetBrains.Annotations.UsedImplicitly]
+    Target AuditDocs => target => target
         .Description("Print analyzer catalog statistics.")
         .DependsOn(Compile)
         .Executes(() => RunDocsGenerator(buildGenerator: false, "--audit"));
@@ -170,7 +175,8 @@ internal sealed partial class Build : FalloutBuild, ICoverageReport
     ///   DiagnosticId-const docs match the runtime <c>DiagnosticDescriptor.Id</c> they register.
     ///   Run after an intentional rule-id change; review the diff before committing.
     /// </summary>
-    Target EnforceIdsApply => _ => _
+    [JetBrains.Annotations.UsedImplicitly]
+    Target EnforceIdsApply => target => target
         .Description("Rewrite analyzer files to align class/doc/id-const with runtime descriptors.")
         .DependsOn(Compile)
         .Executes(() => RunDocsGenerator(buildGenerator: false, "--enforce-ids", "--apply"));

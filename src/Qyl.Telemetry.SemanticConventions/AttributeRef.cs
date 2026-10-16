@@ -5,6 +5,7 @@ namespace Qyl.Telemetry.SemanticConventions;
 /// level and its condition, whether the attribute itself is deprecated, when its value becomes
 /// known, and whether the qyl collector persists it.
 /// </summary>
+[JetBrains.Annotations.PublicAPI]
 public sealed class AttributeRef
 {
     /// <summary>Initializes a new attribute reference.</summary>

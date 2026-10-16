@@ -1,13 +1,12 @@
-using AwesomeAssertions;
 using Qyl.Telemetry.SemanticConventions.Analyzers;
-using Xunit;
 
 namespace Qyl.Telemetry.SemanticConventions.Pipeline.Tests;
-
 /// <summary>QYL0122: FunctionInvokingChatClient already records the execute_tool span of an AIFunction (ADR D6).</summary>
-public sealed class Qyl0122StarterInsideAIFunctionAnalyzerTests
+[TestClass]
+public sealed class Qyl0122StarterInsideAiFunctionAnalyzerTests(TestContext testContext)
 {
-    private static readonly (string, string) MicrosoftExtensionsAI = ("Microsoft.Extensions.AI", """
+
+    private static readonly (string, string) MicrosoftExtensionsAi = ("Microsoft.Extensions.AI", """
         namespace Microsoft.Extensions.AI
         {
             public static class AIFunctionFactory
@@ -16,14 +15,10 @@ public sealed class Qyl0122StarterInsideAIFunctionAnalyzerTests
             }
         }
         """);
-
-    [Fact]
+    [TestMethod]
     public async Task Reports_a_starter_inside_the_function_delegate()
     {
-        var diagnostics = await AnalyzerRun.DiagnosticsAsync(
-            new Qyl0122StarterInsideAIFunctionAnalyzer(),
-            "QYL0122",
-            """
+        var diagnostics = await AnalyzerRun.DiagnosticsAsync(new Qyl0122StarterInsideAiFunctionAnalyzer(), "QYL0122", """
             using Microsoft.Extensions.AI;
             using Qyl;
 
@@ -36,19 +31,14 @@ public sealed class Qyl0122StarterInsideAIFunctionAnalyzerTests
                     return 3;
                 }, "lookup_stock");
             }
-            """,
-            libraries: [MicrosoftExtensionsAI]);
-
-        diagnostics.Should().HaveCount(2);
+            """, libraries: [MicrosoftExtensionsAi], cancellationToken: testContext.CancellationToken);
+        Assert.HasCount(2, diagnostics);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Is_silent_outside_the_function_delegate()
     {
-        var diagnostics = await AnalyzerRun.DiagnosticsAsync(
-            new Qyl0122StarterInsideAIFunctionAnalyzer(),
-            "QYL0122",
-            """
+        var diagnostics = await AnalyzerRun.DiagnosticsAsync(new Qyl0122StarterInsideAiFunctionAnalyzer(), "QYL0122", """
             using Microsoft.Extensions.AI;
             using Qyl;
 
@@ -60,9 +50,7 @@ public sealed class Qyl0122StarterInsideAIFunctionAnalyzerTests
                     return AIFunctionFactory.Create((string sku) => 3, "lookup_stock");
                 }
             }
-            """,
-            libraries: [MicrosoftExtensionsAI]);
-
-        diagnostics.Should().BeEmpty();
+            """, libraries: [MicrosoftExtensionsAi], cancellationToken: testContext.CancellationToken);
+        Assert.IsEmpty(diagnostics);
     }
 }

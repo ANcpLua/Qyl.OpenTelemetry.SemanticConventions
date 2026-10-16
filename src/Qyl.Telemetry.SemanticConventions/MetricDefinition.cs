@@ -7,6 +7,7 @@ namespace Qyl.Telemetry.SemanticConventions;
 /// compile-time instrument safety.
 /// </summary>
 /// <typeparam name="TInstrument">The instrument marker (<see cref="Counter"/>, <see cref="UpDownCounter"/>, <see cref="Gauge"/>, or <see cref="Histogram"/>).</typeparam>
+[JetBrains.Annotations.PublicAPI]
 public sealed class MetricDefinition<TInstrument>
     where TInstrument : struct, IInstrument
 {

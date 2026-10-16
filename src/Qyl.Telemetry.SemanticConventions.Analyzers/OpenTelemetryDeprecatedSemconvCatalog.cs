@@ -5,7 +5,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 ///     <c>semantic-conventions/model/**/*.yaml</c>.
 /// </summary>
 internal static class OpenTelemetryDeprecatedSemconvCatalog {
-    private static readonly Dictionary<string, (string Replacement, string Version)> s_deprecatedAttributes =
+    private static readonly Dictionary<string, (string Replacement, string Version)> DeprecatedAttributes =
         new(StringComparer.OrdinalIgnoreCase) {
             ["android.state"] = ("android.app.state", "1.31.0"),
             ["az.namespace"] = ("azure.resource_provider.namespace", "1.35.0"),
@@ -106,12 +106,12 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
             ["vcs.repository.ref.type"] = ("vcs.ref.head.type", "1.29.0"),
         };
 
-    private static readonly Dictionary<string, (string ReplacementPrefix, string Version)> s_deprecatedAttributePrefixes =
+    private static readonly Dictionary<string, (string ReplacementPrefix, string Version)> DeprecatedAttributePrefixes =
         new(StringComparer.OrdinalIgnoreCase) {
             ["db.elasticsearch.path_parts."] = ("db.operation.parameter.", "1.30.0"),
         };
 
-    private static readonly Dictionary<string, (string Replacement, string Version)> s_deprecatedGenAiAttributes =
+    private static readonly Dictionary<string, (string Replacement, string Version)> DeprecatedGenAiAttributes =
         new(StringComparer.OrdinalIgnoreCase) {
             ["gen_ai.openai.request.response_format"] = ("gen_ai.output.type", "1.37.0"),
             ["gen_ai.openai.request.seed"] = ("gen_ai.request.seed", "1.37.0"),
@@ -124,7 +124,7 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
             ["gen_ai.usage.prompt_tokens"] = ("gen_ai.usage.input_tokens", "1.37.0"),
         };
 
-    private static readonly Dictionary<string, Dictionary<string, string>> s_deprecatedAttributeValues =
+    private static readonly Dictionary<string, Dictionary<string, string>> DeprecatedAttributeValues =
         new(StringComparer.OrdinalIgnoreCase) {
             ["browser.web_vital.name"] = new(StringComparer.OrdinalIgnoreCase) {
                 ["fid"] = "Use 'inp' instead.",
@@ -169,7 +169,7 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
             },
         };
 
-    private static readonly Dictionary<string, string> s_contextSensitiveDeprecatedNames = new(StringComparer.OrdinalIgnoreCase) {
+    private static readonly Dictionary<string, string> ContextSensitiveDeprecatedNames = new(StringComparer.OrdinalIgnoreCase) {
         ["code.function"] = "Value should be included in `code.function.name` which is expected to be a fully-qualified name.",
         ["code.namespace"] = "Value should be included in `code.function.name` which is expected to be a fully-qualified name.",
         ["db.connection_string"] = "Replaced by `server.address` and `server.port`.",
@@ -225,16 +225,16 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
     internal static ImmutableArray<SemconvMigrationCatalogEntry> Entries { get; } = BuildEntries();
 
     private static ImmutableArray<SemconvMigrationCatalogEntry> BuildEntries() {
-        var count = s_deprecatedAttributes.Count
-            + s_deprecatedAttributePrefixes.Count
-            + s_deprecatedGenAiAttributes.Count
-            + s_deprecatedAttributeValues.Sum(static values => values.Value.Count)
-            + s_contextSensitiveDeprecatedNames.Count
+        var count = DeprecatedAttributes.Count
+            + DeprecatedAttributePrefixes.Count
+            + DeprecatedGenAiAttributes.Count
+            + DeprecatedAttributeValues.Sum(static values => values.Value.Count)
+            + ContextSensitiveDeprecatedNames.Count
             + 8;
 
         var builder = ImmutableArray.CreateBuilder<SemconvMigrationCatalogEntry>(count);
 
-        foreach (var item in s_deprecatedAttributes) {
+        foreach (var item in DeprecatedAttributes) {
             builder.Add(CreateAttributeEntry(
                 item.Key,
                 item.Value.Replacement,
@@ -245,7 +245,7 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
                     : SemconvMigrationKind.ExactRename));
         }
 
-        foreach (var item in s_deprecatedAttributePrefixes) {
+        foreach (var item in DeprecatedAttributePrefixes) {
             builder.Add(CreateAttributeEntry(
                 item.Key + "*",
                 item.Value.ReplacementPrefix + "*",
@@ -254,7 +254,7 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
                 SemconvMigrationKind.ExactRename));
         }
 
-        foreach (var item in s_deprecatedGenAiAttributes) {
+        foreach (var item in DeprecatedGenAiAttributes) {
             builder.Add(CreateAttributeEntry(
                 item.Key,
                 item.Value.Replacement,
@@ -263,7 +263,7 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
                 SemconvMigrationKind.ExactRename));
         }
 
-        foreach (var attr in s_deprecatedAttributeValues) {
+        foreach (var attr in DeprecatedAttributeValues) {
             foreach (var value in attr.Value) {
                 var replacement = SemconvCodeFixHelpers.TryExtractExactReplacement(value.Value, out var extractedReplacement)
                     ? ImmutableArray.Create(extractedReplacement)
@@ -287,7 +287,7 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
             }
         }
 
-        foreach (var item in s_contextSensitiveDeprecatedNames) {
+        foreach (var item in ContextSensitiveDeprecatedNames) {
             var migrationKind = IsNoReplacement(item.Value)
                 ? SemconvMigrationKind.RemovedNoReplacement
                 : SemconvMigrationKind.ContextSensitive;
@@ -447,34 +447,4 @@ internal static class OpenTelemetryDeprecatedSemconvCatalog {
     private static string BuildAttributeValueKey(string attributeName, string attributeValue) =>
         attributeName + "=" + attributeValue;
 
-    internal static bool TryGetDeprecatedAttribute(
-        string attributeName,
-        out (string Replacement, string Version) info) {
-        if (s_deprecatedAttributes.TryGetValue(attributeName, out info)) {
-            return true;
-        }
-
-        foreach (var prefix in s_deprecatedAttributePrefixes) {
-            if (!attributeName.StartsWith(prefix.Key, StringComparison.OrdinalIgnoreCase)) {
-                continue;
-            }
-
-            var suffix = attributeName[prefix.Key.Length..];
-            info = ($"{prefix.Value.ReplacementPrefix}{suffix}", prefix.Value.Version);
-            return true;
-        }
-
-        info = default;
-        return false;
-    }
-
-    internal static bool TryGetDeprecatedGenAiAttribute(string attributeName, [NotNullWhen(true)] out string? replacement) {
-        if (s_deprecatedGenAiAttributes.TryGetValue(attributeName, out var info)) {
-            replacement = info.Replacement;
-            return true;
-        }
-
-        replacement = null;
-        return false;
-    }
 }

@@ -8,6 +8,7 @@ namespace Qyl.Telemetry.SemanticConventions;
 /// <c>default(TInstrument).Kind</c> resolves it without static abstract interface
 /// members, which lets the vocabulary compile for <c>netstandard2.0</c>.
 /// </summary>
+[JetBrains.Annotations.PublicAPI]
 public interface IInstrument
 {
     /// <summary>The registry instrument kind (<c>counter</c>, <c>updowncounter</c>, <c>gauge</c>, or <c>histogram</c>).</summary>
@@ -15,6 +16,7 @@ public interface IInstrument
 }
 
 /// <summary>Marker for a monotonic counter instrument.</summary>
+[JetBrains.Annotations.PublicAPI]
 public readonly struct Counter : IInstrument
 {
     /// <inheritdoc/>
@@ -22,6 +24,7 @@ public readonly struct Counter : IInstrument
 }
 
 /// <summary>Marker for an up-down counter instrument.</summary>
+[JetBrains.Annotations.PublicAPI]
 public readonly struct UpDownCounter : IInstrument
 {
     /// <inheritdoc/>
@@ -29,6 +32,7 @@ public readonly struct UpDownCounter : IInstrument
 }
 
 /// <summary>Marker for a gauge instrument.</summary>
+[JetBrains.Annotations.PublicAPI]
 public readonly struct Gauge : IInstrument
 {
     /// <inheritdoc/>
@@ -36,6 +40,7 @@ public readonly struct Gauge : IInstrument
 }
 
 /// <summary>Marker for a histogram instrument.</summary>
+[JetBrains.Annotations.PublicAPI]
 public readonly struct Histogram : IInstrument
 {
     /// <inheritdoc/>

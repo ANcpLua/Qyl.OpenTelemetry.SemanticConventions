@@ -6,6 +6,23 @@ Notable changes to the `Qyl.Telemetry.SemanticConventions` package family. `Vers
 (the three NuGet packages and the TypeScript npm package), then tagged `v<version>`;
 [`eng/release/verify-packages.sh`](eng/release/verify-packages.sh) proves the published packages against nuget.org.
 
+## [11.0.0] - Unreleased
+
+### Changed
+
+- Replace the positional span snapshot constructor with identity plus named initialization. Resource and instrumentation scope carry independent schema URLs, typed attributes and dropped counts. Span, event and link snapshots retain OTLP flags, trace state and dropped counts; exact nanosecond timestamps remain available alongside .NET timestamp projections. The span kind retains the OTLP unspecified value instead of treating it as an internal operation.
+- QYL0200 reserves qyl-owned names while allowing custom application and library telemetry. A name missing from the standard registry is not, by itself, invalid OpenTelemetry.
+- QYL0006 now reports `telemetry.schema_url` resource attributes instead of guessing whether a resource configuration names a schema. The OpenTelemetry SDK takes a real schema URL through its `schemaUrl` parameter; unknown schemas remain unset.
+- Remove QYL0201 and obsolete metric-attribute detection. QYL0402 checks real `Meter.CreateHistogram` calls; QYL0202 uses real SDK measurement APIs.
+- Migrate the test suite to MSTest 4.5.1 and Microsoft.Testing.Platform 2.5.1, with framework-independent Roslyn test utilities 3.0.0. Real SDK tests cover metrics, resource schema metadata, and event/link attribute collections.
+
+### Fixed
+
+- Analyzer test runners now fail on Roslyn engine failures before selecting rule diagnostics, so a crashing analyzer cannot pass a negative test.
+- Traverse constructor-backed `ActivityTagsCollection` payloads on real span events and links.
+- Compare migration replacement arrays structurally when catalog entries become collection keys.
+- Remove obsolete analyzer pages before writing their replacements, including case-only filename changes on macOS. The native coverage build resolves its solution explicitly and uses the supported Fallout process-argument API.
+
 ## [10.1.0] - 2026-10-15
 
 ### Fixed

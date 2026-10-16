@@ -7,7 +7,7 @@
 | Severity | Error |
 | Category | `GenAI` |
 | Code fix | No |
-| Analyzer | `Qyl0122StarterInsideAIFunctionAnalyzer` |
+| Analyzer | `Qyl0122StarterInsideAiFunctionAnalyzer` |
 | Enabled by default | Yes |
 
 ## Description
@@ -18,4 +18,4 @@ FunctionInvokingChatClient records the execute_tool span of every AIFunction it 
 
 - [Rule index](../Qyl.Telemetry.SemanticConventions.Analyzers.md)
 - [Migration catalog](../migration-catalog.md)
-- [Source: `QYL0122StarterInsideAIFunctionAnalyzer.cs`](../../src/Qyl.Telemetry.SemanticConventions.Analyzers/QYL0122StarterInsideAIFunctionAnalyzer.cs)
+- [Source: `QYL0122StarterInsideAiFunctionAnalyzer.cs`](../../src/Qyl.Telemetry.SemanticConventions.Analyzers/QYL0122StarterInsideAiFunctionAnalyzer.cs)

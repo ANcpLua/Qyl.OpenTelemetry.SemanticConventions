@@ -23,7 +23,7 @@ internal sealed class Qyl0406DirectGenAiSdkUsageAnalyzer : AlAnalyzer {
     /// <summary>The diagnostic identifier for QYL0406.</summary>
     private const string DiagnosticId = "QYL0406";
 
-    private const string IChatClientMetadataName = "Microsoft.Extensions.AI.IChatClient";
+    private const string ChatClientMetadataName = "Microsoft.Extensions.AI.IChatClient";
 
     /// <summary>
     ///     Direct-SDK type metadata names paired with a short display label. <c>IChatClient</c> is
@@ -31,7 +31,7 @@ internal sealed class Qyl0406DirectGenAiSdkUsageAnalyzer : AlAnalyzer {
     ///     <c>ChatClientAgent</c>, and <c>DelegatingAIAgent</c> are NOT bypasses — they are the
     ///     Microsoft.Agents.AI abstractions the framework expects consumers to call through.
     /// </summary>
-    private static readonly (string MetadataName, string Label)[] s_sdkTypes = [
+    private static readonly (string MetadataName, string Label)[] SdkTypes = [
         ("OpenAI.Chat.ChatClient", "OpenAI Chat"),
         ("OpenAI.Embeddings.EmbeddingClient", "OpenAI Embeddings"),
         ("OpenAI.Images.ImageClient", "OpenAI Images"),
@@ -43,20 +43,20 @@ internal sealed class Qyl0406DirectGenAiSdkUsageAnalyzer : AlAnalyzer {
         ("Cohere.CohereClient", "Cohere")
     ];
 
-    private static readonly DiagnosticDescriptor s_rule = CreateRule(
+    private static readonly DiagnosticDescriptor Rule = CreateRule(
         DiagnosticId,
         DiagnosticCategories.GenAI,
         DiagnosticSeverities.Suggestion);
 
     /// <inheritdoc />
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
 
     /// <inheritdoc />
     protected override void InitializeCore(AnalysisContext context) {
         context.RegisterCompilationStartAction(compilationContext => {
-            var iChatClientType = compilationContext.Compilation.GetTypeByMetadataName(IChatClientMetadataName);
+            var iChatClientType = compilationContext.Compilation.GetTypeByMetadataName(ChatClientMetadataName);
 
-            var knownSdkTypes = s_sdkTypes
+            var knownSdkTypes = SdkTypes
                 .Select(entry => (
                     Type: compilationContext.Compilation.GetTypeByMetadataName(entry.MetadataName),
                     entry.Label))
@@ -89,7 +89,7 @@ internal sealed class Qyl0406DirectGenAiSdkUsageAnalyzer : AlAnalyzer {
         foreach (var (sdkType, label) in knownSdkTypes) {
             if (sdkType is not null && containingType.IsEqualTo(sdkType)) {
                 context.ReportDiagnostic(Diagnostic.Create(
-                    s_rule,
+                    Rule,
                     invocation.Syntax.GetLocation(),
                     label));
                 return;

@@ -10,13 +10,13 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class SupplementalSemconvMigrationAnalyzer : DiagnosticAnalyzer
 {
-    internal const string OldNameProperty = "OldName";
+    private const string OldNameProperty = "OldName";
     internal const string ReplacementNameProperty = "ReplacementName";
     internal const string MigrationKindProperty = "MigrationKind";
-    internal const string ItemKindProperty = "Kind";
-    internal const string SignalProperty = "Signal";
-    internal const string DomainProperty = "Domain";
-    internal const string ChangelogVersionProperty = "ChangelogVersion";
+    private const string ItemKindProperty = "Kind";
+    private const string SignalProperty = "Signal";
+    private const string DomainProperty = "Domain";
+    private const string ChangelogVersionProperty = "ChangelogVersion";
 
     private static readonly ImmutableHashSet<string> MetricInstrumentMethodNames = ImmutableHashSet.Create(
         "CreateCounter",

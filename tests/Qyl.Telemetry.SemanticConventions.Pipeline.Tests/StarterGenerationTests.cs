@@ -1,13 +1,11 @@
+using System.Globalization;
 using System.Diagnostics;
 using System.Reflection;
 using ANcpLua.Roslyn.Utilities.Testing;
-using AwesomeAssertions;
 using Qyl.Telemetry.SemanticConventions.Activities;
 using Qyl.Telemetry.SemanticConventions.Incubating.Activities;
-using Xunit;
 
 namespace Qyl.Telemetry.SemanticConventions.Pipeline.Tests;
-
 // Inside Qyl.Telemetry.SemanticConventions.* the simple name Spans is the definitions namespace.
 using Spans = global::Qyl.Spans;
 
@@ -16,64 +14,73 @@ using Spans = global::Qyl.Spans;
 /// kind comes from the group, the name from the <c>qyl.span_name</c> chain, the source is the
 /// registry-owned application scope, and the group's <c>qyl.instrumentation.domain</c> is stamped.
 /// </summary>
-[Collection(ApplicationSourceListeners.Name)]
+[ResourceLock(ApplicationSourceListeners.Name)]
+[TestClass]
 public sealed class StarterGenerationTests
 {
-    private static ParameterInfo[] DbClientParameters() =>
-        typeof(Spans).GetMethod(nameof(Spans.DbClient))!.GetParameters();
-
-    [Fact]
+    private static ParameterInfo[] DbClientParameters() => typeof(Spans).GetMethod(nameof(Spans.DbClient))!.GetParameters();
+    [TestMethod]
     public void The_required_attribute_is_positional_and_typed()
     {
         var system = DbClientParameters()[0];
-
-        system.Name.Should().Be("system");
-        system.ParameterType.Should().Be<DbSystemName>();
-        system.IsOptional.Should().BeFalse();
+        Assert.AreEqual("system", system.Name);
+        Assert.AreEqual(typeof(DbSystemName), system.ParameterType);
+        Assert.IsFalse(system.IsOptional);
     }
 
-    [Fact]
+    [TestMethod]
     public void Conditionally_required_parameters_are_nullable_and_have_no_default()
     {
         var parameters = DbClientParameters().ToDictionary(static p => p.Name!);
-
-        foreach (var name in new[] { "namespace", "collectionName", "operationName", "serverPort" })
+        foreach (var name in new[]
         {
-            parameters.Should().ContainKey(name);
-            parameters[name].IsOptional.Should().BeFalse($"{name} is conditionally required");
+            "namespace",
+            "collectionName",
+            "operationName",
+            "serverPort"
+        })
+        {
+            Assert.IsTrue(parameters.ContainsKey(name));
+            Assert.IsFalse(parameters[name].IsOptional, $"{name} is conditionally required");
             var type = parameters[name].ParameterType;
-            (type == typeof(string) || Nullable.GetUnderlyingType(type) is not null).Should().BeTrue($"{name} is nullable");
+            Assert.IsTrue((type == typeof(string) || Nullable.GetUnderlyingType(type)is not null), $"{name} is nullable");
         }
     }
 
-    [Fact]
+    [TestMethod]
     public void Recommended_parameters_default_to_null()
     {
         var parameters = DbClientParameters().ToDictionary(static p => p.Name!);
-
-        foreach (var name in new[] { "querySummary", "queryText", "storedProcedureName", "serverAddress", "operationBatchSize", "networkPeerAddress", "networkPeerPort" })
+        foreach (var name in new[]
         {
-            parameters.Should().ContainKey(name);
-            parameters[name].IsOptional.Should().BeTrue($"{name} is recommended");
-            parameters[name].DefaultValue.Should().BeNull();
+            "querySummary",
+            "queryText",
+            "storedProcedureName",
+            "serverAddress",
+            "operationBatchSize",
+            "networkPeerAddress",
+            "networkPeerPort"
+        })
+        {
+            Assert.IsTrue(parameters.ContainsKey(name));
+            Assert.IsTrue(parameters[name].IsOptional, $"{name} is recommended");
+            Assert.IsNull(parameters[name].DefaultValue);
         }
     }
 
-    [Fact]
+    [TestMethod]
     public void OptIn_and_end_phase_attributes_get_no_parameter()
     {
-        DbClientParameters().Select(static p => p.Name).Should()
-            .NotContain("queryParameter")
-            .And.NotContain("responseReturnedRows")
-            .And.NotContain("responseStatusCode")
-            .And.NotContain("errorType");
+        Assert.DoesNotContain("queryParameter", DbClientParameters().Select(static p => p.Name));
+        Assert.DoesNotContain("responseReturnedRows", DbClientParameters().Select(static p => p.Name));
+        Assert.DoesNotContain("responseStatusCode", DbClientParameters().Select(static p => p.Name));
+        Assert.DoesNotContain("errorType", DbClientParameters().Select(static p => p.Name));
     }
 
-    [Fact]
+    [TestMethod]
     public void Omitting_a_conditional_parameter_is_a_compile_error()
     {
-        var result = Compile
-            .Source("""
+        var result = Compile.Source("""
                 using Qyl;
                 using Qyl.Telemetry.SemanticConventions.Activities;
 
@@ -82,118 +89,131 @@ public sealed class StarterGenerationTests
                     public static void Write() =>
                         Spans.DbClient(DbSystemName.Postgresql, collectionName: "orders", operationName: "write", serverPort: null)?.Dispose();
                 }
-                """)
-            .WithReference(typeof(Spans).Assembly)
-            .WithReference<Activity>()
-            .Build();
-
-        result.HasError("CS7036").Should().BeTrue();
-        result.Diagnostics.Should().Contain(static d => d.Id == "CS7036" && d.GetMessage(null).Contains("namespace", StringComparison.Ordinal));
+                """).WithReference(typeof(Spans).Assembly).WithReference<Activity>().Build();
+        Assert.IsTrue(result.HasError("CS7036"));
+        Assert.IsTrue(result.Diagnostics.Any(static d => d.Id == "CS7036" && d.GetMessage(CultureInfo.InvariantCulture).Contains("namespace", StringComparison.Ordinal)));
     }
 
-    [Theory]
-    [InlineData("SELECT orders", "SELECT", "orders", "shop", null, null, "SELECT orders")]
-    [InlineData(null, "write", "orders", "shop", null, null, "write orders")]
-    [InlineData(null, "write", null, "shop", null, null, "write shop")]
-    [InlineData(null, null, "orders", "shop", null, null, "orders")]
-    [InlineData(null, null, null, null, "db.internal", 5432L, "db.internal:5432")]
-    [InlineData(null, null, null, null, null, null, "postgresql")]
-    public void The_name_follows_the_span_name_chain(
-        string? summary, string? operation, string? collection, string? @namespace, string? address, long? port, string expected)
+    [TestMethod]
+    [DataRow("SELECT orders", "SELECT", "orders", "shop", null, null, "SELECT orders")]
+    [DataRow(null, "write", "orders", "shop", null, null, "write orders")]
+    [DataRow(null, "write", null, "shop", null, null, "write shop")]
+    [DataRow(null, null, "orders", "shop", null, null, "orders")]
+    [DataRow(null, null, null, null, "db.internal", 5432L, "db.internal:5432")]
+    [DataRow(null, null, null, null, null, null, "postgresql")]
+    public void The_name_follows_the_span_name_chain(string? summary, string? operation, string? collection, string? @namespace, string? address, long? port, string expected)
     {
         using var listener = new ApplicationSourceListener();
-
-        using var span = Spans.DbClient(DbSystemName.Postgresql, collectionName: collection, @namespace: @namespace,
-            operationName: operation, serverPort: port, querySummary: summary, serverAddress: address);
-
-        span.Should().NotBeNull();
-        span.DisplayName.Should().Be(expected);
+        using var span = Spans.DbClient(DbSystemName.Postgresql, collectionName: collection, @namespace: @namespace, operationName: operation, serverPort: port, querySummary: summary, serverAddress: address);
+        Assert.IsNotNull(span);
+        Assert.AreNotEqual(default(ActivityTraceId), span.TraceId);
+        Assert.AreNotEqual(default(ActivitySpanId), span.SpanId);
+        Assert.AreEqual(ActivityStatusCode.Unset, span.Status);
+        Assert.AreEqual("Qyl.Telemetry.Application", span.Source.Name);
+        Assert.AreEqual(SchemaUrl.QylVersion, span.Source.Version);
+        Assert.AreEqual(SchemaUrl.Qyl, span.Source.TelemetrySchemaUrl);
+        Assert.AreEqual(expected, span.DisplayName);
+        Assert.AreEqual(ActivityKind.Client, span.Kind);
+        Assert.AreEqual("db.client", span.GetTagItem("qyl.instrumentation.domain"));
     }
 
-    [Fact]
+    [TestMethod]
     public void The_starter_starts_a_client_span_on_the_application_scope_with_its_domain()
     {
         using var listener = new ApplicationSourceListener();
-
-        using var span = Spans.DbClient(DbSystemName.Custom("memory"), @namespace: "shop",
-            collectionName: "orders", operationName: "write", serverPort: null);
-
-        span!.Kind.Should().Be(ActivityKind.Client);
-        span.Source.Name.Should().Be("Qyl.Telemetry.Application");
-        span.Source.TelemetrySchemaUrl.Should().Be(SchemaUrl.Qyl);
-        span.Source.Version.Should().Be(SchemaUrl.QylVersion);
-        span.GetTagItem("db.system.name").Should().Be("memory");
-        span.GetTagItem("db.namespace").Should().Be("shop");
-        span.GetTagItem("db.collection.name").Should().Be("orders");
-        span.GetTagItem("qyl.instrumentation.domain").Should().Be("db.client");
-        span.GetTagItem("server.port").Should().BeNull();
+        using var span = Spans.DbClient(DbSystemName.Custom("memory"), @namespace: "shop", collectionName: "orders", operationName: "write", serverPort: null);
+        Assert.IsNotNull(span);
+        Assert.AreNotEqual(default(ActivityTraceId), span.TraceId);
+        Assert.AreNotEqual(default(ActivitySpanId), span.SpanId);
+        Assert.AreEqual(ActivityStatusCode.Unset, span.Status);
+        Assert.AreEqual("Qyl.Telemetry.Application", span.Source.Name);
+        Assert.AreEqual(SchemaUrl.QylVersion, span.Source.Version);
+        Assert.AreEqual(SchemaUrl.Qyl, span.Source.TelemetrySchemaUrl);
+        Assert.AreEqual(ActivityKind.Client, span.Kind);
+        Assert.AreEqual("write orders", span.DisplayName);
+        Assert.AreEqual("memory", span.GetTagItem("db.system.name"));
+        Assert.AreEqual("shop", span.GetTagItem("db.namespace"));
+        Assert.AreEqual("orders", span.GetTagItem("db.collection.name"));
+        Assert.AreEqual("db.client", span.GetTagItem("qyl.instrumentation.domain"));
+        Assert.IsNull(span.GetTagItem("server.port"));
     }
 
-    [Fact]
+    [TestMethod]
     public void Without_a_listener_a_starter_returns_null()
     {
-        Spans.Source.HasListeners().Should().BeFalse();
-
-        Spans.DbClient(DbSystemName.Postgresql, null, null, null, null).Should().BeNull();
-        Spans.Work("checkout").Should().BeNull();
+        Assert.IsFalse(Spans.Source.HasListeners());
+        Assert.IsNull(Spans.DbClient(DbSystemName.Postgresql, null, null, null, null));
+        Assert.IsNull(Spans.Work("checkout"));
     }
 
-    [Fact]
+    [TestMethod]
     public void Work_starts_an_internal_span_stamped_app()
     {
         using var listener = new ApplicationSourceListener();
-
         using var span = Spans.Work("checkout");
-
-        span!.DisplayName.Should().Be("checkout");
-        span.Kind.Should().Be(ActivityKind.Internal);
-        span.GetTagItem("qyl.instrumentation.domain").Should().Be("app");
+        Assert.IsNotNull(span);
+        Assert.AreNotEqual(default(ActivityTraceId), span.TraceId);
+        Assert.AreNotEqual(default(ActivitySpanId), span.SpanId);
+        Assert.AreEqual(ActivityStatusCode.Unset, span.Status);
+        Assert.AreEqual("Qyl.Telemetry.Application", span.Source.Name);
+        Assert.AreEqual(SchemaUrl.QylVersion, span.Source.Version);
+        Assert.AreEqual(SchemaUrl.Qyl, span.Source.TelemetrySchemaUrl);
+        Assert.AreEqual("checkout", span.DisplayName);
+        Assert.AreEqual(ActivityKind.Internal, span.Kind);
+        Assert.AreEqual("app", span.GetTagItem("qyl.instrumentation.domain"));
     }
 
-    [Fact]
+    [TestMethod]
     public void The_consumer_starter_parents_to_the_producer_context()
     {
         using var listener = new ApplicationSourceListener();
         var producer = new ActivityContext(ActivityTraceId.CreateRandom(), ActivitySpanId.CreateRandom(), ActivityTraceFlags.Recorded, isRemote: true);
-
-        using var span = IncubatingSpans.MessagingProcessConsumer(MessagingSystem.Kafka, "process",
-            batchMessageCount: null, destinationName: "orders", destinationTemplate: null, producer: producer);
-
-        span!.Kind.Should().Be(ActivityKind.Consumer);
-        span.DisplayName.Should().Be("process orders");
-        span.TraceId.Should().Be(producer.TraceId);
-        span.ParentSpanId.Should().Be(producer.SpanId);
-        span.GetTagItem("messaging.system").Should().Be("kafka");
-        span.GetTagItem("messaging.operation.type").Should().Be("process");
-        span.GetTagItem("qyl.instrumentation.domain").Should().Be("messaging.process");
+        using var span = IncubatingSpans.MessagingProcessConsumer(MessagingSystem.Kafka, "process", batchMessageCount: null, destinationName: "orders", destinationTemplate: null, producer: producer);
+        Assert.IsNotNull(span);
+        Assert.AreNotEqual(default(ActivityTraceId), span.TraceId);
+        Assert.AreNotEqual(default(ActivitySpanId), span.SpanId);
+        Assert.AreEqual(ActivityStatusCode.Unset, span.Status);
+        Assert.AreEqual("Qyl.Telemetry.Application", span.Source.Name);
+        Assert.AreEqual(SchemaUrl.QylVersion, span.Source.Version);
+        Assert.AreEqual(SchemaUrl.Qyl, span.Source.TelemetrySchemaUrl);
+        Assert.AreEqual(ActivityKind.Consumer, span.Kind);
+        Assert.AreEqual("process orders", span.DisplayName);
+        Assert.AreEqual(producer.TraceId, span.TraceId);
+        Assert.AreEqual(producer.SpanId, span.ParentSpanId);
+        Assert.AreEqual("kafka", span.GetTagItem("messaging.system"));
+        Assert.AreEqual("process", span.GetTagItem("messaging.operation.type"));
+        Assert.AreEqual("messaging.process", span.GetTagItem("qyl.instrumentation.domain"));
     }
 
-    [Fact]
+    [TestMethod]
     public void The_agent_starter_fixes_its_operation()
     {
         using var listener = new ApplicationSourceListener();
-
-        using var span = IncubatingSpans.GenAiInvokeAgent(agentDescription: null, agentName: "Planner",
-            conversationId: "conv-1", dataSourceId: null, outputType: null, requestChoiceCount: null, requestSeed: null);
-
-        span!.DisplayName.Should().Be("invoke_agent Planner");
-        span.Kind.Should().Be(ActivityKind.Internal);
-        span.GetTagItem("gen_ai.operation.name").Should().Be("invoke_agent");
-        span.GetTagItem("gen_ai.agent.name").Should().Be("Planner");
-        span.GetTagItem("qyl.instrumentation.domain").Should().Be("gen_ai.invoke_agent");
-        typeof(IncubatingSpans).GetMethod(nameof(IncubatingSpans.GenAiInvokeAgent))!.GetParameters()
-            .Select(static p => p.Name).Should().NotContain("operationName");
+        using var span = IncubatingSpans.GenAiInvokeAgent(agentDescription: null, agentName: "Planner", conversationId: "conv-1", dataSourceId: null, outputType: null, requestChoiceCount: null, requestSeed: null);
+        Assert.IsNotNull(span);
+        Assert.AreNotEqual(default(ActivityTraceId), span.TraceId);
+        Assert.AreNotEqual(default(ActivitySpanId), span.SpanId);
+        Assert.AreEqual(ActivityStatusCode.Unset, span.Status);
+        Assert.AreEqual("Qyl.Telemetry.Application", span.Source.Name);
+        Assert.AreEqual(SchemaUrl.QylVersion, span.Source.Version);
+        Assert.AreEqual(SchemaUrl.Qyl, span.Source.TelemetrySchemaUrl);
+        Assert.AreEqual("invoke_agent Planner", span.DisplayName);
+        Assert.AreEqual(ActivityKind.Internal, span.Kind);
+        Assert.AreEqual("invoke_agent", span.GetTagItem("gen_ai.operation.name"));
+        Assert.AreEqual("Planner", span.GetTagItem("gen_ai.agent.name"));
+        Assert.AreEqual("gen_ai.invoke_agent", span.GetTagItem("qyl.instrumentation.domain"));
+        Assert.DoesNotContain("operationName", typeof(IncubatingSpans).GetMethod(nameof(IncubatingSpans.GenAiInvokeAgent))!.GetParameters().Select(static p => p.Name));
     }
 
-    [Fact]
+    [TestMethod]
     public void Span_names_are_generated_for_the_families_qyl_instruments()
     {
-        SpanNames.HttpServer("GET", "/orders/{id}").Should().Be("GET /orders/{id}");
-        SpanNames.HttpServer("_OTHER", "/orders").Should().Be("HTTP /orders");
-        SpanNames.HttpServer(null, null).Should().Be("HTTP");
-        SpanNames.RpcGrpcCallClient("_OTHER", "grpc").Should().Be("grpc");
-        SpanNames.RpcGrpcCallClient("Greeter/SayHello", "grpc").Should().Be("Greeter/SayHello");
-        SpanNames.MessagingProcessConsumer("process", null, "orders", null, null).Should().Be("process orders");
-        SpanNames.DbClient(null, null, null, null, null, null, null, "postgresql").Should().Be("postgresql");
+        Assert.AreEqual("GET /orders/{id}", SpanNames.HttpServer("GET", "/orders/{id}"));
+        Assert.AreEqual("HTTP /orders", SpanNames.HttpServer("_OTHER", "/orders"));
+        Assert.AreEqual("HTTP", SpanNames.HttpServer(null, null));
+        Assert.AreEqual("grpc", SpanNames.RpcGrpcCallClient("_OTHER", "grpc"));
+        Assert.AreEqual("Greeter/SayHello", SpanNames.RpcGrpcCallClient("Greeter/SayHello", "grpc"));
+        Assert.AreEqual("process orders", SpanNames.MessagingProcessConsumer("process", null, "orders", null, null));
+        Assert.AreEqual("postgresql", SpanNames.DbClient(null, null, null, null, null, null, null, "postgresql"));
     }
 }

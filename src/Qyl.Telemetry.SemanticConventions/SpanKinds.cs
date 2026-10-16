@@ -8,6 +8,7 @@ namespace Qyl.Telemetry.SemanticConventions;
 /// so the vocabulary needs no static abstract interface members and compiles for
 /// <c>netstandard2.0</c>.
 /// </summary>
+[JetBrains.Annotations.PublicAPI]
 public interface ISpanKind
 {
     /// <summary>The registry span kind (<c>client</c>, <c>server</c>, <c>internal</c>, <c>producer</c>, or <c>consumer</c>).</summary>
@@ -15,6 +16,7 @@ public interface ISpanKind
 }
 
 /// <summary>Marker for a client span.</summary>
+[JetBrains.Annotations.PublicAPI]
 public readonly struct Client : ISpanKind
 {
     /// <inheritdoc/>
@@ -22,6 +24,7 @@ public readonly struct Client : ISpanKind
 }
 
 /// <summary>Marker for a server span.</summary>
+[JetBrains.Annotations.PublicAPI]
 public readonly struct Server : ISpanKind
 {
     /// <inheritdoc/>
@@ -29,6 +32,7 @@ public readonly struct Server : ISpanKind
 }
 
 /// <summary>Marker for an internal span.</summary>
+[JetBrains.Annotations.PublicAPI]
 public readonly struct Internal : ISpanKind
 {
     /// <inheritdoc/>
@@ -36,6 +40,7 @@ public readonly struct Internal : ISpanKind
 }
 
 /// <summary>Marker for a producer span.</summary>
+[JetBrains.Annotations.PublicAPI]
 public readonly struct Producer : ISpanKind
 {
     /// <inheritdoc/>
@@ -43,6 +48,7 @@ public readonly struct Producer : ISpanKind
 }
 
 /// <summary>Marker for a consumer span.</summary>
+[JetBrains.Annotations.PublicAPI]
 public readonly struct Consumer : ISpanKind
 {
     /// <inheritdoc/>

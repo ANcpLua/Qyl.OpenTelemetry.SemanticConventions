@@ -12,25 +12,25 @@ internal static class SemconvMigrationCatalog
     public static ImmutableArray<SemconvMigrationCatalogEntry> SupplementalAttributeValueEntries { get; } =
         BuildSupplementalAttributeValueEntries();
 
-    private static readonly ImmutableDictionary<string, SemconvMigrationCatalogEntry> s_entriesByOldName =
+    private static readonly ImmutableDictionary<string, SemconvMigrationCatalogEntry> EntriesByOldName =
         BuildEntriesByOldName(Entries);
 
-    private static readonly ImmutableDictionary<string, SemconvMigrationCatalogEntry> s_attributeValueEntriesByOldName =
+    private static readonly ImmutableDictionary<string, SemconvMigrationCatalogEntry> AttributeValueEntriesByOldName =
         BuildEntriesByOldName(SupplementalAttributeValueEntries);
 
-    private static readonly ImmutableArray<SemconvMigrationCatalogEntry> s_wildcardEntries =
+    private static readonly ImmutableArray<SemconvMigrationCatalogEntry> WildcardEntries =
         BuildWildcardEntries(Entries);
 
     public static bool TryGetMigrationByName(
         string oldName,
         out SemconvMigrationCatalogEntry entry)
     {
-        if (s_entriesByOldName.TryGetValue(oldName, out entry))
+        if (EntriesByOldName.TryGetValue(oldName, out entry))
         {
             return true;
         }
 
-        foreach (var wildcardEntry in s_wildcardEntries)
+        foreach (var wildcardEntry in WildcardEntries)
         {
             if (!MatchesWildcard(oldName, wildcardEntry.OldName))
             {
@@ -51,7 +51,7 @@ internal static class SemconvMigrationCatalog
         out SemconvMigrationCatalogEntry entry)
     {
         var key = attributeName + "=" + attributeValue;
-        if (s_attributeValueEntriesByOldName.TryGetValue(key, out entry))
+        if (AttributeValueEntriesByOldName.TryGetValue(key, out entry))
         {
             return true;
         }
@@ -77,7 +77,7 @@ internal static class SemconvMigrationCatalog
     /// </summary>
     public static string ResolveTerminalReplacement(string oldName)
     {
-        const int MaxResolutionDepth = 8;
+        const int maxResolutionDepth = 8;
 
         if (string.IsNullOrEmpty(oldName))
         {
@@ -87,9 +87,9 @@ internal static class SemconvMigrationCatalog
         var visited = new HashSet<string>(StringComparer.Ordinal) { oldName };
         var current = oldName;
 
-        for (var step = 0; step < MaxResolutionDepth; step++)
+        for (var step = 0; step < maxResolutionDepth; step++)
         {
-            if (!s_entriesByOldName.TryGetValue(current, out var entry) || !entry.HasExactReplacement)
+            if (!EntriesByOldName.TryGetValue(current, out var entry) || !entry.HasExactReplacement)
             {
                 return current;
             }

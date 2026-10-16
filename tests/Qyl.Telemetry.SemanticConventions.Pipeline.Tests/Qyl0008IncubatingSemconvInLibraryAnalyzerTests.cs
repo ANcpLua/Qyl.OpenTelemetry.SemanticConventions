@@ -1,26 +1,24 @@
 // Copyright The OpenTelemetry Authors
 // SPDX-License-Identifier: Apache-2.0
-
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Globalization;
 using ANcpLua.Roslyn.Utilities.Testing;
-using AwesomeAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Qyl.Telemetry.SemanticConventions.Analyzers;
-using Xunit;
 
 namespace Qyl.Telemetry.SemanticConventions.Pipeline.Tests;
-
 /// <summary>
 ///   QYL0008 fires on a direct incubating reference from a library, and stays silent for
 ///   the three accepted local-copy forms (const field, static readonly field, static
 ///   readonly array) plus a method-local const. A whole project opts out with
 ///   <c>OtelSemConvInstrumentationLibrary=true</c>.
 /// </summary>
-public sealed class Qyl0008IncubatingSemconvInLibraryAnalyzerTests
+[TestClass]
+public sealed class Qyl0008IncubatingSemconvInLibraryAnalyzerTests(TestContext testContext)
 {
+
     /// <summary>
     ///   A stand-in incubating surface: the namespace carries both a
     ///   <c>SemanticConventions</c> root and an <c>.Incubating</c> segment, which is
@@ -38,9 +36,7 @@ public sealed class Qyl0008IncubatingSemconvInLibraryAnalyzerTests
             }
         }
         """;
-
-    private static string Library(string body) =>
-        $$"""
+    private static string Library(string body) => $$"""
         using System.Diagnostics;
         using MessagingAttributes = Contoso.SemanticConventions.Incubating.Attributes.Messaging.MessagingAttributes;
 
@@ -51,109 +47,80 @@ public sealed class Qyl0008IncubatingSemconvInLibraryAnalyzerTests
 
         {{IncubatingFixture}}
         """;
-
-    private static async Task<ImmutableArray<Diagnostic>> RunAsync(
-        string source,
-        IReadOnlyDictionary<string, string>? buildProperties = null)
+    private async Task<ImmutableArray<Diagnostic>> RunAsync(string source, IReadOnlyDictionary<string, string>? buildProperties = null)
     {
         // The compilation references no test framework, so QYL0008 sees a library project.
-        var diagnostics = await Compile
-            .Source(source)
-            .WithReference<Activity>()
-            .Build()
-            .ShouldSucceed()
-            .Compilation
-            .WithAnalyzers(
-                [new IncubatingSemconvInLibraryAnalyzer()],
-                new AnalyzerOptions(
-                    [],
-                    new DictionaryAnalyzerConfigOptionsProvider(buildProperties ?? new Dictionary<string, string>())))
-            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
-        return [.. diagnostics.Where(d => d.Id == "QYL0008")];
+        var diagnostics = await AnalyzerRun.CompileSource(Compile.Source(source).WithReference<Activity>()).WithAnalyzers([new IncubatingSemconvInLibraryAnalyzer()], new AnalyzerOptions([], new DictionaryAnalyzerConfigOptionsProvider(buildProperties ?? new Dictionary<string, string>()))).GetAnalyzerDiagnosticsAsync(testContext.CancellationToken);
+        Assert.IsFalse(diagnostics.Any(static diagnostic => diagnostic.Id.StartsWith("AD", StringComparison.Ordinal)),
+            "Analyzer execution failed:\n" + string.Join("\n", diagnostics));
+        return[..diagnostics.Where(d => d.Id == "QYL0008")];
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Fires_on_a_direct_incubating_reference_in_a_library()
     {
-        var diagnostics = await RunAsync(Library(
-            """
+        var diagnostics = await RunAsync(Library("""
                 public static void M(Activity activity) =>
                     activity.SetTag(MessagingAttributes.System, "kafka");
             """));
-
-        diagnostics.Should().ContainSingle();
-        diagnostics[0].Severity.Should().Be(DiagnosticSeverity.Warning);
-        diagnostics[0].GetMessage(CultureInfo.InvariantCulture).Should().Contain("System");
+        Assert.ContainsSingle(diagnostics);
+        Assert.AreEqual(DiagnosticSeverity.Warning, diagnostics[0].Severity);
+        Assert.Contains("System", diagnostics[0].GetMessage(CultureInfo.InvariantCulture));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Silent_for_a_const_field_copy()
     {
-        var diagnostics = await RunAsync(Library(
-            """
+        var diagnostics = await RunAsync(Library("""
                 private const string Copy = MessagingAttributes.System;
 
                 public static void M(Activity activity) => activity.SetTag(Copy, "kafka");
             """));
-
-        diagnostics.Should().BeEmpty();
+        Assert.IsEmpty(diagnostics);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Silent_for_a_static_readonly_field_copy()
     {
-        var diagnostics = await RunAsync(Library(
-            """
+        var diagnostics = await RunAsync(Library("""
                 private static readonly string Copy = MessagingAttributes.OperationType;
 
                 public static void M(Activity activity) => activity.SetTag(Copy, "send");
             """));
-
-        diagnostics.Should().BeEmpty();
+        Assert.IsEmpty(diagnostics);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Silent_for_a_static_readonly_array_of_copies()
     {
-        var diagnostics = await RunAsync(Library(
-            """
+        var diagnostics = await RunAsync(Library("""
                 private static readonly string[] Copies = [MessagingAttributes.OperationName];
 
                 public static void M(Activity activity) => activity.SetTag(Copies[0], "publish");
             """));
-
-        diagnostics.Should().BeEmpty();
+        Assert.IsEmpty(diagnostics);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Silent_for_a_method_local_const_copy()
     {
-        var diagnostics = await RunAsync(Library(
-            """
+        var diagnostics = await RunAsync(Library("""
                 public static void M(Activity activity)
                 {
                     const string copy = MessagingAttributes.DestinationName;
                     activity.SetTag(copy, "orders");
                 }
             """));
-
-        diagnostics.Should().BeEmpty();
+        Assert.IsEmpty(diagnostics);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Silent_when_the_project_opts_out_as_an_instrumentation_library()
     {
-        var diagnostics = await RunAsync(
-            Library(
-                """
+        var diagnostics = await RunAsync(Library("""
                     public static void M(Activity activity) =>
                         activity.SetTag(MessagingAttributes.System, "kafka");
-                """),
-            new Dictionary<string, string>
-            {
-                ["build_property.OtelSemConvInstrumentationLibrary"] = "true",
-            });
-
-        diagnostics.Should().BeEmpty();
+                """), new Dictionary<string, string> { ["build_property.OtelSemConvInstrumentationLibrary"] = "true", });
+        Assert.IsEmpty(diagnostics);
     }
 }

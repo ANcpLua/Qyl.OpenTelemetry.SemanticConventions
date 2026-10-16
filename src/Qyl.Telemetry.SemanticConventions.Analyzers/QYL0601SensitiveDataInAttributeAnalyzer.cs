@@ -33,7 +33,7 @@ internal sealed class Qyl0601SensitiveDataInAttributeAnalyzer : AlAnalyzer {
     ///     same words are covered by segment matching; the joined spellings stay listed because
     ///     an all-lowercase <c>apikey</c> is a single segment.
     /// </summary>
-    private static readonly AttributeKeyPatternSet s_sensitivePatterns = new(
+    private static readonly AttributeKeyPatternSet SensitivePatterns = new(
         // Credentials
         "password",
         "passwd",
@@ -77,13 +77,13 @@ internal sealed class Qyl0601SensitiveDataInAttributeAnalyzer : AlAnalyzer {
     /// <summary>The diagnostic identifier for QYL0601.</summary>
     private const string DiagnosticId = "QYL0601";
 
-    private static readonly DiagnosticDescriptor s_rule = CreateRule(
+    private static readonly DiagnosticDescriptor Rule = CreateRule(
         DiagnosticId,
         DiagnosticCategories.OpenTelemetry,
         DiagnosticSeverity.Warning);
 
     /// <summary>Gets the diagnostic descriptors for the supported diagnostics.</summary>
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
 
     /// <summary>Routes every telemetry payload literal in the compilation through the sensitive-name check.</summary>
     protected override void InitializeCore(AnalysisContext context) =>
@@ -93,10 +93,10 @@ internal sealed class Qyl0601SensitiveDataInAttributeAnalyzer : AlAnalyzer {
     private static void ReportIfSensitive(OperationAnalysisContext context, TelemetryAttributePayloadLiteral payload) {
         if (payload.Sink == TelemetryPayloadSink.None
             || SemconvRegistryFacts.IsRegistryAttributeKey(payload.Key)
-            || !s_sensitivePatterns.Matches(payload.Key)) {
+            || !SensitivePatterns.Matches(payload.Key)) {
             return;
         }
 
-        context.ReportDiagnostic(Diagnostic.Create(s_rule, payload.KeySyntax.GetLocation(), payload.Key));
+        context.ReportDiagnostic(Diagnostic.Create(Rule, payload.KeySyntax.GetLocation(), payload.Key));
     }
 }

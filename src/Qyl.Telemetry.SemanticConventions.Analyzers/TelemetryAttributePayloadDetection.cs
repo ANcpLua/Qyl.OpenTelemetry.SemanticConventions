@@ -43,16 +43,11 @@ internal enum TelemetryPayloadSink
 /// or tag collection reach telemetry, and where?" with a lookup instead of a walk over the whole
 /// block, which is what the previous per-literal <c>DescendantsAndSelf</c> scan cost.
 /// </summary>
-internal sealed class TelemetryPayloadFlowScope
+internal sealed class TelemetryPayloadFlowScope(ImmutableArray<IOperation> operationBlocks)
 {
-    private readonly Lazy<ImmutableDictionary<ILocalSymbol, TelemetryPayloadSink>> _sinkByLocal;
-
-    public TelemetryPayloadFlowScope(ImmutableArray<IOperation> operationBlocks)
-    {
-        _sinkByLocal = new Lazy<ImmutableDictionary<ILocalSymbol, TelemetryPayloadSink>>(
-            () => Build(operationBlocks),
-            LazyThreadSafetyMode.ExecutionAndPublication);
-    }
+    private readonly Lazy<ImmutableDictionary<ILocalSymbol, TelemetryPayloadSink>> _sinkByLocal = new(
+        () => Build(operationBlocks),
+        LazyThreadSafetyMode.ExecutionAndPublication);
 
     public bool TryGetSink(ILocalSymbol local, out TelemetryPayloadSink sink) =>
         _sinkByLocal.Value.TryGetValue(local, out sink);
@@ -362,6 +357,14 @@ internal static class TelemetryAttributePayloadDetection
                 AnalyzeKeyValuePairCreation(objectCreation, report);
             }
 
+            if (IsTelemetryTagCollection(objectCreation.Type))
+            {
+                foreach (var argument in objectCreation.Arguments)
+                {
+                    AnalyzePayload(argument.Value, report);
+                }
+            }
+
             if (objectCreation.Initializer is not null)
             {
                 AnalyzeObjectInitializer(objectCreation.Initializer, report);
@@ -660,13 +663,13 @@ internal static class TelemetryAttributePayloadDetection
             return false;
         }
 
-        if (invocation.TargetMethod.ContainingType.Name == "ResourceBuilder")
+        if (invocation.TargetMethod.ContainingType.ToDisplayString() == "OpenTelemetry.Resources.ResourceBuilder")
         {
             return true;
         }
 
         return invocation.TargetMethod is { IsExtensionMethod: true, Parameters.Length: > 0 }
-               && invocation.TargetMethod.Parameters[0].Type.Name == "ResourceBuilder";
+               && invocation.TargetMethod.Parameters[0].Type.ToDisplayString() == "OpenTelemetry.Resources.ResourceBuilder";
     }
 
     private static bool IsMetricMeasurementInvocation(IInvocationOperation invocation) =>
@@ -828,18 +831,18 @@ internal static class TelemetryAttributePayloadDetection
         && IsLoggerLike(invocation.TargetMethod.ContainingType);
 
     private static bool IsMetricInstrument(ITypeSymbol? type) =>
-        type?.Name is "Counter" or "Histogram" or "UpDownCounter";
+        type is INamedTypeSymbol { Arity: 1, Name: "Counter" or "Histogram" or "UpDownCounter" }
+        && type.ContainingNamespace.ToDisplayString() == "System.Diagnostics.Metrics";
 
     private static bool IsMetricMeasurementCreation(ITypeSymbol? type) =>
-        type?.Name is "Measurement";
+        type is INamedTypeSymbol { Arity: 1, Name: "Measurement" }
+        && type.ContainingNamespace.ToDisplayString() == "System.Diagnostics.Metrics";
 
     private static bool IsLoggerLike(ITypeSymbol? type) =>
         type?.Name is "ILogger";
 }
 
-internal readonly struct TelemetryAttributePayloadLiteral
-{
-    public TelemetryAttributePayloadLiteral(
+internal readonly struct TelemetryAttributePayloadLiteral(
         string key,
         SyntaxNode keySyntax,
         bool keyIsBareLiteral,
@@ -847,30 +850,22 @@ internal readonly struct TelemetryAttributePayloadLiteral
         SyntaxNode? valueSyntax,
         bool valueIsBareLiteral,
         TelemetryPayloadSink sink = TelemetryPayloadSink.None)
-    {
-        Key = key;
-        KeySyntax = keySyntax;
-        KeyIsBareLiteral = keyIsBareLiteral;
-        Value = value;
-        ValueSyntax = valueSyntax;
-        ValueIsBareLiteral = valueIsBareLiteral;
-        Sink = sink;
-    }
+{
 
-    public string Key { get; }
+    public string Key { get; } = key;
 
-    public SyntaxNode KeySyntax { get; }
+    public SyntaxNode KeySyntax { get; } = keySyntax;
 
-    public bool KeyIsBareLiteral { get; }
+    public bool KeyIsBareLiteral { get; } = keyIsBareLiteral;
 
-    public string? Value { get; }
+    public string? Value { get; } = value;
 
-    public SyntaxNode? ValueSyntax { get; }
+    public SyntaxNode? ValueSyntax { get; } = valueSyntax;
 
-    public bool ValueIsBareLiteral { get; }
+    public bool ValueIsBareLiteral { get; } = valueIsBareLiteral;
 
     /// <summary>Where the payload ends up; <see cref="TelemetryPayloadSink.None"/> when it provably goes nowhere.</summary>
-    public TelemetryPayloadSink Sink { get; }
+    public TelemetryPayloadSink Sink { get; } = sink;
 
     /// <summary>True when the payload reaches a telemetry sink rather than an unattached collection.</summary>
     public bool IsProductionEmission => Sink != TelemetryPayloadSink.None;

@@ -20,12 +20,12 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 internal sealed class Qyl0305LegacySemanticConventionsAccessorAnalyzer : AlAnalyzer {
     private const string DiagnosticId = "QYL0305";
 
-    private static readonly DiagnosticDescriptor s_rule = CreateRule(
+    private static readonly DiagnosticDescriptor Rule = CreateRule(
         DiagnosticId,
         DiagnosticCategories.OpenTelemetry,
         DiagnosticSeverity.Warning);
 
-    private static readonly string[] s_legacyAccessorTypes = [
+    private static readonly string[] LegacyAccessorTypes = [
         "OpenTelemetry.SemanticConventions.SemanticConventions",
         "OpenTelemetry.Trace.TraceSemanticConventions",
         "OpenTelemetry.Resource.ResourceSemanticConventions",
@@ -35,14 +35,14 @@ internal sealed class Qyl0305LegacySemanticConventionsAccessorAnalyzer : AlAnaly
     private const string GroupedReplacement = "OpenTelemetry.SemanticConventions.Attributes.*Attributes";
 
     /// <summary>Gets the diagnostic descriptors for the supported diagnostics.</summary>
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
 
     /// <summary>Registers a compilation-start action that resolves legacy accessor types.</summary>
     protected override void InitializeCore(AnalysisContext context) =>
         context.RegisterCompilationStartAction(OnCompilationStart);
 
     private static void OnCompilationStart(CompilationStartAnalysisContext context) {
-        var legacyTypes = s_legacyAccessorTypes
+        var legacyTypes = LegacyAccessorTypes
             .Select(context.Compilation.GetTypeByMetadataName)
             .WhereNotNull()
             .ToImmutableArray();
@@ -67,6 +67,6 @@ internal sealed class Qyl0305LegacySemanticConventionsAccessorAnalyzer : AlAnaly
         }
 
         var qualifiedMember = $"{container.Name}.{fieldReference.Field.Name}";
-        context.ReportDiagnostic(s_rule, fieldReference.Syntax.GetLocation(), qualifiedMember, GroupedReplacement);
+        context.ReportDiagnostic(Rule, fieldReference.Syntax.GetLocation(), qualifiedMember, GroupedReplacement);
     }
 }

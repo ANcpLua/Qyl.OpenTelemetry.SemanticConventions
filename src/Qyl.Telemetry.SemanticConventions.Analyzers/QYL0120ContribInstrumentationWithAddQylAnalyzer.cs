@@ -15,13 +15,13 @@ internal sealed class Qyl0120ContribInstrumentationWithAddQylAnalyzer : AlAnalyz
     private const string DiagnosticId = "QYL0120";
     private const string InstrumentationAssemblyPrefix = "OpenTelemetry.Instrumentation.";
 
-    private static readonly DiagnosticDescriptor s_rule = CreateCompilationEndRule(
+    private static readonly DiagnosticDescriptor Rule = CreateCompilationEndRule(
         DiagnosticId,
         DiagnosticCategories.OpenTelemetry,
         DiagnosticSeverities.RequiredFix);
 
     /// <inheritdoc />
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
 
     /// <inheritdoc />
     protected override void InitializeCore(AnalysisContext context) =>
@@ -47,7 +47,7 @@ internal sealed class Qyl0120ContribInstrumentationWithAddQylAnalyzer : AlAnalyz
                     && assembly.StartsWith(InstrumentationAssemblyPrefix, StringComparison.Ordinal)
                     && method.Parameters.FirstOrDefault()?.Type is { } receiver
                     && (receiver.IsEqualTo(builderType) || receiver.InheritsFrom(builderType))) {
-                    candidates.Enqueue(Diagnostic.Create(s_rule, ctx.Operation.Syntax.GetLocation(), method.Name, assembly));
+                    candidates.Enqueue(Diagnostic.Create(Rule, ctx.Operation.Syntax.GetLocation(), method.Name, assembly));
                 }
             },
             OperationKind.Invocation);

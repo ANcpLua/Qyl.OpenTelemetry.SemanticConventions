@@ -20,7 +20,7 @@ Each ID links to a per-rule page under [`docs/rules/`](rules/) with severity, ca
 | [QYL0003](rules/QYL0003_DeprecatedSemconv.md) | Warning | Deprecated semantic-convention constant | Yes |
 | [QYL0004](rules/QYL0004_PreferSemconvConstant.md) | Info | Prefer typed semantic-convention constant over string literal | No |
 | [QYL0005](rules/QYL0005_LiteralMatchesDeprecatedSemconv.md) | Warning | String literal matches a deprecated semantic-convention name | Yes |
-| [QYL0006](rules/QYL0006_MissingSchemaUrl.md) | Info | Missing telemetry schema URL | No |
+| [QYL0006](rules/QYL0006_SchemaUrlAttribute.md) | Info | Schema URL stored as a resource attribute | No |
 | [QYL0007](rules/QYL0007_DeprecatedSemconvValue.md) | Warning | Deprecated semantic-convention value | Yes |
 | [QYL0008](rules/QYL0008_IncubatingSemconvInLibrary.md) | Warning | Incubating semantic-convention member used in a library | No |
 | [QYL0009](rules/QYL0009_SupplementalSemconvMigration.md) | Error | Obsolete semantic convention has an exact replacement | Exact replacements only |
@@ -33,9 +33,8 @@ Each ID links to a per-rule page under [`docs/rules/`](rules/) with severity, ca
 | [QYL0113](rules/QYL0113_DeniedAppTagKey.md) | Error | A business key must not contain a token the collector denies | No |
 | [QYL0120](rules/QYL0120_ContribInstrumentationWithAddQyl.md) | Error | No OpenTelemetry.Instrumentation.* package next to AddQyl | No |
 | [QYL0121](rules/QYL0121_CustomValueEqualsMember.md) | Error | Custom value equals a registry member | No |
-| [QYL0122](rules/QYL0122_StarterInsideAIFunction.md) | Error | No span starter inside an AIFunction | No |
-| [QYL0200](rules/QYL0200_TelemetryName.md) | Error | Telemetry name must come from the generated registry catalog | No |
-| [QYL0201](rules/QYL0201_InvalidMetricName.md) | Error | Metric descriptor name must be a well-formed catalog member | No |
+| [QYL0122](rules/QYL0122_StarterInsideAiFunction.md) | Error | No span starter inside an AIFunction | No |
+| [QYL0200](rules/QYL0200_TelemetryName.md) | Error | Reserved qyl telemetry name must come from the generated registry catalog | No |
 | [QYL0202](rules/QYL0202_HighCardinalityMetricTag.md) | Warning | High-cardinality tag on metric | No |
 | [QYL0301](rules/QYL0301_NonOtlpCollectorEndpoint.md) | Warning | Collector endpoint should use OTLP protocol | No |
 | [QYL0304](rules/QYL0304_EnableEventSourceSupport.md) | Warning | EventSource instrumentation is trimmed under Native AOT without EventSourceSupport | No |

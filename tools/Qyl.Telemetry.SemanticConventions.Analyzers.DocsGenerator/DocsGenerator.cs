@@ -198,13 +198,14 @@ internal static class DocsGenerator
         var rulesDir = RepoLayout.RulesDir(repoRoot);
         Directory.CreateDirectory(rulesDir);
         var expectedRuleFiles = new HashSet<string>(StringComparer.Ordinal);
+        var pages = new List<(string Path, string Content)>();
         foreach (var d in descriptors)
         {
             if (!idToClass.TryGetValue(d.Id, out var className)) continue;
             var symbolic = RuleDocs.SymbolicNameFromFile(className);
             var rulePath = RepoLayout.RulePath(repoRoot, d.Id, symbolic);
             expectedRuleFiles.Add(Path.GetFileName(rulePath));
-            File.WriteAllText(rulePath, RulePageRenderer.Render(d, className, fixableIds));
+            pages.Add((rulePath, RulePageRenderer.Render(d, className, fixableIds)));
         }
         foreach (var file in Directory.EnumerateFiles(rulesDir, "*.md"))
         {
@@ -214,7 +215,11 @@ internal static class DocsGenerator
                 Console.WriteLine($@"Removed stale {Path.GetRelativePath(repoRoot, file)}");
             }
         }
-        Console.WriteLine($@"Wrote {descriptors.Count} per-rule pages under docs/rules/");
+        // Delete obsolete filenames before writing replacements: on a case-insensitive
+        // filesystem, writing first leaves an old casing that cleanup would then delete.
+        foreach (var page in pages)
+            File.WriteAllText(page.Path, page.Content);
+        Console.WriteLine($@"Wrote {pages.Count} per-rule pages under docs/rules/");
 
         var catalogPath = RepoLayout.MigrationCatalogPath(repoRoot);
         Directory.CreateDirectory(Path.GetDirectoryName(catalogPath)!);

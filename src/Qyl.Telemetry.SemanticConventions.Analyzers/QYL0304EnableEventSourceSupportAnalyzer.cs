@@ -34,13 +34,13 @@ internal sealed class Qyl0304EnableEventSourceSupportAnalyzer : AlAnalyzer {
     private const string EventListenerMetadataName = "System.Diagnostics.Tracing.EventListener";
     private const string EventCountersAssemblyName = "OpenTelemetry.Instrumentation.EventCounters";
 
-    private static readonly DiagnosticDescriptor s_rule = CreateRule(
+    private static readonly DiagnosticDescriptor Rule = CreateRule(
         DiagnosticId,
         DiagnosticCategories.Configuration,
         DiagnosticSeverities.Suggestion);
 
     /// <summary>Gets the diagnostic descriptors for the supported diagnostics.</summary>
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
 
     /// <summary>Registers a compilation-start action that gates on MSBuild properties before any work.</summary>
     protected override void InitializeCore(AnalysisContext context) =>
@@ -85,11 +85,11 @@ internal sealed class Qyl0304EnableEventSourceSupportAnalyzer : AlAnalyzer {
         context.RegisterCompilationEndAction(endContext => {
             if (!hits.IsEmpty) {
                 foreach (var (location, name) in hits) {
-                    endContext.ReportDiagnostic(Diagnostic.Create(s_rule, location, name));
+                    endContext.ReportDiagnostic(Diagnostic.Create(Rule, location, name));
                 }
             }
             else if (referencesEventCounters) {
-                endContext.ReportDiagnostic(Diagnostic.Create(s_rule, Location.None, EventCountersAssemblyName));
+                endContext.ReportDiagnostic(Diagnostic.Create(Rule, Location.None, EventCountersAssemblyName));
             }
         });
     }

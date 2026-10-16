@@ -130,7 +130,7 @@ public readonly struct {{ view }}Span
 {{ pad }}/// <returns>Whether it matches.</returns>
 {{ pad }}public static bool Matches(global::Qyl.Telemetry.SemanticConventions.SpanRecord span)
 {{ pad }}    => span is not null
-{{ pad }}       && span.Kind == global::System.Diagnostics.ActivityKind.{{ kindname }}
+{{ pad }}       && span.Kind == global::Qyl.Telemetry.SemanticConventions.SpanKind.{{ kindname }}
 {% for a in v.attrs %}
 {% if lib.requirement_level_name(a.requirement_level) == "Required" %}
 {{ pad }}       && span.Attributes.ContainsKey("{{ a.key }}")

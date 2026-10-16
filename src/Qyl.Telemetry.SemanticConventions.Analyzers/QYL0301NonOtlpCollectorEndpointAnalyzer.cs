@@ -15,7 +15,7 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 /// </remarks>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 internal sealed class Qyl0301NonOtlpCollectorEndpointAnalyzer : AlAnalyzer {
-    private static readonly string[] s_otlpPatterns = [
+    private static readonly string[] OtlpPatterns = [
         "4317", // gRPC default port
         "4318", // HTTP default port
         "/v1/traces",
@@ -24,20 +24,20 @@ internal sealed class Qyl0301NonOtlpCollectorEndpointAnalyzer : AlAnalyzer {
         "otlp"
     ];
 
-    private static readonly string[] s_endpointPropertyNames = [
+    private static readonly string[] EndpointPropertyNames = [
         "Endpoint", "CollectorEndpoint", "OtlpEndpoint", "ExporterEndpoint"
     ];
 
     /// <summary>The diagnostic identifier for QYL0301.</summary>
     private const string DiagnosticId = "QYL0301";
 
-    private static readonly DiagnosticDescriptor s_rule = CreateRule(
+    private static readonly DiagnosticDescriptor Rule = CreateRule(
         DiagnosticId,
         DiagnosticCategories.Configuration,
         DiagnosticSeverities.Suggestion);
 
     /// <summary>Gets the diagnostic descriptors for the supported diagnostics.</summary>
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
 
     /// <summary>Registers operation actions to analyze endpoint assignments.</summary>
     protected override void InitializeCore(AnalysisContext context) =>
@@ -47,15 +47,15 @@ internal sealed class Qyl0301NonOtlpCollectorEndpointAnalyzer : AlAnalyzer {
         var assignment = (ISimpleAssignmentOperation)context.Operation;
 
         if (assignment.Target is not IMemberReferenceOperation { Member.Name: var propertyName } ||
-            !s_endpointPropertyNames.Contains(propertyName, StringComparer.OrdinalIgnoreCase) ||
+            !EndpointPropertyNames.Contains(propertyName, StringComparer.OrdinalIgnoreCase) ||
             assignment.Value.ConstantValue is not { HasValue: true, Value: string endpoint } ||
             IsOtlpEndpoint(endpoint)) {
             return;
         }
 
-        context.ReportDiagnostic(Diagnostic.Create(s_rule, assignment.Syntax.GetLocation(), endpoint));
+        context.ReportDiagnostic(Diagnostic.Create(Rule, assignment.Syntax.GetLocation(), endpoint));
     }
 
     private static bool IsOtlpEndpoint(string endpoint) =>
-        s_otlpPatterns.Any(endpoint.ContainsIgnoreCase);
+        OtlpPatterns.Any(endpoint.ContainsIgnoreCase);
 }

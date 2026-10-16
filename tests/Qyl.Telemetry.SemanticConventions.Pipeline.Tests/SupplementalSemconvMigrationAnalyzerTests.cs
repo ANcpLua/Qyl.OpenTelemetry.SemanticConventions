@@ -1,261 +1,182 @@
 using ANcpLua.Roslyn.Utilities.Testing;
-using AwesomeAssertions;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Qyl.Telemetry.SemanticConventions.Analyzers;
-using Xunit;
 
 namespace Qyl.Telemetry.SemanticConventions.Pipeline.Tests;
-
-public sealed class SupplementalSemconvMigrationAnalyzerTests
+[TestClass]
+public sealed class SupplementalSemconvMigrationAnalyzerTests(TestContext testContext)
 {
-    public static TheoryData<string, string, int> PayloadContexts => new()
-    {
-        {
-            "SetTag(\"gen_ai.system\", \"openai\");",
+    public static IEnumerable<object[]> PayloadContexts =>
+    [
+        [
+            "activity.SetTag(\"gen_ai.system\", \"openai\");",
             "QYL0009",
             1
-        },
-        {
-            "AddTag(\"gen_ai.system\", \"openai\");",
+        ],
+        [
+            "activity.AddTag(\"gen_ai.system\", \"openai\");",
             "QYL0009",
             1
-        },
-        {
+        ],
+        [
             "var values = new Dictionary<string, object?>(); values.Add(\"gen_ai.system\", \"openai\");",
             "QYL0010",
             1
-        },
-        {
-            "var tags = new Dictionary<string, object?>(); tags.Add(\"gen_ai.system\", \"openai\"); source.StartActivity(\"operation\", tags: tags);",
+        ],
+        [
+            "var tags = new Dictionary<string, object?>(); tags.Add(\"gen_ai.system\", \"openai\"); source.StartActivity(\"operation\", ActivityKind.Internal, default(ActivityContext), tags: tags);",
             "QYL0009",
             1
-        },
-        {
-            "var tags = new Dictionary<string, object?> { [\"gen_ai.system\"] = \"openai\" }; source.StartActivity(\"operation\", tags: tags);",
+        ],
+        [
+            "var tags = new Dictionary<string, object?> { [\"gen_ai.system\"] = \"openai\" }; source.StartActivity(\"operation\", ActivityKind.Internal, default(ActivityContext), tags: tags);",
             "QYL0009",
             1
-        },
-        {
+        ],
+        [
             "counter.Add(1, new KeyValuePair<string, object?>(\"gen_ai.system\", \"openai\"));",
             "QYL0009",
             1
-        },
-        {
-            "_ = new Measurement(1, new KeyValuePair<string, object?>(\"gen_ai.system\", \"openai\"));",
+        ],
+        [
+            "_ = new Measurement<int>(1, new KeyValuePair<string, object?>(\"gen_ai.system\", \"openai\"));",
             "QYL0009",
             1
-        },
-        {
+        ],
+        [
             "logger.BeginScope(new[] { new KeyValuePair<string, object?>(\"gen_ai.system\", \"openai\") });",
             "QYL0009",
             1
-        },
-        {
-            "logger.Log(0, 0, new[] { new KeyValuePair<string, object?>(\"gen_ai.system\", \"openai\") });",
+        ],
+        [
+            "logger.Log(LogLevel.Information, new EventId(0), new[] { new KeyValuePair<string, object?>(\"gen_ai.system\", \"openai\") }, null, static (state, error) => string.Empty);",
             "QYL0009",
             1
-        },
-        {
-            "_ = new ActivityEvent(\"event\", null, new[] { new KeyValuePair<string, object?>(\"gen_ai.system\", \"openai\") });",
+        ],
+        [
+            "_ = new ActivityEvent(\"event\", tags: new ActivityTagsCollection(new[] { new KeyValuePair<string, object?>(\"gen_ai.system\", \"openai\") }));",
             "QYL0009",
             1
-        },
-        {
-            "_ = new ActivityLink(new object(), new[] { new KeyValuePair<string, object?>(\"gen_ai.system\", \"openai\") });",
+        ],
+        [
+            "_ = new ActivityLink(default, new ActivityTagsCollection(new[] { new KeyValuePair<string, object?>(\"gen_ai.system\", \"openai\") }));",
             "QYL0009",
             1
-        },
-        {
-            "KeyValuePair<string, object?>[] tags = [.. new[] { new KeyValuePair<string, object?>(\"gen_ai.system\", \"openai\") }]; source.StartActivity(\"operation\", tags: tags);",
+        ],
+        [
+            "KeyValuePair<string, object?>[] tags = [.. new[] { new KeyValuePair<string, object?>(\"gen_ai.system\", \"openai\") }]; source.StartActivity(\"operation\", ActivityKind.Internal, default(ActivityContext), tags: tags);",
             "QYL0009",
             1
-        },
-        {
-            "tagList[\"gen_ai.system\"] = \"openai\";",
+        ],
+        [
+            "tagList.Add(\"gen_ai.system\", \"openai\");",
             "QYL0009",
             1
-        },
-        {
-            "var tags = new[] { new KeyValuePair<string, object?>(\"gen_ai.system\", \"openai\") }; source.StartActivity(\"operation\", tags: tags);",
+        ],
+        [
+            "var tags = new[] { new KeyValuePair<string, object?>(\"gen_ai.system\", \"openai\") }; source.StartActivity(\"operation\", ActivityKind.Internal, default(ActivityContext), tags: tags);",
             "QYL0009",
             1
-        },
-        {
+        ],
+        [
             "resourceBuilder.AddAttributes(new[] { new KeyValuePair<string, object?>(\"gen_ai.system\", \"openai\") });",
             "QYL0009",
             1
-        },
-    };
+        ],
+    ];
 
-    [Theory]
-    [MemberData(nameof(PayloadContexts))]
-    public async Task Shared_payload_detection_preserves_supplemental_contexts(
-        string statement,
-        string expectedId,
-        int expectedCount)
+    [TestMethod]
+    [DynamicData(nameof(PayloadContexts))]
+    public async Task Shared_payload_detection_preserves_supplemental_contexts(string statement, string expectedId, int expectedCount)
     {
-        var diagnostics = await Compile
-            .Source(Fixture(statement))
-            .Build()
-            .ShouldSucceed()
-            .Compilation
-            .WithAnalyzers([new SupplementalSemconvMigrationAnalyzer()])
-            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
-
-        diagnostics.Should().HaveCount(expectedCount);
-        diagnostics.Should().OnlyContain(diagnostic => diagnostic.Id == expectedId);
+        var diagnostics = await CompileTelemetry(Compile.Source(Fixture(statement))).WithAnalyzers([new SupplementalSemconvMigrationAnalyzer()]).GetAnalyzerDiagnosticsAsync(testContext.CancellationToken);
+        Assert.HasCount(expectedCount, diagnostics);
+        Assert.IsTrue(diagnostics.All(diagnostic => diagnostic.Id == expectedId));
     }
 
-    [Theory]
-    [InlineData("meter.CreateCounter(\"system.memory.shared\");", "QYL0009")]
-    [InlineData("activity.AddEvent(\"rpc.message\");", "QYL0010")]
-    [InlineData("_ = new ActivityEvent(\"rpc.message\", null, null);", "QYL0010")]
+    [TestMethod]
+    [DataRow("meter.CreateCounter<int>(\"system.memory.shared\");", "QYL0009")]
+    [DataRow("activity.AddEvent(new ActivityEvent(\"rpc.message\"));", "QYL0010")]
+    [DataRow("_ = new ActivityEvent(\"rpc.message\");", "QYL0010")]
     public async Task Metric_and_event_name_paths_remain_owned(string statement, string expectedId)
     {
-        var diagnostics = await Compile
-            .Source(Fixture(statement))
-            .Build()
-            .ShouldSucceed()
-            .Compilation
-            .WithAnalyzers([new SupplementalSemconvMigrationAnalyzer()])
-            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
-
-        diagnostics.Should().ContainSingle(diagnostic => diagnostic.Id == expectedId);
+        var diagnostics = await CompileTelemetry(Compile.Source(Fixture(statement))).WithAnalyzers([new SupplementalSemconvMigrationAnalyzer()]).GetAnalyzerDiagnosticsAsync(testContext.CancellationToken);
+        Assert.ContainsSingle(diagnostics);
+        Assert.AreEqual(expectedId, diagnostics[0].Id);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Two_dictionaries_in_one_method_are_classified_by_which_one_reaches_telemetry()
     {
-        var diagnostics = await Compile
-            .Source(Fixture(
-                """
+        var diagnostics = await CompileTelemetry(Compile.Source(Fixture("""
                 var tags = new Dictionary<string, object?>();
                 tags.Add("gen_ai.system", "openai");
                 var values = new Dictionary<string, object?>();
                 values.Add("gen_ai.system", "openai");
-                source.StartActivity("operation", tags: tags);
-                """))
-            .Build()
-            .ShouldSucceed()
-            .Compilation
-            .WithAnalyzers([new SupplementalSemconvMigrationAnalyzer()])
-            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
-
-        diagnostics.Should().HaveCount(2);
-        diagnostics.Should().ContainSingle(diagnostic => diagnostic.Id == "QYL0009");
-        diagnostics.Should().ContainSingle(diagnostic => diagnostic.Id == "QYL0010");
+                source.StartActivity("operation", ActivityKind.Internal, default(ActivityContext), tags: tags);
+                """))).WithAnalyzers([new SupplementalSemconvMigrationAnalyzer()]).GetAnalyzerDiagnosticsAsync(testContext.CancellationToken);
+        Assert.HasCount(2, diagnostics);
+        Assert.ContainsSingle(diagnostics.Where(diagnostic => diagnostic.Id == "QYL0009"));
+        Assert.ContainsSingle(diagnostics.Where(diagnostic => diagnostic.Id == "QYL0010"));
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Constant_key_is_not_reclassified_as_a_hard_coded_literal()
     {
-        var diagnostics = await Compile
-            .Source(Fixture("SetTag(GenAiSystem, \"openai\");"))
-            .Build()
-            .ShouldSucceed()
-            .Compilation
-            .WithAnalyzers([new SupplementalSemconvMigrationAnalyzer()])
-            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
-
-        diagnostics.Should().BeEmpty();
+        var diagnostics = await CompileTelemetry(Compile.Source(Fixture("activity.SetTag(GenAiSystem, \"openai\");"))).WithAnalyzers([new SupplementalSemconvMigrationAnalyzer()]).GetAnalyzerDiagnosticsAsync(testContext.CancellationToken);
+        Assert.IsEmpty(diagnostics);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Bare_value_is_reported_but_constant_value_is_not()
     {
-        var bare = await Compile
-            .Source(Fixture("SetTag(\"cloud.platform\", \"azure_aks\");"))
-            .Build()
-            .ShouldSucceed()
-            .Compilation
-            .WithAnalyzers([new SupplementalSemconvMigrationAnalyzer()])
-            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
-        var constant = await Compile
-            .Source(Fixture("SetTag(\"cloud.platform\", AzureAks);"))
-            .Build()
-            .ShouldSucceed()
-            .Compilation
-            .WithAnalyzers([new SupplementalSemconvMigrationAnalyzer()])
-            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
-
-        bare.Should().ContainSingle(diagnostic => diagnostic.Id == "QYL0009");
-        constant.Should().BeEmpty();
+        var bare = await CompileTelemetry(Compile.Source(Fixture("activity.SetTag(\"cloud.platform\", \"azure_aks\");"))).WithAnalyzers([new SupplementalSemconvMigrationAnalyzer()]).GetAnalyzerDiagnosticsAsync(testContext.CancellationToken);
+        var constant = await CompileTelemetry(Compile.Source(Fixture("activity.SetTag(\"cloud.platform\", AzureAks);"))).WithAnalyzers([new SupplementalSemconvMigrationAnalyzer()]).GetAnalyzerDiagnosticsAsync(testContext.CancellationToken);
+        Assert.ContainsSingle(bare);
+        Assert.AreEqual("QYL0009", bare[0].Id);
+        Assert.IsEmpty(constant);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Deprecated_first_input_delay_value_reports_inp_replacement()
     {
-        var diagnostics = await Compile
-            .Source(Fixture("SetTag(\"browser.web_vital.name\", \"fid\");"))
-            .Build()
-            .ShouldSucceed()
-            .Compilation
-            .WithAnalyzers([new SupplementalSemconvMigrationAnalyzer()])
-            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
-
-        diagnostics.Should().ContainSingle();
-        diagnostics[0].Id.Should().Be("QYL0009");
-        diagnostics[0].Properties["ReplacementName"].Should().Be("inp");
+        var diagnostics = await CompileTelemetry(Compile.Source(Fixture("activity.SetTag(\"browser.web_vital.name\", \"fid\");"))).WithAnalyzers([new SupplementalSemconvMigrationAnalyzer()]).GetAnalyzerDiagnosticsAsync(testContext.CancellationToken);
+        Assert.ContainsSingle(diagnostics);
+        Assert.AreEqual("QYL0009", diagnostics[0].Id);
+        Assert.AreEqual("inp", diagnostics[0].Properties["ReplacementName"]);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Catalog_owner_source_is_not_diagnosed()
     {
-        var compilation = Compile
-            .Source(Fixture("var values = new Dictionary<string, object?>(); values.Add(\"gen_ai.system\", \"openai\");"))
-            .Build()
-            .ShouldSucceed()
-            .Compilation;
+        var compilation = CompileTelemetry(Compile.Source(Fixture("var values = new Dictionary<string, object?>(); values.Add(\"gen_ai.system\", \"openai\");")));
         var tree = compilation.SyntaxTrees.Single();
-
-        var diagnostics = await compilation
-            .ReplaceSyntaxTree(tree, tree.WithFilePath("/repo/OpenTelemetryDeprecatedSemconvCatalog.cs"))
-            .WithAnalyzers([new SupplementalSemconvMigrationAnalyzer()])
-            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
-
-        diagnostics.Should().BeEmpty();
+        var diagnostics = await compilation.ReplaceSyntaxTree(tree, tree.WithFilePath("/repo/OpenTelemetryDeprecatedSemconvCatalog.cs")).WithAnalyzers([new SupplementalSemconvMigrationAnalyzer()]).GetAnalyzerDiagnosticsAsync(testContext.CancellationToken);
+        Assert.IsEmpty(diagnostics);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Generated_source_is_excluded_by_Roslyn()
     {
-        var compilation = Compile
-            .Source(Fixture("SetTag(\"gen_ai.system\", \"openai\");"))
-            .Build()
-            .ShouldSucceed()
-            .Compilation;
+        var compilation = CompileTelemetry(Compile.Source(Fixture("activity.SetTag(\"gen_ai.system\", \"openai\");")));
         var tree = compilation.SyntaxTrees.Single();
-
-        var diagnostics = await compilation
-            .ReplaceSyntaxTree(tree, tree.WithFilePath("/repo/Telemetry.g.cs"))
-            .WithAnalyzers([new SupplementalSemconvMigrationAnalyzer()])
-            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
-
-        diagnostics.Should().BeEmpty();
+        var diagnostics = await compilation.ReplaceSyntaxTree(tree, tree.WithFilePath("/repo/Telemetry.g.cs")).WithAnalyzers([new SupplementalSemconvMigrationAnalyzer()]).GetAnalyzerDiagnosticsAsync(testContext.CancellationToken);
+        Assert.IsEmpty(diagnostics);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Catalog_fallback_reports_one_terminal_GenAi_replacement_without_live_metadata()
     {
-        var diagnostics = await Compile
-            .Source(Fixture("SetTag(\"gen_ai.system\", \"openai\");"))
-            .Build()
-            .ShouldSucceed()
-            .Compilation
-            .WithAnalyzers([new SupplementalSemconvMigrationAnalyzer(), new LiteralMatchesDeprecatedSemconvAnalyzer()])
-            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
-
-        diagnostics.Should().ContainSingle();
-        diagnostics[0].Id.Should().Be("QYL0009");
-        diagnostics[0].Properties["ReplacementName"].Should().Be("gen_ai.provider.name");
+        var diagnostics = await CompileTelemetry(Compile.Source(Fixture("activity.SetTag(\"gen_ai.system\", \"openai\");"))).WithAnalyzers([new SupplementalSemconvMigrationAnalyzer(), new LiteralMatchesDeprecatedSemconvAnalyzer()]).GetAnalyzerDiagnosticsAsync(testContext.CancellationToken);
+        Assert.ContainsSingle(diagnostics);
+        Assert.AreEqual("QYL0009", diagnostics[0].Id);
+        Assert.AreEqual("gen_ai.provider.name", diagnostics[0].Properties["ReplacementName"]);
     }
 
-    [Fact]
+    [TestMethod]
     public async Task Live_metadata_wins_with_one_terminal_GenAi_replacement()
     {
-        var liveSemconv = Compile
-            .Source(
-                """
+        var liveSemconv = CompileTelemetry(Compile.Source("""
                 namespace OpenTelemetry.SemanticConventions.Attributes.GenAi
                 {
                     public static class GenAiAttributes
@@ -264,93 +185,35 @@ public sealed class SupplementalSemconvMigrationAnalyzerTests
                         public const string AttributeGenAiSystem = "gen_ai.system";
                     }
                 }
-                """)
-            .WithAssemblyName("LiveSemconv")
-            .Build()
-            .ShouldSucceed()
-            .Compilation;
-
-        var diagnostics = await Compile
-            .Source(Fixture("SetTag(\"gen_ai.system\", \"openai\");"))
-            .Build()
-            .ShouldSucceed()
-            .Compilation
-            .AddReferences(liveSemconv.ToMetadataReference())
-            .WithAnalyzers([new SupplementalSemconvMigrationAnalyzer(), new LiteralMatchesDeprecatedSemconvAnalyzer()])
-            .GetAnalyzerDiagnosticsAsync(TestContext.Current.CancellationToken);
-
-        diagnostics.Should().ContainSingle();
-        diagnostics[0].Id.Should().Be("QYL0005");
-        diagnostics[0].Properties["ReplacementValue"].Should().Be("gen_ai.provider.name");
+                """).WithAssemblyName("LiveSemconv"));
+        var diagnostics = await CompileTelemetry(Compile.Source(Fixture("activity.SetTag(\"gen_ai.system\", \"openai\");"))).AddReferences(liveSemconv.ToMetadataReference()).WithAnalyzers([new SupplementalSemconvMigrationAnalyzer(), new LiteralMatchesDeprecatedSemconvAnalyzer()]).GetAnalyzerDiagnosticsAsync(testContext.CancellationToken);
+        Assert.ContainsSingle(diagnostics);
+        Assert.AreEqual("QYL0005", diagnostics[0].Id);
+        Assert.AreEqual("gen_ai.provider.name", diagnostics[0].Properties["ReplacementValue"]);
     }
 
-    private static string Fixture(string statement) =>
-        SourceFixture.InMethod(
-            statement,
-            declarations: """
-                using System;
-                using System.Collections.Generic;
+    private static Microsoft.CodeAnalysis.CSharp.CSharpCompilation CompileTelemetry(Compile source) =>
+        AnalyzerRun.CompileSource(source.WithReference<System.Diagnostics.Activity>()
+            .WithReference<System.Diagnostics.Metrics.Meter>()
+            .WithReference<OpenTelemetry.Resources.ResourceBuilder>()
+            .WithReference<Microsoft.Extensions.Logging.ILogger>());
 
-                internal interface ILogger
-                {
-                    void BeginScope(object state);
-                    void Log(int level, int eventId, object state);
-                }
-
-                internal sealed class ActivitySource
-                {
-                    public void StartActivity(
-                        string name,
-                        int kind = 0,
-                        object? parent = null,
-                        IEnumerable<KeyValuePair<string, object?>>? tags = null) { }
-                }
-
-                internal sealed class ActivityEvent(string name, object? timestamp, object? tags);
-                internal sealed class ActivityLink(object context, object? tags);
-
-                internal sealed class Counter
-                {
-                    public void Add(int value, params KeyValuePair<string, object?>[] tags) { }
-                }
-
-                internal sealed class Meter
-                {
-                    public Counter CreateCounter(string name) => new();
-                }
-
-                internal sealed class Activity
-                {
-                    public void AddEvent(string name) { }
-                }
-
-                internal sealed class Measurement(
-                    int value,
-                    params KeyValuePair<string, object?>[] tags);
-
-                internal sealed class TagList
-                {
-                    public object? this[string key] { set { } }
-                    public void Add(string key, object? value) { }
-                }
-
-                internal sealed class ResourceBuilder
-                {
-                    public void AddAttributes(IEnumerable<KeyValuePair<string, object?>> attributes) { }
-                }
-                """,
-            members: """
-                private const string GenAiSystem = "gen_ai.system";
-                private const string AzureAks = "azure_aks";
-                private readonly ActivitySource source = new();
-                private readonly Counter counter = new();
-                private readonly Meter meter = new();
-                private readonly Activity activity = new();
-                private readonly ILogger logger = null!;
-                private readonly TagList tagList = new();
-                private readonly ResourceBuilder resourceBuilder = new();
-
-                private void SetTag(string key, object? value) { }
-                private void AddTag(string key, object? value) { }
-                """);
+    private static string Fixture(string statement) => SourceFixture.InMethod(statement, declarations: """
+        using System;
+        using System.Collections.Generic;
+        using System.Diagnostics;
+        using System.Diagnostics.Metrics;
+        using Microsoft.Extensions.Logging;
+        using OpenTelemetry.Resources;
+        """, members: """
+        private const string GenAiSystem = "gen_ai.system";
+        private const string AzureAks = "azure_aks";
+        private static readonly ActivitySource source = new("test.telemetry");
+        private static readonly Meter meter = new("test.telemetry");
+        private static readonly Counter<int> counter = meter.CreateCounter<int>("requests");
+        private readonly Activity activity = new("operation");
+        private readonly ILogger logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
+        private TagList tagList = new();
+        private readonly ResourceBuilder resourceBuilder = ResourceBuilder.CreateEmpty();
+        """);
 }

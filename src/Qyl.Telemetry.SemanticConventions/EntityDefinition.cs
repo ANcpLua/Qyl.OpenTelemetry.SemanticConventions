@@ -6,6 +6,7 @@ namespace Qyl.Telemetry.SemanticConventions;
 /// (with requirement levels). This is the resolved entity definition, distinct from the
 /// name-only <see cref="EntityRef"/> that a metric or span carries in its association list.
 /// </summary>
+[JetBrains.Annotations.PublicAPI]
 public sealed class EntityDefinition
 {
     /// <summary>Initializes a new entity definition.</summary>

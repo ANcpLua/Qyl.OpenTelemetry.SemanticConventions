@@ -1,10 +1,7 @@
 using System.Security.Cryptography;
 using ANcpLua.Roslyn.Utilities.Testing.MSBuild;
-using AwesomeAssertions;
-using Xunit;
 
 namespace Qyl.Telemetry.SemanticConventions.Pipeline.Tests;
-
 /// <summary>
 /// The byte-identity gate for the templates: <c>Snapshots/generated.manifest.sha256</c> pins the
 /// SHA-256 of every file <c>scripts/generate.sh</c> writes, so an unintended change to a template
@@ -18,49 +15,27 @@ namespace Qyl.Telemetry.SemanticConventions.Pipeline.Tests;
 /// CI runs it before the build. Regenerate this manifest with <c>REGEN_SNAPSHOTS=1</c> after an
 /// intentional change.
 /// </remarks>
+[TestClass]
 public sealed class GeneratedSurfaceTests
 {
-    private static readonly string[] GeneratedRoots =
-    [
-        "src/Qyl.Telemetry.SemanticConventions/Generated",
-        "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated",
-        "generated",
-        "typescript/src",
-        "typescript/dist",
-    ];
-
-    private static readonly string[] GeneratedFiles =
-    [
-        "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvRegistryFacts.g.cs",
-        "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvDeprecations.g.cs",
-        "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvTypedSurface.g.cs",
-        "typescript/package.json",
-        "typescript/LICENSE",
-    ];
-
-    [Fact]
+    private static readonly string[] GeneratedRoots = ["src/Qyl.Telemetry.SemanticConventions/Generated", "src/Qyl.Telemetry.SemanticConventions.Incubating/Generated", "generated", "typescript/src", "typescript/dist", ];
+    private static readonly string[] GeneratedFiles = ["src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvRegistryFacts.g.cs", "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvDeprecations.g.cs", "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvTypedSurface.g.cs", "typescript/package.json", "typescript/LICENSE", ];
+    [TestMethod]
     public void Every_Generated_File_Matches_The_Pinned_Manifest()
     {
-        var manifest = string.Concat(Enumerate()
-            .OrderBy(static entry => entry.Path, StringComparer.Ordinal)
-            .Select(static entry => $"{entry.Hash}  {entry.Path}\n"));
-
-        var snapshot = RepoPath("tests", "Qyl.Telemetry.SemanticConventions.Pipeline.Tests",
-            "Snapshots", "generated.manifest.sha256");
-
-        if (Environment.GetEnvironmentVariable("REGEN_SNAPSHOTS") is { Length: > 0 })
+        var manifest = string.Concat(Enumerate().OrderBy(static entry => entry.Path, StringComparer.Ordinal).Select(static entry => $"{entry.Hash}  {entry.Path}\n"));
+        var snapshot = RepoPath("tests", "Qyl.Telemetry.SemanticConventions.Pipeline.Tests", "Snapshots", "generated.manifest.sha256");
+        if (Environment.GetEnvironmentVariable("REGEN_SNAPSHOTS")is { Length: > 0 })
         {
             Directory.CreateDirectory(Path.GetDirectoryName(snapshot)!);
             File.WriteAllText(snapshot, manifest);
         }
 
-        File.Exists(snapshot).Should().BeTrue($"the pinned manifest {snapshot} must be committed");
-
+        Assert.IsTrue(File.Exists(snapshot), $"the pinned manifest {snapshot} must be committed");
         var expected = Parse(File.ReadAllText(snapshot));
         var actual = Parse(manifest);
-
         var problems = new List<string>();
-        foreach (var (path, hash) in expected.OrderBy(static e => e.Key, StringComparer.Ordinal))
+        foreach (var(path, hash)in expected.OrderBy(static e => e.Key, StringComparer.Ordinal))
         {
             if (!actual.TryGetValue(path, out var actualHash))
                 problems.Add($"missing: {path}");
@@ -70,34 +45,33 @@ public sealed class GeneratedSurfaceTests
 
         foreach (var path in actual.Keys.Where(path => !expected.ContainsKey(path)).Order(StringComparer.Ordinal))
             problems.Add($"extra: {path}");
-
-        expected.Should().NotBeEmpty("the manifest pins the full generated surface");
-        problems.Should().BeEmpty(
-            "every generated file must match generated.manifest.sha256 (regenerate with REGEN_SNAPSHOTS after an intentional change):\n{0}",
-            string.Join("\n", problems));
-        actual.Count.Should().Be(expected.Count);
+        Assert.IsNotEmpty(expected, "the manifest pins the full generated surface");
+        Assert.IsEmpty(problems, string.Format(System.Globalization.CultureInfo.InvariantCulture, "every generated file must match generated.manifest.sha256 (regenerate with REGEN_SNAPSHOTS after an intentional change):\n{0}", string.Join("\n", problems)));
+        Assert.AreEqual(expected.Count, actual.Count);
     }
 
-    [Fact]
+    [TestMethod]
     public void The_Generated_Surface_Covers_Both_Packages_And_Every_Signal_Kind()
     {
         var paths = Enumerate().Select(static entry => entry.Path).ToList();
-
-        foreach (var kind in new[] { "Attributes", "Activities", "Metrics", "Spans", "Events", "Entities" })
+        foreach (var kind in new[]
         {
-            paths.Should().Contain(path => path.Contains($"/Generated/{kind}/", StringComparison.Ordinal)
-                                           && path.StartsWith("src/Qyl.Telemetry.SemanticConventions/", StringComparison.Ordinal),
-                $"the stable package ships {kind}");
-            paths.Should().Contain(path => path.Contains($"/Generated/{kind}/", StringComparison.Ordinal)
-                                           && path.StartsWith("src/Qyl.Telemetry.SemanticConventions.Incubating/", StringComparison.Ordinal),
-                $"the incubating package ships {kind}");
+            "Attributes",
+            "Activities",
+            "Metrics",
+            "Spans",
+            "Events",
+            "Entities"
+        })
+        {
+            Assert.IsTrue(paths.Any(path => path.Contains($"/Generated/{kind}/", StringComparison.Ordinal) && path.StartsWith("src/Qyl.Telemetry.SemanticConventions/", StringComparison.Ordinal)), $"the stable package ships {kind}");
+            Assert.IsTrue(paths.Any(path => path.Contains($"/Generated/{kind}/", StringComparison.Ordinal) && path.StartsWith("src/Qyl.Telemetry.SemanticConventions.Incubating/", StringComparison.Ordinal)), $"the incubating package ships {kind}");
         }
 
-        paths.Should()
-            .Contain("src/Qyl.Telemetry.SemanticConventions/Generated/SchemaUrl.g.cs")
-            .And.Contain("src/Qyl.Telemetry.SemanticConventions/Generated/Names/QylTelemetryNames.g.cs")
-            .And.Contain("src/Qyl.Telemetry.SemanticConventions.Incubating/Generated/Mapping/AttributeMapping.g.cs")
-            .And.Contain("generated/pins.props");
+        Assert.Contains("src/Qyl.Telemetry.SemanticConventions/Generated/SchemaUrl.g.cs", paths);
+        Assert.Contains("src/Qyl.Telemetry.SemanticConventions/Generated/Names/QylTelemetryNames.g.cs", paths);
+        Assert.Contains("src/Qyl.Telemetry.SemanticConventions.Incubating/Generated/Mapping/AttributeMapping.g.cs", paths);
+        Assert.Contains("generated/pins.props", paths);
     }
 
     private static IEnumerable<(string Path, string Hash)> Enumerate()
@@ -126,15 +100,16 @@ public sealed class GeneratedSurfaceTests
         foreach (var line in text.Split('\n', StringSplitOptions.RemoveEmptyEntries))
         {
             var separator = line.IndexOf("  ", StringComparison.Ordinal);
-            separator.Should().BeGreaterThan(0, $"manifest line '{line}' must be '<sha256>  <path>'");
+            Assert.IsGreaterThan(0, separator, $"manifest line '{line}' must be '<sha256>  <path>'");
             entries.Add(line.Substring(separator + 2), line.Substring(0, separator));
         }
+
         return entries;
     }
 
     private static string RepoPath(params string[] parts)
     {
         string root = RepositoryRoot.LocateFrom(AppContext.BaseDirectory, "Qyl.Telemetry.SemanticConventions.slnx");
-        return Path.Combine([root, .. parts]);
+        return Path.Combine([root, ..parts]);
     }
 }

@@ -14,18 +14,18 @@ internal sealed class Qyl0012InvalidAttributeValueAnalyzer : AlAnalyzer
 
     private const string GenAiDiagnosticId = "QYL0403";
 
-    private static readonly DiagnosticDescriptor s_rule = CreateRule(
+    private static readonly DiagnosticDescriptor Rule = CreateRule(
         DiagnosticId,
         DiagnosticCategories.OpenTelemetry,
         DiagnosticSeverities.RequiredFix);
 
-    private static readonly DiagnosticDescriptor s_genAiRule = CreateRule(
+    private static readonly DiagnosticDescriptor GenAiRule = CreateRule(
         GenAiDiagnosticId,
         DiagnosticCategories.GenAI,
         DiagnosticSeverities.Suggestion);
 
     /// <inheritdoc />
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [s_rule, s_genAiRule];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule, GenAiRule];
 
     /// <inheritdoc />
     protected override void InitializeCore(AnalysisContext context) =>
@@ -44,9 +44,9 @@ internal sealed class Qyl0012InvalidAttributeValueAnalyzer : AlAnalyzer
 
         context.ReportDiagnostic(
             SemconvRegistryFacts.IsGenAiSpanDiscriminator(attributeName)
-                ? Diagnostic.Create(s_genAiRule, valueArgument.Syntax.GetLocation(), value, canonical)
+                ? Diagnostic.Create(GenAiRule, valueArgument.Syntax.GetLocation(), value, canonical)
                 : Diagnostic.Create(
-                    s_rule,
+                    Rule,
                     valueArgument.Syntax.GetLocation(),
                     attributeName,
                     value,
