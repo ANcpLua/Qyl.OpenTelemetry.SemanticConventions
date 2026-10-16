@@ -45,7 +45,7 @@ assert.equal(findAttribute('shop.order.id'), undefined);
 assert.equal(findAttribute('db.system').deprecated.renamed_to, 'db.system.name');
 assert.equal(findAttribute('exception.escaped').deprecated.reason, 'obsoleted');
 assert.equal(findAttribute('exception.escaped').deprecated.renamed_to, undefined);
-assert.equal(findAttribute('code.function').deprecated.note, 'Value should be included in `code.function.name` which is expected to be a fully-qualified name.\n');
+assert.equal(findAttribute('code.function').deprecated.note, ${JSON.stringify('Value should be included in `code.function.name` which is expected to be a fully-qualified name.\n')});
 assert.equal(findMetric('http.server.request.duration').unit, 's');
 assert.equal(findMetric('http.server.request.duration').instrument, 'histogram');
 assert.equal(findMetric('system.cpu.time').stability, 'development');
