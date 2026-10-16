@@ -300,13 +300,18 @@ These singletons round the surface out.
 - `RegistryPolicy` — the collector's persistence rule as a table (`NotPersistedKeys`,
   `NotPersistedPrefixes`, `DeniedKeyTokens`, `TokenExemptKeys`, `VendorKeys`, `IsPersisted`);
   the views, QYL0113 and the qyl collector's catalog read it.
-- `SpanRecord`, `SpanEventRecord`, `SpanLinkRecord`, `StoreIdentity` — the trace contract the
-  generated views read and `Qyl.Telemetry.Testing` builds on.
+- `SpanRecord`, `SpanEventRecord`, `SpanLinkRecord`, `ResourceRecord`,
+  `InstrumentationScopeRecord`, `ResourceEntityReference` and `StoreIdentity` — the trace
+  contract the generated views read and `Qyl.Telemetry.Testing` builds on. Construct a span
+  with its trace ID, span ID and name; initialize its remaining metadata by name. Resource
+  and scope schema URLs are independent, and typed attributes and exact nanosecond times
+  remain available alongside the .NET timestamp projections.
 - `Names.QylTelemetryNames` — stable package only, because the producer packages build their
   `ActivitySource` and `Meter` from it and may not read the incubating tier. `Scopes` is the
   seven scope names qyl constructs (the application scope `Qyl.Telemetry.Application` among them); `VendorActivitySources` is the source names of the pinned
   third-party libraries, so `AddSource` and a span processor's source match need no literal,
-  and they join QYL0200's allowlist; `Events` is the one qyl-owned event name.
+  and define the reserved names QYL0200 checks. Custom application and library names remain
+  valid; `Events` is the one qyl-owned event name.
 - `Incubating.Attributes.{Root}.{Root}MetricAttributes` — the qyl-owned instrument names and
   their units, for the roots that declare one.
 - `Incubating.Mapping.AttributeMapping` — the collector's normalize table, four switch

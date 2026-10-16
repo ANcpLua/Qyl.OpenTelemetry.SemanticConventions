@@ -1,8 +1,8 @@
 # Qyl.Telemetry.SemanticConventions.Analyzers
 
 Roslyn analyzers and code fixes for OpenTelemetry semantic-convention consumers. They flag, at
-compile time, a deprecated attribute key with its replacement, a span or metric written without
-the schema URL, a required attribute that is missing on a GenAI or HTTP span, a span started
+compile time, a deprecated attribute key with its replacement, a schema URL mistakenly stored
+as a resource attribute, a required attribute that is missing on a GenAI or HTTP span, a span started
 outside the generated starters, a composed span name or business key, a business key the
 collector drops, a contrib instrumentation package next to `AddQyl`, a `catch` that rethrows
 without `RecordFailure`, and a wider band of instrumentation patterns that produce telemetry a

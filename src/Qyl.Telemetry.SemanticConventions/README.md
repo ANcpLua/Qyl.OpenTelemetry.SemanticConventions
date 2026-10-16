@@ -5,7 +5,7 @@ The stable OpenTelemetry semantic conventions as .NET constants and typed helper
 attribute keys, the pinned `SchemaUrl`, the qyl-owned scope and event names, typed `Activity`
 setter extensions with open value-set structs, first-class metric, span, event and entity
 definitions, the span starters `Qyl.Spans` (with `Work`, `SetAppTag`, `RecordFailure`) and
-`Qyl.SpanNames`, and the trace contract `SpanRecord`, `StoreIdentity`, typed span views and
+`Qyl.SpanNames`, and the trace contract `SpanRecord`, resource and scope records, `StoreIdentity`, typed span views and
 `RegistryPolicy`.
 
 ```bash
@@ -45,7 +45,8 @@ publishes NativeAOT clean.
   mapping table. The two packages are disjoint for every kind but attributes, so both namespaces
   can be in scope at once.
 - [`Qyl.Telemetry.SemanticConventions.Analyzers`](https://www.nuget.org/packages/Qyl.Telemetry.SemanticConventions.Analyzers)
-  flags deprecated keys, a missing schema URL and missing required attributes at compile time.
+  flags deprecated keys, a schema URL mistakenly stored as a resource attribute, and missing
+  required attributes at compile time. An unknown resource schema may remain unset.
 
 ## More
 
