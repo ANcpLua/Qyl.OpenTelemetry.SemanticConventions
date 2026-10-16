@@ -1,5 +1,9 @@
 # Changelog
 
+## [Unreleased]
+
+- Verify native tests against OpenTelemetry SDK 1.20.0. This test dependency is not shipped in the convention packages.
+
 Notable changes to the `Qyl.Telemetry.SemanticConventions` package family. `VersionPrefix` in
 [`Directory.Build.props`](Directory.Build.props) names the current release line and must equal the registry
 `schema_url` version, which qyl.at serves before a release. A release is packed and pushed from the developer's machine

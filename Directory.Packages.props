@@ -36,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Tests">
-    <PackageVersion Include="OpenTelemetry" Version="1.19.1"/>
+    <PackageVersion Include="OpenTelemetry" Version="1.20.0"/>
     <PackageVersion Include="ANcpLua.Roslyn.Utilities.Testing" Version="$(ANcpLuaRoslynUtilitiesVersion)"/>
   </ItemGroup>
 </Project>
