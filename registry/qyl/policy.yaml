@@ -54,6 +54,8 @@ groups:
       # These two exact keys are eligible only after the Collector's bounded .NET
       # value sanitization. A token exemption never waives a value policy or any
       # earlier exact-key/prefix denial. Keep the general "message" token denied.
+      # Only the canonical spelling is eligible; case variants and dotted descendants
+      # remain denied rather than becoming unsanitized extension attributes.
       - ref: exception.message
         annotations: {qyl: {token_exempt: true, sanitize: exception_text}}
       - ref: exception.stacktrace

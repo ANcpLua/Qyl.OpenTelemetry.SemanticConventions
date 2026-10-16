@@ -38,6 +38,8 @@ namespace Qyl.Telemetry.SemanticConventions;
 /// attributes.
 /// Keys in <see cref="ExceptionTextKeys"/> require value sanitization before persistence;
 /// eligibility and token exemptions never waive that requirement.
+/// Only their exact canonical spelling is eligible; case variants and dotted descendants
+/// remain denied, including names not covered by the general denied-token rule.
 /// </remarks>
 public static class RegistryPolicy
 {
@@ -112,6 +114,12 @@ public static class RegistryPolicy
 {{ pad }}    foreach (var prefix in NotPersistedPrefixes)
 {{ pad }}    {
 {{ pad }}        if (key.StartsWith(prefix, global::System.StringComparison.OrdinalIgnoreCase)) return false;
+{{ pad }}    }
+{{ pad }}    foreach (var exact in ExceptionTextKeys)
+{{ pad }}    {
+{{ pad }}        if (string.Equals(key, exact, global::System.StringComparison.Ordinal)) continue;
+{{ pad }}        if (string.Equals(key, exact, global::System.StringComparison.OrdinalIgnoreCase) ||
+{{ pad }}            key.Length > exact.Length && key[exact.Length] == '.' && key.StartsWith(exact, global::System.StringComparison.OrdinalIgnoreCase)) return false;
 {{ pad }}    }
 {{ pad }}    foreach (var exempt in TokenExemptKeys)
 {{ pad }}    {

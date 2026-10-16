@@ -1,5 +1,9 @@
 # Changelog
 
+## [13.1.1] - 2026-10-17
+
+- Keep the exception-text policy limited to the two canonical keys. Deny case variants and dotted descendants, preserving the previous child-key privacy boundary when the canonical fields become eligible for sanitized persistence.
+
 ## [13.1.0] - 2026-10-17
 
 - Retain `exception.message` and `exception.stacktrace` only after Collector value sanitization. Remove their exact-key denials and exempt only `exception.message` from the unchanged general message-token rule.
