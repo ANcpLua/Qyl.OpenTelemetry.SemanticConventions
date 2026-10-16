@@ -4,6 +4,7 @@
 
 - Remove `SetAppTag`, the `qyl.app` string template and the stringifying `App` span views. Applications use native typed attributes with their own names; historical keys have no invented registry type.
 - Allow application-owned `ActivitySource` instances. Keep generated starters optional and limit the constant-name rule to `Spans.Work`. Remove the helper-specific QYL0113 rule.
+- Define `qyl.collector.attributes.coalesced` for lossless normalization of identical typed duplicates, and describe attribute drops as explicit policy denials rather than unknown registry names.
 
 ## [12.0.0] - 2026-10-16
 

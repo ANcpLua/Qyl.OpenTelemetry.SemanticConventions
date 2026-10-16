@@ -15,7 +15,7 @@ public sealed class ApplicationAttributeTests
         using var provider = Sdk.CreateTracerProviderBuilder().AddSource(source.Name)
             .AddProcessor(new SimpleActivityExportProcessor(exporter)).Build();
         string[] labels = ["first", "second"];
-        using (var span = source.StartActivity("checkout"))
+        using (var span = source.StartActivity())
         {
             Assert.IsNotNull(span);
             span.SetTag("checkout.sequence", 9_007_199_254_740_993L);

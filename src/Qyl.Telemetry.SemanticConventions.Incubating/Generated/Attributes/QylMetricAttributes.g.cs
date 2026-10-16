@@ -14,10 +14,23 @@ namespace Qyl.Telemetry.SemanticConventions.Incubating.Attributes.Qyl;
 public static class QylMetricAttributes
 {
     /// <summary>
-    /// Attributes the collector dropped at ingest because their key is not in the pinned registry.
+    /// Identical typed duplicate attributes coalesced into one map entry at ingest.
     /// </summary>
     /// <remarks>
-    /// The collector's attribute allowlist is generated from the pinned registry plus the qyl-owned and vendor rows; a key outside it is dropped rather than forwarded. Counting the drops by namespace is how an undeclared key is noticed at all.
+    /// For example, an ILogger message and its activity scope can export the same TraceId. Only identical values are coalesced; conflicting duplicate values are rejected explicitly. Count by a bounded namespace and never record the value.
+    /// </remarks>
+    public const string CollectorAttributesCoalesced = "qyl.collector.attributes.coalesced";
+
+    /// <summary>
+    /// Unit of the <c>qyl.collector.attributes.coalesced</c> instrument.
+    /// </summary>
+    public const string CollectorAttributesCoalescedUnit = "{attribute}";
+
+    /// <summary>
+    /// Attributes the collector dropped under its explicit persistence policy.
+    /// </summary>
+    /// <remarks>
+    /// Registry membership does not restrict application attributes. This counts policy denials by a bounded namespace, without recording attribute values.
     /// </remarks>
     public const string CollectorAttributesDropped = "qyl.collector.attributes.dropped";
 

@@ -3311,6 +3311,8 @@ public static class RegistryCatalog
                 Stability.Development, Deprecation.None),
             ["quartz.trigger.retry"] = new("quartz.trigger.retry", "counter", "{trigger}",
                 Stability.Development, Deprecation.None),
+            ["qyl.collector.attributes.coalesced"] = new("qyl.collector.attributes.coalesced", "counter", "{attribute}",
+                Stability.Development, Deprecation.None),
             ["qyl.collector.attributes.dropped"] = new("qyl.collector.attributes.dropped", "counter", "{attribute}",
                 Stability.Development, Deprecation.None),
             ["rpc.client.call.duration"] = new("rpc.client.call.duration", "histogram", "s",

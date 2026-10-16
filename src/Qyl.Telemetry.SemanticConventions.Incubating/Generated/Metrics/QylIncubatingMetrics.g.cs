@@ -18,16 +18,32 @@ namespace Qyl.Telemetry.SemanticConventions.Incubating.Metrics;
 public static class QylIncubatingMetricDefinitions
 {
     /// <summary>
-    /// Attributes the collector dropped at ingest because their key is not in the pinned registry.
+    /// Identical typed duplicate attributes coalesced into one map entry at ingest.
     /// </summary>
     /// <remarks>
-    /// The collector's attribute allowlist is generated from the pinned registry plus the qyl-owned and vendor rows; a key outside it is dropped rather than forwarded. Counting the drops by namespace is how an undeclared key is noticed at all.
+    /// For example, an ILogger message and its activity scope can export the same TraceId. Only identical values are coalesced; conflicting duplicate values are rejected explicitly. Count by a bounded namespace and never record the value.
+    /// </remarks>
+    public static readonly global::Qyl.Telemetry.SemanticConventions.MetricDefinition<global::Qyl.Telemetry.SemanticConventions.Counter> QylCollectorAttributesCoalesced =
+        new(
+            name: "qyl.collector.attributes.coalesced",
+            unit: "{attribute}",
+            brief: "Identical typed duplicate attributes coalesced into one map entry at ingest.",
+            stability: global::Qyl.Telemetry.SemanticConventions.Stability.Development,
+            deprecation: global::Qyl.Telemetry.SemanticConventions.Deprecation.None,
+            entities: global::System.Array.Empty<global::Qyl.Telemetry.SemanticConventions.EntityRef>(),
+            attributes: new global::Qyl.Telemetry.SemanticConventions.AttributeRef[] { new("qyl.attribute.namespace", "enum", global::Qyl.Telemetry.SemanticConventions.RequirementLevel.Required, false, null, global::Qyl.Telemetry.SemanticConventions.AttributePhase.Start, true) });
+
+    /// <summary>
+    /// Attributes the collector dropped under its explicit persistence policy.
+    /// </summary>
+    /// <remarks>
+    /// Registry membership does not restrict application attributes. This counts policy denials by a bounded namespace, without recording attribute values.
     /// </remarks>
     public static readonly global::Qyl.Telemetry.SemanticConventions.MetricDefinition<global::Qyl.Telemetry.SemanticConventions.Counter> QylCollectorAttributesDropped =
         new(
             name: "qyl.collector.attributes.dropped",
             unit: "{attribute}",
-            brief: "Attributes the collector dropped at ingest because their key is not in the pinned registry.",
+            brief: "Attributes the collector dropped under its explicit persistence policy.",
             stability: global::Qyl.Telemetry.SemanticConventions.Stability.Development,
             deprecation: global::Qyl.Telemetry.SemanticConventions.Deprecation.None,
             entities: global::System.Array.Empty<global::Qyl.Telemetry.SemanticConventions.EntityRef>(),
