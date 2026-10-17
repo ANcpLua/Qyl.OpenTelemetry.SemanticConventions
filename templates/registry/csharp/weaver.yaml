@@ -507,6 +507,7 @@ templates:
       | . + $schema_urls
       | . as $facts
       | [ $facts + {target_template: "analyzer_facts.cs.j2", output_file: "src/Qyl.Telemetry.SemanticConventions.Analyzers/SemconvRegistryFacts.g.cs"},
+          $facts + {target_template: "registry_value_kind.cs.j2", output_file: "src/Qyl.Telemetry.SemanticConventions/Generated/RegistryAttributeValueKind.g.cs"},
           $facts + {target_template: "registry_catalog.cs.j2", output_file: "src/Qyl.Telemetry.SemanticConventions/Generated/RegistryCatalog.g.cs"},
           $facts + {target_template: "registry.json.j2", output_file: ".build/registry-catalog.json"} ]
     application_mode: each

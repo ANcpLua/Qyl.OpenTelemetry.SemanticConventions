@@ -16,9 +16,9 @@ public static partial class Spans
     /// full type name, and the exception event.
     /// </summary>
     /// <remarks>
-    /// The status description is the one message carrier that survives ingest, which drops
-    /// <c>exception.message</c>; call this in every <c>catch</c> that rethrows inside a starter's
-    /// scope (QYL0110).
+    /// The Collector sanitizes exception text before persistence. The bounded status description
+    /// and exception event both retain useful failure context. Call this in each rethrowing
+    /// <c>catch</c> inside a starter scope (QYL0110).
     /// </remarks>
     /// <param name="activity">The failed span.</param>
     /// <param name="exception">The exception.</param>

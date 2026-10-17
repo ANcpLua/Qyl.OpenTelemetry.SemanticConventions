@@ -1,5 +1,11 @@
 # Changelog
 
+## [13.1.2] - 2026-10-17 (unreleased)
+
+- Generate only the key-kind and metric-name facts used by the analyzer instead of embedding unused public catalog metadata.
+- Share the value-kind vocabulary, replace handwritten legacy compiler polyfills with the shared source package, and align source folders with their namespaces.
+- Correct the failure-recording documentation to describe sanitized exception persistence.
+
 ## [13.1.1] - 2026-10-17
 
 - Keep the exception-text policy limited to the two canonical keys. Deny case variants and dotted descendants, preserving the previous child-key privacy boundary when the canonical fields become eligible for sanitized persistence.

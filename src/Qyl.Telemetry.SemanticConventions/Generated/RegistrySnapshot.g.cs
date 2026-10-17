@@ -8,5 +8,5 @@ namespace Qyl.Telemetry.SemanticConventions;
 public static class RegistrySnapshot
 {
     /// <summary>SHA-256 shared by the generated C# and TypeScript bindings.</summary>
-    public const string Sha256 = "cac1c444b47ac2ad63e7b5e884e8b27df7070e1dbebf91ebdfe13b622ec83bb4";
+    public const string Sha256 = "12eb6d36886f5072b0723548145e78a86e9e0bc810177c225233577926891975";
 }

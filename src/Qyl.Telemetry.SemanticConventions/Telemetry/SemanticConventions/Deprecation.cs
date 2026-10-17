@@ -1,8 +1,4 @@
-#if QYL_ANALYZER_CATALOG
-namespace Qyl.Telemetry.SemanticConventions.Analyzers;
-#else
 namespace Qyl.Telemetry.SemanticConventions;
-#endif
 
 /// <summary>
 /// Structured deprecation projected verbatim from the upstream Weaver model
@@ -10,12 +6,8 @@ namespace Qyl.Telemetry.SemanticConventions;
 /// uncategorized note). <see cref="Replacement"/> is <see langword="null"/> unless the
 /// upstream data gives an exact rename target: a deprecation does not imply a successor.
 /// </summary>
-#if QYL_ANALYZER_CATALOG
-internal
-#else
 [JetBrains.Annotations.PublicAPI]
 public
-#endif
 sealed class Deprecation
 {
     private Deprecation(MigrationKind kind, string? replacement, string? note)

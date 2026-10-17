@@ -20,31 +20,6 @@ namespace Qyl.Telemetry.SemanticConventions.Analyzers;
 namespace Qyl.Telemetry.SemanticConventions;
 #endif
 
-/// <summary>The value kind declared by the pinned registry, independent of a signal's attribute requirements.</summary>
-{{ visibility("enum RegistryAttributeValueKind") }}
-{
-    /// <summary>The registry's value representation is not understood by this generator.</summary>
-    Unknown,
-    /// <summary>A string value.</summary>
-    String,
-    /// <summary>A signed integer value.</summary>
-    Integer,
-    /// <summary>A floating-point value.</summary>
-    Double,
-    /// <summary>A boolean value.</summary>
-    Boolean,
-    /// <summary>An array of string values.</summary>
-    StringArray,
-    /// <summary>An array of signed integer values.</summary>
-    IntegerArray,
-    /// <summary>An array of floating-point values.</summary>
-    DoubleArray,
-    /// <summary>An array of boolean values.</summary>
-    BooleanArray,
-    /// <summary>Any value representation allowed by the signal's data model.</summary>
-    Any
-}
-
 /// <summary>Registry facts for an attribute key or a named template expansion.</summary>
 {{ visibility("sealed class RegistryAttributeInfo") }}
 {

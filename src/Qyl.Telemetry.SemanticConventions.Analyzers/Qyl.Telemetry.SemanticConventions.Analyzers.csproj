@@ -24,11 +24,8 @@
     <NoWarn>$(NoWarn);NU5017;RS1041;RS1025;RS1026;RS0030;RS1038;IDE0055;CA2249</NoWarn>
   </PropertyGroup>
 
-  <ItemGroup Label="One generated catalog, embedded privately in the compiler component">
-    <Compile Include="../Qyl.Telemetry.SemanticConventions/Generated/RegistryCatalog.g.cs" Link="RegistryCatalog.g.cs"/>
-    <Compile Include="../Qyl.Telemetry.SemanticConventions/Stability.cs" Link="Stability.cs"/>
-    <Compile Include="../Qyl.Telemetry.SemanticConventions/Deprecation.cs" Link="Deprecation.cs"/>
-    <Compile Include="../Qyl.Telemetry.SemanticConventions/MigrationKind.cs" Link="MigrationKind.cs"/>
+  <ItemGroup Label="Value-kind vocabulary shared with the generated compiler facts">
+    <Compile Include="../Qyl.Telemetry.SemanticConventions/Generated/RegistryAttributeValueKind.g.cs" Link="RegistryAttributeValueKind.g.cs"/>
   </ItemGroup>
 
   <ItemGroup>

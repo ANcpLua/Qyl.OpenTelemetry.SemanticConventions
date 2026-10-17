@@ -62,6 +62,33 @@ internal static class SemconvRegistryFacts
 {% endfor %}
     };
 
+    private static readonly Dictionary<string, RegistryAttributeValueKind> AttributeKinds =
+        new(StringComparer.Ordinal)
+        {
+{% for a in ctx.attributes %}
+{% if not a.template %}
+            [{{ lib.cs_string(a.key) }}] = RegistryAttributeValueKind.{{ a.kind }},
+{% endif %}
+{% endfor %}
+        };
+
+    private static readonly (string Prefix, RegistryAttributeValueKind Kind)[] TemplateKinds =
+    {
+{% for a in ctx.attributes | sort(attribute="key", reverse=true) %}
+{% if a.template %}
+        ({{ lib.cs_string(a.key ~ ".") }}, RegistryAttributeValueKind.{{ a.kind }}),
+{% endif %}
+{% endfor %}
+    };
+
+    private static readonly HashSet<string> KnownMetricNames =
+        new(new[]
+        {
+{% for m in ctx.metrics %}
+            {{ lib.cs_string(m.name) }},
+{% endfor %}
+        }, StringComparer.Ordinal);
+
     private static readonly Dictionary<string, string[]> EnumValues =
         new(StringComparer.Ordinal)
         {
@@ -97,10 +124,14 @@ internal static class SemconvRegistryFacts
 
     internal static bool TryGetAttributeType(string key, out RegistryAttributeValueKind kind)
     {
-        if (RegistryCatalog.TryGetAttribute(key, out var attribute))
+        if (AttributeKinds.TryGetValue(key, out kind)) return true;
+        foreach (var template in TemplateKinds)
         {
-            kind = attribute.ValueKind;
-            return true;
+            if (key.Length > template.Prefix.Length && key.StartsWith(template.Prefix, StringComparison.Ordinal))
+            {
+                kind = template.Kind;
+                return true;
+            }
         }
 
         kind = RegistryAttributeValueKind.Unknown;
@@ -134,9 +165,9 @@ internal static class SemconvRegistryFacts
     /// template such as <c>http.request.header.</c> is not one.
     /// </summary>
     internal static bool IsRegistryAttributeKey(string key) =>
-        RegistryCatalog.TryGetAttribute(key, out var attribute) && !attribute.IsTemplate;
+        AttributeKinds.ContainsKey(key);
 
-    internal static bool IsKnownMetricName(string name) => RegistryCatalog.TryGetMetric(name, out _);
+    internal static bool IsKnownMetricName(string name) => KnownMetricNames.Contains(name);
 
     internal static bool IsKnownScopeName(string name) => KnownScopeNames.Contains(name);
 
