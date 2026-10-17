@@ -7,7 +7,8 @@ source=${2:-@ancplua/qyl-semantic-conventions@$version}
 expected_digest=${QYL_EXPECTED_REGISTRY_SHA256:-$(node --input-type=module -e 'import {REGISTRY_SNAPSHOT_SHA256 as hash} from "./typescript/dist/index.js"; console.log(hash)')}
 temp=$(mktemp -d)
 trap 'rm -rf "$temp"' EXIT
-npm install --prefix "$temp" --registry=https://registry.npmjs.org --ignore-scripts --no-audit --no-fund "$source" >/dev/null
+npm install --prefix "$temp" --cache "$temp/.npm-cache" --prefer-online \
+  --registry=https://registry.npmjs.org --ignore-scripts --no-audit --no-fund "$source" >/dev/null
 cat > "$temp/verify.mjs" <<'JS'
 import assert from 'node:assert/strict';
 import { fileURLToPath } from 'node:url';
