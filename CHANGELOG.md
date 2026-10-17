@@ -1,6 +1,6 @@
 # Changelog
 
-## [13.1.2] - 2026-10-17 (unreleased)
+## [13.1.2] - 2026-10-17
 
 - Generate only the key-kind and metric-name facts used by the analyzer instead of embedding unused public catalog metadata.
 - Share the value-kind vocabulary, replace handwritten legacy compiler polyfills with the shared source package, and align source folders with their namespaces.
