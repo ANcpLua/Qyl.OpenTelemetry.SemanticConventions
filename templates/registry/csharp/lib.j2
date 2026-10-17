@@ -451,7 +451,7 @@ global::Qyl.Telemetry.SemanticConventions.RequirementLevel.{{ requirement_level_
 
 {#- The persistence rule of registry/qyl/policy.yaml, which RegistryPolicy carries at runtime:
     "true" when the qyl collector persists `key`. A not-persisted key also denies its template
-    children. Captured fields use their own finite credential/name rule after explicit denials. -#}
+    children. Captured fields preserve valid protocol field names after explicit denials. -#}
 {%- macro persisted(key, policy) -%}
 {%- set s = namespace(denied = false, exempt = false) -%}
 {%- for k in policy.not_persisted -%}
@@ -469,8 +469,6 @@ global::Qyl.Telemetry.SemanticConventions.RequirementLevel.{{ requirement_level_
 {%- if suffix | length == 0 -%}{%- set s.denied = true -%}{%- endif -%}
 {%- set allowed = "abcdefghijklmnopqrstuvwxyz0123456789_-." ~ ("!#$%&'*+^`|~" if root in policy.captured_fields.http_roots else "") -%}
 {%- for c in suffix -%}{%- if c not in allowed -%}{%- set s.denied = true -%}{%- endif -%}{%- endfor -%}
-{%- if suffix in policy.captured_fields.denied_names -%}{%- set s.denied = true -%}{%- endif -%}
-{%- for token in policy.captured_fields.denied_tokens -%}{%- if token in suffix -%}{%- set s.denied = true -%}{%- endif -%}{%- endfor -%}
 {%- endif -%}
 {%- endfor -%}
 {%- if key in policy.token_exempt or key in policy.vendor_keys -%}{%- set s.exempt = true -%}{%- endif -%}

@@ -8,15 +8,11 @@ public sealed class CapturedFieldPolicyTests
     [DataRow("http.response.header", true)]
     [DataRow("rpc.request.metadata", false)]
     [DataRow("rpc.response.metadata", false)]
-    public void Captured_families_use_the_finite_name_rule(string root, bool http)
+    public void Captured_families_preserve_valid_names_including_credentials(string root, bool http)
     {
         string[] accepted = ["x-request-id", "x_request_id", "x.request.id", "x-message-id", "content-type",
-            "x-ratelimit-remaining", "x-tenant-id", "x-demo-res-md", "x-auth", "key"];
-        string[] denied = ["authorization", "proxy-authorization", "cookie", "set-cookie", "x-api-key",
-            "www-authenticate", "proxy-authenticate", "x-auth-token", "x-token-count", "client-secret",
-            "x-password", "x-passwd", "x-apikey", "x-api_key", "x-credential", "x-private_key",
-            "x-private-key", "x-privatekey", "x-client_secret", "x-jwt", "", "bad name", "bad:name",
-            "bad/name", "bad\r\nname", "naïve"];
+            "x-ratelimit-remaining", "x-tenant-id", "x-demo-res-md", "x-auth", "key", "authorization", "cookie", "set-cookie", "x-token-count", "x-auth-token", "x-api-key", "x-privatekey", "mcp-param-secret", "trace-bin"];
+        string[] denied = ["", "bad name", "bad:name", "bad/name", "bad\r\nname", "naïve"];
         foreach (var name in accepted)
         {
             Check(root + "." + name, true);

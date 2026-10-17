@@ -63,7 +63,7 @@ public sealed class RegistryPolicyTests
     [DataRow("http.request.header.exception.message", true)]
     [DataRow("user.exception.stacktrace", false)]
     [DataRow("Exception.Message", false)]
-    [DataRow("http.request.header.authorization", false)]
+    [DataRow("http.request.header.authorization", true)]
     [DataRow("user.email", false)]
     [DataRow("enduser.id", false)]
     [DataRow("qyl.app.order.message", false)]

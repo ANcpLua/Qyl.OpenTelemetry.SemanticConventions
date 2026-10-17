@@ -1,5 +1,10 @@
 # Changelog
 
+## [14.0.0] - 2026-10-17
+
+- Preserve every valid explicitly captured HTTP-header and RPC-metadata name, including credential-like names and binary metadata names. Capture selection controls exposure; unrelated persistence rules remain unchanged.
+- Remove the captured-field name and token deny tables from the generated public policy. Keep protocol name validation and rejection of bare template roots.
+
 ## [13.2.0] - 2026-10-17
 
 - Replace blanket HTTP-header and RPC-metadata retention denials with a finite field-name and credential-name policy. Preserve explicit denials and exception sanitization; allow benign selected names such as `x-message-id`.

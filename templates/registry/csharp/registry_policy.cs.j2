@@ -39,13 +39,13 @@ namespace Qyl.Telemetry.SemanticConventions;
 /// eligibility and token exemptions never waive that requirement.
 /// Only their exact canonical spelling is eligible; case variants and dotted descendants
 /// remain denied, including names not covered by the general denied-token rule.
-/// Captured HTTP headers and textual RPC metadata use a finite field-name/credential rule
+/// Captured HTTP headers and RPC metadata use their protocol field-name grammar
 /// after explicit denials and before the unrelated content-token rule. Selection belongs to
 /// instrumentation; this policy does not attest capture provenance or detect every secret value.
 /// </remarks>
 public static class RegistryPolicy
 {
-{% for property, key in [("CapturedHttpHeaderRoots", "http_roots"), ("CapturedRpcMetadataRoots", "rpc_roots"), ("CapturedFieldDeniedNames", "denied_names"), ("CapturedFieldDeniedTokens", "denied_tokens")] %}
+{% for property, key in [("CapturedHttpHeaderRoots", "http_roots"), ("CapturedRpcMetadataRoots", "rpc_roots")] %}
 {{ lib.doc_block(pad, "summary", "Captured-field policy from registry/qyl/policy.yaml; comparisons are ordinal and case-insensitive.") }}
 {{ pad }}public static global::System.Collections.Generic.IReadOnlyList<string> {{ property }} { get; } = new string[]
 {{ pad }}{
@@ -87,14 +87,6 @@ public static class RegistryPolicy
 {{ pad }}        if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' ||
 {{ pad }}            c == '_' || c == '-' || c == '.' || http && "!#$%&'*+^`|~".IndexOf(c) >= 0) continue;
 {{ pad }}        return true;
-{{ pad }}    }
-{{ pad }}    foreach (var denied in CapturedFieldDeniedNames)
-{{ pad }}    {
-{{ pad }}        if (string.Equals(suffix, denied, global::System.StringComparison.OrdinalIgnoreCase)) return true;
-{{ pad }}    }
-{{ pad }}    foreach (var token in CapturedFieldDeniedTokens)
-{{ pad }}    {
-{{ pad }}        if (suffix.IndexOf(token, global::System.StringComparison.OrdinalIgnoreCase) >= 0) return true;
 {{ pad }}    }
 {{ pad }}    persisted = true;
 {{ pad }}    return true;
