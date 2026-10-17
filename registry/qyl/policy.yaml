@@ -6,7 +6,7 @@
 # that every key named here exists.
 groups:
   # Ingest policy. `persisted: false` keys are dropped at ingest, and so is every key that starts
-  # with one of them plus "." (template keys such as http.request.header.<name>) or with a
+  # with one of them plus "." or with a
   # not-persisted prefix. The token rule drops any other key that contains a denied token
   # (ordinal, case-insensitive) unless the key is `token_exempt` or a vendor key (registry/vendor/):
   # a vendor spells its own tags. The generated RegistryPolicy table carries all of it; the
@@ -18,6 +18,13 @@ groups:
     annotations:
       qyl:
         not_persisted_prefixes: ["enduser.", "user."]
+        # Capture is producer opt-in. Retention accepts valid textual field names except
+        # this finite credential-name rule; arbitrary values are not guaranteed secret-free.
+        captured_fields:
+          http_roots: [http.request.header, http.response.header]
+          rpc_roots: [rpc.request.metadata, rpc.response.metadata]
+          denied_names: [authorization, proxy-authorization, cookie, set-cookie, x-api-key, www-authenticate, proxy-authenticate]
+          denied_tokens: [authorization, cookie, token, secret, password, passwd, apikey, api-key, api_key, credential, private_key, private-key, privatekey, client_secret, jwt]
         denied_key_tokens:
           - access_token
           - api-key
@@ -110,19 +117,11 @@ groups:
         annotations: {qyl: {persisted: false}}
       - ref: host.name
         annotations: {qyl: {persisted: false}}
-      - ref: http.request.header
-        annotations: {qyl: {persisted: false}}
-      - ref: http.response.header
-        annotations: {qyl: {persisted: false}}
       - ref: mcp.resource.uri
         annotations: {qyl: {persisted: false}}
       - ref: mcp.session.id
         annotations: {qyl: {persisted: false}}
       - ref: message.content
-        annotations: {qyl: {persisted: false}}
-      - ref: rpc.request.metadata
-        annotations: {qyl: {persisted: false}}
-      - ref: rpc.response.metadata
         annotations: {qyl: {persisted: false}}
       - ref: service.instance.id
         annotations: {qyl: {persisted: false}}

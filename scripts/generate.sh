@@ -175,6 +175,7 @@ policy = {
     "denied_key_tokens": sorted(group.get("denied_key_tokens") or []),
     "token_exempt": sorted(key for key, a in persistence if a.get("token_exempt") is True),
     "exception_text": sorted(key for key, a in persistence if a.get("sanitize") == "exception_text"),
+    "captured_fields": group["captured_fields"],
     "phase_end": sorted(key for key, a in phase if a.get("phase") == "end"),
     "spans": {span_id: {"starter": bool(entry.get("starter")),
                         "domain": entry.get("domain") or "",

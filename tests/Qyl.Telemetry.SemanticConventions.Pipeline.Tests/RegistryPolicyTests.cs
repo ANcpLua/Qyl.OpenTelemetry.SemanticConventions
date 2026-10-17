@@ -13,7 +13,7 @@ namespace Qyl.Telemetry.SemanticConventions.Pipeline.Tests;
 [TestClass]
 public sealed class RegistryPolicyTests
 {
-    private static readonly string[] CollectorDeniedExactKeys = ["code.file.path", "code.stacktrace", "db.query.text", "executor.input", "executor.output", "gen_ai.agent.description", "gen_ai.agent.id", "gen_ai.conversation.id", "gen_ai.data_source.id", "gen_ai.evaluation.explanation", "gen_ai.evaluation.name", "gen_ai.input.messages", "gen_ai.output.messages", "gen_ai.prompt.name", "gen_ai.response.id", "gen_ai.retrieval.documents", "gen_ai.retrieval.query.text", "gen_ai.system_instructions", "gen_ai.tool.call.arguments", "http.request.header", "http.response.header", "gen_ai.tool.call.id", "gen_ai.tool.call.result", "gen_ai.tool.definitions", "gen_ai.tool.description", "gen_ai.workflow.name", "host.id", "host.ip", "host.mac", "host.name", "mcp.resource.uri", "mcp.session.id", "message.content", "rpc.request.metadata", "rpc.response.metadata", "service.instance.id", "session.id", "session.previous_id", "url.full", "url.query", ];
+    private static readonly string[] CollectorDeniedExactKeys = ["code.file.path", "code.stacktrace", "db.query.text", "executor.input", "executor.output", "gen_ai.agent.description", "gen_ai.agent.id", "gen_ai.conversation.id", "gen_ai.data_source.id", "gen_ai.evaluation.explanation", "gen_ai.evaluation.name", "gen_ai.input.messages", "gen_ai.output.messages", "gen_ai.prompt.name", "gen_ai.response.id", "gen_ai.retrieval.documents", "gen_ai.retrieval.query.text", "gen_ai.system_instructions", "gen_ai.tool.call.arguments", "gen_ai.tool.call.id", "gen_ai.tool.call.result", "gen_ai.tool.definitions", "gen_ai.tool.description", "gen_ai.workflow.name", "host.id", "host.ip", "host.mac", "host.name", "mcp.resource.uri", "mcp.session.id", "message.content", "service.instance.id", "session.id", "session.previous_id", "url.full", "url.query", ];
     private static readonly string[] CollectorDeniedKeyTokens = ["access_token", "api-key", "api_key", "apikey", "authorization", "body", "completion", "cookie", "credential", "definition", "document", "fingerprint", "id_token", "instruction", "jwt", "message", "password", "private_key", "prompt", "query", "refresh_token", "result", "secret", "set-cookie", "token", ];
     private static readonly string[] CollectorTokenExemptKeys = ["db.query.summary", "gen_ai.token.type", "messaging.kafka.message.offset", "messaging.message.body.size", "messaging.message.id", ];
     [TestMethod]
@@ -60,7 +60,7 @@ public sealed class RegistryPolicyTests
     [DataRow("exception.stacktrace.detail", false)]
     [DataRow("Exception.StackTrace", false)]
     [DataRow("EXCEPTION.STACKTRACE.detail", false)]
-    [DataRow("http.request.header.exception.message", false)]
+    [DataRow("http.request.header.exception.message", true)]
     [DataRow("user.exception.stacktrace", false)]
     [DataRow("Exception.Message", false)]
     [DataRow("http.request.header.authorization", false)]

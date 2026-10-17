@@ -1,5 +1,10 @@
 # Changelog
 
+## [13.2.0] - 2026-10-17
+
+- Replace blanket HTTP-header and RPC-metadata retention denials with a finite field-name and credential-name policy. Preserve explicit denials and exception sanitization; allow benign selected names such as `x-message-id`.
+- Generate captured-field classification from the canonical registry policy. The Collector consumes the generated captured-field classification; policy tests verify malformed prefixes and known credential names.
+
 ## [13.1.2] - 2026-10-17
 
 - Generate only the key-kind and metric-name facts used by the analyzer instead of embedding unused public catalog metadata.

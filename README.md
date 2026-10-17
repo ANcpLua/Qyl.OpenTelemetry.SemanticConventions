@@ -210,6 +210,7 @@ annotations — the scope names qyl constructs and the vendor `ActivitySource` n
 the same YAML and hands them to the templates as parameters. The same holds for qyl's policy
 over the registry, [`registry/qyl/policy.yaml`](registry/qyl/policy.yaml): which keys the
 collector does not persist (`qyl.persisted: false`, the denied-key tokens, `qyl.token_exempt`),
+and the finite captured HTTP-header / textual RPC-metadata field-name and credential rule,
 which attributes are known only when an operation ends (`qyl.phase: end`), and the span-name
 chains and starters keyed by span refinement id (`qyl.span_name`, `starter`, `domain`, `fixed`).
 `scripts/generate.sh` reads it into one JSON value, `-D policy=<json>`, which the templates

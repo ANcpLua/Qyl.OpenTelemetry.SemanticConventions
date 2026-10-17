@@ -2,9 +2,8 @@
 {#-
   The persistence rule of registry/qyl/policy.yaml as a runtime table, in the stable package. The
   span views and the qyl collector's catalog read this one table, so a test can
-  never assert a key that ingest drops. The rule is applied in this order: a not-persisted key
-  (and its template children), a not-persisted prefix, then the token rule, which a token-exempt
-  key and every vendor key skip.
+  never assert a key that ingest drops. Explicit key/prefix denials precede the finite
+  captured-field rule. Other keys use the token rule, which token-exempt and vendor keys skip.
 -#}
 {%- set pad = "    " -%}
 {%- set inner = "        " -%}
@@ -30,7 +29,7 @@ namespace Qyl.Telemetry.SemanticConventions;
 /// </summary>
 /// <remarks>
 /// A key is not persisted when it is one of <see cref="NotPersistedKeys"/> or a template child of
-/// one (<c>http.request.header.&lt;name&gt;</c>), when it starts with one of
+/// one, when it starts with one of
 /// <see cref="NotPersistedPrefixes"/>, or when it contains one of <see cref="DeniedKeyTokens"/>
 /// (ordinal, case-insensitive) and is neither one of <see cref="TokenExemptKeys"/> nor one of
 /// <see cref="VendorKeys"/>: a vendor spells its own tags. Keys the collector lifts into columns
@@ -40,9 +39,67 @@ namespace Qyl.Telemetry.SemanticConventions;
 /// eligibility and token exemptions never waive that requirement.
 /// Only their exact canonical spelling is eligible; case variants and dotted descendants
 /// remain denied, including names not covered by the general denied-token rule.
+/// Captured HTTP headers and textual RPC metadata use a finite field-name/credential rule
+/// after explicit denials and before the unrelated content-token rule. Selection belongs to
+/// instrumentation; this policy does not attest capture provenance or detect every secret value.
 /// </remarks>
 public static class RegistryPolicy
 {
+{% for property, key in [("CapturedHttpHeaderRoots", "http_roots"), ("CapturedRpcMetadataRoots", "rpc_roots"), ("CapturedFieldDeniedNames", "denied_names"), ("CapturedFieldDeniedTokens", "denied_tokens")] %}
+{{ lib.doc_block(pad, "summary", "Captured-field policy from registry/qyl/policy.yaml; comparisons are ordinal and case-insensitive.") }}
+{{ pad }}public static global::System.Collections.Generic.IReadOnlyList<string> {{ property }} { get; } = new string[]
+{{ pad }}{
+{% for value in policy.captured_fields[key] %}
+{{ inner }}{{ lib.cs_string(value) }},
+{% endfor %}
+{{ pad }}};
+
+{% endfor %}
+{{ lib.doc_block(pad, "summary", "Classify a captured-field family, including invalid or bare roots. A true return identifies the family; persisted reports whether its full suffix is eligible. Unrelated keys return false.") }}
+{{ pad }}public static bool TryGetCapturedFieldPersistence(string key, out bool persisted)
+{{ pad }}{
+{{ pad }}    if (key is null) throw new global::System.ArgumentNullException(nameof(key));
+{{ pad }}    foreach (var root in CapturedHttpHeaderRoots)
+{{ pad }}    {
+{{ pad }}        if (TryCapturedField(key, root, true, out persisted)) return true;
+{{ pad }}    }
+{{ pad }}    foreach (var root in CapturedRpcMetadataRoots)
+{{ pad }}    {
+{{ pad }}        if (TryCapturedField(key, root, false, out persisted)) return true;
+{{ pad }}    }
+{{ pad }}    persisted = false;
+{{ pad }}    return false;
+{{ pad }}}
+
+{{ pad }}private static bool TryCapturedField(string key, string root, bool http, out bool persisted)
+{{ pad }}{
+{{ pad }}    persisted = false;
+{{ pad }}    if (!key.StartsWith(root, global::System.StringComparison.OrdinalIgnoreCase)) return false;
+{{ pad }}    if (key.Length == root.Length) return true;
+{{ pad }}    if (key[root.Length] != '.') return false;
+{{ pad }}    var suffix = key.Substring(root.Length + 1);
+{{ pad }}    if (suffix.Length == 0) return true;
+{{ pad }}    // RFC 9110 section 5.6.2 tchar; gRPC custom metadata uses the narrower ASCII set.
+{{ pad }}    // https://www.rfc-editor.org/rfc/rfc9110.html#section-5.6.2
+{{ pad }}    // https://grpc.github.io/grpc/core/md_doc__p_r_o_t_o_c_o_l-_h_t_t_p2.html
+{{ pad }}    foreach (var c in suffix)
+{{ pad }}    {
+{{ pad }}        if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' ||
+{{ pad }}            c == '_' || c == '-' || c == '.' || http && "!#$%&'*+^`|~".IndexOf(c) >= 0) continue;
+{{ pad }}        return true;
+{{ pad }}    }
+{{ pad }}    foreach (var denied in CapturedFieldDeniedNames)
+{{ pad }}    {
+{{ pad }}        if (string.Equals(suffix, denied, global::System.StringComparison.OrdinalIgnoreCase)) return true;
+{{ pad }}    }
+{{ pad }}    foreach (var token in CapturedFieldDeniedTokens)
+{{ pad }}    {
+{{ pad }}        if (suffix.IndexOf(token, global::System.StringComparison.OrdinalIgnoreCase) >= 0) return true;
+{{ pad }}    }
+{{ pad }}    persisted = true;
+{{ pad }}    return true;
+{{ pad }}}
+
 {{ lib.doc_block(pad, "summary", "The keys annotated <c>qyl.persisted: false</c>, in ordinal order.") }}
 {{ pad }}public static global::System.Collections.Generic.IReadOnlyList<string> NotPersistedKeys { get; } = new string[]
 {{ pad }}{
@@ -121,6 +178,7 @@ public static class RegistryPolicy
 {{ pad }}        if (string.Equals(key, exact, global::System.StringComparison.OrdinalIgnoreCase) ||
 {{ pad }}            key.Length > exact.Length && key[exact.Length] == '.' && key.StartsWith(exact, global::System.StringComparison.OrdinalIgnoreCase)) return false;
 {{ pad }}    }
+{{ pad }}    if (TryGetCapturedFieldPersistence(key, out var captured)) return captured;
 {{ pad }}    foreach (var exempt in TokenExemptKeys)
 {{ pad }}    {
 {{ pad }}        if (string.Equals(key, exempt, global::System.StringComparison.Ordinal)) return true;
